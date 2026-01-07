@@ -346,7 +346,7 @@
 
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 let sectionCount = {{ $questionnaire->sections->count() }};
 let questionCounts = {
@@ -396,5 +396,5 @@ function toggleOptions(select) {
     optionsRow.style.display = needsOptions ? 'flex' : 'none';
 }
 </script>
-@endpush
+@endsection
 

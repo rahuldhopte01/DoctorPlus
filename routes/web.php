@@ -107,9 +107,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('/user_profile', [WebsiteController::class, 'user_profile']);
         Route::get('/lab_test/{id}/{name}', [WebsiteController::class, 'labTest']);
         
-        // Questionnaire routes (before booking)
-        Route::get('/questionnaire/{doctorId}', [WebQuestionnaireController::class, 'show'])->name('questionnaire.show');
-        Route::post('/questionnaire/validate/{doctorId}', [WebQuestionnaireController::class, 'validate'])->name('questionnaire.validate');
+        // Questionnaire routes (before booking) - use 'patient-questionnaire' to avoid conflict with admin routes
+        Route::get('/patient-questionnaire/{doctorId}', [WebQuestionnaireController::class, 'show'])->name('questionnaire.show');
+        Route::post('/patient-questionnaire/validate/{doctorId}', [WebQuestionnaireController::class, 'validateAnswers'])->name('questionnaire.validate');
         Route::get('/api/questionnaire/{treatmentId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
         
         Route::get('/booking/{id}/{name}', [WebsiteController::class, 'booking']);

@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData(form);
 
-        fetch('{{ url("/questionnaire/validate/" . $doctor->id) }}', {
+        fetch('{{ url("/patient-questionnaire/validate/" . $doctor->id) }}', {
             method: 'POST',
             body: formData,
             headers: {

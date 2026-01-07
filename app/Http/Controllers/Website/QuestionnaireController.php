@@ -41,7 +41,7 @@ class QuestionnaireController extends Controller
     /**
      * Validate questionnaire answers (AJAX).
      */
-    public function validate(Request $request, $doctorId)
+    public function validateAnswers(Request $request, $doctorId)
     {
         $doctor = Doctor::findOrFail($doctorId);
         $questionnaire = $this->questionnaireService->getQuestionnaireForTreatment($doctor->treatment_id);

@@ -229,7 +229,7 @@
 
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 let sectionCount = 0;
 let questionCounts = {};
@@ -278,9 +278,9 @@ function toggleOptions(select) {
 }
 
 // Initialize with one section
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
     addSection();
 });
 </script>
-@endpush
+@endsection
 
