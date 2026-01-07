@@ -1,0 +1,1 @@
+ALTER TABLE `banner` ADD `description` VARCHAR(255) NULL DEFAULT NULL AFTER `name`;
