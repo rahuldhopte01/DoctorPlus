@@ -731,12 +731,27 @@ class WebsiteController extends Controller
 
     public function patientLogin(Request $request)
     {
+        // Store redirect URL from query parameter (Phase 3: Authentication Gate)
+        if ($request->has('redirect_to')) {
+            session()->put('questionnaire_intent', [
+                'redirect_to' => $request->get('redirect_to'),
+            ]);
+        }
+
         if ($request->has('email') && $request->has('password')) {
             if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
                 $user = Auth::user();
 
                 if ($user->status) {
                     if ($user->verify) {
+                        // Check for questionnaire intent (Phase 3: Authentication Gate)
+                        $questionnaireIntent = session()->get('questionnaire_intent');
+                        if ($questionnaireIntent && isset($questionnaireIntent['redirect_to'])) {
+                            $redirectUrl = $questionnaireIntent['redirect_to'];
+                            session()->forget('questionnaire_intent');
+                            return redirect($redirectUrl);
+                        }
+
                         if (auth()->user()->hasRole('doctor')) {
                             return redirect()->intended('doctor_home');
                         } else {
@@ -1677,5 +1692,46 @@ class WebsiteController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Account Delete Successfully!']);
         }
+    }
+
+    /**
+     * Display categories landing page (Phase 1)
+     * Shows all treatment categories with their treatment information
+     */
+    public function categories()
+    {
+        $categories = Category::with('treatment')
+            ->whereStatus(1)
+            ->orderBy('name', 'ASC')
+            ->get();
+        
+        $setting = Setting::first();
+
+        return view('website.categories', compact('categories', 'setting'));
+    }
+
+    /**
+     * Display category detail page (Phase 2)
+     * Shows category details, treatment information, and questionnaire CTA
+     */
+    public function categoryDetail($id)
+    {
+        $category = Category::with(['treatment', 'questionnaire'])
+            ->whereStatus(1)
+            ->findOrFail($id);
+
+        // Get treatment details
+        $treatment = $category->treatment;
+        
+        if (!$treatment) {
+            return redirect()->route('categories')->with('error', __('Treatment not found for this category'));
+        }
+
+        // Check if category has active questionnaire
+        $hasQuestionnaire = $category->hasActiveQuestionnaire();
+
+        $setting = Setting::first();
+
+        return view('website.category_detail', compact('category', 'treatment', 'hasQuestionnaire', 'setting'));
     }
 }

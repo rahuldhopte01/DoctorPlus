@@ -30,19 +30,4 @@ class Treatments extends Model
         return $this->hasMany('App\Models\Doctor');
     }
 
-    /**
-     * Get the questionnaire for this treatment.
-     */
-    public function questionnaire()
-    {
-        return $this->hasOne(Questionnaire::class, 'treatment_id');
-    }
-
-    /**
-     * Check if treatment has an active questionnaire.
-     */
-    public function hasActiveQuestionnaire(): bool
-    {
-        return $this->questionnaire()->where('status', 1)->exists();
-    }
 }

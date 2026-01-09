@@ -38,8 +38,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="treatment_id">{{ __('Treatment') }}</label>
-                                <input type="text" class="form-control" value="{{ $questionnaire->treatment->name ?? 'N/A' }}" disabled>
+                                <label for="category_id">{{ __('Category') }}</label>
+                                <input type="text" class="form-control" value="{{ $questionnaire->category->name ?? 'N/A' }} 
+                                    @if($questionnaire->category && $questionnaire->category->treatment)
+                                        ({{ $questionnaire->category->treatment->name }})
+                                    @endif
+                                " disabled>
                             </div>
                         </div>
                         <div class="col-md-6">

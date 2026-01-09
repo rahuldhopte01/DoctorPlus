@@ -103,6 +103,10 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
     Route::get('/forgot_password', [WebsiteController::class, 'forgotPassword']);
     Route::post('/user_forget_password', [WebsiteController::class, 'userForgotPassword']);
 
+    // Questionnaire discovery flow (Phase 1 & 2)
+    Route::get('/categories', [WebsiteController::class, 'categories'])->name('categories');
+    Route::get('/category/{id}', [WebsiteController::class, 'categoryDetail'])->name('category.detail');
+
     Route::middleware(['auth'])->group(function () {
         Route::get('/user_profile', [WebsiteController::class, 'user_profile']);
         Route::get('/lab_test/{id}/{name}', [WebsiteController::class, 'labTest']);
@@ -110,7 +114,18 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // Questionnaire routes (before booking) - use 'patient-questionnaire' to avoid conflict with admin routes
         Route::get('/patient-questionnaire/{doctorId}', [WebQuestionnaireController::class, 'show'])->name('questionnaire.show');
         Route::post('/patient-questionnaire/validate/{doctorId}', [WebQuestionnaireController::class, 'validateAnswers'])->name('questionnaire.validate');
-        Route::get('/api/questionnaire/{treatmentId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
+        Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
+        
+        // Category-based questionnaire flow (Phase 4-6)
+        Route::get('/questionnaire/category/{categoryId}', [WebQuestionnaireController::class, 'showByCategory'])->name('questionnaire.category');
+        Route::get('/questionnaire/category/{categoryId}/section/{sectionIndex}', [WebQuestionnaireController::class, 'showSection'])->name('questionnaire.section');
+        Route::post('/questionnaire/category/{categoryId}/save', [WebQuestionnaireController::class, 'saveAnswers'])->name('questionnaire.save');
+        Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
+        Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
+        Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
+        Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
+            return view('website.questionnaire.success', compact('categoryId'));
+        })->name('questionnaire.success');
         
         Route::get('/booking/{id}/{name}', [WebsiteController::class, 'booking']);
         Route::post('/bookAppointment', [WebsiteController::class, 'bookAppointment']);
@@ -199,7 +214,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
 
         // Questionnaire routes
         Route::post('/questionnaire/change-status', [QuestionnaireController::class, 'changeStatus']);
-        Route::get('/questionnaire/treatment/{treatmentId}', [QuestionnaireController::class, 'getForTreatment']);
+        Route::get('/admin/questionnaire/category/{categoryId}', [QuestionnaireController::class, 'getForCategory']);
 
         Route::get('/login-as-doctor/{id}', [AdminController::class, 'loginAsDoctor'])->name('loginAsDoctor');
         Route::get('/login-as-patient/{id}', [AdminController::class, 'loginAsPatient'])->name('loginAsPatient');

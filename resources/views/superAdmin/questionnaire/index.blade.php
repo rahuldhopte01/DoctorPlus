@@ -26,6 +26,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>{{__('Category')}}</th>
                                 <th>{{__('Treatment')}}</th>
                                 <th>{{__('Name')}}</th>
                                 <th>{{__('Sections')}}</th>
@@ -41,8 +42,15 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>
-                                        @if($questionnaire->treatment)
-                                            <span class="badge badge-info">{{ $questionnaire->treatment->name }}</span>
+                                        @if($questionnaire->category)
+                                            <span class="badge badge-primary">{{ $questionnaire->category->name }}</span>
+                                        @else
+                                            <span class="text-muted">N/A</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($questionnaire->category && $questionnaire->category->treatment)
+                                            <span class="badge badge-info">{{ $questionnaire->category->treatment->name }}</span>
                                         @else
                                             <span class="text-muted">N/A</span>
                                         @endif
@@ -92,5 +100,6 @@
     </div>
 </section>
 @endsection
+
 
 

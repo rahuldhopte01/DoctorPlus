@@ -29,17 +29,20 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="treatment_id">{{ __('Treatment') }} <span class="text-danger">*</span></label>
-                                <select name="treatment_id" id="treatment_id" class="form-control select2" required>
-                                    <option value="">{{ __('Select Treatment') }}</option>
-                                    @foreach($treatments as $treatment)
-                                        <option value="{{ $treatment->id }}" {{ $selectedTreatment && $selectedTreatment->id == $treatment->id ? 'selected' : '' }}>
-                                            {{ $treatment->name }}
+                                <label for="category_id">{{ __('Category') }} <span class="text-danger">*</span></label>
+                                <select name="category_id" id="category_id" class="form-control select2" required>
+                                    <option value="">{{ __('Select Category') }}</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ $selectedCategory && $selectedCategory->id == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }} 
+                                            @if($category->treatment)
+                                                ({{ $category->treatment->name }})
+                                            @endif
                                         </option>
                                     @endforeach
                                 </select>
-                                @if($treatments->isEmpty())
-                                    <small class="text-warning">{{ __('All treatments already have questionnaires assigned.') }}</small>
+                                @if($categories->isEmpty())
+                                    <small class="text-warning">{{ __('All categories already have questionnaires assigned.') }}</small>
                                 @endif
                             </div>
                         </div>

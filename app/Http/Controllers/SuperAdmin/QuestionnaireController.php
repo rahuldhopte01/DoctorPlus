@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireQuestion;
 use App\Models\QuestionnaireSection;
-use App\Models\Treatments;
+use App\Models\Category;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +21,7 @@ class QuestionnaireController extends Controller
     {
         abort_if(Gate::denies('questionnaire_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $questionnaires = Questionnaire::with('treatment')
+        $questionnaires = Questionnaire::with('category.treatment')
             ->withCount('sections')
             ->orderBy('id', 'DESC')
             ->get();
@@ -36,19 +36,20 @@ class QuestionnaireController extends Controller
     {
         abort_if(Gate::denies('questionnaire_add'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $treatments = Treatments::whereStatus(1)
+        $categories = Category::whereStatus(1)
             ->whereDoesntHave('questionnaire')
+            ->with('treatment')
             ->orderBy('id', 'DESC')
             ->get();
 
-        $selectedTreatment = null;
-        if ($request->has('treatment_id')) {
-            $selectedTreatment = Treatments::find($request->treatment_id);
+        $selectedCategory = null;
+        if ($request->has('category_id')) {
+            $selectedCategory = Category::with('treatment')->find($request->category_id);
         }
 
         $fieldTypes = QuestionnaireQuestion::FIELD_TYPES;
 
-        return view('superAdmin.questionnaire.create', compact('treatments', 'selectedTreatment', 'fieldTypes'));
+        return view('superAdmin.questionnaire.create', compact('categories', 'selectedCategory', 'fieldTypes'));
     }
 
     /**
@@ -59,7 +60,7 @@ class QuestionnaireController extends Controller
         abort_if(Gate::denies('questionnaire_add'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $request->validate([
-            'treatment_id' => 'required|exists:treatments,id|unique:questionnaires,treatment_id',
+            'category_id' => 'required|exists:category,id|unique:questionnaires,category_id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'sections' => 'required|array|min:1',
@@ -74,7 +75,7 @@ class QuestionnaireController extends Controller
         try {
             // Create questionnaire
             $questionnaire = Questionnaire::create([
-                'treatment_id' => $request->treatment_id,
+                'category_id' => $request->category_id,
                 'name' => $request->name,
                 'description' => $request->description,
                 'status' => $request->has('status') ? 1 : 0,
@@ -122,7 +123,7 @@ class QuestionnaireController extends Controller
     {
         abort_if(Gate::denies('questionnaire_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $questionnaire = Questionnaire::with(['treatment', 'sections.questions'])
+        $questionnaire = Questionnaire::with(['category.treatment', 'sections.questions'])
             ->findOrFail($id);
 
         return view('superAdmin.questionnaire.show', compact('questionnaire'));
@@ -135,13 +136,13 @@ class QuestionnaireController extends Controller
     {
         abort_if(Gate::denies('questionnaire_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $questionnaire = Questionnaire::with(['treatment', 'sections.questions'])
+        $questionnaire = Questionnaire::with(['category.treatment', 'sections.questions'])
             ->findOrFail($id);
 
-        $treatments = Treatments::whereStatus(1)->orderBy('id', 'DESC')->get();
+        $categories = Category::whereStatus(1)->with('treatment')->orderBy('id', 'DESC')->get();
         $fieldTypes = QuestionnaireQuestion::FIELD_TYPES;
 
-        return view('superAdmin.questionnaire.edit', compact('questionnaire', 'treatments', 'fieldTypes'));
+        return view('superAdmin.questionnaire.edit', compact('questionnaire', 'categories', 'fieldTypes'));
     }
 
     /**
@@ -245,11 +246,11 @@ class QuestionnaireController extends Controller
     }
 
     /**
-     * Get questionnaire for a treatment (API).
+     * Get questionnaire for a category (API).
      */
-    public function getForTreatment($treatmentId)
+    public function getForCategory($categoryId)
     {
-        $questionnaire = Questionnaire::where('treatment_id', $treatmentId)
+        $questionnaire = Questionnaire::where('category_id', $categoryId)
             ->where('status', 1)
             ->with(['sections' => function ($query) {
                 $query->orderBy('order')->with(['questions' => function ($q) {
@@ -347,5 +348,6 @@ class QuestionnaireController extends Controller
         ];
     }
 }
+
 
 

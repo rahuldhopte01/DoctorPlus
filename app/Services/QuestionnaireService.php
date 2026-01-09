@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Validator;
 class QuestionnaireService
 {
     /**
-     * Get questionnaire for a treatment.
+     * Get questionnaire for a category.
      */
-    public function getQuestionnaireForTreatment($treatmentId): ?Questionnaire
+    public function getQuestionnaireForCategory($categoryId): ?Questionnaire
     {
-        return Questionnaire::where('treatment_id', $treatmentId)
+        return Questionnaire::where('category_id', $categoryId)
             ->where('status', 1)
             ->with(['sections' => function ($query) {
                 $query->orderBy('order')->with(['questions' => function ($q) {
@@ -230,5 +230,6 @@ class QuestionnaireService
         return $grouped;
     }
 }
+
 
 

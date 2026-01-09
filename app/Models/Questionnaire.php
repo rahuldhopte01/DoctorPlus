@@ -12,7 +12,7 @@ class Questionnaire extends Model
     protected $table = 'questionnaires';
 
     protected $fillable = [
-        'treatment_id',
+        'category_id',
         'name',
         'description',
         'status',
@@ -24,11 +24,11 @@ class Questionnaire extends Model
     ];
 
     /**
-     * Get the treatment that owns the questionnaire.
+     * Get the category that owns the questionnaire.
      */
-    public function treatment()
+    public function category()
     {
-        return $this->belongsTo(Treatments::class, 'treatment_id');
+        return $this->belongsTo(Category::class, 'category_id');
     }
 
     /**
@@ -61,6 +61,21 @@ class Questionnaire extends Model
     }
 
     /**
+     * Get the treatment through category.
+     */
+    public function treatment()
+    {
+        return $this->hasOneThrough(
+            Treatments::class,
+            Category::class,
+            'id',
+            'id',
+            'category_id',
+            'treatment_id'
+        );
+    }
+
+    /**
      * Scope to get only active questionnaires.
      */
     public function scopeActive($query)
@@ -80,5 +95,6 @@ class Questionnaire extends Model
         }]);
     }
 }
+
 
 

@@ -34,4 +34,20 @@ class Category extends Model
     {
         return $this->hasMany('App\Models\Doctor');
     }
+
+    /**
+     * Get the questionnaire for this category.
+     */
+    public function questionnaire()
+    {
+        return $this->hasOne(Questionnaire::class, 'category_id');
+    }
+
+    /**
+     * Check if category has an active questionnaire.
+     */
+    public function hasActiveQuestionnaire(): bool
+    {
+        return $this->questionnaire()->where('status', 1)->exists();
+    }
 }

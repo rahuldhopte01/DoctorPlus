@@ -22,9 +22,12 @@
             <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h6 class="text-muted">{{ __('Treatment') }}</h6>
+                        <h6 class="text-muted">{{ __('Category') }}</h6>
                         <p class="mb-0">
-                            <span class="badge badge-primary">{{ $questionnaire->treatment->name ?? 'N/A' }}</span>
+                            <span class="badge badge-primary">{{ $questionnaire->category->name ?? 'N/A' }}</span>
+                            @if($questionnaire->category && $questionnaire->category->treatment)
+                                <span class="badge badge-info ml-2">{{ $questionnaire->category->treatment->name }}</span>
+                            @endif
                         </p>
                     </div>
                     <div class="col-md-6">
@@ -109,5 +112,6 @@
     </div>
 </section>
 @endsection
+
 
 
