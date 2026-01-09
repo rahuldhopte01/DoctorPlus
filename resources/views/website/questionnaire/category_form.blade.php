@@ -91,11 +91,15 @@
 
                         @switch($question->field_type)
                             @case('text')
+                                @php
+                                    $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '';
+                                    $savedValue = is_array($savedValue) ? '' : (string) $savedValue;
+                                @endphp
                                 <input type="text" 
                                     name="answers[{{ $question->id }}]" 
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
                                     data-question-id="{{ $question->id }}"
-                                    value="{{ isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '' }}"
+                                    value="{{ $savedValue }}"
                                     @if($question->required) required @endif
                                     @if($question->validation_rules)
                                         @if(isset($question->validation_rules['min'])) minlength="{{ $question->validation_rules['min'] }}" @endif
@@ -104,20 +108,28 @@
                                 @break
 
                             @case('textarea')
+                                @php
+                                    $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '';
+                                    $savedValue = is_array($savedValue) ? '' : (string) $savedValue;
+                                @endphp
                                 <textarea 
                                     name="answers[{{ $question->id }}]" 
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
                                     data-question-id="{{ $question->id }}"
                                     rows="4"
-                                    @if($question->required) required @endif>{{ isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '' }}</textarea>
+                                    @if($question->required) required @endif>{{ $savedValue }}</textarea>
                                 @break
 
                             @case('number')
+                                @php
+                                    $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '';
+                                    $savedValue = is_array($savedValue) ? '' : (string) $savedValue;
+                                @endphp
                                 <input type="number" 
                                     name="answers[{{ $question->id }}]" 
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
                                     data-question-id="{{ $question->id }}"
-                                    value="{{ isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '' }}"
+                                    value="{{ $savedValue }}"
                                     @if($question->required) required @endif
                                     @if($question->validation_rules)
                                         @if(isset($question->validation_rules['min'])) min="{{ $question->validation_rules['min'] }}" @endif
@@ -126,6 +138,10 @@
                                 @break
 
                             @case('dropdown')
+                                @php
+                                    $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
+                                    $savedValue = is_array($savedValue) ? null : $savedValue;
+                                @endphp
                                 <select name="answers[{{ $question->id }}]" 
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
                                     data-question-id="{{ $question->id }}"
@@ -133,7 +149,7 @@
                                     <option value="">{{ __('Select an option') }}</option>
                                     @foreach($question->options ?? [] as $option)
                                         <option value="{{ $option }}" 
-                                            {{ isset($savedAnswers['answers'][$question->id]) && $savedAnswers['answers'][$question->id] == $option ? 'selected' : '' }}>
+                                            {{ $savedValue !== null && $savedValue == $option ? 'selected' : '' }}>
                                             {{ $option }}
                                         </option>
                                     @endforeach
@@ -141,6 +157,10 @@
                                 @break
 
                             @case('radio')
+                                @php
+                                    $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
+                                    $savedValue = is_array($savedValue) ? null : $savedValue;
+                                @endphp
                                 <div class="space-y-2">
                                     @foreach($question->options ?? [] as $optionIndex => $option)
                                     <div class="flex items-center">
@@ -150,7 +170,7 @@
                                             value="{{ $option }}"
                                             class="question-input"
                                             data-question-id="{{ $question->id }}"
-                                            {{ isset($savedAnswers['answers'][$question->id]) && $savedAnswers['answers'][$question->id] == $option ? 'checked' : '' }}
+                                            {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                             @if($question->required) required @endif>
                                         <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="ml-2 font-fira-sans text-gray">
                                             {{ $option }}
@@ -187,7 +207,10 @@
                                 @break
 
                             @case('file')
-                                <div class="border border-gray-300 rounded-lg p-4">
+                                @php
+                                    $savedFilePath = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '';
+                                    $savedFilePath = is_array($savedFilePath) ? '' : (string) $savedFilePath;
+                                @endphp<div class="border border-gray-300 rounded-lg p-4">
                                     <input type="file" 
                                         name="files[{{ $question->id }}]" 
                                         class="question-input"
@@ -243,7 +266,7 @@
 </div>
 @endsection
 
-@push('scripts')
+@section('js')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('questionnaireForm');
@@ -521,4 +544,4 @@ document.addEventListener('DOMContentLoaded', function() {
     handleConditionalLogic();
 });
 </script>
-@endpush
+@endsection

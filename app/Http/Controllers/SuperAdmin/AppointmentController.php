@@ -245,7 +245,7 @@ class AppointmentController extends Controller
             $appointments = Appointment::with(['doctor', 'address'])->orderBy('id', 'DESC')->get();
         } else {
             $doctor = Doctor::where('user_id', auth()->user()->id)->first();
-            $appointments = Appointment::with(['doctor', 'address', 'hospital'])->where('doctor_id', $doctor->id)->orderBy('id', 'DESC')->get();
+            $appointments = Appointment::with(['doctor', 'address', 'hospital', 'questionnaireAnswers'])->where('doctor_id', $doctor->id)->orderBy('id', 'DESC')->get();
             foreach ($appointments as $appointment) {
                 if (Prescription::where('appointment_id', $appointment->id)->first()) {
                     $appointment->prescription = '1';

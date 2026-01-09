@@ -105,7 +105,16 @@
     <div class="card section-card mb-3" data-section-index="__SECTION_INDEX__">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center flex-grow-1">
-                <i class="fas fa-grip-vertical text-muted mr-2"></i>
+                <div class="btn-group-vertical mr-2" role="group">
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" 
+                        onclick="moveSectionUp(this)" title="{{ __('Move Up') }}">
+                        <i class="fas fa-chevron-up" style="font-size: 10px;"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" 
+                        onclick="moveSectionDown(this)" title="{{ __('Move Down') }}">
+                        <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                    </button>
+                </div>
                 <input type="text" name="sections[__SECTION_INDEX__][name]" class="form-control form-control-sm" 
                     placeholder="{{ __('Section Name (e.g., Medical History)') }}" required style="max-width: 300px;">
             </div>
@@ -135,7 +144,19 @@
     <div class="card question-card mb-2" data-question-index="__QUESTION_INDEX__">
         <div class="card-body p-3">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-1">
+                    <div class="btn-group-vertical" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" 
+                            onclick="moveQuestionUp(this)" title="{{ __('Move Up') }}">
+                            <i class="fas fa-chevron-up" style="font-size: 10px;"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-1" 
+                            onclick="moveQuestionDown(this)" title="{{ __('Move Down') }}">
+                            <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-5">
                     <div class="form-group mb-2">
                         <label class="small">{{ __('Question Text') }} <span class="text-danger">*</span></label>
                         <textarea name="sections[__SECTION_INDEX__][questions][__QUESTION_INDEX__][question_text]" 
@@ -280,9 +301,126 @@ function toggleOptions(select) {
     optionsRow.style.display = needsOptions ? 'flex' : 'none';
 }
 
-// Initialize with one section
+// Reindex all sections and questions before form submission
+function reindexForm() {
+    const sectionsList = document.getElementById('sectionsList');
+    const sections = sectionsList.querySelectorAll('.section-card');
+    
+    sections.forEach((section, sectionIndex) => {
+        // Update section data attribute
+        section.setAttribute('data-section-index', sectionIndex);
+        
+        // Update all section field names
+        section.querySelectorAll('[name^="sections["]').forEach(field => {
+            const name = field.getAttribute('name');
+            const newName = name.replace(/sections\[\d+\]/, `sections[${sectionIndex}]`);
+            field.setAttribute('name', newName);
+            
+            // Update IDs that reference section index
+            if (field.id) {
+                field.id = field.id.replace(/_\d+_/, `_${sectionIndex}_`);
+            }
+            if (field.getAttribute('for')) {
+                field.setAttribute('for', field.getAttribute('for').replace(/_\d+_/, `_${sectionIndex}_`));
+            }
+        });
+        
+        // Reindex questions within this section
+        const questionsContainer = section.querySelector('.questions-container');
+        const questions = questionsContainer.querySelectorAll('.question-card');
+        
+        questions.forEach((question, questionIndex) => {
+            question.setAttribute('data-question-index', questionIndex);
+            
+            // Update all question field names
+            question.querySelectorAll('[name*="[questions]["]').forEach(field => {
+                const name = field.getAttribute('name');
+                const newName = name.replace(/\[questions\]\[\d+\]/, `[questions][${questionIndex}]`);
+                field.setAttribute('name', newName);
+                
+                // Update IDs that reference question index
+                if (field.id) {
+                    field.id = field.id.replace(new RegExp(`_${sectionIndex}_\\d+`), `_${sectionIndex}_${questionIndex}`);
+                }
+                if (field.getAttribute('for')) {
+                    field.setAttribute('for', field.getAttribute('for').replace(new RegExp(`_${sectionIndex}_\\d+`), `_${sectionIndex}_${questionIndex}`));
+                }
+            });
+            
+            // Update collapse links and targets separately
+            question.querySelectorAll('[href^="#advanced_"]').forEach(link => {
+                link.setAttribute('href', `#advanced_${sectionIndex}_${questionIndex}`);
+            });
+            
+            question.querySelectorAll('.collapse[id^="advanced_"]').forEach(collapse => {
+                collapse.id = `advanced_${sectionIndex}_${questionIndex}`;
+            });
+            
+            // Update question move buttons disabled state
+            const upBtn = question.querySelector('[onclick="moveQuestionUp(this)"]');
+            const downBtn = question.querySelector('[onclick="moveQuestionDown(this)"]');
+            if (upBtn) upBtn.disabled = (questionIndex === 0);
+            if (downBtn) downBtn.disabled = (questionIndex === questions.length - 1);
+        });
+    });
+    
+    // Update section move buttons disabled state
+    sections.forEach((section, sectionIndex) => {
+        const upBtn = section.querySelector('[onclick="moveSectionUp(this)"]');
+        const downBtn = section.querySelector('[onclick="moveSectionDown(this)"]');
+        if (upBtn) upBtn.disabled = (sectionIndex === 0);
+        if (downBtn) downBtn.disabled = (sectionIndex === sections.length - 1);
+    });
+}
+
+function moveSectionUp(btn) {
+    const sectionCard = btn.closest('.section-card');
+    const prevSection = sectionCard.previousElementSibling;
+    if (prevSection) {
+        sectionCard.parentNode.insertBefore(sectionCard, prevSection);
+        reindexForm();
+    }
+}
+
+function moveSectionDown(btn) {
+    const sectionCard = btn.closest('.section-card');
+    const nextSection = sectionCard.nextElementSibling;
+    if (nextSection) {
+        sectionCard.parentNode.insertBefore(nextSection, sectionCard);
+        reindexForm();
+    }
+}
+
+function moveQuestionUp(btn) {
+    const questionCard = btn.closest('.question-card');
+    const questionsContainer = questionCard.parentNode;
+    const prevQuestion = questionCard.previousElementSibling;
+    if (prevQuestion) {
+        questionsContainer.insertBefore(questionCard, prevQuestion);
+        reindexForm();
+    }
+}
+
+function moveQuestionDown(btn) {
+    const questionCard = btn.closest('.question-card');
+    const questionsContainer = questionCard.parentNode;
+    const nextQuestion = questionCard.nextElementSibling;
+    if (nextQuestion) {
+        questionsContainer.insertBefore(nextQuestion, questionCard);
+        reindexForm();
+    }
+}
+
+// Initialize with one section and reindex before form submission
 $(document).ready(function() {
     addSection();
+    
+    $('#questionnaireForm').on('submit', function() {
+        reindexForm();
+    });
+    
+    // Initial reindex to set disabled states correctly
+    setTimeout(reindexForm, 100);
 });
 </script>
 @endsection

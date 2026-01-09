@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Questionnaire;
+use App\Models\QuestionnaireAnswer;
 use App\Services\QuestionnaireService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class QuestionnaireController extends Controller
@@ -112,8 +114,7 @@ class QuestionnaireController extends Controller
     }
 
     /**
-     * Show questionnaire form for a category (Phase 4)
-     * Redirects to first section
+     * Show questionnaire form for a category (Single page - all sections)
      */
     public function showByCategory($categoryId)
     {
@@ -127,8 +128,37 @@ class QuestionnaireController extends Controller
             return redirect('/patient-login')->with('info', __('Please login to continue with the questionnaire'));
         }
 
-        // Redirect to first section (section index 0)
-        return redirect()->to('/questionnaire/category/' . $categoryId . '/section/0');
+        $category = Category::with(['treatment', 'questionnaire.sections.questions'])->findOrFail($categoryId);
+        
+        if (!$category->questionnaire || !$category->questionnaire->status) {
+            return redirect()->route('category.detail', ['id' => $categoryId])
+                ->with('error', __('No questionnaire available for this category'));
+        }
+
+        $questionnaire = $this->questionnaireService->getQuestionnaireForCategory($categoryId);
+        $treatment = $category->treatment;
+
+        // Load saved answers from session - ensure it's always an array with proper structure
+        $savedAnswers = session()->get('questionnaire_answers_' . $categoryId, []);
+        if (!is_array($savedAnswers) || !isset($savedAnswers['answers'])) {
+            $savedAnswers = ['answers' => [], 'files' => []];
+        }
+        
+        // Normalize saved answers to ensure question IDs are integers
+        if (isset($savedAnswers['answers']) && is_array($savedAnswers['answers'])) {
+            $normalizedSavedAnswers = [];
+            foreach ($savedAnswers['answers'] as $questionId => $answer) {
+                $normalizedSavedAnswers[(int) $questionId] = $answer;
+            }
+            $savedAnswers['answers'] = $normalizedSavedAnswers;
+        }
+
+        return view('website.questionnaire.category_form', compact(
+            'category', 
+            'questionnaire', 
+            'treatment', 
+            'savedAnswers'
+        ));
     }
 
     /**
@@ -170,6 +200,15 @@ class QuestionnaireController extends Controller
         $savedAnswers = session()->get('questionnaire_answers_' . $categoryId, []);
         if (!is_array($savedAnswers) || !isset($savedAnswers['answers'])) {
             $savedAnswers = ['answers' => [], 'files' => []];
+        }
+        
+        // Normalize saved answers to ensure question IDs are integers
+        if (isset($savedAnswers['answers']) && is_array($savedAnswers['answers'])) {
+            $normalizedSavedAnswers = [];
+            foreach ($savedAnswers['answers'] as $questionId => $answer) {
+                $normalizedSavedAnswers[(int) $questionId] = $answer;
+            }
+            $savedAnswers['answers'] = $normalizedSavedAnswers;
         }
 
         return view('website.questionnaire.category_section', compact(
@@ -314,6 +353,39 @@ class QuestionnaireController extends Controller
         $files = $request->file('files', []);
         $action = $request->input('action', 'next'); // 'next' or 'previous'
 
+        // Normalize answers - ensure question IDs are used as keys and handle checkbox arrays
+        $normalizedAnswers = [];
+        foreach ($answers as $questionId => $answer) {
+            // Convert string keys to integers for consistency
+            $questionId = (int) $questionId;
+            
+            // Normalize answer values: trim strings, convert empty strings to null
+            if (is_string($answer)) {
+                $answer = trim($answer);
+                if ($answer === '') {
+                    $answer = null;
+                }
+            } elseif (is_array($answer)) {
+                // For checkbox arrays, filter out empty values and trim strings
+                $answer = array_filter(array_map(function($item) {
+                    if (is_string($item)) {
+                        $item = trim($item);
+                        return $item === '' ? null : $item;
+                    }
+                    return $item;
+                }, $answer), function($item) {
+                    return $item !== null;
+                });
+                // Re-index array after filtering
+                $answer = array_values($answer);
+                if (empty($answer)) {
+                    $answer = null;
+                }
+            }
+            
+            $normalizedAnswers[$questionId] = $answer;
+        }
+
         // Handle file uploads (Issue 3: File upload support)
         $uploadedFiles = [];
         if (!empty($files)) {
@@ -325,6 +397,8 @@ class QuestionnaireController extends Controller
             }
             
             foreach ($files as $questionId => $file) {
+                $questionId = (int) $questionId;
+                
                 // Validate file type and size
                 $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
                 $extension = strtolower($file->getClientOriginalExtension());
@@ -347,7 +421,7 @@ class QuestionnaireController extends Controller
                 $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
                 $file->move($fullPath, $filename);
                 $uploadedFiles[$questionId] = $uploadDir . '/' . $filename;
-                $answers[$questionId] = $uploadDir . '/' . $filename;
+                $normalizedAnswers[$questionId] = $uploadDir . '/' . $filename;
             }
         }
 
@@ -358,8 +432,12 @@ class QuestionnaireController extends Controller
             $errors = [];
             
             foreach ($currentSection->questions as $question) {
-                $answer = $answers[$question->id] ?? null;
-                if ($question->required && empty($answer)) {
+                $answer = $normalizedAnswers[$question->id] ?? null;
+                
+                // Check if answer is empty (null, empty string, or empty array)
+                $isEmpty = ($answer === null || $answer === '' || (is_array($answer) && empty($answer)));
+                
+                if ($question->required && $isEmpty) {
                     $errors[$question->id] = __('This question is required');
                 }
             }
@@ -372,9 +450,12 @@ class QuestionnaireController extends Controller
             }
         }
 
-        // Merge with existing answers
+        // Merge with existing answers - preserve all existing answers and update with new ones
         $existingAnswers = session()->get('questionnaire_answers_' . $categoryId, []);
-        $mergedAnswers = array_merge($existingAnswers['answers'] ?? [], $answers);
+        $existingAnswersArray = $existingAnswers['answers'] ?? [];
+        
+        // Merge answers - new answers override existing ones for the same question IDs
+        $mergedAnswers = array_merge($existingAnswersArray, $normalizedAnswers);
         
         // Store in session
         session()->put('questionnaire_answers_' . $categoryId, [
@@ -443,16 +524,46 @@ class QuestionnaireController extends Controller
             ], 404);
         }
 
-        // Get answers from session (all sections saved incrementally)
-        $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
-        $answers = $savedData['answers'] ?? [];
+        // Get answers directly from request (single-page form submits all at once)
+        $answers = $request->input('answers', []);
         
-        // Also merge any answers from request (in case session was cleared)
-        $requestAnswers = $request->input('answers', []);
-        if (!empty($requestAnswers)) {
-            $answers = array_merge($answers, $requestAnswers);
+        // Normalize answers to ensure question IDs are integers and values are clean
+        $normalizedAnswers = [];
+        foreach ($answers as $questionId => $answer) {
+            $questionId = (int) $questionId;
+            
+            // Normalize answer values: trim strings, convert empty strings to null
+            if (is_string($answer)) {
+                $answer = trim($answer);
+                if ($answer === '') {
+                    $answer = null;
+                }
+            } elseif (is_array($answer)) {
+                // For checkbox arrays, filter out empty values and trim strings
+                $answer = array_filter(array_map(function($item) {
+                    if (is_string($item)) {
+                        $item = trim($item);
+                        return $item === '' ? null : $item;
+                    }
+                    return $item;
+                }, $answer), function($item) {
+                    return $item !== null;
+                });
+                // Re-index array after filtering
+                $answer = array_values($answer);
+                if (empty($answer)) {
+                    $answer = null;
+                }
+            }
+            
+            $normalizedAnswers[$questionId] = $answer;
         }
+        $answers = $normalizedAnswers;
         $files = $request->file('files', []);
+        
+        // Get any existing files from session (in case files were uploaded earlier)
+        $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
+        $uploadedFiles = $savedData['files'] ?? [];
 
         // Handle file uploads if provided in final submit (Issue 3: File upload)
         if (!empty($files)) {
@@ -462,8 +573,30 @@ class QuestionnaireController extends Controller
             }
             
             foreach ($files as $questionId => $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
+                $questionId = (int) $questionId;
+                
+                // Validate file type and size
+                $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
+                $extension = strtolower($file->getClientOriginalExtension());
+                $maxSize = 5242880; // 5MB
+                
+                if (!in_array($extension, $allowedTypes)) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => [$questionId => __('File type not allowed. Allowed types: PDF, JPG, PNG')],
+                    ]);
+                }
+                
+                if ($file->getSize() > $maxSize) {
+                    return response()->json([
+                        'success' => false,
+                        'errors' => [$questionId => __('File size exceeds 5MB limit')],
+                    ]);
+                }
+                
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
                 $file->move(public_path($uploadDir), $filename);
+                $uploadedFiles[$questionId] = $uploadDir . '/' . $filename;
                 $answers[$questionId] = $uploadDir . '/' . $filename;
             }
         }
@@ -509,13 +642,66 @@ class QuestionnaireController extends Controller
             ]);
         }
 
-        // Store final answers in session with submission flag
+        // Delete any existing pending answers for this user/category/questionnaire combination
+        QuestionnaireAnswer::where('user_id', Auth::id())
+            ->where('category_id', $categoryId)
+            ->where('questionnaire_id', $questionnaire->id)
+            ->whereNull('appointment_id')
+            ->where('status', 'pending')
+            ->delete();
+
+        // Move files from temp to permanent location (user-specific folder)
+        $permanentFiles = [];
+        foreach ($uploadedFiles as $questionId => $filePath) {
+            $questionId = (int) $questionId;
+            if (strpos($filePath, 'temp/') === false) {
+                // Already in permanent location
+                $permanentFiles[$questionId] = str_replace('questionnaire_uploads/', '', $filePath);
+            } else {
+                // Move from temp to user's questionnaire folder
+                $tempPath = public_path('questionnaire_uploads/' . $filePath);
+                if (file_exists($tempPath)) {
+                    $userDir = 'questionnaire_uploads/user/' . Auth::id() . '/' . $categoryId;
+                    $fullUserDir = public_path($userDir);
+                    if (!is_dir($fullUserDir)) {
+                        mkdir($fullUserDir, 0755, true);
+                    }
+                    $filename = basename($filePath);
+                    $newPath = $userDir . '/' . $filename;
+                    rename($tempPath, public_path($newPath));
+                    $permanentFiles[$questionId] = str_replace('questionnaire_uploads/', '', $newPath);
+                }
+            }
+        }
+
+        // Save answers immediately to database with status 'pending'
+        // Only if migration has been run (check if user_id column exists)
+        if (\Schema::hasColumn('questionnaire_answers', 'user_id')) {
+            try {
+                $this->questionnaireService->saveAnswersImmediate(
+                    Auth::id(),
+                    $categoryId,
+                    $questionnaire,
+                    $answers,
+                    $permanentFiles,
+                    'pending'
+                );
+            } catch (\Exception $e) {
+                \Log::error('Error saving questionnaire answers: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => __('Failed to save questionnaire. Please try again.'),
+                ], 500);
+            }
+        }
+
+        // Also store in session for backward compatibility (for appointment booking)
         session()->put('questionnaire_submitted_' . $categoryId, [
             'questionnaire_id' => $questionnaire->id,
             'category_id' => $categoryId,
             'treatment_id' => $category->treatment_id,
             'answers' => $answers,
-            'files' => $savedData['files'] ?? [],
+            'files' => $permanentFiles,
             'flags' => $flagCheck['flags'],
             'version' => $questionnaire->version,
             'submitted_at' => now()->toDateTimeString(),
@@ -526,6 +712,7 @@ class QuestionnaireController extends Controller
             'success' => true,
             'has_warnings' => !empty($flagCheck['flags']),
             'flags' => $flagCheck['flags'],
+            'message' => __('Questionnaire submitted successfully. Doctor will review your answers.'),
             'redirect_url' => url('/questionnaire/category/' . $categoryId . '/success'),
         ]);
     }

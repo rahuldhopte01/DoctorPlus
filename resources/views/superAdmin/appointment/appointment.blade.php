@@ -136,16 +136,27 @@
                                         @endif
                                     </td>
                                     @if (auth()->user()->hasRole('doctor'))
-                                    <td class="d-flex w-100">
+                                    <td class="d-flex w-100 flex-wrap">
                                         @if ($appointment->appointment_status == 'approve' ||  $appointment->appointment_status == 'complete')
                                             <a href="{{ url('completeAppointment/'.$appointment->id) }}" class="btn btn-sm bg-info-light {{ $appointment->appointment_status == 'complete' ? 'disabled' : '' }}">
                                                 <i class="fas fa-check"></i> {{__('Complete')}}
                                             </a>
                                         @elseif($appointment->appointment_status == 'pending' || $appointment->appointment_status != 'cancel')
-                                            <a href="{{ url('acceptAppointment/'.$appointment->id) }}" class="btn btn-sm bg-success-light {{ $appointment->appointment_status != 'pending' ? 'disabled' : '' }}">
+                                            @if($appointment->questionnaire_id)
+                                                <a href="{{ route('doctor.questionnaire.review', $appointment->id) }}" class="btn btn-sm bg-warning-light mr-1 mb-1" title="{{__('View Questionnaire')}}">
+                                                    <i class="fas fa-clipboard-list"></i>
+                                                    @php
+                                                        $flaggedCount = $appointment->questionnaireAnswers ? $appointment->questionnaireAnswers->where('is_flagged', true)->count() : 0;
+                                                    @endphp
+                                                    @if($flaggedCount > 0)
+                                                        <span class="badge badge-danger badge-sm">{{ $flaggedCount }}</span>
+                                                    @endif
+                                                </a>
+                                            @endif
+                                            <a href="{{ url('acceptAppointment/'.$appointment->id) }}" class="btn btn-sm bg-success-light mb-1 {{ $appointment->appointment_status != 'pending' ? 'disabled' : '' }}">
                                                 <i class="fas fa-check"></i> {{__('Accept')}}
                                             </a>
-                                            <a href="{{ url('cancelAppointment/'.$appointment->id) }}" class="btn btn-sm bg-danger-light ml-2 {{ $appointment->appointment_status != 'pending' ? 'disabled' : '' }}">
+                                            <a href="{{ url('cancelAppointment/'.$appointment->id) }}" class="btn btn-sm bg-danger-light ml-2 mb-1 {{ $appointment->appointment_status != 'pending' ? 'disabled' : '' }}">
                                                 <i class="fas fa-times"></i>{{__('Cancel')}}
                                             </a>
                                         @endif

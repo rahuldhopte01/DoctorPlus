@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Doctor;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Models\QuestionnaireAnswer;
+use App\Models\Category;
 use App\Services\QuestionnaireService;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
 class QuestionnaireReviewController extends Controller
 {
@@ -17,6 +20,129 @@ class QuestionnaireReviewController extends Controller
     public function __construct(QuestionnaireService $questionnaireService)
     {
         $this->questionnaireService = $questionnaireService;
+    }
+    
+    /**
+     * List all pending questionnaire submissions for doctor review.
+     */
+    public function index()
+    {
+        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+        
+        if (!$doctor || !$doctor->category_id) {
+            return redirect()->back()->with('error', __('Doctor has no category assigned'));
+        }
+        
+        // Get all pending/under_review questionnaire answers for this doctor's category
+        $answers = QuestionnaireAnswer::where('category_id', $doctor->category_id)
+            ->whereNull('appointment_id')
+            ->whereIn('status', ['pending', 'under_review'])
+            ->with(['user', 'category', 'questionnaire', 'question.section'])
+            ->orderBy('submitted_at', 'desc')
+            ->get();
+        
+        // Group by user_id, category_id, questionnaire_id, and submitted_at (grouping key)
+        $submissions = $answers->groupBy(function($answer) {
+            $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
+            return $answer->user_id . '_' . $answer->category_id . '_' . $answer->questionnaire_id . '_' . $submittedAt;
+        })
+        ->map(function($group) {
+            $first = $group->first();
+            return [
+                'user' => $first->user,
+                'category' => $first->category,
+                'questionnaire' => $first->questionnaire,
+                'status' => $first->status,
+                'submitted_at' => $first->submitted_at ?? $first->created_at,
+                'answers' => $group->keyBy('question_id'),
+                'flagged_count' => $group->where('is_flagged', true)->count(),
+            ];
+        })
+        ->values();
+        
+        return view('doctor.questionnaire.index', compact('submissions', 'doctor'));
+    }
+    
+    /**
+     * Show questionnaire answers for review (without appointment).
+     */
+    public function showSubmission($userId, $categoryId, $questionnaireId)
+    {
+        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+        
+        if (!$doctor || $doctor->category_id != $categoryId) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        // Get all answers for this submission
+        $answers = QuestionnaireAnswer::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->where('questionnaire_id', $questionnaireId)
+            ->whereNull('appointment_id')
+            ->with(['user', 'category', 'questionnaire', 'question.section'])
+            ->orderBy('question_id')
+            ->get();
+        
+        if ($answers->isEmpty()) {
+            return redirect()->route('doctor.questionnaire.index')->with('error', __('Questionnaire submission not found'));
+        }
+        
+        $firstAnswer = $answers->first();
+        $groupedAnswers = $this->groupAnswersBySection($answers);
+        $hasFlaggedAnswers = $answers->where('is_flagged', true)->isNotEmpty();
+        
+        return view('doctor.questionnaire.review_submission', compact('answers', 'firstAnswer', 'groupedAnswers', 'hasFlaggedAnswers', 'doctor'));
+    }
+    
+    /**
+     * Update status of questionnaire submission.
+     */
+    public function updateStatus(Request $request, $userId, $categoryId, $questionnaireId)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,under_review,approved,rejected',
+        ]);
+        
+        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+        
+        if (!$doctor || $doctor->category_id != $categoryId) {
+            abort(403, 'Unauthorized access');
+        }
+        
+        QuestionnaireAnswer::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->where('questionnaire_id', $questionnaireId)
+            ->whereNull('appointment_id')
+            ->update(['status' => $request->status]);
+        
+        return redirect()->back()->with('success', __('Status updated successfully'));
+    }
+    
+    /**
+     * Group answers by section.
+     */
+    protected function groupAnswersBySection($answers)
+    {
+        $grouped = [];
+        
+        foreach ($answers as $answer) {
+            $sectionName = $answer->question->section->name ?? 'General';
+            if (!isset($grouped[$sectionName])) {
+                $grouped[$sectionName] = [];
+            }
+            $grouped[$sectionName][] = [
+                'question' => $answer->question->question_text,
+                'answer' => $answer->display_value,
+                'field_type' => $answer->question->field_type,
+                'is_flagged' => $answer->is_flagged,
+                'flag_reason' => $answer->flag_reason,
+                'doctor_notes' => $answer->question->doctor_notes,
+                'file_url' => $answer->full_file_url,
+                'file_name' => $answer->answer_value,
+            ];
+        }
+        
+        return $grouped;
     }
 
     /**

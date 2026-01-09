@@ -821,8 +821,18 @@ class WebsiteController extends Controller
             return $a !== '';
         });
         
-        // Check for questionnaire answers in session
+        // Check for questionnaire answers in session (try both old and new session keys)
         $questionnaireData = session()->get('questionnaire_answers');
+        
+        // If not found, try the new session key format (questionnaire_submitted_{categoryId})
+        if (!$questionnaireData && $doctor->category_id) {
+            $questionnaireData = session()->get('questionnaire_submitted_' . $doctor->category_id);
+            // Also clear the new session key after use
+            if ($questionnaireData) {
+                session()->forget('questionnaire_submitted_' . $doctor->category_id);
+            }
+        }
+        
         if ($questionnaireData) {
             $data['questionnaire_id'] = $questionnaireData['questionnaire_id'];
             $data['questionnaire_completed_at'] = now();
@@ -835,14 +845,33 @@ class WebsiteController extends Controller
             $questionnaireService = app(\App\Services\QuestionnaireService::class);
             $questionnaire = \App\Models\Questionnaire::find($questionnaireData['questionnaire_id']);
             if ($questionnaire) {
+                // Handle files from session if they exist (new format)
+                $files = [];
+                if (isset($questionnaireData['files']) && is_array($questionnaireData['files'])) {
+                    // Files are stored as paths in session, we need to move them to the appointment folder
+                    foreach ($questionnaireData['files'] as $questionId => $filePath) {
+                        $questionId = (int) $questionId;
+                        if ($filePath && file_exists(public_path($filePath))) {
+                            // Move file from temp location to appointment folder
+                            $newFullPath = public_path('questionnaire_uploads/' . $appointment->id);
+                            if (!is_dir($newFullPath)) {
+                                mkdir($newFullPath, 0755, true);
+                            }
+                            $newPath = 'questionnaire_uploads/' . $appointment->id . '/' . basename($filePath);
+                            rename(public_path($filePath), public_path($newPath));
+                            $files[$questionId] = $newPath;
+                        }
+                    }
+                }
+                
                 $questionnaireService->saveAnswers(
                     $appointment,
                     $questionnaire,
-                    $questionnaireData['answers'],
-                    $request->file('files') ?? []
+                    $questionnaireData['answers'] ?? [],
+                    $files
                 );
             }
-            // Clear session data
+            // Clear session data (old format)
             session()->forget('questionnaire_answers');
         }
 

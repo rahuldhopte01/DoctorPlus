@@ -9,7 +9,7 @@
     ])
 
     <div class="section-body">
-        <!-- Patient & Appointment Info -->
+        <!-- Patient & Questionnaire Info -->
         <div class="row">
             <div class="col-md-6">
                 <div class="card">
@@ -20,23 +20,15 @@
                         <table class="table table-sm table-borderless">
                             <tr>
                                 <td class="text-muted" width="40%">{{ __('Name') }}</td>
-                                <td><strong>{{ $appointment->patient_name }}</strong></td>
+                                <td><strong>{{ $firstAnswer->user->name ?? 'N/A' }}</strong></td>
                             </tr>
                             <tr>
-                                <td class="text-muted">{{ __('Age') }}</td>
-                                <td>{{ $appointment->age }} {{ __('years') }}</td>
+                                <td class="text-muted">{{ __('Email') }}</td>
+                                <td>{{ $firstAnswer->user->email ?? 'N/A' }}</td>
                             </tr>
                             <tr>
                                 <td class="text-muted">{{ __('Phone') }}</td>
-                                <td>{{ $appointment->phone_no }}</td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted">{{ __('Appointment ID') }}</td>
-                                <td><code>{{ $appointment->appointment_id }}</code></td>
-                            </tr>
-                            <tr>
-                                <td class="text-muted">{{ __('Date') }}</td>
-                                <td>{{ $appointment->date }} {{ $appointment->time }}</td>
+                                <td>{{ $firstAnswer->user->phone ?? 'N/A' }}</td>
                             </tr>
                         </table>
                     </div>
@@ -51,29 +43,74 @@
                         <table class="table table-sm table-borderless">
                             <tr>
                                 <td class="text-muted" width="40%">{{ __('Questionnaire') }}</td>
-                                <td><strong>{{ $appointment->questionnaire->name ?? 'N/A' }}</strong></td>
+                                <td><strong>{{ $firstAnswer->questionnaire->name ?? 'N/A' }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">{{ __('Category') }}</td>
+                                <td>{{ $firstAnswer->category->name ?? 'N/A' }}</td>
                             </tr>
                             <tr>
                                 <td class="text-muted">{{ __('Version') }}</td>
-                                <td>v{{ $appointment->questionnaire->version ?? '1' }}</td>
+                                <td>v{{ $firstAnswer->questionnaire_version ?? '1' }}</td>
                             </tr>
                             <tr>
-                                <td class="text-muted">{{ __('Completed At') }}</td>
-                                <td>{{ $appointment->questionnaire_completed_at ? \Carbon\Carbon::parse($appointment->questionnaire_completed_at)->format('M d, Y H:i') : 'N/A' }}</td>
+                                <td class="text-muted">{{ __('Submitted At') }}</td>
+                                <td>{{ $firstAnswer->submitted_at ? \Carbon\Carbon::parse($firstAnswer->submitted_at)->format('M d, Y H:i') : 'N/A' }}</td>
                             </tr>
                             <tr>
                                 <td class="text-muted">{{ __('Status') }}</td>
                                 <td>
-                                    @if($appointment->questionnaire_locked)
-                                        <span class="badge badge-secondary"><i class="fas fa-lock mr-1"></i>{{ __('Locked') }}</span>
-                                    @else
-                                        <span class="badge badge-success"><i class="fas fa-unlock mr-1"></i>{{ __('Editable') }}</span>
+                                    @if($firstAnswer->status === 'pending')
+                                        <span class="badge badge-warning">{{ __('Pending') }}</span>
+                                    @elseif($firstAnswer->status === 'under_review')
+                                        <span class="badge badge-info">{{ __('Under Review') }}</span>
+                                    @elseif($firstAnswer->status === 'approved')
+                                        <span class="badge badge-success">{{ __('Approved') }}</span>
+                                    @elseif($firstAnswer->status === 'rejected')
+                                        <span class="badge badge-danger">{{ __('Rejected') }}</span>
                                     @endif
                                 </td>
                             </tr>
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Status Update Form -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h4><i class="fas fa-edit mr-2"></i>{{ __('Update Status') }}</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ route('doctor.questionnaire.update-status', [
+                    'userId' => $firstAnswer->user_id,
+                    'categoryId' => $firstAnswer->category_id,
+                    'questionnaireId' => $firstAnswer->questionnaire_id
+                ]) }}" method="POST">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>{{ __('Status') }}</label>
+                                <select name="status" class="form-control" required>
+                                    <option value="pending" {{ $firstAnswer->status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                    <option value="under_review" {{ $firstAnswer->status === 'under_review' ? 'selected' : '' }}>{{ __('Under Review') }}</option>
+                                    <option value="approved" {{ $firstAnswer->status === 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                                    <option value="rejected" {{ $firstAnswer->status === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fas fa-save mr-2"></i>{{ __('Update Status') }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
 
@@ -91,7 +128,7 @@
                 <h4><i class="fas fa-file-medical-alt mr-2"></i>{{ __('Questionnaire Answers') }}</h4>
             </div>
             <div class="card-body">
-                @forelse($groupedAnswers as $sectionName => $answers)
+                @forelse($groupedAnswers as $sectionName => $sectionAnswers)
                 <div class="mb-4">
                     <h5 class="border-bottom pb-2 mb-3">
                         <i class="fas fa-folder-open text-primary mr-2"></i>
@@ -109,7 +146,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($answers as $index => $answer)
+                                @foreach($sectionAnswers as $index => $answer)
                                 <tr class="{{ $answer['is_flagged'] ? 'table-warning' : '' }}">
                                     <td>{{ $index + 1 }}</td>
                                     <td>
@@ -122,7 +159,7 @@
                                     </td>
                                     <td>
                                         @if($answer['field_type'] === 'file' && $answer['file_url'])
-                                            <a href="{{ $answer['file_url'] }}" target="_blank" class="btn btn-sm btn-outline-primary" download>
+                                            <a href="{{ $answer['file_url'] }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-download mr-1"></i>{{ __('Download File') }}
                                             </a>
                                             @if(isset($answer['file_name']))
@@ -169,45 +206,11 @@
                 @endforelse
             </div>
             <div class="card-footer">
-                <div class="d-flex justify-content-between">
-                    <a href="{{ url('doctor_home') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left mr-2"></i>{{ __('Back to Appointments') }}
-                    </a>
-                    <div>
-                        @if($appointment->appointment_status === 'pending')
-                            <a href="{{ url('acceptAppointment/'.$appointment->id) }}" class="btn btn-success mr-2">
-                                <i class="fas fa-check mr-2"></i>{{ __('Accept Appointment') }}
-                            </a>
-                            <a href="{{ url('cancelAppointment/'.$appointment->id) }}" class="btn btn-danger">
-                                <i class="fas fa-times mr-2"></i>{{ __('Reject Appointment') }}
-                            </a>
-                        @endif
-                    </div>
-                </div>
+                <a href="{{ route('doctor.questionnaire.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>{{ __('Back to List') }}
+                </a>
             </div>
         </div>
     </div>
 </section>
 @endsection
-
-@section('css')
-<style>
-    .answer-text {
-        word-break: break-word;
-        white-space: pre-wrap;
-    }
-    .table-warning {
-        background-color: #fff3cd;
-    }
-    .bg-danger-light {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-    .answer-text strong {
-        font-weight: 600;
-    }
-</style>
-@endsection
-
-
-

@@ -163,7 +163,11 @@ class DoctorController extends Controller
         (new CustomController)->cancel_max_order();
         abort_if(Gate::denies('doctor_home'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
-        $today_Appointments = Appointment::whereDate('created_at', Carbon::now(env('timezone')))->where('doctor_id', $doctor->id)->orderBy('id', 'DESC')->get();
+        $today_Appointments = Appointment::with('questionnaireAnswers')
+            ->whereDate('created_at', Carbon::now(env('timezone')))
+            ->where('doctor_id', $doctor->id)
+            ->orderBy('id', 'DESC')
+            ->get();
         $currency = Setting::first()->currency_symbol;
         $orderCharts = $this->orderChart();
         $allUsers = User::where('doctor_id', $doctor->id)->doesntHave('roles')->orderBy('id', 'DESC')->get()->take(10);

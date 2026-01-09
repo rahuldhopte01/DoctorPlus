@@ -38,14 +38,25 @@ class QuestionnaireService
         foreach ($questions as $question) {
             $answer = $answers[$question->id] ?? null;
 
+            // Normalize answer: trim strings, convert empty strings to null
+            if (is_string($answer)) {
+                $answer = trim($answer);
+                if ($answer === '') {
+                    $answer = null;
+                }
+            }
+
+            // Check if answer is empty (null, empty string, or empty array for checkboxes)
+            $isEmpty = ($answer === null || $answer === '' || (is_array($answer) && empty($answer)));
+
             // Check required
-            if ($question->required && empty($answer)) {
+            if ($question->required && $isEmpty) {
                 $errors[$question->id] = __('This question is required');
                 continue;
             }
 
             // Skip validation if empty and not required
-            if (empty($answer)) {
+            if ($isEmpty) {
                 continue;
             }
 
@@ -68,19 +79,23 @@ class QuestionnaireService
 
         switch ($question->field_type) {
             case 'number':
-                if (!is_numeric($answer)) {
+                // Convert to numeric value for validation
+                $numericValue = is_numeric($answer) ? (float)$answer : null;
+                if ($numericValue === null) {
                     return __('Please enter a valid number');
                 }
-                if (isset($rules['min']) && $answer < $rules['min']) {
+                if (isset($rules['min']) && $numericValue < $rules['min']) {
                     return __('Value must be at least :min', ['min' => $rules['min']]);
                 }
-                if (isset($rules['max']) && $answer > $rules['max']) {
+                if (isset($rules['max']) && $numericValue > $rules['max']) {
                     return __('Value must not exceed :max', ['max' => $rules['max']]);
                 }
                 break;
 
             case 'text':
             case 'textarea':
+                // Trim whitespace for validation
+                $answer = trim($answer);
                 if (isset($rules['min']) && strlen($answer) < $rules['min']) {
                     return __('Must be at least :min characters', ['min' => $rules['min']]);
                 }
@@ -94,8 +109,21 @@ class QuestionnaireService
 
             case 'dropdown':
             case 'radio':
+                // Trim and normalize answer for comparison
+                $answer = is_string($answer) ? trim($answer) : $answer;
                 $options = $question->getOptionsArray();
-                if (!in_array($answer, $options)) {
+                
+                // Check if answer matches any option (case-insensitive, trimmed)
+                $matched = false;
+                foreach ($options as $option) {
+                    $normalizedOption = is_string($option) ? trim($option) : $option;
+                    if ($answer === $normalizedOption || (is_string($answer) && is_string($normalizedOption) && strcasecmp($answer, $normalizedOption) === 0)) {
+                        $matched = true;
+                        break;
+                    }
+                }
+                
+                if (!$matched && !empty($answer)) {
                     return __('Please select a valid option');
                 }
                 break;
@@ -103,8 +131,18 @@ class QuestionnaireService
             case 'checkbox':
                 $options = $question->getOptionsArray();
                 $selected = is_array($answer) ? $answer : [$answer];
+                
                 foreach ($selected as $item) {
-                    if (!in_array($item, $options)) {
+                    $item = is_string($item) ? trim($item) : $item;
+                    $matched = false;
+                    foreach ($options as $option) {
+                        $normalizedOption = is_string($option) ? trim($option) : $option;
+                        if ($item === $normalizedOption || (is_string($item) && is_string($normalizedOption) && strcasecmp($item, $normalizedOption) === 0)) {
+                            $matched = true;
+                            break;
+                        }
+                    }
+                    if (!$matched && !empty($item)) {
                         return __('Invalid option selected');
                     }
                 }
@@ -145,6 +183,65 @@ class QuestionnaireService
     }
 
     /**
+     * Save questionnaire answers immediately (without appointment) - NEW METHOD
+     */
+    public function saveAnswersImmediate($userId, $categoryId, Questionnaire $questionnaire, array $answers, array $files = [], $status = 'pending'): void
+    {
+        $questions = $questionnaire->questions;
+        $submittedAt = now();
+
+        foreach ($questions as $question) {
+            $answer = $answers[$question->id] ?? null;
+
+            // Handle file uploads
+            $filePath = null;
+            if ($question->field_type === 'file' && isset($files[$question->id])) {
+                $file = $files[$question->id];
+                // Files are already processed and stored in permanent location
+                if (is_string($file)) {
+                    // File path (already moved to user folder)
+                    $filePath = str_replace('questionnaire_uploads/', '', $file);
+                    $answer = basename($file);
+                } else {
+                    // File upload object - should not happen here (files processed before calling this)
+                    $userDir = 'questionnaire_uploads/user/' . $userId . '/' . $categoryId;
+                    $fullUserDir = public_path($userDir);
+                    if (!is_dir($fullUserDir)) {
+                        mkdir($fullUserDir, 0755, true);
+                    }
+                    $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+                    $file->move($fullUserDir, $filename);
+                    $filePath = 'user/' . $userId . '/' . $categoryId . '/' . $filename;
+                    $answer = $file->getClientOriginalName();
+                }
+            }
+
+            // Handle checkbox arrays
+            if ($question->field_type === 'checkbox' && is_array($answer)) {
+                $answer = json_encode($answer);
+            }
+
+            // Evaluate flags
+            $flagResult = $question->evaluateFlag($answer);
+
+            QuestionnaireAnswer::create([
+                'appointment_id' => null, // Will be set when appointment is created
+                'user_id' => $userId,
+                'category_id' => $categoryId,
+                'questionnaire_id' => $questionnaire->id,
+                'question_id' => $question->id,
+                'questionnaire_version' => $questionnaire->version,
+                'answer_value' => $answer,
+                'file_path' => $filePath,
+                'is_flagged' => $flagResult !== null,
+                'flag_reason' => $flagResult['flag_message'] ?? null,
+                'status' => $status,
+                'submitted_at' => $submittedAt,
+            ]);
+        }
+    }
+
+    /**
      * Save questionnaire answers for an appointment.
      */
     public function saveAnswers(Appointment $appointment, Questionnaire $questionnaire, array $answers, array $files = []): void
@@ -157,8 +254,17 @@ class QuestionnaireService
             // Handle file uploads
             $filePath = null;
             if ($question->field_type === 'file' && isset($files[$question->id])) {
-                $filePath = $this->handleFileUpload($files[$question->id], $appointment->id);
-                $answer = $files[$question->id]->getClientOriginalName();
+                $file = $files[$question->id];
+                // Handle both file objects and file paths (strings from session)
+                if (is_string($file)) {
+                    // File path from session - extract just the relative path
+                    $filePath = str_replace('questionnaire_uploads/', '', $file);
+                    $answer = basename($file);
+                } else {
+                    // File upload object
+                    $filePath = $this->handleFileUpload($file, $appointment->id);
+                    $answer = $file->getClientOriginalName();
+                }
             }
 
             // Handle checkbox arrays
@@ -171,12 +277,17 @@ class QuestionnaireService
 
             QuestionnaireAnswer::create([
                 'appointment_id' => $appointment->id,
+                'user_id' => $appointment->user_id,
+                'category_id' => $questionnaire->category_id,
+                'questionnaire_id' => $questionnaire->id,
                 'question_id' => $question->id,
                 'questionnaire_version' => $questionnaire->version,
                 'answer_value' => $answer,
                 'file_path' => $filePath,
                 'is_flagged' => $flagResult !== null,
                 'flag_reason' => $flagResult['flag_message'] ?? null,
+                'status' => 'approved', // Answers linked to appointment are considered approved
+                'submitted_at' => $appointment->questionnaire_completed_at ?? now(),
             ]);
         }
 
@@ -210,12 +321,23 @@ class QuestionnaireService
             ->with(['question.section'])
             ->get();
 
+        // Group by section with order information
         $grouped = [];
+        $sectionMetadata = [];
+        
         foreach ($answers as $answer) {
-            $sectionName = $answer->question->section->name ?? 'General';
+            $section = $answer->question->section;
+            $sectionName = $section->name ?? 'General';
+            $sectionOrder = $section->order ?? 999;
+            
             if (!isset($grouped[$sectionName])) {
                 $grouped[$sectionName] = [];
+                $sectionMetadata[$sectionName] = [
+                    'order' => $sectionOrder,
+                    'description' => $section->description ?? null,
+                ];
             }
+            
             $grouped[$sectionName][] = [
                 'question' => $answer->question->question_text,
                 'answer' => $answer->display_value,
@@ -224,10 +346,24 @@ class QuestionnaireService
                 'flag_reason' => $answer->flag_reason,
                 'doctor_notes' => $answer->question->doctor_notes,
                 'file_url' => $answer->full_file_url,
+                'file_name' => $answer->answer_value, // Store original filename for file uploads
             ];
         }
 
-        return $grouped;
+        // Sort sections by order and rebuild array to preserve order
+        uksort($grouped, function($a, $b) use ($sectionMetadata) {
+            $orderA = $sectionMetadata[$a]['order'] ?? 999;
+            $orderB = $sectionMetadata[$b]['order'] ?? 999;
+            return $orderA <=> $orderB;
+        });
+
+        // Add section metadata to each section's first element for view access
+        $result = [];
+        foreach ($grouped as $sectionName => $answers) {
+            $result[$sectionName] = $answers;
+        }
+
+        return $result;
     }
 }
 

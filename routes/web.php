@@ -343,6 +343,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // Doctor questionnaire review
         Route::get('/doctor/questionnaire-review/{appointmentId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'show'])->name('doctor.questionnaire.review');
         Route::get('/doctor/questionnaire-summary/{appointmentId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'summary']);
+        Route::get('/doctor/questionnaires', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'index'])->name('doctor.questionnaire.index');
+        Route::get('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'showSubmission'])->name('doctor.questionnaire.show');
+        Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/status', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'updateStatus'])->name('doctor.questionnaire.update-status');
         Route::get('/subscription_purchase/{subscription_id}', [DoctorSubscriptionController::class, 'subscription_purchase']);
         Route::post('/stripePayment', [DoctorSubscriptionController::class, 'stripePayment']);
 
