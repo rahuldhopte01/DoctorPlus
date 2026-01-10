@@ -172,6 +172,24 @@
                 </li>
             @endcan
 
+            @can('pharmacy_access')
+                <li class="{{ $activePage == 'pharmacy_registrations' ? 'active' : '' }}">
+                    <a href="{{ url('pharmacy_registrations') }}">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>{{__('Pharmacy Registrations')}}</span>
+                    </a>
+                </li>
+            @endcan
+
+            @can('medicine_category_access')
+                <li class="{{ $activePage == 'medicine_master' ? 'active' : '' }}">
+                    <a href="{{ url('medicine_master') }}">
+                        <i class="fas fa-pills"></i>
+                        <span>{{__('Medicine Master')}}</span>
+                    </a>
+                </li>
+            @endcan
+
             @can('lab_access')
                 <li class="{{ $activePage == 'lab' ? 'active' : '' }}">
                     <a href="{{ url('laboratory') }}">
@@ -472,6 +490,26 @@
                     </a>
                 </li>
                 @endcan
+
+                @php
+                    $hasNewPharmacy = \App\Models\PharmacyRegistration::where('owner_user_id', auth()->id())
+                        ->where('status', 'approved')
+                        ->exists();
+                @endphp
+                @if($hasNewPharmacy)
+                    <li class="{{ $activePage == 'pharmacy-inventory' ? 'active' : '' }}">
+                        <a href="{{ url('pharmacy-inventory') }}">
+                            <i class="fas fa-boxes"></i>
+                            <span>{{__('Inventory Management')}}</span>
+                        </a>
+                    </li>
+                    <li class="{{ $activePage == 'pharmacy-delivery-settings' ? 'active' : '' }}">
+                        <a href="{{ url('pharmacy-delivery-settings') }}">
+                            <i class="fas fa-truck"></i>
+                            <span>{{__('Delivery Settings')}}</span>
+                        </a>
+                    </li>
+                @endif
             @endif
 
             @can('insurer_access')

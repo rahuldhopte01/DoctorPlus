@@ -11,7 +11,7 @@ class Notification extends Model
 
     protected $table = 'notification';
 
-    protected $fillable = ['user_id', 'doctor_id', 'title', 'user_type', 'message'];
+    protected $fillable = ['user_id', 'doctor_id', 'pharmacy_id', 'pharmacy_inventory_id', 'title', 'user_type', 'message', 'notification_type'];
 
     public function user()
     {
@@ -22,4 +22,19 @@ class Notification extends Model
     {
         return $this->belongsTo('App\Models\Doctor');
     }
+
+    public function pharmacy()
+    {
+        return $this->belongsTo(PharmacyRegistration::class, 'pharmacy_id');
+    }
+
+    public function pharmacyInventory()
+    {
+        return $this->belongsTo(PharmacyInventory::class, 'pharmacy_inventory_id');
+    }
+
+    /**
+     * Notification type constants.
+     */
+    public const TYPE_LOW_STOCK = 'low_stock';
 }

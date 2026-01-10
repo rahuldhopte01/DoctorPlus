@@ -25,6 +25,8 @@ use App\Http\Controllers\SuperAdmin\NotificationTemplateController;
 use App\Http\Controllers\SuperAdmin\OfferController;
 use App\Http\Controllers\SuperAdmin\PathologyCategoryController;
 use App\Http\Controllers\SuperAdmin\PharmacyController;
+use App\Http\Controllers\SuperAdmin\PharmacyRegistrationController;
+use App\Http\Controllers\SuperAdmin\MedicineMasterController;
 use App\Http\Controllers\SuperAdmin\RadiologyCategoryController;
 use App\Http\Controllers\SuperAdmin\ReportController;
 use App\Http\Controllers\SuperAdmin\RoleController;
@@ -227,6 +229,17 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('pharmacy_commission/{pharmacy_id}', [pharmacyController::class, 'pharmacy_commission']);
         Route::post('show_pharmacy_settle_details', [pharmacyController::class, 'show_pharmacy_settalement']);
         Route::get('pharmacy_schedule/{pharmacy_id}', [pharmacyController::class, 'pharmacy_schedule']);
+        
+        // Pharmacy Registration Management (New System)
+        Route::get('pharmacy_registrations', [PharmacyRegistrationController::class, 'index'])->name('pharmacy_registrations.index');
+        Route::get('pharmacy_registrations/{id}', [PharmacyRegistrationController::class, 'show'])->name('pharmacy_registrations.show');
+        Route::post('pharmacy_registrations/{id}/approve', [PharmacyRegistrationController::class, 'approve'])->name('pharmacy_registrations.approve');
+        Route::post('pharmacy_registrations/{id}/reject', [PharmacyRegistrationController::class, 'reject'])->name('pharmacy_registrations.reject');
+        Route::post('pharmacy_registrations/{id}/toggle-priority', [PharmacyRegistrationController::class, 'togglePriority'])->name('pharmacy_registrations.toggle_priority');
+        Route::delete('pharmacy_registrations/{id}', [PharmacyRegistrationController::class, 'destroy'])->name('pharmacy_registrations.destroy');
+        
+        // Medicine Master Management (Global Medicines)
+        Route::resource('medicine_master', MedicineMasterController::class);
 
         // Doctor
         Route::get('/doctor/{id}/{name}/{with}', [DoctorController::class, 'show']);
@@ -403,6 +416,19 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('pharmacyCommission', [App\Http\Controllers\Pharmacy\PharmacyController::class, 'pharmacyCommission']);
         Route::get('purchased_medicines', [App\Http\Controllers\Pharmacy\PharmacyController::class, 'purchased_medicines']);
         Route::get('display_purchase_medicine/{id}', [App\Http\Controllers\Pharmacy\PharmacyController::class, 'display_purchase_medicine']);
+        
+        // Pharmacy Inventory Management (New System - Module 1)
+        Route::get('/pharmacy-delivery-settings', [App\Http\Controllers\Pharmacy\PharmacyRegistrationController::class, 'deliverySettings'])->name('pharmacy.delivery_settings');
+        Route::post('/pharmacy-delivery-settings', [App\Http\Controllers\Pharmacy\PharmacyRegistrationController::class, 'updateDeliverySettings'])->name('pharmacy.update_delivery_settings');
+        Route::resource('pharmacy-inventory', App\Http\Controllers\Pharmacy\InventoryController::class)->names([
+            'index' => 'pharmacy.inventory.index',
+            'create' => 'pharmacy.inventory.create',
+            'store' => 'pharmacy.inventory.store',
+            'show' => 'pharmacy.inventory.show',
+            'edit' => 'pharmacy.inventory.edit',
+            'update' => 'pharmacy.inventory.update',
+            'destroy' => 'pharmacy.inventory.destroy',
+        ]);
     });
     // Medicies
     Route::get('app_medicine_flutter_payment/{id}', [UserApiController::class, 'app_medicine_flutter_payment']);

@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Register observers
+        \App\Models\PharmacyInventory::observe(\App\Observers\PharmacyInventoryObserver::class);
     }
 }
