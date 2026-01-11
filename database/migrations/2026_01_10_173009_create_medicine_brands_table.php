@@ -13,13 +13,7 @@ return new class extends Migration
     {
         Schema::create('medicine_brands', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('medicine_id')->constrained('medicines')->onDelete('cascade');
-            $table->string('brand_name');
-            $table->string('strength')->nullable()->comment('Must match medicine strength');
-            $table->boolean('status')->default(true);
             $table->timestamps();
-            
-            $table->index(['medicine_id', 'status']);
         });
     }
 

@@ -7,6 +7,7 @@ use App\Models\Questionnaire;
 use App\Models\QuestionnaireAnswer;
 use App\Models\QuestionnaireQuestion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -275,20 +276,26 @@ class QuestionnaireService
             // Evaluate flags
             $flagResult = $question->evaluateFlag($answer);
 
-            QuestionnaireAnswer::create([
+            $answerData = [
                 'appointment_id' => $appointment->id,
-                'user_id' => $appointment->user_id,
-                'category_id' => $questionnaire->category_id,
-                'questionnaire_id' => $questionnaire->id,
                 'question_id' => $question->id,
                 'questionnaire_version' => $questionnaire->version,
                 'answer_value' => $answer,
                 'file_path' => $filePath,
                 'is_flagged' => $flagResult !== null,
                 'flag_reason' => $flagResult['flag_message'] ?? null,
-                'status' => 'approved', // Answers linked to appointment are considered approved
-                'submitted_at' => $appointment->questionnaire_completed_at ?? now(),
-            ]);
+            ];
+            
+            // Add new fields if migration has been run
+            if (\Schema::hasColumn('questionnaire_answers', 'user_id')) {
+                $answerData['user_id'] = $appointment->user_id;
+                $answerData['category_id'] = $questionnaire->category_id;
+                $answerData['questionnaire_id'] = $questionnaire->id;
+                $answerData['status'] = 'approved'; // Answers linked to appointment are considered approved
+                $answerData['submitted_at'] = $appointment->questionnaire_completed_at ?? now();
+            }
+            
+            QuestionnaireAnswer::create($answerData);
         }
 
         // Update appointment

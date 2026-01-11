@@ -25,13 +25,13 @@ class Notification extends Model
 
     public function pharmacy()
     {
-        return $this->belongsTo(PharmacyRegistration::class, 'pharmacy_id');
+        return $this->belongsTo(Pharmacy::class, 'pharmacy_id');
     }
 
-    public function pharmacyInventory()
-    {
-        return $this->belongsTo(PharmacyInventory::class, 'pharmacy_inventory_id');
-    }
+    // public function pharmacyInventory()
+    // {
+    //     return $this->belongsTo(PharmacyInventory::class, 'pharmacy_inventory_id');
+    // }
 
     /**
      * Notification type constants.

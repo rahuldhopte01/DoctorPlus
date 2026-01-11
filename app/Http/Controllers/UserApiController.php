@@ -18,6 +18,7 @@ use App\Models\Notification;
 use App\Models\NotificationTemplate;
 use App\Models\Offer;
 use App\Models\Pharmacy;
+use App\Models\PharmacyInventory;
 use App\Models\PharmacySettle;
 use App\Models\Prescription;
 use App\Models\PurchaseMedicine;
@@ -613,7 +614,12 @@ class UserApiController extends Controller
     public function apiSinglePharmacy($id)
     {
         $pharmacy = Pharmacy::find($id);
-        $pharmacy->medicine = Medicine::where('pharmacy_id', $id)->get();
+        $pharmacy->medicine = PharmacyInventory::with('medicine')
+            ->where('pharmacy_id', $id)
+            ->get()
+            ->map(function ($inventory) {
+                return $inventory->medicine;
+            });
 
         return response(['success' => true, 'data' => $pharmacy, 'msg' => 'Single Phamracy Details']);
     }

@@ -11,7 +11,6 @@ use App\Models\Hospital;
 use App\Models\HospitalGallery;
 use App\Models\Lab;
 use App\Models\Medicine;
-use App\Models\MedicineCategory;
 use App\Models\Offer;
 use App\Models\Pathology;
 use App\Models\PathologyCategory;
@@ -64,17 +63,6 @@ class MultiDeleteController extends Controller
         $ids = explode(',', $request->ids);
         foreach ($ids as $id) {
             Expertise::find($id)->delete();
-        }
-
-        return response(['success' => true]);
-    }
-
-    public function medicineCategory_all_delete(Request $request)
-    {
-        $ids = explode(',', $request->ids);
-        foreach ($ids as $id) {
-            $medicineCategory = MedicineCategory::find($id);
-            $medicineCategory->delete();
         }
 
         return response(['success' => true]);
@@ -160,7 +148,6 @@ class MultiDeleteController extends Controller
         $ids = explode(',', $request->ids);
         foreach ($ids as $id) {
             $medicine = Medicine::find($id);
-            (new CustomController)->deleteFile($medicine->image);
             $medicine->delete();
         }
 

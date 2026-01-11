@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Events\Saving;
 
 class PharmacyInventory extends Model
 {
@@ -15,11 +14,10 @@ class PharmacyInventory extends Model
     protected $fillable = [
         'pharmacy_id',
         'medicine_id',
-        'medicine_brand_id',
+        'brand_id',
         'price',
         'quantity',
         'low_stock_threshold',
-        'stock_status',
     ];
 
     protected $casts = [
@@ -29,97 +27,57 @@ class PharmacyInventory extends Model
     ];
 
     /**
-     * Stock status constants.
-     */
-    public const STATUS_IN_STOCK = 'in_stock';
-    public const STATUS_LOW_STOCK = 'low_stock';
-    public const STATUS_OUT_OF_STOCK = 'out_of_stock';
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($inventory) {
-            $inventory->updateStockStatus();
-        });
-    }
-
-    /**
-     * Get the pharmacy that owns this inventory item.
+     * Get the pharmacy that owns this inventory.
      */
     public function pharmacy()
     {
-        return $this->belongsTo(PharmacyRegistration::class, 'pharmacy_id');
+        return $this->belongsTo(Pharmacy::class);
     }
 
     /**
-     * Get the medicine.
+     * Get the medicine for this inventory.
      */
     public function medicine()
     {
-        return $this->belongsTo(MedicineMaster::class, 'medicine_id');
+        return $this->belongsTo(Medicine::class);
     }
 
     /**
-     * Get the medicine brand.
+     * Get the brand for this inventory.
      */
     public function brand()
     {
-        return $this->belongsTo(MedicineBrand::class, 'medicine_brand_id');
+        return $this->belongsTo(MedicineBrand::class, 'brand_id');
     }
 
     /**
-     * Update stock status based on quantity and threshold.
+     * Get stock status (derived, not stored).
+     * Returns: 'in_stock', 'low_stock', or 'out_of_stock'
      */
-    public function updateStockStatus()
+    public function getStockStatusAttribute()
     {
-        if ($this->quantity <= 0) {
-            $this->stock_status = self::STATUS_OUT_OF_STOCK;
-        } elseif ($this->quantity <= $this->low_stock_threshold) {
-            $this->stock_status = self::STATUS_LOW_STOCK;
-        } else {
-            $this->stock_status = self::STATUS_IN_STOCK;
+        if ($this->quantity == 0) {
+            return 'out_of_stock';
         }
+        if ($this->quantity <= $this->low_stock_threshold) {
+            return 'low_stock';
+        }
+        return 'in_stock';
     }
 
     /**
-     * Scope to filter by stock status.
+     * Check if stock is low.
      */
-    public function scopeStockStatus($query, $status)
+    public function isLowStock(): bool
     {
-        return $query->where('stock_status', $status);
+        return $this->quantity > 0 && $this->quantity <= $this->low_stock_threshold;
     }
 
     /**
-     * Scope to filter low stock items.
+     * Check if out of stock.
      */
-    public function scopeLowStock($query)
+    public function isOutOfStock(): bool
     {
-        return $query->where('stock_status', self::STATUS_LOW_STOCK)
-            ->orWhere(function ($q) {
-                $q->whereColumn('quantity', '<=', 'low_stock_threshold')
-                  ->where('quantity', '>', 0);
-            });
-    }
-
-    /**
-     * Scope to filter out of stock items.
-     */
-    public function scopeOutOfStock($query)
-    {
-        return $query->where('stock_status', self::STATUS_OUT_OF_STOCK)
-            ->orWhere('quantity', '<=', 0);
-    }
-
-    /**
-     * Scope to filter in stock items.
-     */
-    public function scopeInStock($query)
-    {
-        return $query->where('stock_status', self::STATUS_IN_STOCK)
-            ->where('quantity', '>', 0);
+        return $this->quantity == 0;
     }
 }

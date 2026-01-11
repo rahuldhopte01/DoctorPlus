@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SuperAdmin\CustomController;
 use App\Models\Medicine;
-use App\Models\MedicineCategory;
-use App\Models\Pharmacy;
+use App\Models\MedicineBrand;
 use App\Models\Setting;
 use Gate;
 use Illuminate\Http\Request;
@@ -18,14 +18,12 @@ class MedicineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($pharmacy_id)
+    public function index()
     {
         abort_if(Gate::denies('admin_medicine_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $pharmacy = Pharmacy::find($pharmacy_id);
-        $medicines = Medicine::where('pharmacy_id', $pharmacy_id)->orderBy('id', 'DESC')->get();
-        $currency = Setting::first()->currency_symbol;
+        $medicines = Medicine::with('brand')->orderBy('id', 'DESC')->get();
 
-        return view('superAdmin.medicine.medicine', compact('medicines', 'currency', 'pharmacy'));
+        return view('superAdmin.medicine.medicine', compact('medicines'));
     }
 
     /**
@@ -33,13 +31,12 @@ class MedicineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($pharmacy_id)
+    public function create()
     {
         abort_if(Gate::denies('admin_medicine_add'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $pharmacy = Pharmacy::find($pharmacy_id);
-        $categories = MedicineCategory::whereStatus(1)->get();
+        $brands = MedicineBrand::orderBy('name')->get();
 
-        return view('superAdmin.medicine.create_medicine', compact('pharmacy', 'categories'));
+        return view('superAdmin.medicine.create_medicine', compact('brands'));
     }
 
     /**
@@ -51,35 +48,16 @@ class MedicineController extends Controller
     {
         $request->validate([
             'name' => 'bail|required|max:255|unique:medicine',
-            'incoming_stock' => 'bail|required|numeric',
-            'price_pr_strip' => 'bail|required|numeric',
-            'number_of_medicine' => 'bail|required|numeric',
+            'strength' => 'nullable|max:100',
+            'form' => 'nullable|max:100',
+            'brand_id' => 'nullable|exists:medicine_brands,id',
             'description' => 'bail|required',
-            'works' => 'bail|required',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
-        ],
-            [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
-            ]);
+        ]);
         $data = $request->all();
-        if (isset($data['title'])) {
-            $meta_info = [];
-            for ($i = 0; $i < count($data['title']); $i++) {
-                $temp['title'] = $data['title'][$i];
-                $temp['desc'] = $data['desc'][$i];
-                array_push($meta_info, $temp);
-            }
-            $data['meta_info'] = json_encode($meta_info);
-        }
-        $data['total_stock'] = $data['incoming_stock'];
-        if ($request->hasFile('image')) {
-            $data['image'] = (new CustomController)->imageUpload($request->image);
-        } else {
-            $data['image'] = 'prod_default.png';
-        }
-        $medicine = Medicine::create($data);
+        $data['status'] = $request->has('status') ? 1 : 0;
+        Medicine::create($data);
 
-        return redirect('medicine/'.$medicine->pharmacy_id)->withStatus(__('Medicines created successfully..!!'));
+        return redirect('medicine')->withStatus(__('Medicines created successfully..!!'));
     }
 
     /**
@@ -101,11 +79,10 @@ class MedicineController extends Controller
     public function edit($id)
     {
         abort_if(Gate::denies('admin_medicine_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $medicine = Medicine::find($id);
-        $pharmacy = Pharmacy::find($medicine->pharmacy_id);
-        $categories = MedicineCategory::whereStatus(1)->get();
+        $medicine = Medicine::with('brand')->find($id);
+        $brands = MedicineBrand::orderBy('name')->get();
 
-        return view('superAdmin.medicine.edit_medicine', compact('medicine', 'pharmacy', 'categories'));
+        return view('superAdmin.medicine.edit_medicine', compact('medicine', 'brands'));
     }
 
     /**
@@ -118,33 +95,17 @@ class MedicineController extends Controller
     {
         $request->validate([
             'name' => 'bail|required|max:255|unique:medicine,name,'.$id.',id',
-            'price_pr_strip' => 'bail|required|numeric',
-            'number_of_medicine' => 'bail|required|numeric',
+            'strength' => 'nullable|max:100',
+            'form' => 'nullable|max:100',
+            'brand_id' => 'nullable|exists:medicine_brands,id',
             'description' => 'bail|required',
-            'works' => 'bail|required',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
-        ],
-            [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
-            ]);
-        $id = Medicine::find($id);
+        ]);
+        $medicine = Medicine::find($id);
         $data = $request->all();
-        if (isset($data['title'])) {
-            $meta_info = [];
-            for ($i = 0; $i < count($data['title']); $i++) {
-                $temp['title'] = $data['title'][$i];
-                $temp['desc'] = $data['desc'][$i];
-                array_push($meta_info, $temp);
-            }
-            $data['meta_info'] = json_encode($meta_info);
-        }
-        if ($request->hasFile('image')) {
-            (new CustomController)->deleteFile($id->image);
-            $data['image'] = (new CustomController)->imageUpload($request->image);
-        }
-        $id->update($data);
+        $data['status'] = $request->has('status') ? 1 : 0;
+        $medicine->update($data);
 
-        return redirect('medicine/'.$id->pharmacy_id)->withStatus(__('Medicines updated successfully..!!'));
+        return redirect('medicine')->withStatus(__('Medicines updated successfully..!!'));
     }
 
     /**
@@ -157,7 +118,6 @@ class MedicineController extends Controller
     {
         abort_if(Gate::denies('admin_medicine_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $medicine = Medicine::find($id);
-        (new CustomController)->deleteFile($medicine->image);
         $medicine->delete();
 
         return response(['success' => true]);
@@ -179,16 +139,4 @@ class MedicineController extends Controller
         return response(['success' => true, 'data' => $medicine]);
     }
 
-    public function update_stock(Request $request)
-    {
-        $data = $request->all();
-        $medicine = Medicine::find($request->medicine_id);
-        $stock = [];
-        $stock['total_stock'] = $medicine->total_stock;
-        $stock['total_stock'] += $data['incoming_stock'];
-        $stock['incoming_stock'] = $medicine->incoming_stock + $data['incoming_stock'];
-        $medicine->update($stock);
-
-        return redirect()->back();
-    }
 }

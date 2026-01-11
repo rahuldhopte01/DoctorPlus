@@ -11,38 +11,13 @@ class MedicineBrand extends Model
 
     protected $table = 'medicine_brands';
 
-    protected $fillable = [
-        'medicine_id',
-        'brand_name',
-        'strength',
-        'status',
-    ];
-
-    protected $casts = [
-        'status' => 'boolean',
-    ];
+    protected $fillable = ['name'];
 
     /**
-     * Get the medicine that owns this brand.
+     * Get the medicines that belong to this brand.
      */
-    public function medicine()
+    public function medicines()
     {
-        return $this->belongsTo(MedicineMaster::class, 'medicine_id');
-    }
-
-    /**
-     * Get inventory items for this brand across all pharmacies.
-     */
-    public function inventory()
-    {
-        return $this->hasMany(PharmacyInventory::class, 'medicine_brand_id');
-    }
-
-    /**
-     * Scope to filter active brands.
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('status', true);
+        return $this->hasMany(Medicine::class, 'brand_id');
     }
 }

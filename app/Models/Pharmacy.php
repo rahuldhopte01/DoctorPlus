@@ -12,7 +12,7 @@ class Pharmacy extends Model
 
     protected $table = 'pharmacy';
 
-    protected $fillable = ['user_id', 'description', 'image', 'name', 'email', 'phone', 'address', 'lat', 'lang', 'start_time', 'end_time', 'commission_amount', 'status', 'is_shipping', 'delivery_charges', 'language'];
+    protected $fillable = ['user_id', 'description', 'image', 'name', 'email', 'phone', 'address', 'postcode', 'lat', 'lang', 'start_time', 'end_time', 'commission_amount', 'status', 'is_priority', 'is_shipping', 'delivery_charges', 'language'];
 
     protected $appends = ['fullImage'];
 

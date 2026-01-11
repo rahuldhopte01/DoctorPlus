@@ -106,7 +106,8 @@ class PharmacyController extends Controller
         } else {
             $data['image'] = 'defaultUser.png';
         }
-        $data['status'] = 1;
+        $data['status'] = 'approved'; // Admin-created pharmacies are approved by default
+        $data['is_priority'] = $request->has('is_priority') ? 1 : 0;
         $data['is_shipping'] = $request->has('is_shipping') ? 1 : 0;
         $delivery = [];
         for ($i = 0; $i < count($data['min_value']); $i++) {
@@ -230,11 +231,49 @@ class PharmacyController extends Controller
 
     public function change_status(Request $reqeust)
     {
-        $banner = Pharmacy::find($reqeust->id);
-        $data['status'] = $banner->status == 1 ? 0 : 1;
-        $banner->update($data);
+        // Extended to support approval workflow: pending, approved, rejected
+        // This method is kept for backward compatibility but status management is done via approve/reject
+        $pharmacy = Pharmacy::find($reqeust->id);
+        $data['status'] = $pharmacy->status == 'approved' ? 'pending' : 'approved';
+        $pharmacy->update($data);
 
         return response(['success' => true]);
+    }
+
+    public function approve_pharmacy(Request $request)
+    {
+        abort_if(Gate::denies('pharmacy_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $pharmacy = Pharmacy::find($request->id);
+        if ($pharmacy) {
+            $pharmacy->status = 'approved';
+            $pharmacy->save();
+            return response(['success' => true, 'message' => __('Pharmacy approved successfully')]);
+        }
+        return response(['success' => false, 'message' => __('Pharmacy not found')], 404);
+    }
+
+    public function reject_pharmacy(Request $request)
+    {
+        abort_if(Gate::denies('pharmacy_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $pharmacy = Pharmacy::find($request->id);
+        if ($pharmacy) {
+            $pharmacy->status = 'rejected';
+            $pharmacy->save();
+            return response(['success' => true, 'message' => __('Pharmacy rejected successfully')]);
+        }
+        return response(['success' => false, 'message' => __('Pharmacy not found')], 404);
+    }
+
+    public function toggle_priority(Request $request)
+    {
+        abort_if(Gate::denies('pharmacy_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $pharmacy = Pharmacy::find($request->id);
+        if ($pharmacy) {
+            $pharmacy->is_priority = !$pharmacy->is_priority;
+            $pharmacy->save();
+            return response(['success' => true, 'is_priority' => $pharmacy->is_priority]);
+        }
+        return response(['success' => false, 'message' => __('Pharmacy not found')], 404);
     }
 
     public function pharmacy_commission($pharmacy_id)

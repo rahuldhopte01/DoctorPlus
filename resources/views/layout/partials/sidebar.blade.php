@@ -109,15 +109,6 @@
                 </li>
             @endcan
 
-            @can('questionnaire_access')
-                <li class="{{ $activePage == 'questionnaire' ? 'active' : '' }}">
-                    <a href="{{ url('questionnaire') }}">
-                        <i class="fas fa-clipboard-list"></i>
-                        <span>{{__('Questionnaires')}}</span>
-                    </a>
-                </li>
-            @endcan
-
             @can('category_access')
                 <li class="{{ $activePage == 'category' ? 'active' : '' }}">
                     <a href="{{ url('category') }}">
@@ -136,11 +127,29 @@
                 </li>
             @endcan
 
+            @can('questionnaire_access')
+                <li class="{{ $activePage == 'questionnaire' ? 'active' : '' }}">
+                    <a href="{{ url('questionnaire') }}">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>{{__('Questionnaire')}}</span>
+                    </a>
+                </li>
+            @endcan
+
+            @can('admin_medicine_access')
+                <li class="{{ $activePage == 'medicine' ? 'active' : '' }}">
+                    <a href="{{ url('medicine') }}">
+                        <i class="fas fa-capsules"></i>
+                        <span>{{__('Medicine')}}</span>
+                    </a>
+                </li>
+            @endcan
+
             @can('medicine_category_access')
-                <li class="{{ $activePage == 'medicineCategory' ? 'active' : '' }}">
-                    <a href="{{ url('medicineCategory') }}">
-                        <i class="fas fa-tablets"></i>
-                        <span>{{__('medicine Category')}}</span>
+                <li class="{{ $activePage == 'medicineBrand' ? 'active' : '' }}">
+                    <a href="{{ url('medicineBrand') }}">
+                        <i class="fas fa-tags"></i>
+                        <span>{{__('Medicine Brand')}}</span>
                     </a>
                 </li>
             @endcan
@@ -168,24 +177,6 @@
                     <a href="{{ url('pharmacy') }}">
                         <i class="fas fa-prescription-bottle"></i>
                         <span>{{__('pharmacy')}}</span>
-                    </a>
-                </li>
-            @endcan
-
-            @can('pharmacy_access')
-                <li class="{{ $activePage == 'pharmacy_registrations' ? 'active' : '' }}">
-                    <a href="{{ url('pharmacy_registrations') }}">
-                        <i class="fas fa-clipboard-list"></i>
-                        <span>{{__('Pharmacy Registrations')}}</span>
-                    </a>
-                </li>
-            @endcan
-
-            @can('medicine_category_access')
-                <li class="{{ $activePage == 'medicine_master' ? 'active' : '' }}">
-                    <a href="{{ url('medicine_master') }}">
-                        <i class="fas fa-pills"></i>
-                        <span>{{__('Medicine Master')}}</span>
                     </a>
                 </li>
             @endcan
@@ -456,10 +447,10 @@
                 @endcan
 
                 @can('medicine_access')
-                <li class="{{ $activePage == 'medicine' ? 'active' : '' }}">
-                    <a href="{{ url('medicines') }}">
+                <li class="{{ $activePage == 'pharmacy_inventory' ? 'active' : '' }}">
+                    <a href="{{ url('pharmacy_inventory') }}">
                         <i class="fas fa-capsules"></i>
-                        <span>{{__('Medicine')}}</span>
+                        <span>{{__('Pharmacy Medicine Inventory')}}</span>
                     </a>
                 </li>
                 @endcan
@@ -490,26 +481,6 @@
                     </a>
                 </li>
                 @endcan
-
-                @php
-                    $hasNewPharmacy = \App\Models\PharmacyRegistration::where('owner_user_id', auth()->id())
-                        ->where('status', 'approved')
-                        ->exists();
-                @endphp
-                @if($hasNewPharmacy)
-                    <li class="{{ $activePage == 'pharmacy-inventory' ? 'active' : '' }}">
-                        <a href="{{ url('pharmacy-inventory') }}">
-                            <i class="fas fa-boxes"></i>
-                            <span>{{__('Inventory Management')}}</span>
-                        </a>
-                    </li>
-                    <li class="{{ $activePage == 'pharmacy-delivery-settings' ? 'active' : '' }}">
-                        <a href="{{ url('pharmacy-delivery-settings') }}">
-                            <i class="fas fa-truck"></i>
-                            <span>{{__('Delivery Settings')}}</span>
-                        </a>
-                    </li>
-                @endif
             @endif
 
             @can('insurer_access')

@@ -11,17 +11,38 @@ class Medicine extends Model
 
     protected $table = 'medicine';
 
-    protected $fillable = ['name', 'image', 'pharmacy_id', 'medicine_category_id', 'status', 'incoming_stock', 'total_stock', 'use_stock', 'description', 'works', 'price_pr_strip', 'number_of_medicine', 'prescription_required', 'meta_info'];
+    // Updated fillable - removed pharmacy-specific fields, kept global fields
+    protected $fillable = [
+        'name',
+        'strength',
+        'form',
+        'brand_id',
+        'status',
+        'description',
+    ];
 
-    protected $appends = ['fullImage'];
-
-    protected function getFullImageAttribute()
+    /**
+     * Get the brand for this medicine.
+     */
+    public function brand()
     {
-        return url('images/upload').'/'.$this->image;
+        return $this->belongsTo(MedicineBrand::class, 'brand_id');
     }
 
-    public function pharmacy()
+    /**
+     * Get pharmacy inventory entries for this medicine.
+     */
+    public function pharmacyInventories()
     {
-        return $this->belongsTo('App\Models\Pharmacy');
+        return $this->hasMany(PharmacyInventory::class);
+    }
+
+
+    /**
+     * Scope to get only active medicines.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
     }
 }

@@ -20,7 +20,6 @@ use App\Models\LabSettle;
 use App\Models\LabWorkHours;
 use App\Models\Language;
 use App\Models\Medicine;
-use App\Models\MedicineCategory;
 use App\Models\MedicineChild;
 use App\Models\Notification;
 use App\Models\NotificationTemplate;
@@ -28,6 +27,7 @@ use App\Models\Offer;
 use App\Models\Pathology;
 use App\Models\PathologyCategory;
 use App\Models\Pharmacy;
+use App\Models\PharmacyInventory;
 use App\Models\PharmacySettle;
 use App\Models\PharmacyWorkingHour;
 use App\Models\Prescription;
@@ -413,7 +413,7 @@ class WebsiteController extends Controller
 
     public function pharmacy(Request $request)
     {
-        $pharmacy = Pharmacy::whereStatus(1);
+        $pharmacy = Pharmacy::whereStatus('approved');
         $data = $request->all();
         $data = array_filter($data, function ($a) {
             return $a !== '';
@@ -433,7 +433,7 @@ class WebsiteController extends Controller
                 $Ids = [];
                 $current_time = Carbon::now(env('timezone'));
                 $current_day = Carbon::now(env('timezone'))->format('l');
-                $tempPharmacy = Pharmacy::whereStatus(1)->get();
+                $tempPharmacy = Pharmacy::whereStatus('approved')->get();
                 foreach ($tempPharmacy as $value) {
                     $pharmacyHours = PharmacyWorkingHour::where([['pharmacy_id', $value->id], ['day_index', $current_day], ['status', 1]])->first();
                     if ($pharmacyHours) {
@@ -509,19 +509,24 @@ class WebsiteController extends Controller
     public function pharmacyProduct(Request $request, $id, $name)
     {
         $pharmacy = Pharmacy::find($id);
-        $categories = MedicineCategory::whereStatus(1)->orderBy('id', 'DESC')->get();
         $currency = Setting::first()->currency_symbol;
-        $medicine = Medicine::where('pharmacy_id', $id);
+        $medicine = PharmacyInventory::with('medicine')->where('pharmacy_id', $id);
         if ($request->has('from')) {
             if ($request->has('category')) {
-                $medicines = $medicine->whereIn('medicine_category_id', $request->category)->get();
+                $medicines = $medicine->get()->map(function ($inventory) {
+                    return $inventory->medicine;
+                });
                 $view = view('website.display_medicine', compact('medicines', 'currency'))->render();
 
                 return response()->json(['html' => $view, 'success' => true]);
             }
 
             if ($request->has('medicine_name')) {
-                $medicines = $medicine->where('name', 'like', '%'.$request->medicine_name.'%')->get();
+                $medicines = $medicine->whereHas('medicine', function ($q) use ($request) {
+                    $q->where('name', 'like', '%'.$request->medicine_name.'%');
+                })->get()->map(function ($inventory) {
+                    return $inventory->medicine;
+                });
                 $view = view('website.display_medicine', compact('medicines', 'currency'))->render();
 
                 return response()->json(['html' => $view, 'success' => true]);
@@ -529,6 +534,9 @@ class WebsiteController extends Controller
         }
 
         $medicines = $medicine->paginate(5);
+        $medicines->getCollection()->transform(function ($inventory) {
+            return $inventory->medicine;
+        });
         $medicines = $medicines->toArray();
 
         if ($request->ajax()) {
@@ -536,6 +544,8 @@ class WebsiteController extends Controller
 
             return response()->json(['html' => $view, 'meta' => $medicines, 'success' => true]);
         }
+
+        $categories = Category::whereStatus(1)->get();
 
         return view('website.pharmacy_product', compact('pharmacy', 'medicines', 'currency', 'categories'));
     }

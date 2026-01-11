@@ -80,6 +80,15 @@
               <div id="map" class="mapClass"></div>
             </div>
           </div>
+          <div class="form-group mt-3">
+            <label class="col-form-label">{{ __('Postcode') }}</label>
+            <input type="text" value="{{ old('postcode') }}" name="postcode" class="form-control @error('postcode') is-invalid @enderror" placeholder="{{__('Postcode')}}">
+            @error('postcode')
+            <div class="invalid-feedback">
+              {{ $message }}
+            </div>
+            @enderror
+          </div>
           <div class="form-group mt-2 text-right">
             <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right" tabindex="4">
               {{ __('Register')}}

@@ -128,13 +128,34 @@
                             <div id="map" class="mapClass"></div>
                         </div>
                     </div>
+                    <div class="form-group mt-3">
+                        <label class="col-form-label">{{__('Postcode')}}</label>
+                        <input type="text" name="postcode" class="form-control @error('postcode') is-invalid @enderror" value="{{ old('postcode') }}" placeholder="{{__('Postcode')}}">
+                        @error('postcode')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
                 </div>
             </div>
 
             <div class="card mt-5">
                 <div class="card-body">
                     <div class="form-group">
-                        <label class="col-form-label">{{__('Allow Shipping ??')}}</label>
+                        <label class="col-form-label">{{__('Allow Shipping ?')}}</label>
+                        <label class="cursor-pointer ml-2">
+                            <input type="checkbox" id="is_shipping" class="custom-switch-input" name="is_shipping">
+                            <span class="custom-switch-indicator"></span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">{{__('Mark as My Pharmacy (Priority)')}}</label>
+                        <label class="cursor-pointer ml-2">
+                            <input type="checkbox" id="is_priority" class="custom-switch-input" name="is_priority">
+                            <span class="custom-switch-indicator"></span>
+                        </label>
+                    </div>
                         <label class="cursor-pointer ml-2">
                             <input type="checkbox" id="is_shipping" class="custom-switch-input" name="is_shipping">
                             <span class="custom-switch-indicator"></span>

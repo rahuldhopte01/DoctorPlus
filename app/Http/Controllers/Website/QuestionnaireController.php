@@ -643,12 +643,18 @@ class QuestionnaireController extends Controller
         }
 
         // Delete any existing pending answers for this user/category/questionnaire combination
-        QuestionnaireAnswer::where('user_id', Auth::id())
-            ->where('category_id', $categoryId)
-            ->where('questionnaire_id', $questionnaire->id)
-            ->whereNull('appointment_id')
-            ->where('status', 'pending')
-            ->delete();
+        // Check if migration has been run (check if user_id column exists)
+        $query = QuestionnaireAnswer::whereNull('appointment_id');
+        
+        // Only use new columns if migration has been run
+        if (\Schema::hasColumn('questionnaire_answers', 'user_id')) {
+            $query->where('user_id', Auth::id())
+                ->where('category_id', $categoryId)
+                ->where('questionnaire_id', $questionnaire->id)
+                ->where('status', 'pending');
+        }
+        
+        $query->delete();
 
         // Move files from temp to permanent location (user-specific folder)
         $permanentFiles = [];

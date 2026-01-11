@@ -22,6 +22,11 @@
         </div>
         @endforeach
         @endif
+        @if (session('status'))
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+          {{ session('status') }}
+        </div>
+        @endif
         <form action="{{ url('verify_pharmacy') }}" method="post">
           @csrf
           <div class="form-group">

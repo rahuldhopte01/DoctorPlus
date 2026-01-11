@@ -19,14 +19,12 @@ use App\Http\Controllers\SuperAdmin\HospitalGalleryController;
 use App\Http\Controllers\SuperAdmin\InsurerController;
 use App\Http\Controllers\SuperAdmin\LabController;
 use App\Http\Controllers\SuperAdmin\LanguageController;
-use App\Http\Controllers\SuperAdmin\MedicineCategoryController;
 use App\Http\Controllers\SuperAdmin\MedicineController;
+use App\Http\Controllers\SuperAdmin\MedicineBrandController;
 use App\Http\Controllers\SuperAdmin\NotificationTemplateController;
 use App\Http\Controllers\SuperAdmin\OfferController;
 use App\Http\Controllers\SuperAdmin\PathologyCategoryController;
 use App\Http\Controllers\SuperAdmin\PharmacyController;
-use App\Http\Controllers\SuperAdmin\PharmacyRegistrationController;
-use App\Http\Controllers\SuperAdmin\MedicineMasterController;
 use App\Http\Controllers\SuperAdmin\RadiologyCategoryController;
 use App\Http\Controllers\SuperAdmin\ReportController;
 use App\Http\Controllers\SuperAdmin\RoleController;
@@ -34,11 +32,10 @@ use App\Http\Controllers\SuperAdmin\SettingController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\SuperAdmin\TreatmentsController;
 use App\Http\Controllers\SuperAdmin\UserController;
-use App\Http\Controllers\SuperAdmin\QuestionnaireController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\Website\CalenderController;
-use App\Http\Controllers\Website\WebsiteController;
 use App\Http\Controllers\Website\QuestionnaireController as WebQuestionnaireController;
+use App\Http\Controllers\Website\WebsiteController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -104,31 +101,14 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
 
     Route::get('/forgot_password', [WebsiteController::class, 'forgotPassword']);
     Route::post('/user_forget_password', [WebsiteController::class, 'userForgotPassword']);
-
-    // Questionnaire discovery flow (Phase 1 & 2)
+    
+    // Categories and Questionnaire Routes (Public)
     Route::get('/categories', [WebsiteController::class, 'categories'])->name('categories');
     Route::get('/category/{id}', [WebsiteController::class, 'categoryDetail'])->name('category.detail');
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/user_profile', [WebsiteController::class, 'user_profile']);
         Route::get('/lab_test/{id}/{name}', [WebsiteController::class, 'labTest']);
-        
-        // Questionnaire routes (before booking) - use 'patient-questionnaire' to avoid conflict with admin routes
-        Route::get('/patient-questionnaire/{doctorId}', [WebQuestionnaireController::class, 'show'])->name('questionnaire.show');
-        Route::post('/patient-questionnaire/validate/{doctorId}', [WebQuestionnaireController::class, 'validateAnswers'])->name('questionnaire.validate');
-        Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
-        
-        // Category-based questionnaire flow (Phase 4-6)
-        Route::get('/questionnaire/category/{categoryId}', [WebQuestionnaireController::class, 'showByCategory'])->name('questionnaire.category');
-        Route::get('/questionnaire/category/{categoryId}/section/{sectionIndex}', [WebQuestionnaireController::class, 'showSection'])->name('questionnaire.section');
-        Route::post('/questionnaire/category/{categoryId}/save', [WebQuestionnaireController::class, 'saveAnswers'])->name('questionnaire.save');
-        Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
-        Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
-        Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
-        Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
-            return view('website.questionnaire.success', compact('categoryId'));
-        })->name('questionnaire.success');
-        
         Route::get('/booking/{id}/{name}', [WebsiteController::class, 'booking']);
         Route::post('/bookAppointment', [WebsiteController::class, 'bookAppointment']);
         Route::post('cancelAppointment', [WebsiteController::class, 'cancelAppointment']);
@@ -152,6 +132,18 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/displayTimeslot', [WebsiteController::class, 'displayTimeslot']);
         Route::post('getDeliveryCharge', [WebsiteController::class, 'getDeliveryCharge']);
         Route::post('bookMedicine', [WebsiteController::class, 'bookMedicine']);
+        
+        // Questionnaire Routes (Category-based flow)
+        Route::get('/questionnaire/category/{categoryId}', [WebQuestionnaireController::class, 'showByCategory'])->name('questionnaire.category');
+        Route::get('/questionnaire/category/{categoryId}/section/{sectionIndex}', [WebQuestionnaireController::class, 'showSection'])->name('questionnaire.section');
+        Route::post('/questionnaire/category/{categoryId}/save', [WebQuestionnaireController::class, 'saveAnswers'])->name('questionnaire.save');
+        Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
+        Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
+        Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
+        Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
+            return view('website.questionnaire.success', compact('categoryId'));
+        })->name('questionnaire.success');
+        Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
 
         // User
         Route::get('/user_profile', [WebsiteController::class, 'userProfile']);
@@ -204,19 +196,15 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
             'patient' => UserController::class,
             'offer' => OfferController::class,
             'banner' => BannerController::class,
-            'medicineCategory' => MedicineCategoryController::class,
+            'medicineBrand' => MedicineBrandController::class,
             'language' => LanguageController::class,
             'laboratory' => LabController::class,
             'pathology_category' => PathologyCategoryController::class,
             'radiology_category' => RadiologyCategoryController::class,
             'admin_users' => AdminUserController::class,
             'insurers' => InsurerController::class,
-            'questionnaire' => QuestionnaireController::class,
+            'questionnaire' => \App\Http\Controllers\SuperAdmin\QuestionnaireController::class,
         ]);
-
-        // Questionnaire routes
-        Route::post('/questionnaire/change-status', [QuestionnaireController::class, 'changeStatus']);
-        Route::get('/admin/questionnaire/category/{categoryId}', [QuestionnaireController::class, 'getForCategory']);
 
         Route::get('/login-as-doctor/{id}', [AdminController::class, 'loginAsDoctor'])->name('loginAsDoctor');
         Route::get('/login-as-patient/{id}', [AdminController::class, 'loginAsPatient'])->name('loginAsPatient');
@@ -229,17 +217,6 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('pharmacy_commission/{pharmacy_id}', [pharmacyController::class, 'pharmacy_commission']);
         Route::post('show_pharmacy_settle_details', [pharmacyController::class, 'show_pharmacy_settalement']);
         Route::get('pharmacy_schedule/{pharmacy_id}', [pharmacyController::class, 'pharmacy_schedule']);
-        
-        // Pharmacy Registration Management (New System)
-        Route::get('pharmacy_registrations', [PharmacyRegistrationController::class, 'index'])->name('pharmacy_registrations.index');
-        Route::get('pharmacy_registrations/{id}', [PharmacyRegistrationController::class, 'show'])->name('pharmacy_registrations.show');
-        Route::post('pharmacy_registrations/{id}/approve', [PharmacyRegistrationController::class, 'approve'])->name('pharmacy_registrations.approve');
-        Route::post('pharmacy_registrations/{id}/reject', [PharmacyRegistrationController::class, 'reject'])->name('pharmacy_registrations.reject');
-        Route::post('pharmacy_registrations/{id}/toggle-priority', [PharmacyRegistrationController::class, 'togglePriority'])->name('pharmacy_registrations.toggle_priority');
-        Route::delete('pharmacy_registrations/{id}', [PharmacyRegistrationController::class, 'destroy'])->name('pharmacy_registrations.destroy');
-        
-        // Medicine Master Management (Global Medicines)
-        Route::resource('medicine_master', MedicineMasterController::class);
 
         // Doctor
         Route::get('/doctor/{id}/{name}/{with}', [DoctorController::class, 'show']);
@@ -282,7 +259,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::POST('/user/change_status', [UserController::class, 'change_status']);
         Route::POST('/banner/change_status', [BannerController::class, 'change_status']);
         Route::POST('/pharmacy/change_status', [pharmacyController::class, 'change_status']);
-        Route::POST('/medicineCategory/change_status', [MedicineCategoryController::class, 'change_status']);
+        Route::POST('/pharmacy/approve', [pharmacyController::class, 'approve_pharmacy']);
+        Route::POST('/pharmacy/reject', [pharmacyController::class, 'reject_pharmacy']);
+        Route::POST('/pharmacy/toggle_priority', [pharmacyController::class, 'toggle_priority']);
         Route::POST('/language/change_status', [LanguageController::class, 'change_status']);
         Route::POST('/offer/change_status', [OfferController::class, 'change_status']);
         Route::POST('/lab/change_status', [LabController::class, 'change_status']);
@@ -320,6 +299,10 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
 
         // Download Language Sample File
         Route::get('downloadFile', [LanguageController::class, 'downloadFile']);
+        
+        // Questionnaire routes
+        Route::post('/questionnaire/change-status', [\App\Http\Controllers\SuperAdmin\QuestionnaireController::class, 'changeStatus']);
+        Route::get('/admin/questionnaire/category/{categoryId}', [\App\Http\Controllers\SuperAdmin\QuestionnaireController::class, 'getForCategory']);
 
         // Multi delete
         Route::post('appointment_all_delete', [MultiDeleteController::class, 'appointment_all_delete']);
@@ -352,13 +335,6 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
     Route::middleware(['auth'])->group(function () {
         Route::get('/doctor_home', [App\Http\Controllers\Doctor\DoctorController::class, 'doctor_home']);
         Route::get('/calendar', [AppointmentController::class, 'calendar']);
-        
-        // Doctor questionnaire review
-        Route::get('/doctor/questionnaire-review/{appointmentId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'show'])->name('doctor.questionnaire.review');
-        Route::get('/doctor/questionnaire-summary/{appointmentId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'summary']);
-        Route::get('/doctor/questionnaires', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'index'])->name('doctor.questionnaire.index');
-        Route::get('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'showSubmission'])->name('doctor.questionnaire.show');
-        Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/status', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'updateStatus'])->name('doctor.questionnaire.update-status');
         Route::get('/subscription_purchase/{subscription_id}', [DoctorSubscriptionController::class, 'subscription_purchase']);
         Route::post('/stripePayment', [DoctorSubscriptionController::class, 'stripePayment']);
 
@@ -391,6 +367,13 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
 
         // doctor review
         Route::get('doctor_review', [App\Http\Controllers\Doctor\DoctorController::class, 'doctor_review']);
+        
+        // Doctor questionnaire review
+        Route::get('/doctor/questionnaire-review/{appointmentId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'show'])->name('doctor.questionnaire.review');
+        Route::get('/doctor/questionnaire-summary/{appointmentId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'summary']);
+        Route::get('/doctor/questionnaires', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'index'])->name('doctor.questionnaire.index');
+        Route::get('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'showSubmission'])->name('doctor.questionnaire.show');
+        Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/status', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'updateStatus'])->name('doctor.questionnaire.update-status');
 
         // Zoom Metting
         Route::get('create_zoom_meeting/{appointment_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'setupZoomMeeting']);
@@ -416,19 +399,6 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('pharmacyCommission', [App\Http\Controllers\Pharmacy\PharmacyController::class, 'pharmacyCommission']);
         Route::get('purchased_medicines', [App\Http\Controllers\Pharmacy\PharmacyController::class, 'purchased_medicines']);
         Route::get('display_purchase_medicine/{id}', [App\Http\Controllers\Pharmacy\PharmacyController::class, 'display_purchase_medicine']);
-        
-        // Pharmacy Inventory Management (New System - Module 1)
-        Route::get('/pharmacy-delivery-settings', [App\Http\Controllers\Pharmacy\PharmacyRegistrationController::class, 'deliverySettings'])->name('pharmacy.delivery_settings');
-        Route::post('/pharmacy-delivery-settings', [App\Http\Controllers\Pharmacy\PharmacyRegistrationController::class, 'updateDeliverySettings'])->name('pharmacy.update_delivery_settings');
-        Route::resource('pharmacy-inventory', App\Http\Controllers\Pharmacy\InventoryController::class)->names([
-            'index' => 'pharmacy.inventory.index',
-            'create' => 'pharmacy.inventory.create',
-            'store' => 'pharmacy.inventory.store',
-            'show' => 'pharmacy.inventory.show',
-            'edit' => 'pharmacy.inventory.edit',
-            'update' => 'pharmacy.inventory.update',
-            'destroy' => 'pharmacy.inventory.destroy',
-        ]);
     });
     // Medicies
     Route::get('app_medicine_flutter_payment/{id}', [UserApiController::class, 'app_medicine_flutter_payment']);
@@ -471,16 +441,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/update_pharmacy_profile',[App\Http\Controllers\Pharmacy\PharmacyController::class, 'update_pharmacy_profile']);
 
     Route::resource('blog',BlogController::class);
-    Route::resource('medicines',App\Http\Controllers\Pharmacy\MedicineController::class);
+    Route::resource('pharmacy_inventory',App\Http\Controllers\Pharmacy\PharmacyInventoryController::class);
     Route::resource('pharmacy',PharmacyController::class);
 
     // Settings
     Route::post('/update_general_setting',[SettingController::class, 'update_general_setting']);
 
-    // Medicine
-    Route::get('medicine/{pharmacy_id}',[MedicineController::class, 'index']);
-    Route::get('medicine/create/{pharmacy_id}',[MedicineController::class, 'create']);
-    Route::resource('medicine',MedicineController::class)->except([
-        'index', 'create',
-    ]);
+    // Medicine (Super Admin only)
+    Route::resource('medicine',MedicineController::class);
 });

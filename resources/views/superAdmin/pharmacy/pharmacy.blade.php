@@ -74,7 +74,8 @@
                                 <th>{{__('Pharmacy name')}}</th>
                                 <th>{{__('email')}}</th>
                                 <th>{{__('phone')}}</th>
-                                <th>{{__('status')}}</th>
+                                <th>{{__('Status')}}</th>
+                                <th>{{__('Priority')}}</th>
                                 @if (Gate::check('pharmacy_edit') || Gate::check('pharmacy_delete'))
                                     <th> {{__('Action')}} </th>
                                 @endif
@@ -100,23 +101,46 @@
                                     <td>{{$pharmacy->phone}}</td>
 
                                     <td>
+                                        @if($pharmacy->status == 'pending')
+                                            <span class="badge badge-warning">{{__('Pending')}}</span>
+                                        @elseif($pharmacy->status == 'approved')
+                                            <span class="badge badge-success">{{__('Approved')}}</span>
+                                        @elseif($pharmacy->status == 'rejected')
+                                            <span class="badge badge-danger">{{__('Rejected')}}</span>
+                                        @else
+                                            <span class="badge badge-secondary">{{$pharmacy->status}}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @can('pharmacy_edit')
                                         <label class="cursor-pointer">
-                                            <input type="checkbox" id="status{{$pharmacy->id}}" class="custom-switch-input" name="status" onchange="change_status('pharmacy',{{ $pharmacy->id }})" {{ $pharmacy->status == 1 ? 'checked' : '' }}>
+                                            <input type="checkbox" id="priority{{$pharmacy->id}}" class="custom-switch-input" name="is_priority" onchange="toggle_priority({{ $pharmacy->id }})" {{ $pharmacy->is_priority ? 'checked' : '' }}>
                                             <span class="custom-switch-indicator"></span>
                                         </label>
+                                        @else
+                                        {{ $pharmacy->is_priority ? __('Yes') : __('No') }}
+                                        @endcan
                                     </td>
                                     @if (Gate::check('pharmacy_edit') || Gate::check('pharmacy_delete'))
                                         <td>
-                                            <a class="text-primary" href="{{url('pharmacy/'.$pharmacy->id)}}">
+                                            <a class="text-primary" href="{{url('pharmacy/'.$pharmacy->id)}}" title="{{__('View')}}">
                                                 <i class="far fa-eye"></i>
                                             </a>
                                             @can('pharmacy_edit')
-                                            <a class="text-success" href="{{url('pharmacy/'.$pharmacy->id.'/edit/')}}">
+                                            @if($pharmacy->status == 'pending')
+                                                <a class="text-success" href="javascript:void(0);" onclick="approve_pharmacy({{ $pharmacy->id }})" title="{{__('Approve')}}">
+                                                    <i class="far fa-check-circle"></i>
+                                                </a>
+                                                <a class="text-danger" href="javascript:void(0);" onclick="reject_pharmacy({{ $pharmacy->id }})" title="{{__('Reject')}}">
+                                                    <i class="far fa-times-circle"></i>
+                                                </a>
+                                            @endif
+                                            <a class="text-success" href="{{url('pharmacy/'.$pharmacy->id.'/edit/')}}" title="{{__('Edit')}}">
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             @endcan
                                             @can('pharmacy_delete')
-                                                <a class="text-danger" href="javascript:void(0);"  onclick="deleteData('pharmacy',{{ $pharmacy->id }})">
+                                                <a class="text-danger" href="javascript:void(0);"  onclick="deleteData('pharmacy',{{ $pharmacy->id }})" title="{{__('Delete')}}">
                                                     <i class="far fa-trash-alt"></i>
                                                 </a>
                                             @endcan
@@ -134,4 +158,105 @@
         </div>
 </section>
 
+@endsection
+
+@section('js')
+<script>
+function approve_pharmacy(id) {
+    Swal.fire({
+        title: '{{__("Are you sure?")}}',
+        text: '{{__("Do you want to approve this pharmacy?")}}',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{__("Yes, approve it!")}}'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: base_url + '/pharmacy/approve',
+                data: {
+                    id: id,
+                },
+                success: function (result) {
+                    if (result.success) {
+                        Swal.fire('{{__("Approved!")}}', result.message || '{{__("Pharmacy approved successfully.")}}', 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{__("Error!")}}', result.message || '{{__("Something went wrong.")}}', 'error');
+                    }
+                },
+                error: function (err) {
+                    Swal.fire('{{__("Error!")}}', '{{__("Something went wrong.")}}', 'error');
+                }
+            });
+        }
+    });
+}
+
+function reject_pharmacy(id) {
+    Swal.fire({
+        title: '{{__("Are you sure?")}}',
+        text: '{{__("Do you want to reject this pharmacy?")}}',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{__("Yes, reject it!")}}'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: base_url + '/pharmacy/reject',
+                data: {
+                    id: id,
+                },
+                success: function (result) {
+                    if (result.success) {
+                        Swal.fire('{{__("Rejected!")}}', result.message || '{{__("Pharmacy rejected successfully.")}}', 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{__("Error!")}}', result.message || '{{__("Something went wrong.")}}', 'error');
+                    }
+                },
+                error: function (err) {
+                    Swal.fire('{{__("Error!")}}', '{{__("Something went wrong.")}}', 'error');
+                }
+            });
+        }
+    });
+}
+
+function toggle_priority(id) {
+    $.ajax({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: "POST",
+        url: base_url + '/pharmacy/toggle_priority',
+        data: {
+            id: id,
+        },
+        success: function (result) {
+            if (!result.success) {
+                $('#priority' + id).prop('checked', !$('#priority' + id).prop('checked'));
+                Swal.fire('{{__("Error!")}}', result.message || '{{__("Something went wrong.")}}', 'error');
+            }
+        },
+        error: function (err) {
+            $('#priority' + id).prop('checked', !$('#priority' + id).prop('checked'));
+            Swal.fire('{{__("Error!")}}', '{{__("Something went wrong.")}}', 'error');
+        }
+    });
+}
+</script>
 @endsection

@@ -16,6 +16,12 @@
                     <img alt="image" src="{{ $pharmacy->fullImage }}" class="rounded-circle profile-widget-picture">
                 </a>
                 <div class="btn-group mb-2 dropleft float-right p-3">
+                    @can('pharmacy_edit')
+                    @if($pharmacy->status == 0)
+                        <a href="javascript:void(0);" onclick="approve_pharmacy({{ $pharmacy->id }})" class="btn btn-success btn-sm mr-2">{{__('Approve')}}</a>
+                        <a href="javascript:void(0);" onclick="reject_pharmacy({{ $pharmacy->id }})" class="btn btn-danger btn-sm mr-2">{{__('Reject')}}</a>
+                    @endif
+                    @endcan
                     <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{ __('More Details') }}
                     </button>
@@ -28,6 +34,18 @@
             </div>
             <div class="profile-widget-description">
                 <div class="profile-widget-name">{{ $pharmacy->name }}</div>
+                <div class="mb-2">
+                    @if($pharmacy->status == 'pending')
+                        <span class="badge badge-warning">{{__('Pending Approval')}}</span>
+                    @elseif($pharmacy->status == 'approved')
+                        <span class="badge badge-success">{{__('Approved')}}</span>
+                    @elseif($pharmacy->status == 'rejected')
+                        <span class="badge badge-danger">{{__('Rejected')}}</span>
+                    @endif
+                    @if($pharmacy->is_priority)
+                        <span class="badge badge-info ml-2">{{__('Priority Pharmacy')}}</span>
+                    @endif
+                </div>
                 {!! clean($pharmacy->description) !!}
             </div>
         </div>
@@ -134,4 +152,82 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+<script>
+function approve_pharmacy(id) {
+    Swal.fire({
+        title: '{{__("Are you sure?")}}',
+        text: '{{__("Do you want to approve this pharmacy?")}}',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{__("Yes, approve it!")}}'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: base_url + '/pharmacy/approve',
+                data: {
+                    id: id,
+                },
+                success: function (result) {
+                    if (result.success) {
+                        Swal.fire('{{__("Approved!")}}', result.message || '{{__("Pharmacy approved successfully.")}}', 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{__("Error!")}}', result.message || '{{__("Something went wrong.")}}', 'error');
+                    }
+                },
+                error: function (err) {
+                    Swal.fire('{{__("Error!")}}', '{{__("Something went wrong.")}}', 'error');
+                }
+            });
+        }
+    });
+}
+
+function reject_pharmacy(id) {
+    Swal.fire({
+        title: '{{__("Are you sure?")}}',
+        text: '{{__("Do you want to reject this pharmacy?")}}',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '{{__("Yes, reject it!")}}'
+    }).then((result) => {
+        if (result.value) {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: base_url + '/pharmacy/reject',
+                data: {
+                    id: id,
+                },
+                success: function (result) {
+                    if (result.success) {
+                        Swal.fire('{{__("Rejected!")}}', result.message || '{{__("Pharmacy rejected successfully.")}}', 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{__("Error!")}}', result.message || '{{__("Something went wrong.")}}', 'error');
+                    }
+                },
+                error: function (err) {
+                    Swal.fire('{{__("Error!")}}', '{{__("Something went wrong.")}}', 'error');
+                }
+            });
+        }
+    });
+}
+</script>
 @endsection

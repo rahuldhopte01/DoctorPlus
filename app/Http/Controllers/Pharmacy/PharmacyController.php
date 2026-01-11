@@ -9,6 +9,7 @@ use App\Models\Country;
 use App\Models\Language;
 use App\Models\Medicine;
 use App\Models\Pharmacy;
+use App\Models\PharmacyInventory;
 use App\Models\PharmacySettle;
 use App\Models\PharmacyWorkingHour;
 use App\Models\PurchaseMedicine;
@@ -38,12 +39,16 @@ class PharmacyController extends Controller
             if ($pharmacy->hasRole('pharmacy')) {
                 if ($pharmacy->verify == 1) {
                     $pharmacy = Pharmacy::where('user_id', auth()->user()->id)->first();
-                    if ($pharmacy->status == 1) {
+                    if ($pharmacy->status == 'approved') {
                         return redirect('pharmacy_home');
                     } else {
                         Auth::logout();
-
-                        return redirect()->back()->withErrors('you are disable by admin please contact admin');
+                        $message = $pharmacy->status == 'pending' 
+                            ? 'Your pharmacy registration is pending approval. Please contact admin.' 
+                            : ($pharmacy->status == 'rejected' 
+                                ? 'Your pharmacy has been rejected. Please contact admin.'
+                                : 'you are disable by admin please contact admin');
+                        return redirect()->back()->withErrors($message);
                     }
                 } else {
                     return redirect('pharmacy/send_otp/'.$pharmacy->id);
@@ -64,7 +69,7 @@ class PharmacyController extends Controller
     {
         $pharmacy = Pharmacy::where('user_id', auth()->user()->id)->first();
         $today_sells = PharmacySettle::where('pharmacy_id', $pharmacy->id)->whereDate('created_at', Carbon::now(env('timezone')))->sum('pharmacy_amount');
-        $total_medicines = Medicine::where('pharmacy_id', $pharmacy->id)->count();
+        $total_medicines = PharmacyInventory::where('pharmacy_id', $pharmacy->id)->count();
         $currency = Setting::first()->currency_symbol;
         $revenueCharts = $this->revenueChart();
 
@@ -121,15 +126,27 @@ class PharmacyController extends Controller
             'phone' => $data['phone'],
             'phone_code' => $data['phone_code'],
         ]);
-        Auth::loginUsingId($user->id);
         $user->assignRole('pharmacy');
-        $data['user_id'] = $user->id;
-        $data['start_time'] = strtolower('08:00 am');
-        $data['end_time'] = strtolower('08:00 pm');
-        $data['image'] = 'defaultUser.png';
-        $data['status'] = 1;
-        $data['commission_amount'] = $setting->pharmacy_commission;
-        $pharmacy = Pharmacy::create($data);
+        
+        // Build clean pharmacy data array with only required fields
+        $pharmacyData = [
+            'user_id' => $user->id,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+            'postcode' => $data['postcode'] ?? null,
+            'lat' => $data['lat'] ?? '',
+            'lang' => $data['lang'] ?? '',
+            'start_time' => strtolower('08:00 am'),
+            'end_time' => strtolower('08:00 pm'),
+            'image' => 'defaultUser.png',
+            'status' => 'pending', // pending, approved, rejected
+            'is_priority' => 0, // Default to false
+            'commission_amount' => $setting->pharmacy_commission,
+            'is_shipping' => 0,
+        ];
+        $pharmacy = Pharmacy::create($pharmacyData);
         $start_time = strtolower($pharmacy->start_time);
         $end_time = strtolower($pharmacy->end_time);
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -144,13 +161,10 @@ class PharmacyController extends Controller
             $work_time['status'] = 1;
             PharmacyWorkingHour::create($work_time);
         }
-        if ($user->verify == 1) {
-            if (Auth::attempt(['email' => $user['email'], 'password' => $request->password])) {
-                return redirect('pharmacy_home');
-            }
-        } else {
-            return redirect('pharmacy/send_otp/'.$user->id);
-        }
+        
+        // Registration successful - redirect to login with pending approval message
+        // Do NOT log the user in - they must wait for admin approval
+        return redirect('pharmacy_login')->with('status', __('Your pharmacy registration is pending approval. You will be able to login once the admin approves your registration.'));
     }
 
     public function send_otp($user_id)
@@ -180,8 +194,20 @@ class PharmacyController extends Controller
             if ($user->otp == $otp) {
                 $user->verify = 1;
                 $user->save();
-                if (Auth::loginUsingId($user->id)) {
-                    return redirect('pharmacy_home');
+                // Check pharmacy status before allowing login
+                $pharmacy = Pharmacy::where('user_id', $user->id)->first();
+                if ($pharmacy && $pharmacy->status == 'approved') {
+                    if (Auth::loginUsingId($user->id)) {
+                        return redirect('pharmacy_home');
+                    }
+                } else {
+                    // Pharmacy status is pending or rejected - do not allow login
+                    $message = $pharmacy && $pharmacy->status == 'pending' 
+                        ? __('Your pharmacy registration is pending approval. Please contact admin.')
+                        : ($pharmacy && $pharmacy->status == 'rejected'
+                            ? __('Your pharmacy has been rejected. Please contact admin.')
+                            : __('Your pharmacy account is not approved. Please contact admin.'));
+                    return redirect('pharmacy_login')->withErrors($message);
                 }
             } else {
                 return redirect()->back()->with('error', __('otp does not match'));
