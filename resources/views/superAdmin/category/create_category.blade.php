@@ -61,6 +61,7 @@
                                 @enderror
                             </div>
                             <div class="form-group">
+                                <label class="col-form-label">{{__('Status')}}</label>
                                 <label class="cursor-pointer">
                                     <input type="checkbox" id="status" class="custom-switch-input" name="status">
                                     <span class="custom-switch-indicator"></span>

@@ -104,7 +104,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
     
     // Categories and Questionnaire Routes (Public)
     Route::get('/categories', [WebsiteController::class, 'categories'])->name('categories');
-    Route::get('/category/{id}', [WebsiteController::class, 'categoryDetail'])->name('category.detail');
+    Route::get('/category/{id}', [WebsiteController::class, 'categoryDetail'])->where('id', '[0-9]+')->name('category.detail');
 
     Route::middleware(['auth'])->group(function () {
         Route::get('/user_profile', [WebsiteController::class, 'user_profile']);
@@ -188,7 +188,6 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
 
         Route::resources([
             'treatments' => TreatmentsController::class,
-            'category' => CategoryController::class,
             'expertise' => ExpertiseController::class,
             'hospital' => HospitalController::class,
             'role' => RoleController::class,
@@ -205,6 +204,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
             'insurers' => InsurerController::class,
             'questionnaire' => \App\Http\Controllers\SuperAdmin\QuestionnaireController::class,
         ]);
+        
+        // Category routes - defined separately to avoid conflict with public /category/{id} route
+        Route::resource('category', CategoryController::class)->except(['show']);
 
         Route::get('/login-as-doctor/{id}', [AdminController::class, 'loginAsDoctor'])->name('loginAsDoctor');
         Route::get('/login-as-patient/{id}', [AdminController::class, 'loginAsPatient'])->name('loginAsPatient');
@@ -374,6 +376,8 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('/doctor/questionnaires', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'index'])->name('doctor.questionnaire.index');
         Route::get('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'showSubmission'])->name('doctor.questionnaire.show');
         Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/status', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'updateStatus'])->name('doctor.questionnaire.update-status');
+        Route::get('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/prescription/create', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'createPrescription'])->name('doctor.questionnaire.create-prescription');
+        Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/prescription/store', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'storePrescription'])->name('doctor.questionnaire.store-prescription');
 
         // Zoom Metting
         Route::get('create_zoom_meeting/{appointment_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'setupZoomMeeting']);

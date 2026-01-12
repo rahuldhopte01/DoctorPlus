@@ -1,4 +1,4 @@
-@extends('layout.mainlayout_admin',['activePage' => 'appointment'])
+@extends('layout.mainlayout_admin',['activePage' => 'questionnaire_submissions'])
 
 @section('title', __('Questionnaire Review'))
 
@@ -111,12 +111,115 @@
                         </div>
                     </div>
                 </form>
+                
+                @if($firstAnswer->status === 'approved')
+                <div class="mt-4 pt-4 border-top">
+                    @if($prescription)
+                    <div class="alert alert-info">
+                        <i class="fas fa-prescription-bottle-alt mr-2"></i>
+                        <strong>{{ __('Prescription Already Created') }}</strong>
+                        <p class="mb-0 mt-2">{{ __('A prescription has been created for this questionnaire. View details below.') }}</p>
+                    </div>
+                    @else
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <strong>{{ __('Questionnaire Approved') }}</strong>
+                        <p class="mb-0 mt-2">{{ __('You can now create a prescription for this patient.') }}</p>
+                    </div>
+                    <a href="{{ route('doctor.questionnaire.create-prescription', [
+                        'userId' => $firstAnswer->user_id,
+                        'categoryId' => $firstAnswer->category_id,
+                        'questionnaireId' => $firstAnswer->questionnaire_id
+                    ]) }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-prescription-bottle-alt mr-2"></i>
+                        {{ __('Create Prescription') }}
+                    </a>
+                    @endif
+                </div>
+                @endif
             </div>
         </div>
 
+        <!-- Prescription Details -->
+        @if($prescription)
+        <div class="card mb-3">
+            <div class="card-header">
+                <h4><i class="fas fa-prescription-bottle-alt mr-2"></i>{{ __('Prescription Details') }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td class="text-muted" width="40%">{{ __('Status') }}</td>
+                                <td>
+                                    @if($prescription->status === 'approved_pending_payment')
+                                        <span class="badge badge-warning">{{ __('Approved - Pending Payment') }}</span>
+                                    @elseif($prescription->status === 'active')
+                                        <span class="badge badge-success">{{ __('Active') }}</span>
+                                    @elseif($prescription->status === 'approved')
+                                        <span class="badge badge-info">{{ __('Approved') }}</span>
+                                    @elseif($prescription->status === 'expired')
+                                        <span class="badge badge-danger">{{ __('Expired') }}</span>
+                                    @else
+                                        <span class="badge badge-secondary">{{ $prescription->status }}</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">{{ __('Valid From') }}</td>
+                                <td>{{ $prescription->valid_from ? \Carbon\Carbon::parse($prescription->valid_from)->format('M d, Y') : 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">{{ __('Valid Until') }}</td>
+                                <td>{{ $prescription->valid_until ? \Carbon\Carbon::parse($prescription->valid_until)->format('M d, Y') : 'N/A' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">{{ __('Validity Days') }}</td>
+                                <td>{{ $prescription->validity_days ?? 'N/A' }} {{ __('days') }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <h5 class="mb-3">{{ __('Medicines') }}</h5>
+                @php
+                    $medicines = json_decode($prescription->medicines, true);
+                @endphp
+                @if($medicines && count($medicines) > 0)
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="60%">{{ __('Medicine Name') }}</th>
+                                <th width="35%">{{ __('Strength') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($medicines as $index => $medicine)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td><strong>{{ $medicine['medicine'] ?? 'N/A' }}</strong></td>
+                                <td>{{ $medicine['strength'] ?? 'N/A' }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    {{ __('No medicines found in this prescription.') }}
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <!-- Flag Alert -->
         @if($hasFlaggedAnswers)
-        <div class="alert alert-warning">
+        <div class="alert alert-warning mb-3">
             <i class="fas fa-exclamation-triangle mr-2"></i>
             <strong>{{ __('Attention:') }}</strong> {{ __('This questionnaire contains flagged answers that require your review.') }}
         </div>

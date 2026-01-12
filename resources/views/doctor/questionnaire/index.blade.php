@@ -1,4 +1,4 @@
-@extends('layout.mainlayout_admin',['activePage' => 'appointment'])
+@extends('layout.mainlayout_admin',['activePage' => 'questionnaire_submissions'])
 
 @section('title', __('Questionnaire Submissions'))
 
@@ -11,9 +11,16 @@
     <div class="section-body">
         <div class="card">
             <div class="card-header">
-                <h4><i class="fas fa-clipboard-list mr-2"></i>{{ __('Pending Questionnaire Submissions') }}</h4>
+                <h4><i class="fas fa-clipboard-list mr-2"></i>{{ __('Questionnaire Submissions') }}</h4>
             </div>
             <div class="card-body">
+                @if(!$doctor->category_id)
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    {{ __('Your doctor profile does not have a category assigned. Please contact the administrator to assign a category.') }}
+                </div>
+                @endif
+                
                 @if($submissions->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
@@ -78,7 +85,7 @@
                 @else
                 <div class="text-center py-5">
                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">{{ __('No pending questionnaire submissions.') }}</p>
+                    <p class="text-muted">{{ __('No questionnaire submissions found.') }}</p>
                 </div>
                 @endif
             </div>

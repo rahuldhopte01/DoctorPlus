@@ -127,9 +127,10 @@
                                                 <thead class="bg-white-50 border-b">
                                                     <tr>
                                                         <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">#</th>
-                                                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Appointment Id') }}</th>
-                                                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Appointment Date') }}</th>
+                                                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Reference') }}</th>
+                                                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Date') }}</th>
                                                         <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Created by') }}</th>
+                                                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Status') }}</th>
                                                         <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{__('Action') }}</th>
                                                     </tr>
                                                 </thead>
@@ -137,25 +138,57 @@
                                                     @foreach ($prescriptions as $prescription)
                                                     <tr class="bg-white-50 border-b transition duration-300 ease-in-out hover:bg-gray-50">
                                                         <td class="text-sm px-6 py-4 font-fira-sans">{{ $loop->iteration }}</td>
-                                                        <td class="text-sm px-6 py-4 font-fira-sans">{{$prescription->appointment['appointment_id'] }}</td>
-                                                        <td class="text-sm px-6 py-4 font-fira-sans">{{Carbon\Carbon::parse($prescription->created_at)->format('d F Y') }}</td>
+                                                        <td class="text-sm px-6 py-4 font-fira-sans">
+                                                            @if($prescription->appointment_id && $prescription->appointment)
+                                                                {{ $prescription->appointment->appointment_id }}
+                                                            @else
+                                                                <span class="text-muted">{{ __('Questionnaire') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-sm px-6 py-4 font-fira-sans">{{ \Carbon\Carbon::parse($prescription->created_at)->format('d F Y') }}</td>
                                                         <td class="text-sm px-6 py-4">
-                                                            <a href="{{ url('doctor-profile/' . $prescription->doctor['id'] . '/' . Str::slug($prescription->doctor['name'])) }}" class="avatar avatar-sm mr-2">
-                                                                <img class="rounded-full" src="{{ $prescription->doctor['fullImage'] }}" alt="User Image" width="50px" height="50px">
+                                                            @if($prescription->doctor)
+                                                            <a href="{{ url('doctor-profile/' . $prescription->doctor->id . '/' . Str::slug($prescription->doctor->name)) }}" class="avatar avatar-sm mr-2">
+                                                                <img class="rounded-full" src="{{ $prescription->doctor->fullImage }}" alt="User Image" width="50px" height="50px">
                                                             </a>
-                                                            <a href="{{ url('doctor-profile/' . $prescription->doctor['id'] . '/' . Str::slug($prescription->doctor['name'])) }}" class="font-fira-sans">{{$prescription->doctor['name'] }}</a>
+                                                            <a href="{{ url('doctor-profile/' . $prescription->doctor->id . '/' . Str::slug($prescription->doctor->name)) }}" class="font-fira-sans">{{ $prescription->doctor->name }}</a>
+                                                            @else
+                                                            <span class="text-muted">{{ __('N/A') }}</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-sm px-6 py-4">
+                                                            @if($prescription->status === 'approved_pending_payment')
+                                                                <span class="badge badge-warning">{{ __('Pending Payment') }}</span>
+                                                            @elseif($prescription->status === 'active')
+                                                                <span class="badge badge-success">{{ __('Active') }}</span>
+                                                            @elseif($prescription->status === 'approved')
+                                                                <span class="badge badge-info">{{ __('Approved') }}</span>
+                                                            @elseif($prescription->status === 'expired')
+                                                                <span class="badge badge-danger">{{ __('Expired') }}</span>
+                                                            @else
+                                                                <span class="badge badge-secondary">{{ $prescription->status }}</span>
+                                                            @endif
                                                         </td>
                                                         <td class="text-sm px-6 py-4">
                                                             <div class="table-action">
                                                                 <div class="flex space-x-2">
-                                                                    <div>
-                                                                        <a href="{{ url('downloadPDF/' . $prescription->id) }}" type="button" class="justify-between px-6 pt-2.5 pb-2 bg-white-50 border-solid border-2 border-primary font-semibold text-xs leading-normal uppercase rounded transition duration-150 ease-in-out flex align-center">
+                                                                    @if($prescription->status === 'approved_pending_payment')
+                                                                        <a href="{{ url('prescription/pay/' . $prescription->id) }}" type="button" class="justify-between px-4 pt-2.5 pb-2 bg-primary text-white border-solid border-2 border-primary font-semibold text-xs leading-normal uppercase rounded transition duration-150 ease-in-out flex align-center">
+                                                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm.5-9H7v6h1.5V5zm0-2H7v1.5h1.5V3z"/>
+                                                                            </svg>
+                                                                            <span class="ml-2">{{ __('Pay Now') }}</span>
+                                                                        </a>
+                                                                    @elseif(in_array($prescription->status, ['active', 'approved']) && $prescription->isValid())
+                                                                        <a href="{{ url('downloadPDF/' . $prescription->id) }}" type="button" class="justify-between px-4 pt-2.5 pb-2 bg-white-50 border-solid border-2 border-primary font-semibold text-xs leading-normal uppercase rounded transition duration-150 ease-in-out flex align-center">
                                                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                                                 <path d="M2 16C1.45 16 0.979333 15.8043 0.588 15.413C0.196 15.021 0 14.55 0 14V11H2V14H14V11H16V14C16 14.55 15.8043 15.021 15.413 15.413C15.021 15.8043 14.55 16 14 16H2ZM8 12L3 7L4.4 5.55L7 8.15V0H9V8.15L11.6 5.55L13 7L8 12Z" />
                                                                             </svg>
                                                                             <span class="ml-2 text-primary font-fira-sans">{{ __('Download') }}</span>
                                                                         </a>
-                                                                    </div>
+                                                                    @else
+                                                                        <span class="text-muted text-xs">{{ __('Not Available') }}</span>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </td>

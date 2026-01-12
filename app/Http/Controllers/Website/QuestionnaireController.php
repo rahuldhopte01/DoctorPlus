@@ -643,18 +643,16 @@ class QuestionnaireController extends Controller
         }
 
         // Delete any existing pending answers for this user/category/questionnaire combination
-        // Check if migration has been run (check if user_id column exists)
-        $query = QuestionnaireAnswer::whereNull('appointment_id');
-        
-        // Only use new columns if migration has been run
-        if (\Schema::hasColumn('questionnaire_answers', 'user_id')) {
-            $query->where('user_id', Auth::id())
+        // Delete any existing pending answers for this user/category/questionnaire
+        // Only if the migration has been run (user_id column exists)
+        if (Schema::hasColumn('questionnaire_answers', 'user_id')) {
+            QuestionnaireAnswer::whereNull('appointment_id')
+                ->where('user_id', Auth::id())
                 ->where('category_id', $categoryId)
                 ->where('questionnaire_id', $questionnaire->id)
-                ->where('status', 'pending');
+                ->where('status', 'pending')
+                ->delete();
         }
-        
-        $query->delete();
 
         // Move files from temp to permanent location (user-specific folder)
         $permanentFiles = [];
@@ -681,8 +679,8 @@ class QuestionnaireController extends Controller
         }
 
         // Save answers immediately to database with status 'pending'
-        // Only if migration has been run (check if user_id column exists)
-        if (\Schema::hasColumn('questionnaire_answers', 'user_id')) {
+        // Only if the migration has been run (user_id column exists)
+        if (Schema::hasColumn('questionnaire_answers', 'user_id')) {
             try {
                 $this->questionnaireService->saveAnswersImmediate(
                     Auth::id(),
@@ -693,12 +691,14 @@ class QuestionnaireController extends Controller
                     'pending'
                 );
             } catch (\Exception $e) {
-                \Log::error('Error saving questionnaire answers: ' . $e->getMessage());
+                \Log::error('Error saving questionnaire answers: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
                 return response()->json([
                     'success' => false,
                     'message' => __('Failed to save questionnaire. Please try again.'),
                 ], 500);
             }
+        } else {
+            \Log::warning('Questionnaire answers table does not have user_id column. Migration may not have run successfully.');
         }
 
         // Also store in session for backward compatibility (for appointment booking)

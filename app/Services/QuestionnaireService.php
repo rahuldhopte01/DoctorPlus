@@ -188,8 +188,14 @@ class QuestionnaireService
      */
     public function saveAnswersImmediate($userId, $categoryId, Questionnaire $questionnaire, array $answers, array $files = [], $status = 'pending'): void
     {
+        // Ensure questions are loaded
         $questions = $questionnaire->questions;
         $submittedAt = now();
+
+        if ($questions->isEmpty()) {
+            \Log::warning('No questions found for questionnaire ID: ' . $questionnaire->id);
+            return;
+        }
 
         foreach ($questions as $question) {
             $answer = $answers[$question->id] ?? null;

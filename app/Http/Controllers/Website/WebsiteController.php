@@ -479,9 +479,28 @@ class WebsiteController extends Controller
 
     public function downloadPDF($id)
     {
-        $id = Prescription::find($id);
-        $pathToFile = public_path().'/prescription/upload/'.$id->pdf;
-        $name = $id->pdf;
+        $prescription = Prescription::findOrFail($id);
+        
+        // Check if prescription belongs to authenticated user
+        if ($prescription->user_id != auth()->user()->id) {
+            abort(403, 'Unauthorized');
+        }
+        
+        // Check if payment is required and status allows download
+        if ($prescription->status === 'approved_pending_payment') {
+            return redirect(url('/user_profile'))->with('error', __('Payment required to download prescription.'));
+        }
+        
+        if (!in_array($prescription->status, ['active', 'approved']) || !$prescription->isValid()) {
+            return redirect(url('/user_profile'))->with('error', __('Prescription is not available for download.'));
+        }
+        
+        if (!$prescription->pdf) {
+            return redirect(url('/user_profile'))->with('error', __('Prescription PDF not found.'));
+        }
+        
+        $pathToFile = public_path().'/prescription/upload/'.$prescription->pdf;
+        $name = $prescription->pdf;
         $headers = ['Content-Type: application/pdf'];
 
         return response()->download($pathToFile, $name, $headers);
@@ -1484,7 +1503,11 @@ class WebsiteController extends Controller
         foreach ($appointments as $appointment) {
             $appointment->isReview = Review::where('appointment_id', $appointment->id)->exists();
         }
-        $prescriptions = Prescription::with(['doctor', 'appointment'])->where('user_id', auth()->user()->id)->orderBy('id', 'DESC')->get();
+        // Get all prescriptions including questionnaire-based ones (appointment_id can be null)
+        $prescriptions = Prescription::with(['doctor', 'appointment'])
+            ->where('user_id', auth()->user()->id)
+            ->orderBy('id', 'DESC')
+            ->get();
         $purchaseMedicines = PurchaseMedicine::where('user_id', auth()->user()->id)->orderBy('id', 'DESC')->get();
         $currency = $setting->currency_symbol;
         $cancel_reason = $setting->cancel_reason;

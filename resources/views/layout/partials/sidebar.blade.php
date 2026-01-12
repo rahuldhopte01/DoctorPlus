@@ -100,6 +100,15 @@
                 </li>
             @endcan
 
+            @if (auth()->user()->hasRole('doctor'))
+                <li class="{{ $activePage == 'questionnaire_submissions' ? 'active' : '' }}">
+                    <a href="{{ url('/doctor/questionnaires') }}">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>{{__('Questionnaire Submissions')}}</span>
+                    </a>
+                </li>
+            @endif
+
             @can('treatment_access')
                 <li class="{{ $activePage == 'treatments' ? 'active' : '' }}">
                     <a href="{{ url('treatments') }}">

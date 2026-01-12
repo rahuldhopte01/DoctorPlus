@@ -61,18 +61,14 @@ class PharmacyController extends Controller
             'name' => 'bail|required',
             'phone' => 'bail|required|digits_between:6,12',
             'email' => 'bail|required|email|unique:users',
-            'start_time' => 'bail|required',
-            'end_time' => 'bail|required|after:start_time',
             'address' => 'bail|required',
-            'commission_amount' => 'bail|required',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
-        ],
-            [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
-            ]);
+        ]);
         $data = $request->all();
         $setting = Setting::first();
-        $password = mt_rand(10000, 999999);
+        
+        // Generate temporary password
+        $password = mt_rand(100000, 999999);
+        
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -82,44 +78,33 @@ class PharmacyController extends Controller
             'phone_code' => $data['phone_code'],
         ]);
         $user->assignRole('pharmacy');
-        $message1 = 'Dear Pharmacy Admin your password is : '.$password;
-        try {
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
-            Mail::to($user->email)->send(new SendMail($message1, 'Pharmacy Password'));
-        } catch (\Exception $e) {
-            info($e);
-        }
-        $data['user_id'] = $user->id;
-        $data['start_time'] = strtolower(Carbon::parse($data['start_time'])->format('h:i a'));
-        $data['end_time'] = strtolower(Carbon::parse($data['end_time'])->format('h:i a'));
-        if ($request->hasFile('image')) {
-            $data['image'] = (new CustomController)->imageUpload($request->image);
-        } else {
-            $data['image'] = 'defaultUser.png';
-        }
-        $data['status'] = 'approved'; // Admin-created pharmacies are approved by default
-        $data['is_priority'] = $request->has('is_priority') ? 1 : 0;
-        $data['is_shipping'] = $request->has('is_shipping') ? 1 : 0;
-        $delivery = [];
-        for ($i = 0; $i < count($data['min_value']); $i++) {
-            $temp['min_value'] = $data['min_value'][$i];
-            $temp['max_value'] = $data['max_value'][$i];
-            $temp['charges'] = $data['charges'][$i];
-            array_push($delivery, $temp);
-        }
-        $data['delivery_charges'] = json_encode($delivery);
-        $pharmacy = Pharmacy::create($data);
-        $start_time = strtolower($pharmacy->start_time);
-        $end_time = strtolower($pharmacy->end_time);
+        
+        // Build clean pharmacy data array with default values
+        $pharmacyData = [
+            'user_id' => $user->id,
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+            'postcode' => $data['postcode'] ?? null,
+            'lat' => $data['lat'] ?? $setting->lat ?? '',
+            'lang' => $data['lang'] ?? $setting->lang ?? '',
+            'start_time' => strtolower('08:00 am'), // Default start time
+            'end_time' => strtolower('08:00 pm'), // Default end time
+            'description' => null,
+            'commission_amount' => $setting->pharmacy_commission ?? 0, // Use default from settings
+            'status' => 'approved', // Pre-approved
+            'is_priority' => $request->has('is_priority') ? 1 : 0,
+            'is_shipping' => 0, // Default to no shipping
+            'image' => 'defaultUser.png',
+            'delivery_charges' => null,
+        ];
+        
+        $pharmacy = Pharmacy::create($pharmacyData);
+        
+        // Create default working hours
+        $start_time = $pharmacy->start_time;
+        $end_time = $pharmacy->end_time;
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         for ($i = 0; $i < count($days); $i++) {
             $master = [];
@@ -132,8 +117,34 @@ class PharmacyController extends Controller
             $work_time['status'] = 1;
             PharmacyWorkingHour::create($work_time);
         }
+        
+        // Send approval email with temporary password
+        $message = "Dear " . $data['name'] . ",\n\n";
+        $message .= "Your pharmacy account has been approved and created successfully!\n\n";
+        $message .= "Login Credentials:\n";
+        $message .= "Email: " . $data['email'] . "\n";
+        $message .= "Temporary Password: " . $password . "\n\n";
+        $message .= "Please login and change your password for security reasons.\n\n";
+        $message .= "You can login at: " . url('pharmacy_login') . "\n\n";
+        $message .= "Thank you!";
+        
+        try {
+            $config = [
+                'driver' => $setting->mail_mailer,
+                'host' => $setting->mail_host,
+                'port' => $setting->mail_port,
+                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
+                'encryption' => $setting->mail_encryption,
+                'username' => $setting->mail_username,
+                'password' => $setting->mail_password,
+            ];
+            Config::set('mail', $config);
+            Mail::to($user->email)->send(new SendMail($message, 'Pharmacy Account Approved'));
+        } catch (\Exception $e) {
+            info($e);
+        }
 
-        return redirect('pharmacy')->withStatus(__('Pharmacy created successfully..!!'));
+        return redirect('pharmacy')->withStatus(__('Pharmacy created successfully and approval email sent..!!'));
     }
 
     /**
