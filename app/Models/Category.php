@@ -11,7 +11,7 @@ class Category extends Model
 
     protected $table = 'category';
 
-    protected $fillable = ['name', 'image', 'treatment_id', 'status'];
+    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'status'];
 
     protected $appends = ['fullImage'];
 

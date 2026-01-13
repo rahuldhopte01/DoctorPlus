@@ -42,6 +42,15 @@
                                 </div>
                                 @enderror
                             </div>
+                            <div class="form-group">
+                                <label class="col-form-label">{{__('Description')}}</label>
+                                <textarea name="description" class="form-control summernote @error('description') is-invalid @enderror">{{ $treatment->description }}</textarea>
+                                @error('description')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 

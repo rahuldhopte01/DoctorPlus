@@ -11,7 +11,7 @@ class Treatments extends Model
 
     protected $table = 'treatments';
 
-    protected $fillable = ['name', 'image', 'status'];
+    protected $fillable = ['name', 'description', 'image', 'status'];
 
     protected $appends = ['fullImage'];
 
