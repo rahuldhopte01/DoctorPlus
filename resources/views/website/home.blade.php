@@ -230,6 +230,85 @@
         @endif
     </div> -->
 
+    {{-- Health Categories Section --}}
+    <div class="w-full bg-[#f0fdf4] py-20 flex justify-center"> {{-- Added background wrapper and flex centering --}}
+         <div class="xl:w-3/4 mx-5 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 font-fira-sans justify-items-center"> {{-- Centered grid items --}}
+            {{-- Card 1: Männergesundheit --}}
+            <div class="relative w-full rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[80px] p-8 overflow-hidden h-[450px] flex flex-col justify-between" style="background-color: #0b2c4e;">
+                <div class="z-10 relative w-2/3"> {{-- Restricted width for content --}}
+                    <h3 class="text-xl font-bold mb-4 text-left" style="color: #2bd490;">Männergesundheit</h3>
+                    <ul class="text-white space-y-2 text-sm font-medium text-left">
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Erektionsstörungen <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Medizinisches Cannabis <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Vorzeitiger Samenerguss <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Haarausfall <span class="ml-1 text-xs">></span></a></li>
+                    </ul>
+                    <div class="text-left">
+                        <a href="javascript:void(0)" class="text-sm mt-4 inline-block hover:underline font-bold" style="color: #107e63;">Mehr zeigen ></a>
+                    </div>
+                </div>
+                <div class="absolute bottom-0 right-0 translate-y-4 translate-x-4"> {{-- Image positioned bottom-right --}}
+                     <img src="https://placehold.co/250x300/transparent/png" class="h-56 w-auto object-contain object-bottom opacity-50 bg-[#163a5c] rounded-tl-[50px] mask-image-diagonal" style="mask-image: linear-gradient(to top left, black 60%, transparent 100%);" alt="Männergesundheit">
+                </div>
+            </div>
+
+            {{-- Card 2: Frauengesundheit --}}
+            <div class="relative w-full rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[80px] p-8 overflow-hidden h-[450px] flex flex-col justify-between" style="background-color: #0b2c4e;">
+                <div class="z-10 relative w-2/3">
+                    <h3 class="text-xl font-bold mb-4 text-left" style="color: #2bd490;">Frauengesundheit</h3>
+                     <ul class="text-white space-y-2 text-sm font-medium text-left">
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Verhütung <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Medizinisches Cannabis <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Gesichtsbehaarung <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Vaginale Beschwerden <span class="ml-1 text-xs">></span></a></li>
+                    </ul>
+                    <div class="text-left">
+                        <a href="javascript:void(0)" class="text-sm mt-4 inline-block hover:underline font-bold" style="color: #107e63;">Mehr zeigen ></a>
+                    </div>
+                </div>
+                 <div class="absolute bottom-0 right-0 translate-y-4 translate-x-4">
+                     <img src="https://placehold.co/250x300/transparent/png" class="h-56 w-auto object-contain object-bottom opacity-50 bg-[#163a5c] rounded-tl-[50px]" style="mask-image: linear-gradient(to top left, black 60%, transparent 100%);" alt="Frauengesundheit">
+                </div>
+            </div>
+
+            {{-- Card 3: Sexuelle Gesundheit --}}
+            <div class="relative w-full rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[80px] p-8 overflow-hidden h-[450px] flex flex-col justify-between" style="background-color: #0b2c4e;">
+                <div class="z-10 relative w-2/3">
+                    <h3 class="text-xl font-bold mb-4 text-left" style="color: #2bd490;">Sexuelle Gesundheit</h3>
+                     <ul class="text-white space-y-2 text-sm font-medium text-left">
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Chlamydien <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Gonorrhoe <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Genitalwarzen <span class="ml-1 text-xs">></span></a></li>
+                    </ul>
+                    <div class="text-left">
+                        <a href="javascript:void(0)" class="text-sm mt-4 inline-block hover:underline font-bold" style="color: #107e63;">Mehr zeigen ></a>
+                    </div>
+                </div>
+                 <div class="absolute bottom-0 right-0 translate-y-4 translate-x-4">
+                     <img src="https://placehold.co/250x300/transparent/png" class="h-56 w-auto object-contain object-bottom opacity-50 bg-[#163a5c] rounded-tl-[50px]" style="mask-image: linear-gradient(to top left, black 60%, transparent 100%);" alt="Sexuelle Gesundheit">
+                </div>
+            </div>
+
+            {{-- Card 4: Allgemeine Medizin --}}
+            <div class="relative w-full rounded-tl-3xl rounded-tr-3xl rounded-bl-3xl rounded-br-[80px] p-8 overflow-hidden h-[450px] flex flex-col justify-between" style="background-color: #0b2c4e;">
+                <div class="z-10 relative w-2/3">
+                    <h3 class="text-xl font-bold mb-4 text-left" style="color: #2bd490;">Allgemeine Medizin</h3>
+                     <ul class="text-white space-y-2 text-sm font-medium text-left">
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Übergewicht <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Asthma <span class="ml-1 text-xs">></span></a></li>
+                        <li><a href="javascript:void(0)" class="hover:text-green-400 flex items-center">Diabetes Typ 2 <span class="ml-1 text-xs">></span></a></li>
+                    </ul>
+                    <div class="text-left">
+                        <a href="javascript:void(0)" class="text-sm mt-4 inline-block hover:underline font-bold" style="color: #107e63;">Mehr zeigen ></a>
+                    </div>
+                </div>
+                 <div class="absolute bottom-0 right-0 translate-y-4 translate-x-4">
+                     <img src="https://placehold.co/250x300/transparent/png" class="h-56 w-auto object-contain object-bottom opacity-50 bg-[#163a5c] rounded-tl-[50px]" style="mask-image: linear-gradient(to top left, black 60%, transparent 100%);" alt="Allgemeine Medizin">
+                </div>
+            </div>
+         </div>
+    </div>
+
     {{-- Browse by Specialities--}}
     <div class="p-5 w-full mb-10" style="background-color: aliceblue;">
         <div class="xl:w-3/4 mx-auto pt-20 pb-20">
