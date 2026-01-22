@@ -91,7 +91,8 @@ class DoctorController extends Controller
             'timeslot' => 'bail|nullable',
             'start_time' => 'bail|nullable',
             'end_time' => 'bail|nullable|after:start_time',
-            'hospital_id' => 'bail|nullable',
+            'hospital_id' => 'bail|nullable|exists:hospital,id',
+            'doctor_role' => 'bail|required|in:ADMIN_DOCTOR,SUB_DOCTOR',
             'desc' => 'nullable',
             'appointment_fees' => 'nullable|numeric',
             'experience' => 'bail|nullable|numeric',
@@ -163,7 +164,8 @@ class DoctorController extends Controller
         $data['status'] = 1;
         $data['subscription_status'] = 1;
         $data['is_filled'] = 1;
-        $data['hospital_id'] = !empty($request->hospital_id) ? implode(',', $request->hospital_id) : null;
+        $data['hospital_id'] = $request->hospital_id ?? null;
+        $data['doctor_role'] = $request->doctor_role ?? 'SUB_DOCTOR';
         if ($data['commission_amount'] == '') {
             $data['commission_amount'] = null;
         }
@@ -319,7 +321,12 @@ class DoctorController extends Controller
         $hospitals = Hospital::get();
         $doctor['start_time'] = Carbon::parse($doctor['start_time'])->format('H:i');
         $doctor['end_time'] = Carbon::parse($doctor['end_time'])->format('H:i');
-        $doctor['hospital_id'] = explode(',', $doctor->hospital_id);
+        // Handle hospital_id - could be string (comma-separated) or integer
+        if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
+            $doctor['hospital_id'] = explode(',', $doctor->hospital_id)[0]; // Take first one
+        } else {
+            $doctor['hospital_id'] = $doctor->hospital_id;
+        }
         
         // Get selected treatment and category IDs for the view
         $doctor['selected_treatment_ids'] = $doctor->treatments->pluck('id')->toArray();
@@ -349,7 +356,8 @@ class DoctorController extends Controller
             'timeslot' => 'bail|nullable',
             'start_time' => 'bail|nullable',
             'end_time' => 'bail|nullable|after:start_time',
-            'hospital_id' => 'bail|nullable',
+            'hospital_id' => 'bail|nullable|exists:hospital,id',
+            'doctor_role' => 'bail|required|in:ADMIN_DOCTOR,SUB_DOCTOR',
             'desc' => 'nullable',
             'appointment_fees' => 'nullable|numeric',
             'experience' => 'bail|nullable|numeric',
@@ -387,7 +395,8 @@ class DoctorController extends Controller
         $data['certificate'] = json_encode($certificate);
         $data['is_filled'] = 1;
         $data['custom_timeslot'] = $request->custom_time == '' ? null : $request->custom_time;
-        $data['hospital_id'] = !empty($request->hospital_id) ? implode(',', $request->hospital_id) : $doctor->hospital_id;
+        $data['hospital_id'] = $request->hospital_id ?? $doctor->hospital_id;
+        $data['doctor_role'] = $request->doctor_role ?? $doctor->doctor_role ?? 'SUB_DOCTOR';
         if ($request->based_on == 'subscription') {
             if (! DoctorSubscription::where('doctor_id', $id)->exists()) {
                 $subscription = Subscription::where('name', 'free')->first();

@@ -27,66 +27,148 @@ class QuestionnaireReviewController extends Controller
     
     /**
      * List all pending questionnaire submissions for doctor review.
+     * 
+     * Visibility Rules:
+     * - SUB_DOCTOR: Sees questionnaires where:
+     *   - Hospital matches (or NULL for legacy data)
+     *   - Category is in doctor's assigned categories
+     *   - Treatment (through category) is in doctor's assigned treatments
+     *   - Status is "pending" (unlocked, not yet reviewed) OR status is "IN_REVIEW" (any sub doctor in same hospital is reviewing it)
+     *   - NOTE: Approved/rejected questionnaires are only visible to the reviewing doctor, not other sub doctors
+     *   - NOTE: When a questionnaire is IN_REVIEW, ALL sub doctors in the same hospital can see it
+     * - ADMIN_DOCTOR: Sees all questionnaires in their hospital (regardless of status or assignment)
      */
     public function index()
     {
-        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+        $doctor = Doctor::where('user_id', auth()->user()->id)
+            ->with(['hospital', 'categories', 'treatments'])
+            ->first();
         
         if (!$doctor) {
             return redirect('doctor_home')->with('error', __('Doctor profile not found'));
         }
         
+        if (!$doctor->hospital_id) {
+            return redirect('doctor_home')->with('error', __('Doctor is not assigned to a hospital'));
+        }
+        
         $submissions = collect([]);
         
-        if ($doctor->category_id) {
-            // Get all questionnaire answers (pending, approved, rejected) for this doctor's category
-            $answers = QuestionnaireAnswer::where('category_id', $doctor->category_id)
-                ->whereNull('appointment_id')
-                ->whereIn('status', ['pending', 'under_review', 'approved', 'rejected'])
-                ->with(['user', 'category', 'questionnaire', 'question.section'])
-                ->orderBy('submitted_at', 'desc')
-                ->get();
+        // Build base query - no appointment_id, valid statuses
+        $baseQuery = QuestionnaireAnswer::whereNull('questionnaire_answers.appointment_id')
+            ->whereIn('questionnaire_answers.status', ['pending', 'under_review', 'IN_REVIEW', 'approved', 'rejected', 'REVIEW_COMPLETED'])
+            ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor']);
+        
+        // Apply role-based visibility
+        if ($doctor->isSubDoctor()) {
+            // SUB_DOCTOR: Must match category AND treatment assignments
+            // Get doctor's assigned category IDs and treatment IDs
+            $doctorCategoryIds = $doctor->categories->pluck('id')->toArray();
+            $doctorTreatmentIds = $doctor->treatments->pluck('id')->toArray();
             
-            // Group by user_id, category_id, questionnaire_id, and submitted_at (grouping key)
-            $submissions = $answers->groupBy(function($answer) {
-                $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
-                return $answer->user_id . '_' . $answer->category_id . '_' . $answer->questionnaire_id . '_' . $submittedAt;
-            })
-            ->map(function($group) {
-                $first = $group->first();
-                return [
-                    'user' => $first->user,
-                    'category' => $first->category,
-                    'questionnaire' => $first->questionnaire,
-                    'status' => $first->status,
-                    'submitted_at' => $first->submitted_at ?? $first->created_at,
-                    'answers' => $group->keyBy('question_id'),
-                    'flagged_count' => $group->where('is_flagged', true)->count(),
-                ];
-            })
-            ->values();
+            if (empty($doctorCategoryIds) || empty($doctorTreatmentIds)) {
+                // Doctor must have BOTH category and treatment assignments to see questionnaires
+                $answers = collect([]);
+            } else {
+                // Filter by category and treatment assignments
+                // Use join with category table to check treatment_id efficiently
+                $baseQuery->join('category', 'questionnaire_answers.category_id', '=', 'category.id')
+                    ->where(function($query) use ($doctor, $doctorCategoryIds, $doctorTreatmentIds) {
+                        // Show if already assigned to this doctor (they're reviewing it) - regardless of status
+                        $query->where('questionnaire_answers.reviewing_doctor_id', $doctor->id)
+                            ->orWhere(function($q) use ($doctor, $doctorCategoryIds, $doctorTreatmentIds) {
+                                // OR if hospital matches AND:
+                                // - Status is pending (unlocked) AND matches category/treatment
+                                // - OR Status is IN_REVIEW (any sub doctor in same hospital is reviewing - no category/treatment requirement)
+                                $q->where(function($hospitalQuery) use ($doctor) {
+                                    // Hospital must match OR be NULL (for legacy data)
+                                    $hospitalQuery->where('questionnaire_answers.hospital_id', $doctor->hospital_id)
+                                        ->orWhereNull('questionnaire_answers.hospital_id');
+                                })
+                                ->where(function($statusQuery) use ($doctor, $doctorCategoryIds, $doctorTreatmentIds) {
+                                    // Pending status: Must match category AND treatment
+                                    $statusQuery->where(function($pendingQuery) use ($doctorCategoryIds, $doctorTreatmentIds) {
+                                        $pendingQuery->where('questionnaire_answers.status', 'pending')
+                                            ->whereNull('questionnaire_answers.reviewing_doctor_id')
+                                            ->whereIn('questionnaire_answers.category_id', $doctorCategoryIds)
+                                            ->whereIn('category.treatment_id', $doctorTreatmentIds);
+                                    })
+                                    // IN_REVIEW status: All sub doctors in same hospital can see it (no category/treatment requirement)
+                                    ->orWhere(function($inReviewQuery) use ($doctor) {
+                                        $inReviewQuery->where('questionnaire_answers.status', 'IN_REVIEW')
+                                            ->where('questionnaire_answers.hospital_id', $doctor->hospital_id)
+                                            ->whereNotNull('questionnaire_answers.reviewing_doctor_id');
+                                    });
+                                });
+                            });
+                    })
+                    ->select('questionnaire_answers.*') // Select only questionnaire_answers columns
+                    ->distinct(); // Avoid duplicates from join
+                
+                $answers = $baseQuery->orderBy('questionnaire_answers.submitted_at', 'desc')->get();
+            }
+        } else {
+            // ADMIN_DOCTOR: See all questionnaires in hospital (or NULL hospital_id for legacy)
+            $baseQuery->where(function($query) use ($doctor) {
+                $query->where('questionnaire_answers.hospital_id', $doctor->hospital_id)
+                    ->orWhereNull('questionnaire_answers.hospital_id');
+            });
+            $answers = $baseQuery->orderBy('questionnaire_answers.submitted_at', 'desc')->get();
         }
+        
+        // Group by user_id, category_id, questionnaire_id, and submitted_at (grouping key)
+        $submissions = $answers->groupBy(function($answer) {
+            $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
+            return $answer->user_id . '_' . $answer->category_id . '_' . $answer->questionnaire_id . '_' . $submittedAt;
+        })
+        ->map(function($group) use ($doctor) {
+            $first = $group->first();
+            $isLocked = $first->isLocked();
+            $isLockedByMe = $first->isLockedBy($doctor->id);
+            $canEdit = $doctor->isAdminDoctor() ? false : $isLockedByMe; // Admin can't edit, sub-doctor can only edit if locked by them
+            
+            return [
+                'user' => $first->user,
+                'category' => $first->category,
+                'questionnaire' => $first->questionnaire,
+                'status' => $first->status,
+                'submitted_at' => $first->submitted_at ?? $first->created_at,
+                'answers' => $group->keyBy('question_id'),
+                'flagged_count' => $group->where('is_flagged', true)->count(),
+                'is_locked' => $isLocked,
+                'is_locked_by_me' => $isLockedByMe,
+                'reviewing_doctor' => $first->reviewingDoctor,
+                'can_edit' => $canEdit,
+            ];
+        })
+        ->values();
         
         return view('doctor.questionnaire.index', compact('submissions', 'doctor'));
     }
     
     /**
      * Show questionnaire answers for review (without appointment).
+     * 
+     * Locks the questionnaire when opened by a sub-doctor.
+     * Admin doctors can view but not edit locked questionnaires.
      */
     public function showSubmission($userId, $categoryId, $questionnaireId)
     {
-        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+        $doctor = Doctor::where('user_id', auth()->user()->id)
+            ->with(['hospital', 'categories', 'treatments'])
+            ->first();
         
-        if (!$doctor || $doctor->category_id != $categoryId) {
-            abort(403, 'Unauthorized access');
+        if (!$doctor || !$doctor->hospital_id) {
+            abort(403, 'Unauthorized access - Doctor not assigned to hospital');
         }
         
-        // Get all answers for this submission
+        // Get all answers for this submission - must be from same hospital
         $answers = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
+            ->where('hospital_id', $doctor->hospital_id) // Hospital-scoped
             ->whereNull('appointment_id')
-            ->with(['user', 'category', 'questionnaire', 'question.section'])
+            ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
             ->orderBy('question_id')
             ->get();
         
@@ -95,8 +177,74 @@ class QuestionnaireReviewController extends Controller
         }
         
         $firstAnswer = $answers->first();
+        $questionnaireCategory = $firstAnswer->category;
+        $questionnaireTreatment = $questionnaireCategory ? $questionnaireCategory->treatment : null;
+        
+        // For SUB_DOCTOR: Validate category and treatment assignments
+        if ($doctor->isSubDoctor()) {
+            $doctorCategoryIds = $doctor->categories->pluck('id')->toArray();
+            $doctorTreatmentIds = $doctor->treatments->pluck('id')->toArray();
+            
+            // Check if doctor is assigned to this category
+            if (!in_array($categoryId, $doctorCategoryIds)) {
+                return redirect()->route('doctor.questionnaire.index')
+                    ->with('error', __('You are not assigned to this category'));
+            }
+            
+            // Check if doctor is assigned to this treatment (through category)
+            if ($questionnaireTreatment && !in_array($questionnaireTreatment->id, $doctorTreatmentIds)) {
+                return redirect()->route('doctor.questionnaire.index')
+                    ->with('error', __('You are not assigned to this treatment'));
+            }
+        }
+        
+        // Check if locked by another doctor
+        if ($firstAnswer->isLocked() && !$firstAnswer->isLockedBy($doctor->id)) {
+            if ($doctor->isSubDoctor()) {
+                // Sub-doctor can view questionnaires under review by other sub doctors in same hospital
+                // But cannot edit them (read-only access)
+                // Continue to view mode (read-only)
+            } else {
+                // Admin can view but not edit
+                // Continue to view mode
+            }
+        }
+        
+        // Lock mechanism: If sub-doctor opens an unlocked questionnaire, lock it
+        if ($doctor->isSubDoctor() && !$firstAnswer->isLocked()) {
+            // Lock all answers in this submission
+            DB::transaction(function() use ($answers, $doctor, $userId, $categoryId, $questionnaireId) {
+                QuestionnaireAnswer::where('user_id', $userId)
+                    ->where('category_id', $categoryId)
+                    ->where('questionnaire_id', $questionnaireId)
+                    ->whereNull('appointment_id')
+                    ->update([
+                        'status' => 'IN_REVIEW',
+                        'reviewing_doctor_id' => $doctor->id,
+                        'hospital_id' => $doctor->hospital_id, // Ensure hospital_id is set
+                    ]);
+            });
+            
+            // Reload answers to get updated status
+            $answers = QuestionnaireAnswer::where('user_id', $userId)
+                ->where('category_id', $categoryId)
+                ->where('questionnaire_id', $questionnaireId)
+                ->whereNull('appointment_id')
+                ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
+                ->orderBy('question_id')
+                ->get();
+            
+            $firstAnswer = $answers->first();
+        }
+        
         $groupedAnswers = $this->groupAnswersBySection($answers);
         $hasFlaggedAnswers = $answers->where('is_flagged', true)->isNotEmpty();
+        
+        // Determine if doctor can edit:
+        // - Sub-doctor can only edit if they locked it (reviewing_doctor_id = their id) or if unlocked
+        // - If another sub doctor is reviewing it, this doctor can view but not edit (read-only)
+        // - Admin doctor cannot edit (view-only)
+        $canEdit = $doctor->isSubDoctor() && ($firstAnswer->isLockedBy($doctor->id) || !$firstAnswer->isLocked());
         
         // Get prescription for this questionnaire if it exists
         $prescription = Prescription::where('user_id', $userId)
@@ -105,31 +253,75 @@ class QuestionnaireReviewController extends Controller
             ->where('status', '!=', 'expired')
             ->first();
         
-        return view('doctor.questionnaire.review_submission', compact('answers', 'firstAnswer', 'groupedAnswers', 'hasFlaggedAnswers', 'doctor', 'prescription'));
+        return view('doctor.questionnaire.review_submission', compact('answers', 'firstAnswer', 'groupedAnswers', 'hasFlaggedAnswers', 'doctor', 'prescription', 'canEdit'));
     }
     
     /**
      * Update status of questionnaire submission.
+     * 
+     * When status is set to approved/rejected, unlock the questionnaire (REVIEW_COMPLETED).
      */
     public function updateStatus(Request $request, $userId, $categoryId, $questionnaireId)
     {
         $request->validate([
-            'status' => 'required|in:pending,under_review,approved,rejected',
+            'status' => 'required|in:pending,under_review,IN_REVIEW,approved,rejected,REVIEW_COMPLETED',
         ]);
         
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
         
-        if (!$doctor || $doctor->category_id != $categoryId) {
+        if (!$doctor || !$doctor->hospital_id) {
             abort(403, 'Unauthorized access');
         }
         
-        QuestionnaireAnswer::where('user_id', $userId)
+        // Get the submission to check permissions
+        $firstAnswer = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
+            ->where('hospital_id', $doctor->hospital_id) // Hospital-scoped
             ->whereNull('appointment_id')
-            ->update(['status' => $request->status]);
+            ->first();
         
-        return redirect()->back()->with('success', __('Status updated successfully'));
+        if (!$firstAnswer) {
+            abort(404, 'Questionnaire submission not found');
+        }
+        
+        // Check permissions
+        if ($doctor->isSubDoctor()) {
+            // Sub-doctor can only update if they locked it
+            if (!$firstAnswer->isLockedBy($doctor->id)) {
+                abort(403, 'You can only update questionnaires you are reviewing');
+            }
+        } else {
+            // Admin doctor cannot edit locked questionnaires (only view)
+            if ($firstAnswer->isLocked() && !$firstAnswer->isLockedBy($doctor->id)) {
+                abort(403, 'Cannot edit questionnaire being reviewed by another doctor');
+            }
+        }
+        
+        // Determine if we should unlock
+        $shouldUnlock = in_array($request->status, ['approved', 'rejected', 'REVIEW_COMPLETED']);
+        
+        DB::transaction(function() use ($userId, $categoryId, $questionnaireId, $request, $shouldUnlock, $doctor) {
+            $updateData = ['status' => $request->status];
+            
+            if ($shouldUnlock) {
+                $updateData['reviewing_doctor_id'] = null; // Unlock if completed
+            }
+            // If not unlocking, keep the current reviewing_doctor_id (don't update it)
+            
+            QuestionnaireAnswer::where('user_id', $userId)
+                ->where('category_id', $categoryId)
+                ->where('questionnaire_id', $questionnaireId)
+                ->whereNull('appointment_id')
+                ->update($updateData);
+        });
+        
+        $message = __('Status updated successfully');
+        if ($shouldUnlock) {
+            $message = __('Review completed and questionnaire unlocked');
+        }
+        
+        return redirect()->back()->with('success', $message);
     }
     
     /**
@@ -139,19 +331,25 @@ class QuestionnaireReviewController extends Controller
     {
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
         
-        if (!$doctor || $doctor->category_id != $categoryId) {
-            abort(403, 'Unauthorized access');
+        if (!$doctor || !$doctor->hospital_id) {
+            abort(403, 'Unauthorized access - Doctor not assigned to hospital');
         }
         
-        // Get the questionnaire answers to verify status
+        // Get the questionnaire answers to verify status - hospital-scoped
         $answers = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
+            ->where('hospital_id', $doctor->hospital_id) // Hospital-scoped
             ->whereNull('appointment_id')
             ->with(['user', 'questionnaire'])
             ->first();
             
-        if (!$answers || $answers->status !== 'approved') {
+        if (!$answers) {
+            return redirect()->route('doctor.questionnaire.index')
+                ->with('error', __('Questionnaire submission not found'));
+        }
+        
+        if ($answers->status !== 'approved') {
             return redirect()->route('doctor.questionnaire.index')
                 ->with('error', __('Questionnaire must be approved before creating prescription'));
         }
@@ -189,18 +387,24 @@ class QuestionnaireReviewController extends Controller
         
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
         
-        if (!$doctor || $doctor->category_id != $categoryId) {
-            abort(403, 'Unauthorized access');
+        if (!$doctor || !$doctor->hospital_id) {
+            abort(403, 'Unauthorized access - Doctor not assigned to hospital');
         }
         
-        // Verify questionnaire is approved
+        // Verify questionnaire is approved - hospital-scoped
         $answers = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
+            ->where('hospital_id', $doctor->hospital_id) // Hospital-scoped
             ->whereNull('appointment_id')
             ->first();
             
-        if (!$answers || $answers->status !== 'approved') {
+        if (!$answers) {
+            return redirect()->route('doctor.questionnaire.index')
+                ->with('error', __('Questionnaire submission not found'));
+        }
+        
+        if ($answers->status !== 'approved') {
             return redirect()->route('doctor.questionnaire.index')
                 ->with('error', __('Questionnaire must be approved before creating prescription'));
         }

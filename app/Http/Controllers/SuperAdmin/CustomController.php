@@ -543,14 +543,24 @@ class CustomController extends Controller
     public function getHospital($doctor_id)
     {
         $doctor = Doctor::find($doctor_id);
-        if (isset($doctor->hospital_id)) {
+        if (isset($doctor->hospital_id) && $doctor->hospital_id !== null) {
+            // Handle both old format (comma-separated string) and new format (single integer)
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
+                // Legacy: comma-separated string
             $hospital_ids = explode(',', $doctor->hospital_id);
             $hospital = [];
             foreach ($hospital_ids as $hospital_id) {
-                array_push($hospital, Hospital::find($hospital_id));
+                    $h = Hospital::find($hospital_id);
+                    if ($h) {
+                        array_push($hospital, $h);
             }
-
+                }
             return $hospital;
+            } else {
+                // New format: single integer
+                $h = Hospital::find($doctor->hospital_id);
+                return $h ? [$h] : [];
+            }
         }
 
         return [];

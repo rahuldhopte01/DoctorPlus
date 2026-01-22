@@ -36,10 +36,12 @@
                             <div class="flex flex-col justify-center">
                                 <div class="pr-5">
                                     <p class="font-fira-sans font-normal text-sm leading-4 text-gray text-left pt-5">{{ $doctor['treatment']['name'] }}</p>
+                                    @if(isset($doctor['hospital']) && is_array($doctor['hospital']) && count($doctor['hospital']) > 0)
                                     @foreach ($doctor['hospital'] as $hospital)
                                     <p class="font-fira-sans font-medium text-base leading-5 text-black-dark text-left pt-3">{{ $hospital['name'] }}</p>
                                     <p class="font-fira-sans font-normal text-sm leading-4 text-gray text-left pt-2"><span class="mr-2"><i class="fa-solid fa-location-dot"></i></span class="ml-2">{{ $hospital['address'] }}</p>
                                     @endforeach
+                                    @endif
                                     <h1 class="font-fira-sans font-semibold text-xl text-primary leading-7 pt-5 xmd:pt-2 sm:pt-1">{{ $currency }}{{ $doctor['appointment_fees'] }}</h1>
                                 </div>
                                 <div class="flex mt-5 mb-2">

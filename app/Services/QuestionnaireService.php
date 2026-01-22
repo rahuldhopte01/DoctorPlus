@@ -231,6 +231,42 @@ class QuestionnaireService
             // Evaluate flags
             $flagResult = $question->evaluateFlag($answer);
 
+            // Determine hospital_id: Find first doctor handling this category with a hospital
+            // Prefer SUB_DOCTOR over ADMIN_DOCTOR to assign to the right hospital
+            $hospitalId = null;
+            if (Schema::hasColumn('doctor_category', 'category_id')) {
+                // First try to find a SUB_DOCTOR with this category
+                $doctor = \App\Models\Doctor::whereHas('categories', function($query) use ($categoryId) {
+                    $query->where('category_id', $categoryId);
+                })
+                ->where('doctor_role', 'SUB_DOCTOR')
+                ->whereNotNull('hospital_id')
+                ->first();
+                
+                // If no SUB_DOCTOR found, try ADMIN_DOCTOR
+                if (!$doctor) {
+                    $doctor = \App\Models\Doctor::whereHas('categories', function($query) use ($categoryId) {
+                        $query->where('category_id', $categoryId);
+                    })
+                    ->where('doctor_role', 'ADMIN_DOCTOR')
+                    ->whereNotNull('hospital_id')
+                    ->first();
+                }
+                
+                // If still no doctor, try any doctor with this category
+                if (!$doctor) {
+                    $doctor = \App\Models\Doctor::whereHas('categories', function($query) use ($categoryId) {
+                        $query->where('category_id', $categoryId);
+                    })
+                    ->whereNotNull('hospital_id')
+                    ->first();
+                }
+                
+                if ($doctor) {
+                    $hospitalId = $doctor->hospital_id;
+                }
+            }
+
             QuestionnaireAnswer::create([
                 'appointment_id' => null, // Will be set when appointment is created
                 'user_id' => $userId,
@@ -244,6 +280,7 @@ class QuestionnaireService
                 'flag_reason' => $flagResult['flag_message'] ?? null,
                 'status' => $status,
                 'submitted_at' => $submittedAt,
+                'hospital_id' => $hospitalId, // Set hospital_id for hospital scoping
             ]);
         }
     }

@@ -81,9 +81,10 @@
                         </div>
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('Hospital')}}</label>
-                            <select name="hospital_id[]" class="select2 @error('hospital_id') is-invalid @enderror" multiple>
+                            <select name="hospital_id" class="form-control @error('hospital_id') is-invalid @enderror">
+                                <option value="">{{__('Select Hospital')}}</option>
                                 @foreach ($hospitals as $hospital)
-                                    <option value="{{ $hospital->id }}" {{in_array($hospital->id, old("hospital_id") ?: []) ? "selected" : ""}}>{{ $hospital->name }}</option>
+                                    <option value="{{ $hospital->id }}" {{old('hospital_id') == $hospital->id ? "selected" : ""}}>{{ $hospital->name }}</option>
                                 @endforeach
                             </select>
                             @error('hospital_id')
@@ -91,6 +92,19 @@
                                     {{ $message }}
                                 </div>
                             @enderror
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">{{__('Doctor Role')}}</label>
+                            <select name="doctor_role" class="form-control @error('doctor_role') is-invalid @enderror" required>
+                                <option value="SUB_DOCTOR" {{old('doctor_role', 'SUB_DOCTOR') == 'SUB_DOCTOR' ? 'selected' : ''}}>{{__('Sub Doctor')}}</option>
+                                <option value="ADMIN_DOCTOR" {{old('doctor_role') == 'ADMIN_DOCTOR' ? 'selected' : ''}}>{{__('Admin Doctor')}}</option>
+                            </select>
+                            @error('doctor_role')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                            <small class="form-text text-muted">{{__('Admin Doctor can see all questionnaires in the hospital. Sub Doctor can only see assigned questionnaires.')}}</small>
                         </div>
                     </div>
 

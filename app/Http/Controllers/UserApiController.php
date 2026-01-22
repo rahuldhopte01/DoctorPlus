@@ -272,7 +272,18 @@ class UserApiController extends Controller
         $radius = Setting::first()->radius;
         $hospitals = Hospital::whereStatus(1)->GetByDistance($request->lat, $request->lang, $radius)->pluck('id')->toArray();
 
+        // Handle hospital_id - could be single integer or comma-separated string (legacy)
+        $h = [];
+        if ($doctor->hospital_id !== null) {
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
+                // Legacy: comma-separated string
         $h = explode(',', $doctor->hospital_id);
+            } else {
+                // New format: single integer
+                $h = [$doctor->hospital_id];
+            }
+        }
+        
         if (! empty(array_intersect($hospitals, $h))) {
             $hss = array_intersect($hospitals, $h);
             $array = [];
@@ -1039,7 +1050,18 @@ class UserApiController extends Controller
         $radius = Setting::first()->radius;
         $hospitals = Hospital::whereStatus(1)->GetByDistance($lat, $lang, $radius)->pluck('id')->toArray();
         foreach ($doctor as $d) {
+            // Handle hospital_id - could be single integer or comma-separated string (legacy)
+            $h = [];
+            if ($d->hospital_id !== null) {
+                if (is_string($d->hospital_id) && strpos($d->hospital_id, ',') !== false) {
+                    // Legacy: comma-separated string
             $h = explode(',', $d->hospital_id);
+                } else {
+                    // New format: single integer
+                    $h = [$d->hospital_id];
+                }
+            }
+            
             if (! empty(array_intersect($hospitals, $h))) {
                 $hss = array_intersect($hospitals, $h);
                 $array = [];

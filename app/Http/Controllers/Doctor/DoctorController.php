@@ -221,7 +221,16 @@ class DoctorController extends Controller
         $hospitals = Hospital::whereStatus(1)->get();
         $doctor['start_time'] = Carbon::parse($doctor['start_time'])->format('H:i');
         $doctor['end_time'] = Carbon::parse($doctor['end_time'])->format('H:i');
+        // Handle hospital_id - could be single integer or comma-separated string (legacy)
+        if ($doctor->hospital_id !== null) {
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
         $doctor['hospital_id'] = explode(',', $doctor->hospital_id);
+            } else {
+                $doctor['hospital_id'] = [$doctor->hospital_id];
+            }
+        } else {
+            $doctor['hospital_id'] = [];
+        }
         $languages = Language::whereStatus(1)->get();
         
         // Get selected treatment and category IDs for the view

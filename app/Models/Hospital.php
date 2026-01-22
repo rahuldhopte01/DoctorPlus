@@ -19,6 +19,22 @@ class Hospital extends Model
         return $this->hasMany('App\Models\Doctor');
     }
 
+    /**
+     * Alias for doctor() - plural form.
+     */
+    public function doctors()
+    {
+        return $this->hasMany('App\Models\Doctor');
+    }
+
+    /**
+     * Get questionnaire answers for this hospital.
+     */
+    public function questionnaireAnswers()
+    {
+        return $this->hasMany('App\Models\QuestionnaireAnswer', 'hospital_id');
+    }
+
     public function scopeGetByDistance($query, $lat, $lng, $radius)
     {
         if ($lat !== null && $lng !== null) {

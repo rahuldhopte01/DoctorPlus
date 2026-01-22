@@ -336,8 +336,24 @@ class AppointmentController extends Controller
     {
         $patient = User::where('id', $id)->first();
         $doctor = Doctor::with(['categories', 'expertise'])->where('user_id', auth()->user()->id)->first();
+        // Handle hospital_id - could be single integer or comma-separated string (legacy)
+        $hosp = [];
+        if ($doctor->hospital_id !== null) {
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
+                // Handle hospital_id - could be single integer or comma-separated string (legacy)
+        $hosp = [];
+        if ($doctor->hospital_id !== null) {
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
         $hosp = explode(',', $doctor->hospital_id);
-        $hospitals = Hospital::whereIn('id', $hosp)->get();
+            } else {
+                $hosp = [$doctor->hospital_id];
+            }
+        }
+            } else {
+                $hosp = [$doctor->hospital_id];
+            }
+        }
+        $hospitals = !empty($hosp) ? Hospital::whereIn('id', $hosp)->get() : collect([]);
         $patient_addressess = UserAddress::where('user_id', $id)->get();
         $date = Carbon::now(env('timezone'))->format('Y-m-d');
         $timeslots = (new CustomController)->timeSlot($doctor->id, $date);
@@ -407,7 +423,15 @@ class AppointmentController extends Controller
         }
         $patient = User::where('id', $appointment->user_id)->first();
         $doctor = Doctor::where('id', $appointment->doctor_id)->first();
+        // Handle hospital_id - could be single integer or comma-separated string (legacy)
+        $hosp = [];
+        if ($doctor->hospital_id !== null) {
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
         $hosp = explode(',', $doctor->hospital_id);
+            } else {
+                $hosp = [$doctor->hospital_id];
+            }
+        }
         $hospitals = Hospital::whereIn('id', $hosp)->get();
         $patient_addressess = UserAddress::where('user_id', $appointment->user_id)->get();
         $date = $appointment->date;

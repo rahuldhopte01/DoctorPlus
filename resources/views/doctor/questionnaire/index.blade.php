@@ -48,14 +48,23 @@
                                     {{ $submission['submitted_at'] ? \Carbon\Carbon::parse($submission['submitted_at'])->format('M d, Y H:i') : 'N/A' }}
                                 </td>
                                 <td>
-                                    @if($submission['status'] === 'pending')
+                                    @php
+                                        $status = strtolower($submission['status'] ?? '');
+                                    @endphp
+                                    @if($status === 'pending')
                                         <span class="badge badge-warning">{{ __('Pending') }}</span>
-                                    @elseif($submission['status'] === 'under_review')
+                                    @elseif($status === 'under_review' || $status === 'in_review' || strtoupper($submission['status'] ?? '') === 'IN_REVIEW')
                                         <span class="badge badge-info">{{ __('Under Review') }}</span>
-                                    @elseif($submission['status'] === 'approved')
+                                    @elseif($status === 'approved')
                                         <span class="badge badge-success">{{ __('Approved') }}</span>
-                                    @elseif($submission['status'] === 'rejected')
+                                    @elseif($status === 'rejected')
                                         <span class="badge badge-danger">{{ __('Rejected') }}</span>
+                                    @elseif($status === 'review_completed' || strtoupper($submission['status'] ?? '') === 'REVIEW_COMPLETED')
+                                        <span class="badge badge-secondary">{{ __('Review Completed') }}</span>
+                                    @elseif(!empty($submission['status']))
+                                        <span class="badge badge-secondary">{{ ucfirst(str_replace('_', ' ', $submission['status'])) }}</span>
+                                    @else
+                                        <span class="badge badge-secondary">{{ __('Unknown') }}</span>
                                     @endif
                                 </td>
                                 <td>

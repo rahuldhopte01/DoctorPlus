@@ -59,7 +59,7 @@ class WebsiteController extends Controller
             return view('first_page');
         }
         $banners = Banner::get();
-        $doctors = Doctor::with('categories:id,name')->where([['status', 1], ['is_filled', 1], ['subscription_status', 1]])->get()->take(8);
+        $doctors = Doctor::with(['categories:id,name', 'expertise:id,name'])->where([['status', 1], ['is_filled', 1], ['subscription_status', 1]])->get()->take(8);
         $treatments = Treatments::whereStatus(1)->paginate(6);
         $setting = Setting::first();
         $reviews = Review::get();
