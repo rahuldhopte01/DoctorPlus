@@ -175,7 +175,9 @@ class UserApiController extends Controller
             'lat' => 'bail|required',
             'lang' => 'bail|required',
         ]);
-        $doctor = Doctor::with('treatment:id,name')->whereStatus(1)->where([['is_filled', 1], ['treatment_id', $treatment_id]])->whereSubscriptionStatus(1)->get(['id', 'status', 'image', 'name', 'treatment_id', 'hospital_id'])->makeHidden(['rate', 'review']);
+        $doctor = Doctor::with('treatments:id,name')->whereStatus(1)->where('is_filled', 1)->whereHas('treatments', function($query) use ($treatment_id) {
+            $query->where('treatments.id', $treatment_id);
+        })->whereSubscriptionStatus(1)->get(['id', 'status', 'image', 'name', 'hospital_id'])->makeHidden(['rate', 'review']);
         $data = $request->all();
         $doctors = $this->getNearDoctor($doctor, $data['lat'], $data['lang']);
         foreach ($doctors as $doctor) {
@@ -192,7 +194,7 @@ class UserApiController extends Controller
             'lat' => 'bail|required',
             'lang' => 'bail|required',
         ]);
-        $doctor = Doctor::with('treatment:id,name')->whereStatus(1)->where('is_filled', 1)->whereSubscriptionStatus(1)->get(['id', 'status', 'image', 'name', 'treatment_id', 'hospital_id'])->makeHidden(['rate', 'review']);
+        $doctor = Doctor::with('treatments:id,name')->whereStatus(1)->where('is_filled', 1)->whereSubscriptionStatus(1)->get(['id', 'status', 'image', 'name', 'hospital_id'])->makeHidden(['rate', 'review']);
         $data = $request->all();
         $doctors = $this->getNearDoctor($doctor, $data['lat'], $data['lang']);
         foreach ($doctors as $doctor) {
@@ -266,7 +268,7 @@ class UserApiController extends Controller
             'lat' => 'bail|required',
             'lang' => 'bail|required',
         ]);
-        $doctor = Doctor::with(['treatment:id,name', 'expertise:id,name'])->find($id)->makeHidden(['created_at', 'updated_at', 'timeslot', 'dob', 'gender', 'timeslot', 'since', 'status', 'based_on']);
+        $doctor = Doctor::with(['treatments:id,name', 'expertise:id,name'])->find($id)->makeHidden(['created_at', 'updated_at', 'timeslot', 'dob', 'gender', 'timeslot', 'since', 'status', 'based_on']);
         $radius = Setting::first()->radius;
         $hospitals = Hospital::whereStatus(1)->GetByDistance($request->lat, $request->lang, $radius)->pluck('id')->toArray();
 
@@ -513,7 +515,7 @@ class UserApiController extends Controller
                 $appointment['hospital'] = (object) [];
                 $appointment['hospital_id'] = 0;
             }
-            $appointment->doctor = Doctor::with(['treatment:id,name'])->where('id', $appointment->doctor_id)->first(['id', 'name', 'image', 'treatment_id'])->makeHidden(['rate', 'review']);
+            $appointment->doctor = Doctor::with(['treatments:id,name'])->where('id', $appointment->doctor_id)->first(['id', 'name', 'image'])->makeHidden(['rate', 'review']);
             $appointment->prescription = Prescription::where('appointment_id', $appointment->id)->exists();
             $appointment->timming = Carbon::parse($appointment['date'].' '.$appointment['time'])->setTimezone(env('timezone'));
             if ($appointment->timming > Carbon::now(env('timezone')) && $appointment->appointment_status == 'approve') {
@@ -538,7 +540,7 @@ class UserApiController extends Controller
     {
         (new CustomController)->cancel_max_order();
         $appointment = Appointment::find($id, 'id', 'date', 'time', 'patient_name', 'doctor_id');
-        $appointment->doctor = Doctor::with('treatment:id,name')->where('id', $appointment->doctor_id)->first(['id', 'name', 'image', 'treatment_id']);
+        $appointment->doctor = Doctor::with('treatments:id,name')->where('id', $appointment->doctor_id)->first(['id', 'name', 'image']);
         $appointment->prescription = Prescription::where('appointment_id', $id)->first();
         $appointment->prescription['pdfPath'] = url('prescription/upload/'.$appointment->prescription['pdf']);
 
@@ -925,7 +927,7 @@ class UserApiController extends Controller
     public function apiFaviroute()
     {
         $favourites = Faviroute::where('user_id', auth()->user()->id)->get(['doctor_id']);
-        $doctors = Doctor::with(['treatment:id,name'])->whereIn('id', $favourites)->get(['id', 'image', 'name', 'treatment_id'])->makeHidden(['created_at', 'updated_at', 'rate', 'review']);
+        $doctors = Doctor::with(['treatments:id,name'])->whereIn('id', $favourites)->get(['id', 'image', 'name'])->makeHidden(['created_at', 'updated_at', 'rate', 'review']);
 
         return response(['success' => true, 'data' => $doctors]);
     }

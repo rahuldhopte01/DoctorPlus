@@ -27,7 +27,7 @@ class QuestionnaireController extends Controller
      */
     public function show($doctorId)
     {
-        $doctor = Doctor::with('category')->findOrFail($doctorId);
+        $doctor = Doctor::with('categories')->findOrFail($doctorId);
         
         if (!$doctor->category) {
             return redirect()->back()->with('error', __('Doctor has no category assigned'));

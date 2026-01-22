@@ -125,7 +125,9 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         abort_if(Gate::denies('category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        if (Doctor::where('category_id', $id)->exists()) {
+        if (Doctor::whereHas('categories', function($query) use ($id) {
+            $query->where('category.id', $id);
+        })->exists()) {
             return response(['success' => false, 'msg' => 'This category is being used by one or more doctors!']);
         }
         $category = Category::find($id);

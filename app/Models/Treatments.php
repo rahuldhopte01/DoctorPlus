@@ -25,9 +25,15 @@ class Treatments extends Model
         return $this->hasOne('App\Models\Category');
     }
 
+    public function doctors()
+    {
+        return $this->belongsToMany('App\Models\Doctor', 'doctor_treatment', 'treatment_id', 'doctor_id');
+    }
+
+    // Keep backward compatibility
     public function doctor()
     {
-        return $this->hasMany('App\Models\Doctor');
+        return $this->belongsToMany('App\Models\Doctor', 'doctor_treatment', 'treatment_id', 'doctor_id');
     }
 
 }

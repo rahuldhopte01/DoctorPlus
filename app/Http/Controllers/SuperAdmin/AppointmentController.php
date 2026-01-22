@@ -280,7 +280,7 @@ class AppointmentController extends Controller
     {
         (new CustomController)->cancel_max_order();
         $appointment = Appointment::with(['doctor', 'user'])->find($appointment_id);
-        $doctor = Doctor::with(['expertise', 'treatment', 'category'])->find($appointment->doctor_id);
+        $doctor = Doctor::with(['expertise', 'treatments', 'categories'])->find($appointment->doctor_id);
         $medicines = Medicine::whereStatus('1')->get();
 
         return view('superAdmin.doctor.prescription', compact('appointment', 'doctor', 'medicines'));
@@ -335,7 +335,7 @@ class AppointmentController extends Controller
     public function createAppointment($id)
     {
         $patient = User::where('id', $id)->first();
-        $doctor = Doctor::with(['category', 'expertise'])->where('user_id', auth()->user()->id)->first();
+        $doctor = Doctor::with(['categories', 'expertise'])->where('user_id', auth()->user()->id)->first();
         $hosp = explode(',', $doctor->hospital_id);
         $hospitals = Hospital::whereIn('id', $hosp)->get();
         $patient_addressess = UserAddress::where('user_id', $id)->get();

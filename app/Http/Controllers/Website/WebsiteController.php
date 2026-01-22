@@ -59,7 +59,7 @@ class WebsiteController extends Controller
             return view('first_page');
         }
         $banners = Banner::get();
-        $doctors = Doctor::with('category:id,name')->where([['status', 1], ['is_filled', 1], ['subscription_status', 1]])->get()->take(8);
+        $doctors = Doctor::with('categories:id,name')->where([['status', 1], ['is_filled', 1], ['subscription_status', 1]])->get()->take(8);
         $treatments = Treatments::whereStatus(1)->paginate(6);
         $setting = Setting::first();
         $reviews = Review::get();
@@ -191,7 +191,7 @@ class WebsiteController extends Controller
         $setting = Setting::first();
         $currency = $setting->currency_symbol;
         $categories = Category::whereStatus(1)->get();
-        $doctorQuery = Doctor::with(['treatment', 'category', 'expertise'])->whereStatus(1)->where('is_filled', 1)->whereSubscriptionStatus(1);
+        $doctorQuery = Doctor::with(['treatments', 'categories', 'expertise'])->whereStatus(1)->where('is_filled', 1)->whereSubscriptionStatus(1);
         $data = $request->all();
 
         if (isset($data['doc_lat']) && isset($data['doc_lang']) && $data['doc_lang'] != '' && $data['doc_lat'] != '') {
@@ -209,7 +209,9 @@ class WebsiteController extends Controller
             $doctorQuery = $doctorQuery->whereIn('category_id', $data['category']);
         }
         if (isset($data['treatment_id'])) {
-            $doctorQuery = $doctorQuery->where('treatment_id', $data['treatment_id']);
+            $doctorQuery = $doctorQuery->whereHas('treatments', function($query) use ($data) {
+                $query->where('treatments.id', $data['treatment_id']);
+            });
         }
         if (isset($data['sort_by']) && $data['sort_by'] != '') {
             $reqData = $request->all();
@@ -307,7 +309,7 @@ class WebsiteController extends Controller
     public function doctor_profile(Request $request, $id, $name)
     {
         $setting = Setting::first();
-        $doctor = Doctor::with(['category', 'expertise'])->find($id);
+        $doctor = Doctor::with(['categories', 'expertise'])->find($id);
         $doctor->user = User::where('id', $doctor->user_id)->first();
         $doctor['is_fav'] = $this->checkFavourite($doctor['id']);
         $doctor->hospital = (new CustomController)->getHospital($id);
@@ -393,7 +395,7 @@ class WebsiteController extends Controller
 
     public function booking($id, $name)
     {
-        $doctor = Doctor::with(['category', 'expertise'])->find($id);
+        $doctor = Doctor::with(['categories', 'expertise'])->find($id);
         $patient_addressess = UserAddress::where('user_id', auth()->user()->id)->get();
 
         $patient_details = [];

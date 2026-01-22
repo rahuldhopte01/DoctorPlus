@@ -78,24 +78,26 @@ class DoctorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'bail|required|unique:doctor',
-            'email' => 'bail|required|email|unique:users',
-            'treatment_id' => 'bail|required',
-            'category_id' => 'bail|required',
-            'dob' => 'bail|required',
-            'gender' => 'bail|required',
-            'phone' => 'bail|required|digits_between:6,12',
-            'expertise_id' => 'bail|required',
-            'timeslot' => 'bail|required',
-            'start_time' => 'bail|required',
-            'end_time' => 'bail|required|after:start_time',
-            'hospital_id' => 'bail|required',
-            'desc' => 'required',
-            'appointment_fees' => 'required|numeric',
-            'experience' => 'bail|required|numeric',
-            'custom_timeslot' => 'bail|required_if:timeslot,other',
-            'commission_amount' => 'bail|required_if:based_on,commission',
-            'password' => 'sometimes|min:6',
+            'name' => 'bail|nullable|unique:doctor',
+            'email' => 'bail|nullable|email|unique:users',
+            'treatment_id' => 'bail|nullable|array',
+            'treatment_id.*' => 'bail|nullable|exists:treatments,id',
+            'category_id' => 'bail|nullable|array',
+            'category_id.*' => 'bail|nullable|exists:category,id',
+            'dob' => 'bail|nullable',
+            'gender' => 'bail|nullable',
+            'phone' => 'bail|nullable|digits_between:6,12',
+            'expertise_id' => 'bail|nullable',
+            'timeslot' => 'bail|nullable',
+            'start_time' => 'bail|nullable',
+            'end_time' => 'bail|nullable|after:start_time',
+            'hospital_id' => 'bail|nullable',
+            'desc' => 'nullable',
+            'appointment_fees' => 'nullable|numeric',
+            'experience' => 'bail|nullable|numeric',
+            'custom_timeslot' => 'bail|nullable',
+            'commission_amount' => 'bail|nullable',
+            'password' => 'sometimes|nullable|min:6',
         ]);
         $data = $request->all();
         if (isset($data['password']) && ($data['password'] != '' || $data['password'] != null)) {
@@ -161,11 +163,25 @@ class DoctorController extends Controller
         $data['status'] = 1;
         $data['subscription_status'] = 1;
         $data['is_filled'] = 1;
-        $data['hospital_id'] = implode(',', $request->hospital_id);
+        $data['hospital_id'] = !empty($request->hospital_id) ? implode(',', $request->hospital_id) : null;
         if ($data['commission_amount'] == '') {
             $data['commission_amount'] = null;
         }
+        
+        // Remove treatment_id and category_id from data array as they're not in fillable anymore
+        $treatmentIds = $request->treatment_id ?? [];
+        $categoryIds = $request->category_id ?? [];
+        unset($data['treatment_id'], $data['category_id']);
+        
         $doctor = Doctor::create($data);
+        
+        // Sync treatments and categories (only if arrays are not empty)
+        if (!empty($treatmentIds)) {
+            $doctor->treatments()->sync($treatmentIds);
+        }
+        if (!empty($categoryIds)) {
+            $doctor->categories()->sync($categoryIds);
+        }
         if ($doctor->based_on == 'subscription') {
             $subscription = Subscription::where('name', 'free')->first();
             if ($subscription) {
@@ -294,7 +310,7 @@ class DoctorController extends Controller
     public function edit($id)
     {
         abort_if(Gate::denies('doctor_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $doctor = Doctor::find($id);
+        $doctor = Doctor::with(['treatments', 'categories'])->find($id);
         $doctor->user = User::find($doctor->user_id);
         $countries = Country::get();
         $treatments = Treatments::whereStatus(1)->get();
@@ -304,6 +320,10 @@ class DoctorController extends Controller
         $doctor['start_time'] = Carbon::parse($doctor['start_time'])->format('H:i');
         $doctor['end_time'] = Carbon::parse($doctor['end_time'])->format('H:i');
         $doctor['hospital_id'] = explode(',', $doctor->hospital_id);
+        
+        // Get selected treatment and category IDs for the view
+        $doctor['selected_treatment_ids'] = $doctor->treatments->pluck('id')->toArray();
+        $doctor['selected_category_ids'] = $doctor->categories->pluck('id')->toArray();
 
         return view('superAdmin.doctor.edit_doctor', compact('doctor', 'countries', 'treatments', 'hospitals', 'categories', 'expertieses'));
     }
@@ -317,24 +337,26 @@ class DoctorController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'bail|required|unique:doctor,name,'.$id.',id',
-            'treatment_id' => 'bail|required',
-            'category_id' => 'bail|required',
-            'dob' => 'bail|required',
-            'gender' => 'bail|required',
-            'phone' => 'bail|required|digits_between:6,12',
-            'expertise_id' => 'bail|required',
-            'timeslot' => 'bail|required',
-            'start_time' => 'bail|required',
-            'end_time' => 'bail|required|after:start_time',
-            'hospital_id' => 'bail|required',
-            'desc' => 'required',
-            'appointment_fees' => 'required|numeric',
-            'experience' => 'bail|required|numeric',
+            'name' => 'bail|nullable|unique:doctor,name,'.$id.',id',
+            'treatment_id' => 'bail|nullable|array',
+            'treatment_id.*' => 'bail|nullable|exists:treatments,id',
+            'category_id' => 'bail|nullable|array',
+            'category_id.*' => 'bail|nullable|exists:category,id',
+            'dob' => 'bail|nullable',
+            'gender' => 'bail|nullable',
+            'phone' => 'bail|nullable|digits_between:6,12',
+            'expertise_id' => 'bail|nullable',
+            'timeslot' => 'bail|nullable',
+            'start_time' => 'bail|nullable',
+            'end_time' => 'bail|nullable|after:start_time',
+            'hospital_id' => 'bail|nullable',
+            'desc' => 'nullable',
+            'appointment_fees' => 'nullable|numeric',
+            'experience' => 'bail|nullable|numeric',
             'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
-            'custom_timeslot' => 'bail|required_if:timeslot,other',
-            'commission_amount' => 'bail|required_if:based_on,commission',
-            'password' => 'sometimes|min:6',
+            'custom_timeslot' => 'bail|nullable',
+            'commission_amount' => 'bail|nullable',
+            'password' => 'sometimes|nullable|min:6',
         ],
             [
                 'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
@@ -365,7 +387,7 @@ class DoctorController extends Controller
         $data['certificate'] = json_encode($certificate);
         $data['is_filled'] = 1;
         $data['custom_timeslot'] = $request->custom_time == '' ? null : $request->custom_time;
-        $data['hospital_id'] = implode(',', $request->hospital_id);
+        $data['hospital_id'] = !empty($request->hospital_id) ? implode(',', $request->hospital_id) : $doctor->hospital_id;
         if ($request->based_on == 'subscription') {
             if (! DoctorSubscription::where('doctor_id', $id)->exists()) {
                 $subscription = Subscription::where('name', 'free')->first();
@@ -385,12 +407,25 @@ class DoctorController extends Controller
             $data['commission_amount'] = null;
         }
 
+        // Remove treatment_id and category_id from data array as they're not in fillable anymore
+        $treatmentIds = $request->treatment_id ?? [];
+        $categoryIds = $request->category_id ?? [];
+        unset($data['treatment_id'], $data['category_id']);
+
         if (isset($data['password']) && ($data['password'] != '' || $data['password'] != null)) {
             $password = Hash::make($data['password']);
             User::find($doctor->user_id)->update(['password' => $password]);
         }
         unset($data['password']);
         $doctor->update($data);
+        
+        // Sync treatments and categories (only if arrays are not empty)
+        if (!empty($treatmentIds)) {
+            $doctor->treatments()->sync($treatmentIds);
+        }
+        if (!empty($categoryIds)) {
+            $doctor->categories()->sync($categoryIds);
+        }
 
         return redirect('doctor')->withStatus(__('Doctor updated successfully..!!'));
     }

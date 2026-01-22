@@ -256,8 +256,47 @@ class PharmacyController extends Controller
         abort_if(Gate::denies('pharmacy_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $pharmacy = Pharmacy::find($request->id);
         if ($pharmacy) {
-            $pharmacy->status = 'approved';
-            $pharmacy->save();
+            // If already approved, just return success
+            if ($pharmacy->status !== 'approved') {
+                $pharmacy->status = 'approved';
+                $pharmacy->save();
+
+                // Send approval mail with temporary password so pharmacy can login
+                $setting = Setting::first();
+                $user = User::find($pharmacy->user_id);
+
+                if ($user && $setting) {
+                    // Generate a new temporary password and update the user
+                    //$password = mt_rand(100000, 999999);
+                    //$user->password = Hash::make($password);
+                    //$user->save();
+
+                    $message = "Dear " . $pharmacy->name . ",\n\n";
+                    $message .= "Your pharmacy account has been approved successfully!\n\n";
+                    $message .= "Login Credentials:\n";
+                    $message .= "Email: " . $pharmacy->email . "\n";
+                    //$message .= "Temporary Password: " . $password . "\n\n";
+                    $message .= "You can login at: " . url('pharmacy_login') . "\n\n";
+                    $message .= "Thank you!";
+
+                    try {
+                        $config = [
+                            'driver' => $setting->mail_mailer,
+                            'host' => $setting->mail_host,
+                            'port' => $setting->mail_port,
+                            'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
+                            'encryption' => $setting->mail_encryption,
+                            'username' => $setting->mail_username,
+                            'password' => $setting->mail_password,
+                        ];
+                        Config::set('mail', $config);
+                        Mail::to($user->email)->send(new SendMail($message, 'Pharmacy Account Approved'));
+                    } catch (\Exception $e) {
+                        info($e);
+                    }
+                }
+            }
+
             return response(['success' => true, 'message' => __('Pharmacy approved successfully')]);
         }
         return response(['success' => false, 'message' => __('Pharmacy not found')], 404);
