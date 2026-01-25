@@ -56,4 +56,13 @@ class Category extends Model
     {
         return $this->questionnaire()->where('status', 1)->exists();
     }
+
+    /**
+     * Medicines available for this category (questionnaire medicine selection).
+     */
+    public function medicines()
+    {
+        return $this->belongsToMany(Medicine::class, 'category_medicine', 'category_id', 'medicine_id')
+            ->withTimestamps();
+    }
 }

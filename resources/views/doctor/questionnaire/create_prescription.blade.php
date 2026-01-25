@@ -39,23 +39,17 @@
                     'questionnaireId' => $questionnaireId
                 ]) }}" method="POST" id="prescriptionForm">
                     @csrf
-                    
-                    <!-- Prescription Validity Period -->
-                    <div class="form-group row mb-4">
-                        <label class="col-md-3 col-form-label">{{ __('Prescription Validity (Days)') }} <span class="text-danger">*</span></label>
-                        <div class="col-md-9">
-                            <input type="number" name="validity_days" class="form-control @error('validity_days') is-invalid @enderror" 
-                                   value="{{ old('validity_days', 30) }}" min="1" max="365" required>
-                            <small class="form-text text-muted">{{ __('Prescription will be valid from approval date for the specified number of days.') }}</small>
-                            @error('validity_days')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Medicines -->
+                    @if(isset($patientSuggestedMedicines) && count($patientSuggestedMedicines) > 0)
+                    <div class="alert alert-info mb-4">
+                        <strong><i class="fas fa-user-check mr-2"></i>{{ __("Patient's suggested choices") }}</strong>
+                        <p class="mb-0 mt-2">{{ __('The patient selected these medicines. You may keep, remove, or add others from the category.') }}</p>
+                    </div>
+                    @endif
+
                     <div class="form-group">
                         <label class="col-form-label mb-3">{{ __('Medicines') }} <span class="text-danger">*</span></label>
+                        <p class="text-muted small mb-3">{{ __('Select from patient suggestions or any medicine in this category.') }}</p>
                         
                         <div class="table-responsive">
                             <table class="table table-bordered" id="medicinesTable">
@@ -67,6 +61,33 @@
                                     </tr>
                                 </thead>
                                 <tbody id="medicinesBody">
+                                    @forelse(isset($patientSuggestedMedicines) ? $patientSuggestedMedicines : [] as $m)
+                                    <tr class="medicine-row">
+                                        <td>
+                                            <select name="medicines[]" class="form-control select2 medicine-select" required>
+                                                <option value="">{{ __('Select Medicine') }}</option>
+                                                @foreach ($medicines as $medicine)
+                                                    <option value="{{ $medicine->id }}" 
+                                                            data-name="{{ $medicine->name }}"
+                                                            data-strength="{{ $medicine->strength ?? '' }}"
+                                                            {{ ($m->id ?? null) == $medicine->id ? 'selected' : '' }}>
+                                                        {{ $medicine->name }}{{ $medicine->strength ? ' (' . $medicine->strength . ')' : '' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <input type="hidden" name="medicine_names[]" class="medicine-name-input" value="{{ $m->name ?? '' }}">
+                                        </td>
+                                        <td>
+                                            <input type="text" name="strength[]" class="form-control strength-input" 
+                                                   placeholder="e.g., 500mg" value="{{ $m->strength ?? '' }}">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm remove-medicine">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @empty
                                     <tr class="medicine-row">
                                         <td>
                                             <select name="medicines[]" class="form-control select2 medicine-select" required>
@@ -83,7 +104,7 @@
                                         </td>
                                         <td>
                                             <input type="text" name="strength[]" class="form-control strength-input" 
-                                                   placeholder="e.g., 500mg" required>
+                                                   placeholder="e.g., 500mg">
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm remove-medicine" style="display:none;">
@@ -91,6 +112,7 @@
                                             </button>
                                         </td>
                                     </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -146,7 +168,7 @@ $(document).ready(function() {
                 </td>
                 <td>
                     <input type="text" name="strength[]" class="form-control strength-input" 
-                           placeholder="e.g., 500mg" required>
+                           placeholder="e.g., 500mg">
                 </td>
                 <td>
                     <button type="button" class="btn btn-danger btn-sm remove-medicine">

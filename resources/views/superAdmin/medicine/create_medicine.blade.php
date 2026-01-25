@@ -65,6 +65,20 @@
                         @enderror
                     </div>
                     <div class="form-group">
+                        <label class="col-form-label">{{__('Categories')}}</label>
+                        <select name="category_ids[]" class="form-control select2 @error('category_ids') is-invalid @enderror" multiple data-placeholder="{{ __('Select categories for questionnaire medicine selection') }}">
+                            @foreach ($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ in_array($cat->id, old('category_ids', [])) ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        <small class="form-text text-muted">{{__('Assign this medicine to categories. Patients see only these medicines when filling that category\'s questionnaire.')}}</small>
+                        @error('category_ids')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+                    <div class="form-group">
                         <label class="col-form-label">{{__('Description')}}</label>
                         <textarea name="description" class="form-control summernote @error('description') is-invalid @enderror" required>{{ old('description') }}</textarea>
                         @error('description')

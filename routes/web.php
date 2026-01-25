@@ -145,6 +145,16 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         })->name('questionnaire.success');
         Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
 
+        // Questionnaire Post-Submission Flow Routes
+        Route::get('/questionnaire/category/{categoryId}/delivery-choice', [\App\Http\Controllers\Website\QuestionnaireDeliveryController::class, 'showDeliveryChoice'])->name('questionnaire.delivery-choice');
+        Route::post('/questionnaire/category/{categoryId}/delivery-choice', [\App\Http\Controllers\Website\QuestionnaireDeliveryController::class, 'saveDeliveryChoice'])->name('questionnaire.save-delivery-choice');
+        Route::get('/questionnaire/category/{categoryId}/delivery-address', [\App\Http\Controllers\Website\QuestionnaireAddressController::class, 'showAddressForm'])->name('questionnaire.delivery-address');
+        Route::post('/questionnaire/category/{categoryId}/delivery-address', [\App\Http\Controllers\Website\QuestionnaireAddressController::class, 'saveAddress'])->name('questionnaire.save-address');
+        Route::get('/questionnaire/category/{categoryId}/pharmacy-selection', [\App\Http\Controllers\Website\QuestionnairePharmacyController::class, 'showPharmacySelection'])->name('questionnaire.pharmacy-selection');
+        Route::post('/questionnaire/category/{categoryId}/pharmacy-selection', [\App\Http\Controllers\Website\QuestionnairePharmacyController::class, 'savePharmacySelection'])->name('questionnaire.save-pharmacy');
+        Route::get('/questionnaire/category/{categoryId}/medicine-selection', [\App\Http\Controllers\Website\QuestionnaireMedicineController::class, 'showMedicineSelection'])->name('questionnaire.medicine-selection');
+        Route::post('/questionnaire/category/{categoryId}/medicine-selection', [\App\Http\Controllers\Website\QuestionnaireMedicineController::class, 'saveMedicineSelection'])->name('questionnaire.save-medicine');
+
         // User
         Route::get('/user_profile', [WebsiteController::class, 'userProfile']);
         Route::get('/add-to-calendar/{appointment_id}', [CalenderController::class, 'createGoogleCalendarLinkForAppointment']);

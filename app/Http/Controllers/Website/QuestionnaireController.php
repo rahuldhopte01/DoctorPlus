@@ -714,12 +714,24 @@ class QuestionnaireController extends Controller
             'user_id' => Auth::id(),
         ]);
 
+        // Create or update questionnaire submission record
+        $submission = \App\Models\QuestionnaireSubmission::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'category_id' => $categoryId,
+                'questionnaire_id' => $questionnaire->id,
+            ],
+            [
+                'status' => 'pending',
+            ]
+        );
+
         return response()->json([
             'success' => true,
             'has_warnings' => !empty($flagCheck['flags']),
             'flags' => $flagCheck['flags'],
-            'message' => __('Questionnaire submitted successfully. Doctor will review your answers.'),
-            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/success'),
+            'message' => __('Questionnaire submitted successfully. Please choose your delivery method.'),
+            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/delivery-choice'),
         ]);
     }
 }
