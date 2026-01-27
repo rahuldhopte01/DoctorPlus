@@ -1,0 +1,345 @@
+/* Primary Brand Color */
+:root {
+    --primary-color: #e85a1a;
+    --primary-hover: #c74d16;
+    --dark-blue: #1a3a52;
+    --orange-light: #fff5f0;
+    --blue-light: #e7f0ff;
+    --pink-light: #ffe7f0;
+    --teal-light: #e0f7f7;
+    --green-light: #e7f7e7;
+    --purple-light: #f0e7ff;
+}
+
+/* Bootstrap Color Overrides */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.nav-link {
+    color: #374151;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #fff5f0 0%, #ffe7e7 100%);
+}
+
+.badge.bg-orange-light {
+    background-color: var(--orange-light) !important;
+}
+
+.text-orange {
+    color: var(--primary-color);
+}
+
+.hero-card {
+    max-width: 220px;
+}
+
+.hero-card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+}
+
+/* Service Cards */
+.service-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.service-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.1);
+    transition: transform 0.3s;
+}
+
+/* Color Classes */
+.bg-blue-light {
+    background-color: var(--blue-light);
+}
+
+.text-blue {
+    color: #3b82f6;
+}
+
+.bg-pink-light {
+    background-color: var(--pink-light);
+}
+
+.text-pink {
+    color: #ec4899;
+}
+
+.bg-teal-light {
+    background-color: var(--teal-light);
+}
+
+.text-teal {
+    color: #14b8a6;
+}
+
+.bg-green-light {
+    background-color: var(--green-light);
+}
+
+.bg-purple-light {
+    background-color: var(--purple-light);
+}
+
+.text-purple {
+    color: #a855f7;
+}
+
+.bg-orange-light {
+    background-color: var(--orange-light);
+}
+
+.text-orange {
+    color: var(--primary-color);
+}
+
+/* Step Cards */
+.step-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+}
+
+.step-number {
+    top: -8px;
+    right: -8px;
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-connector::after {
+    content: '';
+    position: absolute;
+    top: 48px;
+    left: 60%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, rgba(232, 90, 26, 0.3), rgba(232, 90, 26, 0.2));
+}
+
+/* Feature Icons */
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+}
+
+/* Testimonials */
+.bg-gradient-orange {
+    background: linear-gradient(135deg, #fff5f0 0%, #ffe7e7 100%);
+}
+
+/* Accordion */
+.accordion-button {
+    font-weight: 600;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #fff5f0;
+    color: var(--primary-color);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(232, 90, 26, 0.3);
+}
+
+/* Footer */
+.footer-dark {
+    background-color: var(--dark-blue);
+}
+
+.footer-dark a:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Treatment Cards */
+.treatment-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.treatment-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.treatment-card:hover h5 {
+    color: var(--primary-color);
+}
+
+/* Category Filter */
+.category-filter {
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.category-filter::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f3f4f6;
+    color: #374151;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Treatment Detail Page */
+.breadcrumb-link {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb-link:hover {
+    color: var(--primary-color);
+}
+
+.sticky-cta {
+    position: sticky;
+    top: 100px;
+}
+
+/* Category Icons in Treatment Cards */
+.category-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Custom Shadows */
+.shadow-lg {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Input Focus */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(232, 90, 26, 0.25);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .display-5 {
+        font-size: 1.75rem;
+    }
+
+    .hero-card {
+        max-width: 180px;
+        padding: 0.75rem !important;
+    }
+
+    .hero-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s;
+}
+
+.back-to-top:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-3px);
+}
+
+.back-to-top.show {
+    display: flex;
+}

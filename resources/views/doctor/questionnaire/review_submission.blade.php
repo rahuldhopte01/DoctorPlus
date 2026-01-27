@@ -216,8 +216,8 @@
             </div>
         </div>
 
-        <!-- Medicine Assignment Section (shown when IN_REVIEW or approved) -->
-        @if(in_array($firstAnswer->status, ['IN_REVIEW', 'under_review', 'approved']) && $canEdit)
+        <!-- Medicine Assignment Section (shown only when approved) -->
+        @if($firstAnswer->status === 'approved' && $canEdit)
         <div class="card mb-3" id="medicine-assignment-section">
             <div class="card-header bg-primary text-white">
                 <h4><i class="fas fa-prescription-bottle-alt mr-2"></i>{{ __('Assign Medicines & Generate Prescription') }}</h4>
@@ -389,10 +389,12 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @if($order->pharmacy_id)
+                                    @if($order->address_id)
+                                        {{-- Delivery order: has address_id (patient selected Home Delivery) --}}
+                                        <span class="badge badge-primary">{{ __('Home Delivery') }}</span>
+                                    @elseif($order->pharmacy_id)
+                                        {{-- Pickup order: has pharmacy_id but no address_id (patient selected Pickup) --}}
                                         <span class="badge badge-info">{{ __('Pickup') }}</span>
-                                    @elseif($order->address_id)
-                                        <span class="badge badge-primary">{{ __('Delivery') }}</span>
                                     @else
                                         <span class="badge badge-secondary">{{ __('N/A') }}</span>
                                     @endif
@@ -587,18 +589,25 @@
 @endsection
 
 @section('js')
+@php
+    $medicinesForJs = [];
+    if (isset($categoryMedicines) && $categoryMedicines) {
+        foreach ($categoryMedicines as $m) {
+            $medicinesForJs[] = [
+                'id' => $m->id,
+                'name' => $m->name,
+                'strength' => $m->strength ?? '',
+                'brand' => ($m->brand ? $m->brand->name : '')
+            ];
+        }
+    }
+@endphp
 <script>
 $(document).ready(function() {
     // Medicine assignment form functionality
     let rowIndex = 0;
-    const categoryMedicines = @json(isset($categoryMedicines) ? $categoryMedicines->map(function($m) {
-        return [
-            'id' => $m->id,
-            'name' => $m->name,
-            'strength' => $m->strength ?? '',
-            'brand' => ($m->brand ? $m->brand->name : '')
-        ];
-    })->values() : []);
+    const selectMedicineText = @json(__('Select Medicine'));
+    const categoryMedicines = @json($medicinesForJs);
     
     // Add medicine row
     $('#addMedicine').click(function() {
@@ -613,7 +622,7 @@ $(document).ready(function() {
             });
         } else {
             // Fallback: generate from categoryMedicines array
-            optionsHtml = '<option value="">{{ __('Select Medicine') }}</option>';
+            optionsHtml = '<option value="">' + selectMedicineText + '</option>';
             categoryMedicines.forEach(function(medicine) {
                 const displayName = medicine.name + (medicine.strength ? ' (' + medicine.strength + ')' : '') + (medicine.brand ? ' - ' + medicine.brand : '');
                 optionsHtml += `<option value="${medicine.id}" data-name="${medicine.name}" data-strength="${medicine.strength || ''}">${displayName}</option>`;

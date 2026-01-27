@@ -153,11 +153,15 @@ class QuestionnaireController extends Controller
             $savedAnswers['answers'] = $normalizedSavedAnswers;
         }
 
+        // Check if patient can submit (has active submission)
+        $submissionCheck = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
+
         return view('website.questionnaire.category_form', compact(
             'category', 
             'questionnaire', 
             'treatment', 
-            'savedAnswers'
+            'savedAnswers',
+            'submissionCheck'
         ));
     }
 
@@ -517,6 +521,17 @@ class QuestionnaireController extends Controller
         $category = Category::findOrFail($categoryId);
         $questionnaire = $this->questionnaireService->getQuestionnaireForCategory($categoryId);
 
+        // Check if patient already has an active submission for this category
+        $canSubmit = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
+        if (!$canSubmit['can_submit']) {
+            return response()->json([
+                'success' => false,
+                'blocked' => true,
+                'message' => $canSubmit['message'],
+                'status' => $canSubmit['status'] ?? null,
+            ], 422);
+        }
+
         if (!$questionnaire) {
             return response()->json([
                 'success' => false,
@@ -732,6 +747,32 @@ class QuestionnaireController extends Controller
             'flags' => $flagCheck['flags'],
             'message' => __('Questionnaire submitted successfully. Please choose your delivery method.'),
             'redirect_url' => url('/questionnaire/category/' . $categoryId . '/delivery-choice'),
+        ]);
+    }
+
+    /**
+     * Check if patient can submit questionnaire for a category
+     * Returns submission status and whether submission is allowed
+     */
+    public function checkSubmissionStatus($categoryId)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'can_submit' => false,
+                'message' => __('Please login to check submission status'),
+            ], 401);
+        }
+
+        $canSubmit = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
+        $status = \App\Models\QuestionnaireSubmission::getSubmissionStatus(Auth::id(), $categoryId);
+
+        return response()->json([
+            'success' => true,
+            'can_submit' => $canSubmit['can_submit'],
+            'status' => $status,
+            'message' => $canSubmit['message'],
+            'submitted_at' => $canSubmit['existing_submission']?->submitted_at?->toDateTimeString(),
         ]);
     }
 }

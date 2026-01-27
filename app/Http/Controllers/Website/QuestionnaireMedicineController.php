@@ -79,8 +79,10 @@ class QuestionnaireMedicineController extends Controller
         $request->merge(['medicines' => $medicines ?? []]);
 
         $request->validate([
-            'medicines' => 'required|array|min:1',
+            'medicines' => 'required|array|min:1|max:3',
             'medicines.*.medicine_id' => 'required|exists:medicine,id',
+        ], [
+            'medicines.max' => __('You can select a maximum of 3 medicines.'),
         ]);
 
         $user = Auth::user();
@@ -92,6 +94,14 @@ class QuestionnaireMedicineController extends Controller
         // Get allowed medicine IDs for this category (qualify column to avoid ambiguity)
         $allowedIds = $category->medicines()->get()->pluck('id')->toArray();
 
+        // Limit to maximum 3 medicines
+        if (count($request->medicines) > 3) {
+            return response()->json([
+                'success' => false,
+                'message' => __('You can select a maximum of 3 medicines.'),
+            ], 422);
+        }
+        
         $normalizedMedicines = [];
         foreach ($request->medicines as $m) {
             $id = (int) ($m['medicine_id'] ?? 0);
@@ -105,6 +115,11 @@ class QuestionnaireMedicineController extends Controller
                 'success' => false,
                 'message' => __('Invalid medicine selection.'),
             ], 422);
+        }
+        
+        // Ensure we don't exceed 3 medicines (additional safety check)
+        if (count($normalizedMedicines) > 3) {
+            $normalizedMedicines = array_slice($normalizedMedicines, 0, 3);
         }
 
         $submission->update([

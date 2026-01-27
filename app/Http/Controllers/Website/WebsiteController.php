@@ -62,10 +62,17 @@ class WebsiteController extends Controller
         $doctors = Doctor::with(['categories:id,name', 'expertise:id,name'])->where([['status', 1], ['is_filled', 1], ['subscription_status', 1]])->get()->take(8);
         $treatments = Treatments::whereStatus(1)->paginate(6);
         $setting = Setting::first();
-        $reviews = Review::get();
+        $reviews = Review::with('user')->get();
         $blogs = Blog::get();
+        
+        // Get categories for new design service cards
+        $categories = Category::with('treatment')
+            ->whereStatus(1)
+            ->orderBy('name', 'ASC')
+            ->get();
 
-        return view('website.home', compact('banners', 'doctors', 'treatments', 'setting', 'reviews', 'blogs'));
+        // Use new design if available, otherwise fallback to old
+        return view('website.home_new', compact('banners', 'doctors', 'treatments', 'setting', 'reviews', 'blogs', 'categories'));
     }
 
     public function sign_up(Request $request)
@@ -1759,43 +1766,77 @@ class WebsiteController extends Controller
     }
 
     /**
-     * Display categories landing page (Phase 1)
-     * Shows all treatment categories with their treatment information
+     * Display categories/treatments listing page (Phase 2)
+     * Shows all treatment categories grouped by treatment with filtering and search
      */
     public function categories()
     {
-        $categories = Category::with('treatment')
-            ->whereStatus(1)
+        $query = Category::with('treatment')
+            ->whereStatus(1);
+        
+        // Search functionality
+        if (request('search')) {
+            $searchTerm = request('search');
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'like', '%' . $searchTerm . '%')
+                  ->orWhereHas('treatment', function($tq) use ($searchTerm) {
+                      $tq->where('name', 'like', '%' . $searchTerm . '%');
+                  });
+            });
+        }
+        
+        // Filter by treatment
+        if (request('treatment')) {
+            $query->where('treatment_id', request('treatment'));
+        }
+        
+        $categories = $query->orderBy('name', 'ASC')->get();
+        
+        // Get all treatments for filter buttons
+        $treatments = Treatments::whereStatus(1)
+            ->whereHas('category', function($q) {
+                $q->whereStatus(1);
+            })
             ->orderBy('name', 'ASC')
             ->get();
         
         $setting = Setting::first();
 
-        return view('website.categories', compact('categories', 'setting'));
+        // Use new design if available
+        return view('website.treatments', compact('categories', 'treatments', 'setting'));
     }
 
     /**
-     * Display category detail page (Phase 2)
-     * Shows category details, treatment information, and questionnaire CTA
+     * Display category/treatment detail page (Phase 3)
+     * Shows detailed treatment information with medications, FAQs, side effects, etc.
      */
     public function categoryDetail($id)
     {
-        $category = Category::with(['treatment', 'questionnaire'])
+        $category = Category::with(['treatment', 'questionnaire', 'medicines'])
             ->whereStatus(1)
             ->findOrFail($id);
 
         // Get treatment details
         $treatment = $category->treatment;
-        
-        if (!$treatment) {
-            return redirect()->route('categories')->with('error', __('Treatment not found for this category'));
-        }
+
+        // Get medicines linked to this category
+        $medicines = $category->medicines()->where('status', 1)->get();
 
         // Check if category has active questionnaire
         $hasQuestionnaire = $category->hasActiveQuestionnaire();
 
+        // Get all treatments for footer
+        $treatments = Treatments::whereStatus(1)
+            ->whereHas('category', function($q) {
+                $q->whereStatus(1);
+            })
+            ->orderBy('name', 'ASC')
+            ->get();
+
         $setting = Setting::first();
 
-        return view('website.category_detail', compact('category', 'treatment', 'hasQuestionnaire', 'setting'));
+        // Use new design treatment detail page
+        return view('website.treatment_detail', compact('category', 'treatment', 'hasQuestionnaire', 'setting', 'medicines', 'treatments'));
     }
 }

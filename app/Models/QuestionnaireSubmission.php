@@ -117,4 +117,76 @@ class QuestionnaireSubmission extends Model
     {
         return !empty($this->selected_medicines) && is_array($this->selected_medicines) && count($this->selected_medicines) > 0;
     }
+
+    /**
+     * Check if a patient can submit a questionnaire for a category.
+     * Returns true if no active submission exists (PENDING or UNDER_REVIEW).
+     * 
+     * @param int $userId
+     * @param int $categoryId
+     * @return array ['can_submit' => bool, 'existing_submission' => QuestionnaireAnswer|null, 'message' => string, 'status' => string|null]
+     */
+    public static function canPatientSubmit($userId, $categoryId): array
+    {
+        // Check for existing submissions with status PENDING or UNDER_REVIEW
+        // Group by submitted_at to identify unique submissions
+        $existingAnswers = QuestionnaireAnswer::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->whereNull('appointment_id') // Only check standalone submissions
+            ->whereIn('status', ['pending', 'under_review', 'IN_REVIEW'])
+            ->orderBy('submitted_at', 'desc')
+            ->get();
+
+        if ($existingAnswers->isEmpty()) {
+            return [
+                'can_submit' => true,
+                'existing_submission' => null,
+                'message' => null,
+                'status' => null,
+            ];
+        }
+
+        // Group by submitted_at to get the latest submission
+        $grouped = $existingAnswers->groupBy(function($answer) {
+            $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
+            return $submittedAt;
+        });
+
+        // Get the most recent submission
+        $latestGroup = $grouped->first();
+        $latestSubmission = $latestGroup->first();
+
+        $status = $latestSubmission->status;
+        $statusText = ucfirst(str_replace('_', ' ', strtolower($status)));
+        if ($status === 'IN_REVIEW' || $status === 'under_review') {
+            $statusText = 'Under Review';
+        } elseif ($status === 'pending') {
+            $statusText = 'Pending';
+        }
+
+        return [
+            'can_submit' => false,
+            'existing_submission' => $latestSubmission,
+            'status' => $status,
+            'message' => "You already have a questionnaire under review for this category. Current status: {$statusText}.",
+        ];
+    }
+
+    /**
+     * Get the current submission status for a patient and category.
+     * 
+     * @param int $userId
+     * @param int $categoryId
+     * @return string|null Status (pending, under_review, IN_REVIEW, approved, rejected) or null if no submission
+     */
+    public static function getSubmissionStatus($userId, $categoryId): ?string
+    {
+        $latestAnswer = QuestionnaireAnswer::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->whereNull('appointment_id')
+            ->orderBy('submitted_at', 'desc')
+            ->first();
+
+        return $latestAnswer ? $latestAnswer->status : null;
+    }
 }

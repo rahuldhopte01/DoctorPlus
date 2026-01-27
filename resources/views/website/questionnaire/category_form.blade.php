@@ -243,6 +243,24 @@
                     </div>
                 </div>
 
+                <!-- Submission Status Message -->
+                <div id="submissionStatusMessage" class="hidden mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center text-blue-700">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <span id="submissionStatusText" class="font-fira-sans"></span>
+                    </div>
+                </div>
+
+                @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
+                <!-- Server-side submission status check -->
+                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-center text-blue-700">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <span class="font-fira-sans">{{ $submissionCheck['message'] }}</span>
+                    </div>
+                </div>
+                @endif
+
                 <!-- Warning Flags -->
                 <div id="warningFlags" class="hidden mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <h5 class="font-fira-sans font-medium text-yellow-800 mb-2">
@@ -256,9 +274,15 @@
                 <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary">
                     <i class="fas fa-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
-                <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300" id="submitBtn">
-                    {{ __('Submit Questionnaire') }}
-                    <i class="fas fa-check ml-2"></i>
+                <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300" id="submitBtn"
+                    @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
+                    @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
+                        {{ __('Questionnaire Under Review') }}
+                        <i class="fas fa-lock ml-2"></i>
+                    @else
+                        {{ __('Submit Questionnaire') }}
+                        <i class="fas fa-check ml-2"></i>
+                    @endif
                 </button>
             </div>
         </form>
@@ -278,10 +302,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const warningList = document.getElementById('warningList');
     const saveIndicator = document.getElementById('saveIndicator');
     const saveIndicatorText = document.getElementById('saveIndicatorText');
+    const submissionStatusMessage = document.getElementById('submissionStatusMessage');
+    const submissionStatusText = document.getElementById('submissionStatusText');
     const categoryId = {{ $category->id }};
     
     let saveTimeout;
     const SAVE_DELAY = 2000; // Auto-save after 2 seconds of no typing
+
+    // Check submission status on page load
+    function checkSubmissionStatus() {
+        fetch('{{ route("questionnaire.check-status", ["categoryId" => $category->id]) }}', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && !data.can_submit) {
+                // Patient has an active submission - disable submit button
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                submitBtn.innerHTML = '{{ __("Questionnaire Under Review") }} <i class="fas fa-lock ml-2"></i>';
+                
+                // Show status message
+                submissionStatusMessage.classList.remove('hidden');
+                submissionStatusText.textContent = data.message || 'Your questionnaire for this category is currently under review.';
+                
+                // Disable all form inputs
+                const inputs = form.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.add('opacity-50', 'cursor-not-allowed');
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error checking submission status:', error);
+            // Don't block submission if check fails - let backend handle it
+        });
+    }
+
+    // Check status on page load
+    checkSubmissionStatus();
 
     // Load saved answers from localStorage on page load (client-side persistence)
     function loadFromLocalStorage() {

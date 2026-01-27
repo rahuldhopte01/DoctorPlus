@@ -50,8 +50,8 @@ return new class extends Migration
             $table->foreign('selected_pharmacy_id')->references('id')->on('pharmacy')->onDelete('set null');
             
             // Indexes
-            $table->index(['user_id', 'category_id', 'questionnaire_id']);
-            $table->index(['status']);
+            $table->index(['user_id', 'category_id', 'questionnaire_id'], 'qs_user_cat_quest_idx');
+            $table->index(['status'], 'qs_status_idx');
         });
     }
 

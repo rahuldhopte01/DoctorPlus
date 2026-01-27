@@ -22,7 +22,7 @@
                 {{ __('Select Your Medicines') }}
             </h1>
             <p class="font-fira-sans text-gray text-lg">
-                {{ __('Choose the medicines you need for this category. Doctor can modify if needed.') }}
+                {{ __('Choose up to 3 medicines you need for this category. Doctor can modify if needed.') }}
             </p>
         </div>
 
@@ -59,7 +59,10 @@
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
                 <p class="font-fira-sans text-blue-800 text-sm">
                     <i class="fas fa-info-circle"></i>
-                    {{ __('Select one or more medicines. The doctor will review and may modify your selection if medically required.') }}
+                    {{ __('You can select up to 3 medicines. The doctor will review and may modify your selection if medically required.') }}
+                </p>
+                <p class="font-fira-sans text-blue-800 text-sm mt-2" id="selectionCount">
+                    <strong>{{ __('Selected:') }} <span id="selectedCount">0</span> / 3</strong>
                 </p>
             </div>
             @else
@@ -92,6 +95,8 @@
     var cards = form.querySelectorAll('.medicine-card');
     var checkboxes = form.querySelectorAll('.medicine-checkbox');
 
+    var maxSelection = 3;
+    
     function updateCardStyles() {
         cards.forEach(function(card, i) {
             var cb = checkboxes[i];
@@ -104,16 +109,60 @@
             }
         });
     }
+    
+    function updateSelectionCount() {
+        var checked = form.querySelectorAll('.medicine-checkbox:checked');
+        var count = checked.length;
+        var countElement = document.getElementById('selectedCount');
+        if (countElement) {
+            countElement.textContent = count;
+        }
+        
+        // Disable unchecked checkboxes if max selection reached
+        if (count >= maxSelection) {
+            checkboxes.forEach(function(cb) {
+                if (!cb.checked) {
+                    cb.disabled = true;
+                    cb.closest('label').style.opacity = '0.5';
+                    cb.closest('label').style.cursor = 'not-allowed';
+                }
+            });
+        } else {
+            checkboxes.forEach(function(cb) {
+                cb.disabled = false;
+                cb.closest('label').style.opacity = '1';
+                cb.closest('label').style.cursor = 'pointer';
+            });
+        }
+    }
 
     checkboxes.forEach(function(cb) {
-        cb.addEventListener('change', updateCardStyles);
+        cb.addEventListener('change', function() {
+            var checked = form.querySelectorAll('.medicine-checkbox:checked');
+            if (checked.length > maxSelection) {
+                // Prevent selecting more than max
+                this.checked = false;
+                alert('{{ __("You can select a maximum of 3 medicines.") }}');
+                return;
+            }
+            updateCardStyles();
+            updateSelectionCount();
+        });
     });
+    
+    // Initialize selection count
+    updateSelectionCount();
+    updateCardStyles();
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         var checked = form.querySelectorAll('.medicine-checkbox:checked');
         if (checked.length === 0) {
             alert('{{ __("Please select at least one medicine.") }}');
+            return;
+        }
+        if (checked.length > maxSelection) {
+            alert('{{ __("You can select a maximum of 3 medicines.") }}');
             return;
         }
         if (submitBtn.disabled) return;

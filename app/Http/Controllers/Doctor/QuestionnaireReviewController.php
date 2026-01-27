@@ -133,10 +133,15 @@ class QuestionnaireReviewController extends Controller
         }
         
         // Get all answers for this submission - must be from same hospital
+        // Query fresh to ensure we get the latest data, especially after status updates
+        // Handle both hospital_id match and null hospital_id (for backward compatibility)
         $answers = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
-            ->where('hospital_id', $doctor->hospital_id) // Hospital-scoped
+            ->where(function($query) use ($doctor) {
+                $query->where('hospital_id', $doctor->hospital_id)
+                      ->orWhereNull('hospital_id');
+            })
             ->whereNull('appointment_id')
             ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
             ->orderBy('question_id')
@@ -144,6 +149,37 @@ class QuestionnaireReviewController extends Controller
         
         if ($answers->isEmpty()) {
             return redirect()->route('doctor.questionnaire.index')->with('error', __('Questionnaire submission not found'));
+        }
+        
+        // Ensure all answers have hospital_id set (for consistency)
+        $needsHospitalIdUpdate = false;
+        foreach ($answers as $answer) {
+            if (!$answer->hospital_id) {
+                $answer->hospital_id = $doctor->hospital_id;
+                $needsHospitalIdUpdate = true;
+            }
+        }
+        if ($needsHospitalIdUpdate) {
+            DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor) {
+                QuestionnaireAnswer::where('user_id', $userId)
+                    ->where('category_id', $categoryId)
+                    ->where('questionnaire_id', $questionnaireId)
+                    ->whereNull('appointment_id')
+                    ->whereNull('hospital_id')
+                    ->update(['hospital_id' => $doctor->hospital_id]);
+            });
+            // Refresh answers after update
+            $answers = QuestionnaireAnswer::where('user_id', $userId)
+                ->where('category_id', $categoryId)
+                ->where('questionnaire_id', $questionnaireId)
+                ->where(function($query) use ($doctor) {
+                    $query->where('hospital_id', $doctor->hospital_id)
+                          ->orWhereNull('hospital_id');
+                })
+                ->whereNull('appointment_id')
+                ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
+                ->orderBy('question_id')
+                ->get();
         }
         
         $firstAnswer = $answers->first();
@@ -163,21 +199,31 @@ class QuestionnaireReviewController extends Controller
         }
         
         // Lock when any doctor (sub or admin) opens an unlocked questionnaire: status -> IN_REVIEW, set reviewer
-        if (!$firstAnswer->isLocked()) {
+        // Only lock if status is 'pending' - don't lock if already approved/rejected
+        if (!$firstAnswer->isLocked() && $firstAnswer->status === 'pending') {
             DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor) {
                 QuestionnaireAnswer::where('user_id', $userId)
                     ->where('category_id', $categoryId)
                     ->where('questionnaire_id', $questionnaireId)
                     ->whereNull('appointment_id')
+                    ->where(function($query) use ($doctor) {
+                        $query->where('hospital_id', $doctor->hospital_id)
+                              ->orWhereNull('hospital_id');
+                    })
                     ->update([
                         'status' => 'IN_REVIEW',
                         'reviewing_doctor_id' => $doctor->id,
                         'hospital_id' => $doctor->hospital_id,
                     ]);
             });
+            // Refresh answers after locking
             $answers = QuestionnaireAnswer::where('user_id', $userId)
                 ->where('category_id', $categoryId)
                 ->where('questionnaire_id', $questionnaireId)
+                ->where(function($query) use ($doctor) {
+                    $query->where('hospital_id', $doctor->hospital_id)
+                          ->orWhereNull('hospital_id');
+                })
                 ->whereNull('appointment_id')
                 ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
                 ->orderBy('question_id')
@@ -188,9 +234,34 @@ class QuestionnaireReviewController extends Controller
         $groupedAnswers = $this->groupAnswersBySection($answers);
         $hasFlaggedAnswers = $answers->where('is_flagged', true)->isNotEmpty();
         
-        // Sub-doctor: can edit only if they are the reviewer or it is still unlocked. Admin: can always edit (hospital-scoped).
-        $canEdit = $doctor->isAdminDoctor()
-            || ($doctor->isSubDoctor() && ($firstAnswer->isLockedBy($doctor->id) || !$firstAnswer->isLocked()));
+        // Determine if doctor can edit:
+        // - Admin doctors can always edit questionnaires in their hospital
+        // - Sub-doctors can edit if: they are the reviewer, it's unlocked, OR it's approved (and they have category access)
+        $canEdit = false;
+        if ($doctor->isAdminDoctor()) {
+            // Admin can edit any questionnaire in their hospital
+            $canEdit = true;
+        } elseif ($doctor->isSubDoctor()) {
+            // Sub-doctor can edit if:
+            // 1. They are the reviewer (locked by them or approved by them)
+            // 2. It's not locked (unlocked/pending)
+            // 3. It's approved and they have access to this category (reviewing_doctor_id is kept for approved)
+            if ($firstAnswer->isLockedBy($doctor->id) || !$firstAnswer->isLocked()) {
+                $canEdit = true;
+            } elseif ($firstAnswer->status === 'approved') {
+                // For approved questionnaires, reviewing_doctor_id is kept, so check if this doctor is the reviewer
+                // OR if they have access to this category (fallback)
+                if ($firstAnswer->reviewing_doctor_id == $doctor->id) {
+                    $canEdit = true;
+                } else {
+                    // Fallback: allow if doctor has access to this category
+                    $doctorCategoryIds = $doctor->categories->pluck('id')->toArray();
+                    if (in_array((int) $categoryId, $doctorCategoryIds)) {
+                        $canEdit = true;
+                    }
+                }
+            }
+        }
         
         // Get prescription for this questionnaire if it exists
         $prescription = Prescription::where('user_id', $userId)
@@ -219,8 +290,16 @@ class QuestionnaireReviewController extends Controller
 
         // Get medicines from the category for medicine assignment
         $categoryMedicines = collect([]);
-        if ($firstAnswer->category) {
-            $categoryMedicines = $firstAnswer->category->medicines()->where('status', 1)->orderBy('name')->get();
+        if ($firstAnswer->category_id) {
+            // Load medicines through the category relationship
+            // Use join to ensure we get medicines from the pivot table
+            $categoryMedicines = Medicine::join('category_medicine', 'medicine.id', '=', 'category_medicine.medicine_id')
+                ->where('category_medicine.category_id', $firstAnswer->category_id)
+                ->where('medicine.status', 1)
+                ->with('brand')
+                ->select('medicine.*')
+                ->orderBy('medicine.name')
+                ->get();
         }
 
         // Get PurchaseMedicine orders for this user (related to this questionnaire submission)
@@ -282,15 +361,25 @@ class QuestionnaireReviewController extends Controller
         }
         
         // Get the submission to check permissions
+        // Check with hospital_id first, then fallback to null hospital_id (for backward compatibility)
         $firstAnswer = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
-            ->where('hospital_id', $doctor->hospital_id) // Hospital-scoped
+            ->where(function($query) use ($doctor) {
+                $query->where('hospital_id', $doctor->hospital_id)
+                      ->orWhereNull('hospital_id');
+            })
             ->whereNull('appointment_id')
             ->first();
         
         if (!$firstAnswer) {
             abort(404, 'Questionnaire submission not found');
+        }
+        
+        // Ensure hospital_id is set if it was null
+        if (!$firstAnswer->hospital_id) {
+            $firstAnswer->hospital_id = $doctor->hospital_id;
+            $firstAnswer->save();
         }
         
         // Sub-doctor: can update only if they are the reviewer. Admin: can update any questionnaire in their hospital.
@@ -301,20 +390,33 @@ class QuestionnaireReviewController extends Controller
         }
         // Admin doctor for this hospital can always update status (submission is already hospital-scoped above).
         
-        $shouldUnlock = in_array($request->status, ['approved', 'rejected', 'REVIEW_COMPLETED']);
+        // Only unlock (clear reviewing_doctor_id) for rejected or REVIEW_COMPLETED
+        // Keep reviewing_doctor_id for approved so the reviewing doctor can still access it to create prescription
+        $shouldUnlock = in_array($request->status, ['rejected', 'REVIEW_COMPLETED']);
         $hospitalId = $firstAnswer->hospital_id ?? $doctor->hospital_id;
         $isApproved = $request->status === 'approved';
 
         DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $request, $shouldUnlock, $hospitalId, $doctor, $isApproved) {
-            $updateData = ['status' => $request->status];
+            // Always ensure hospital_id is set in update data
+            $updateData = [
+                'status' => $request->status,
+                'hospital_id' => $hospitalId, // Ensure hospital_id is always set
+            ];
             if ($shouldUnlock) {
                 $updateData['reviewing_doctor_id'] = null;
             }
-            QuestionnaireAnswer::where('user_id', $userId)
+            
+            // Update ALL answers for this submission (user/category/questionnaire combination)
+            // Filter by hospital_id to ensure we only update the correct hospital's records
+            // Also handle backward compatibility with null hospital_id
+            $updated = QuestionnaireAnswer::where('user_id', $userId)
                 ->where('category_id', $categoryId)
                 ->where('questionnaire_id', $questionnaireId)
                 ->whereNull('appointment_id')
-                ->where('hospital_id', $hospitalId)
+                ->where(function($query) use ($hospitalId) {
+                    $query->where('hospital_id', $hospitalId)
+                          ->orWhereNull('hospital_id');
+                })
                 ->update($updateData);
 
             // Doctor selects medicines and creates prescription/orders via Create Prescription flow (no auto-create on approve)
@@ -398,24 +500,54 @@ class QuestionnaireReviewController extends Controller
             'valid_until' => $validUntil,
         ]);
 
-        // Create orders based on delivery type
+        // Create orders based on patient's delivery type choice from questionnaire submission
         if ($submission->delivery_type === 'pickup' && $submission->selected_pharmacy_id) {
-            // Pickup: Create one order for the selected pharmacy
+            // Patient selected PICKUP: Use the pharmacy they selected, no delivery address
             $this->createPurchaseMedicineOrder($submission, $selectedMedicines, $submission->selected_pharmacy_id, null);
         } elseif ($submission->delivery_type === 'delivery' && $submission->hasCompleteDeliveryAddress()) {
-            // Delivery: Create order with delivery address
-            // For delivery, we might need to assign to a pharmacy or handle differently
-            // For now, create order without pharmacy (system can assign later)
-            $this->createPurchaseMedicineOrder($submission, $selectedMedicines, null, $submission->delivery_address_id);
+            // Patient selected DELIVERY: Find a shipping-enabled pharmacy and use their delivery address
+            $pharmacy = \App\Models\Pharmacy::where('status', 'approved')
+                ->where('is_shipping', 1)
+                ->first();
+            
+            // If no shipping pharmacy found, get any approved pharmacy as fallback
+            if (!$pharmacy) {
+                $pharmacy = \App\Models\Pharmacy::where('status', 'approved')->first();
+            }
+            
+            // Only create order if pharmacy is found
+            if ($pharmacy) {
+                // Pass the patient's delivery address to create a delivery order
+                $this->createPurchaseMedicineOrder($submission, $selectedMedicines, $pharmacy->id, $submission->delivery_address_id);
+            }
+            // If no pharmacy found, skip order creation (prescription is already created)
         }
     }
 
     /**
      * Create PurchaseMedicine order for selected medicines.
+     * 
+     * The delivery type is determined by the patient's choice in the questionnaire submission:
+     * - If delivery_type is 'pickup': addressId will be null, order is for pharmacy pickup
+     * - If delivery_type is 'delivery': addressId will be set, order is for home delivery
+     * 
      * Returns the created PurchaseMedicine model or null on failure.
      */
     protected function createPurchaseMedicineOrder($submission, $selectedMedicines, $pharmacyId, $addressId)
     {
+        // Ensure pharmacy_id is provided (required by database)
+        if (!$pharmacyId) {
+            \Log::warning('Cannot create PurchaseMedicine order: pharmacy_id is required', [
+                'submission_id' => $submission->id ?? null,
+                'delivery_type' => $submission->delivery_type ?? null,
+            ]);
+            return null;
+        }
+        
+        // Note: The delivery type is determined by the patient's choice in the questionnaire submission
+        // - For pickup: addressId is null, order will be for pharmacy pickup
+        // - For delivery: addressId is set, order will be for home delivery
+
         $totalAmount = 0;
         $medicineItems = [];
 
@@ -463,7 +595,9 @@ class QuestionnaireReviewController extends Controller
         $adminCommissionPercent = 10;
         $adminCommission = ($totalAmount * $adminCommissionPercent) / 100;
         $pharmacyCommission = $totalAmount - $adminCommission;
-        $deliveryCharge = $submission->delivery_type === 'delivery' ? 50 : 0; // Default delivery charge
+        
+        // Apply delivery charge only if patient selected delivery (respecting patient's delivery type choice)
+        $deliveryCharge = $submission->delivery_type === 'delivery' ? 50 : 0;
 
         // Set shipping date: default to next day (can be adjusted based on business logic)
         // For delivery: ship next day; for pickup: ready for pickup next day
@@ -478,7 +612,7 @@ class QuestionnaireReviewController extends Controller
             'payment_status' => 0, // Pending payment
             'admin_commission' => $adminCommission,
             'pharmacy_commission' => $pharmacyCommission,
-            'pharmacy_id' => $pharmacyId,
+            'pharmacy_id' => $pharmacyId, // Now guaranteed to be non-null
             'address_id' => $addressId,
             'delivery_charge' => $deliveryCharge,
             'shipping_at' => $shippingAt,
@@ -679,10 +813,27 @@ class QuestionnaireReviewController extends Controller
             ]);
             
             if ($submission) {
+                // Respect patient's delivery type choice from questionnaire submission
                 if ($submission->delivery_type === 'pickup' && $submission->selected_pharmacy_id) {
+                    // Patient selected PICKUP: Use the pharmacy they selected, no delivery address
                     $this->createPurchaseMedicineOrder($submission, $selectedForOrders, $submission->selected_pharmacy_id, null);
                 } elseif ($submission->delivery_type === 'delivery' && $submission->hasCompleteDeliveryAddress()) {
-                    $this->createPurchaseMedicineOrder($submission, $selectedForOrders, null, $submission->delivery_address_id);
+                    // Patient selected DELIVERY: Find a shipping-enabled pharmacy and use their delivery address
+                    $pharmacy = \App\Models\Pharmacy::where('status', 'approved')
+                        ->where('is_shipping', 1)
+                        ->first();
+                    
+                    // If no shipping pharmacy found, get any approved pharmacy as fallback
+                    if (!$pharmacy) {
+                        $pharmacy = \App\Models\Pharmacy::where('status', 'approved')->first();
+                    }
+                    
+                    // Only create order if pharmacy is found
+                    if ($pharmacy) {
+                        // Pass the patient's delivery address to create a delivery order
+                        $this->createPurchaseMedicineOrder($submission, $selectedForOrders, $pharmacy->id, $submission->delivery_address_id);
+                    }
+                    // If no pharmacy found, skip order creation (prescription is already created)
                 }
             }
         });

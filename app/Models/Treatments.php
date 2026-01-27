@@ -22,7 +22,7 @@ class Treatments extends Model
 
     public function category()
     {
-        return $this->hasOne('App\Models\Category');
+        return $this->hasMany('App\Models\Category', 'treatment_id');
     }
 
     public function doctors()

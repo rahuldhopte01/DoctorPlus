@@ -140,6 +140,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
         Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
         Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
+        Route::get('/questionnaire/category/{categoryId}/check-status', [WebQuestionnaireController::class, 'checkSubmissionStatus'])->name('questionnaire.check-status');
         Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
             return view('website.questionnaire.success', compact('categoryId'));
         })->name('questionnaire.success');
