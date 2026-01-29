@@ -488,6 +488,10 @@ class QuestionnaireReviewController extends Controller
         $validFrom = now();
         $validityDays = 30; // Default 30 days validity
         $validUntil = $validFrom->copy()->addDays($validityDays);
+        
+        // Get prescription fee from settings
+        $setting = \App\Models\Setting::first();
+        $prescriptionFee = $setting->prescription_fee ?? 50.00;
 
         $prescription = Prescription::create([
             'appointment_id' => null,
@@ -498,6 +502,8 @@ class QuestionnaireReviewController extends Controller
             'validity_days' => $validityDays,
             'valid_from' => $validFrom,
             'valid_until' => $validUntil,
+            'payment_amount' => $prescriptionFee,
+            'payment_status' => 0,
         ]);
 
         // Create orders based on patient's delivery type choice from questionnaire submission
@@ -790,7 +796,11 @@ class QuestionnaireReviewController extends Controller
             ->where('questionnaire_id', $questionnaireId)
             ->first();
         
-        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $prescriptionMedicines, $submission, $selectedForOrders, $answers) {
+        // Get prescription fee from settings
+        $setting = \App\Models\Setting::first();
+        $prescriptionFee = $setting->prescription_fee ?? 50.00;
+        
+        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $prescriptionMedicines, $submission, $selectedForOrders, $answers, $prescriptionFee) {
             // Auto-approve questionnaire if status is IN_REVIEW
             if (in_array($answers->status, ['IN_REVIEW', 'under_review'])) {
                 QuestionnaireAnswer::where('user_id', $userId)
@@ -810,6 +820,8 @@ class QuestionnaireReviewController extends Controller
                 'valid_from' => null,
                 'valid_until' => null,
                 'validity_days' => null,
+                'payment_amount' => $prescriptionFee,
+                'payment_status' => 0,
             ]);
             
             if ($submission) {

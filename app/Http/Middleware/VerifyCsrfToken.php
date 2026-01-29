@@ -13,6 +13,8 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'saveEnvData',
-        'saveAdminData', 'return-data',
+        'saveAdminData', 
+        'return-data',
+        'stripe/webhook',
     ];
 }

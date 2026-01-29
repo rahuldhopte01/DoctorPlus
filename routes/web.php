@@ -70,6 +70,11 @@ Route::get('/clear-cache', function () {
     return 'Cache is cleared';
 });
 
+// Stripe Webhook (must be outside auth and CSRF middleware)
+Route::post('/stripe/webhook', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'handleWebhook'])
+    ->name('stripe.webhook')
+    ->withoutMiddleware(['web']);
+
 Route::group(['middleware' => ['XssSanitizer']], function () {
     Route::get('/', [WebsiteController::class, 'index']);
     Route::any('/show-doctors', [WebsiteController::class, 'doctor']);
@@ -170,6 +175,13 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/update_user_profile', [WebsiteController::class, 'update_user_profile']);
         Route::post('/update_change_password', [WebsiteController::class, 'change_password']);
         Route::get('/delete_account', [WebsiteController::class, 'deleteAccount']);
+
+        // Prescription Payment Routes
+        Route::get('/prescription/pay/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'showPaymentPage'])->name('prescription.pay');
+        Route::post('/prescription/create-checkout-session/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'createCheckoutSession'])->name('prescription.checkout');
+        Route::post('/prescription/process-payment/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'processPayment'])->name('prescription.process');
+        Route::get('/prescription/payment/success/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'paymentSuccess'])->name('prescription.payment.success');
+        Route::get('/prescription/payment/cancel/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'paymentCancel'])->name('prescription.payment.cancel');
 
     });
 
