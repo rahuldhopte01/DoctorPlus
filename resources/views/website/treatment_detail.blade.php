@@ -33,9 +33,9 @@
     </style>
 </head>
 <body>
-<!-- Navigation -->
+<!-- changes -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
-    <div class="container">
+    <div class="container"> 
         <a class="navbar-brand" href="{{ url('/') }}">
             @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
                 <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}" height="40">
