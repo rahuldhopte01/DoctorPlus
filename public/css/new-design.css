@@ -1,6 +1,6 @@
 /* Primary Brand Color */
 :root {
-    --primary-color: #e85a1a;
+    --primary-color: #4A3AFF;
     --primary-hover: #c74d16;
     --dark-blue: #1a3a52;
     --orange-light: #fff5f0;
@@ -280,6 +280,7 @@ html {
 /* Responsive Images */
 img {
     max-width: 100%;
+    width: 200px;
     height: auto;
 }
 

@@ -5,7 +5,7 @@
                 @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
                     <img src="{{$setting->logo}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" />
                 @else
-                    <img src="{{url('/images/upload_empty/lojf.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" />
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" />
                 @endif
             </a>
             <div class="flex items-center md:order-2">

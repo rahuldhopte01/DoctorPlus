@@ -9,7 +9,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/lojf.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @elseif(auth()->user()->hasRole('doctor'))
@@ -17,7 +17,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/lojf.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @elseif(auth()->user()->hasRole('pharmacy'))
@@ -25,7 +25,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/lojf.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @elseif(auth()->user()->hasRole('laboratory'))
@@ -33,7 +33,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/lojf.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @endif
