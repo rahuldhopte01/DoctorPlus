@@ -537,6 +537,8 @@
                 </li>
                 @endcan
 
+                {{-- Hidden from pharmacy sidebar - Schedule Timings --}}
+                @if(false)
                 @can('pharmacy_schedule')
                 <li class="{{ $activePage == 'pharmacy_schedule' ? 'active' : '' }}">
                     <a href="{{ url('pharmacy_schedule') }}">
@@ -545,7 +547,10 @@
                     </a>
                 </li>
                 @endcan
+                @endif
 
+                {{-- Hidden from pharmacy sidebar - Commission Details --}}
+                @if(false)
                 @can('pharmacy_commission_access')
                 <li class="{{ $activePage == 'commission' ? 'active' : '' }}">
                     <a href="{{ url('pharmacyCommission') }}">
@@ -554,6 +559,7 @@
                     </a>
                 </li>
                 @endcan
+                @endif
             @endif
 
             {{-- Hidden from super admin sidebar - insurer --}}
