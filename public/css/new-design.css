@@ -1,27 +1,51 @@
-/* Primary Brand Color */
+/* Dr Fuxx Brand Color Palette */
 :root {
-    --primary-color: #4A3AFF;
-    --primary-hover: #c74d16;
-    --dark-blue: #1a3a52;
-    --orange-light: #fff5f0;
-    --blue-light: #e7f0ff;
-    --pink-light: #ffe7f0;
-    --teal-light: #e0f7f7;
-    --green-light: #e7f7e7;
-    --purple-light: #f0e7ff;
+    /* Primary Brand Colors */
+    --primary-color: #4A3AFF;      /* Electric Violet - Logo, headers, key elements */
+    --secondary-color: #1A1F3D;    /* Deep Navy - Dark mode BG, text, depth */
+    --accent-color: #00D9C0;       /* Electric Cyan - Icons, highlights, success */
+    --cta-color: #FF6B4A;          /* Warm Coral - Buttons, urgent actions */
+    --light-bg: #F8F9FA;           /* Off-White - Light mode background */
+    --dark-bg: #0D0D12;            /* Near-Black - Dark mode background */
+    
+    /* Hover states */
+    --primary-hover: #3828E0;      /* Darker Electric Violet */
+    --cta-hover: #E55A3A;          /* Darker Warm Coral */
+    
+    /* Legacy color variables (for compatibility) */
+    --dark-blue: #1A1F3D;
+    --orange-light: #FFF5F0;
+    --blue-light: #E8EEFF;
+    --pink-light: #FFE7F0;
+    --teal-light: #E0FFF9;
+    --green-light: #E7F7E7;
+    --purple-light: #EFEBFF;
 }
 
 /* Bootstrap Color Overrides */
 .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
+    background-color: var(--cta-color);
+    border-color: var(--cta-color);
 }
 
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
+    background-color: var(--cta-hover);
+    border-color: var(--cta-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
 }
 
 .text-primary {
@@ -32,9 +56,31 @@
     background-color: var(--primary-color) !important;
 }
 
+.text-accent {
+    color: var(--accent-color) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent-color) !important;
+}
+
+.text-cta {
+    color: var(--cta-color) !important;
+}
+
+.bg-cta {
+    background-color: var(--cta-color) !important;
+}
+
 /* Navbar */
 .navbar {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand img {
+    max-height: 45px;
+    width: auto;
+    object-fit: contain;
 }
 
 .nav-link {
@@ -48,14 +94,22 @@
 
 /* Hero Section */
 .hero-section {
-    background: linear-gradient(135deg, #fff5f0 0%, #ffe7e7 100%);
+    background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
 }
 
 .badge.bg-orange-light {
-    background-color: var(--orange-light) !important;
+    background-color: var(--purple-light) !important;
+}
+
+.badge.bg-violet-light {
+    background-color: var(--purple-light) !important;
 }
 
 .text-orange {
+    color: var(--cta-color);
+}
+
+.text-violet {
     color: var(--primary-color);
 }
 
@@ -113,7 +167,7 @@
 }
 
 .text-teal {
-    color: #14b8a6;
+    color: var(--accent-color);
 }
 
 .bg-green-light {
@@ -125,15 +179,11 @@
 }
 
 .text-purple {
-    color: #a855f7;
+    color: var(--primary-color);
 }
 
 .bg-orange-light {
     background-color: var(--orange-light);
-}
-
-.text-orange {
-    color: var(--primary-color);
 }
 
 /* Step Cards */
@@ -161,7 +211,7 @@
     left: 60%;
     width: 100%;
     height: 2px;
-    background: linear-gradient(to right, rgba(232, 90, 26, 0.3), rgba(232, 90, 26, 0.2));
+    background: linear-gradient(to right, rgba(74, 58, 255, 0.3), rgba(74, 58, 255, 0.2));
 }
 
 /* Feature Icons */
@@ -173,7 +223,11 @@
 
 /* Testimonials */
 .bg-gradient-orange {
-    background: linear-gradient(135deg, #fff5f0 0%, #ffe7e7 100%);
+    background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
+}
+
+.bg-gradient-violet {
+    background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
 }
 
 /* Accordion */
@@ -182,22 +236,29 @@
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: #fff5f0;
+    background-color: var(--purple-light);
     color: var(--primary-color);
 }
 
 .accordion-button:focus {
     box-shadow: none;
-    border-color: rgba(232, 90, 26, 0.3);
+    border-color: rgba(74, 58, 255, 0.3);
 }
 
 /* Footer */
 .footer-dark {
-    background-color: var(--dark-blue);
+    background-color: var(--secondary-color);
+}
+
+.footer-dark .footer-logo {
+    max-height: 50px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
 }
 
 .footer-dark a:hover {
-    color: var(--primary-color) !important;
+    color: var(--accent-color) !important;
 }
 
 /* Treatment Cards */
@@ -291,7 +352,7 @@ img {
 /* Input Focus */
 .form-control:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(232, 90, 26, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(74, 58, 255, 0.25);
 }
 
 /* Mobile Adjustments */
@@ -324,7 +385,7 @@ img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: var(--primary-color);
+    background-color: var(--cta-color);
     color: white;
     border: none;
     display: none;
@@ -336,10 +397,35 @@ img {
 }
 
 .back-to-top:hover {
-    background-color: var(--primary-hover);
+    background-color: var(--cta-hover);
     transform: translateY(-3px);
 }
 
 .back-to-top.show {
     display: flex;
+}
+
+/* Success/Accent States */
+.text-success {
+    color: var(--accent-color) !important;
+}
+
+.badge-success,
+.bg-success {
+    background-color: var(--accent-color) !important;
+}
+
+/* Link colors */
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Selection highlight */
+::selection {
+    background-color: var(--primary-color);
+    color: white;
 }

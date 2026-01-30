@@ -406,6 +406,15 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('create_zoom_meeting/{appointment_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'setupZoomMeeting']);
         Route::get('zoom-oauth-callback', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'oauthCallback']);
         Route::post('/store/{app_stor_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'storeZoomMeeting']);
+
+        // Clinic Admin - Sub-Doctor Management
+        Route::get('/doctor/clinic-doctors', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'index'])->name('clinic.doctors.index');
+        Route::get('/doctor/clinic-doctors/create', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'create'])->name('clinic.doctors.create');
+        Route::post('/doctor/clinic-doctors', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'store'])->name('clinic.doctors.store');
+        Route::get('/doctor/clinic-doctors/{id}/edit', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'edit'])->name('clinic.doctors.edit');
+        Route::put('/doctor/clinic-doctors/{id}', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'update'])->name('clinic.doctors.update');
+        Route::delete('/doctor/clinic-doctors/{id}', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'destroy'])->name('clinic.doctors.destroy');
+        Route::post('/doctor/clinic-doctors/change-status', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'changeStatus'])->name('clinic.doctors.status');
     });
 
     /******* PHARMACY PANEL */

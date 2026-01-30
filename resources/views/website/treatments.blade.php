@@ -26,9 +26,9 @@
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
             @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
-                <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}" height="40">
+                <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}">
             @else
-                <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" style="width:200px" alt="{{ $setting->business_name }}" height="40">
+                <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}">
             @endif
         </a>
         
@@ -212,9 +212,9 @@
             <!-- Company Info -->
             <div class="col-md-6 col-lg-3">
                 @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
-                    <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}" height="40" class="mb-3" style="filter: brightness(0) invert(1);">
+                    <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}" class="footer-logo mb-3">
                 @else
-                    <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" style="width:200px" alt="{{ $setting->business_name }}" height="40" class="mb-3" style="filter: brightness(0) invert(1);">
+                    <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}" class="footer-logo mb-3">
                 @endif
                 <p class="small mb-3">Your trusted online medical practice for discreet and secure medical consultation.</p>
                 <div class="d-flex gap-3">
