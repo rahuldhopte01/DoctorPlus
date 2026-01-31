@@ -11,9 +11,13 @@ class Category extends Model
 
     protected $table = 'category';
 
-    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'status'];
+    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'price', 'status'];
 
     protected $appends = ['fullImage'];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
 
     protected function getFullImageAttribute()
     {

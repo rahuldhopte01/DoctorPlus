@@ -160,9 +160,9 @@
                                     </p>
                                     <p class="text-primary fw-bold fs-5 mb-0">
                                         @if(isset($category->price) && $category->price)
-                                            {{ $category->price }}
+                                            Starting from €{{ number_format($category->price, 2) }}
                                         @else
-                                            Starting from €29.99
+                                            Price not available
                                         @endif
                                     </p>
                                 </div>

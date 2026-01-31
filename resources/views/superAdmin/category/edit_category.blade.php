@@ -49,6 +49,15 @@
                                 @enderror
                             </div>
                             <div class="form-group">
+                                <label class="col-form-label">{{__('Price (€)')}}</label>
+                                <input type="number" step="0.01" min="0" value="{{ old('price', $category->price) }}" name="price" class="form-control @error('price') is-invalid @enderror">
+                                @error('price')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
                                 <label class="col-form-label">{{__('Description')}}</label>
                                 <textarea name="description" class="form-control summernote @error('description') is-invalid @enderror">{{ $category->description }}</textarea>
                                 @error('description')

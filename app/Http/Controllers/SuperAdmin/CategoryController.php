@@ -48,6 +48,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'bail|required|unique:category',
+            'price' => 'bail|required|numeric|min:0',
             'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
         ],
             [
@@ -100,6 +101,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'bail|required|unique:category,name,'.$id.',id',
+            'price' => 'bail|required|numeric|min:0',
             'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
         ],
             [
