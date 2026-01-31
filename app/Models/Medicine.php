@@ -45,4 +45,13 @@ class Medicine extends Model
     {
         return $query->where('status', 1);
     }
+
+    /**
+     * Categories this medicine is available for (questionnaire flow).
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_medicine', 'medicine_id', 'category_id')
+            ->withTimestamps();
+    }
 }

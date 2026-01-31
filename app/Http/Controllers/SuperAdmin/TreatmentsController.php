@@ -124,7 +124,9 @@ class TreatmentsController extends Controller
     public function destroy($id)
     {
         abort_if(Gate::denies('treatment_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        if (Doctor::where('treatment_id', $id)->exists()) {
+        if (Doctor::whereHas('treatments', function($query) use ($id) {
+            $query->where('treatments.id', $id);
+        })->exists()) {
             return response(['success' => false, 'msg' => 'This treatment is being used by one or more doctors! ']);
         } else {
             $treat = Treatments::find($id);

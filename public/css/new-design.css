@@ -1,0 +1,431 @@
+/* Dr Fuxx Brand Color Palette */
+:root {
+    /* Primary Brand Colors */
+    --primary-color: #4A3AFF;      /* Electric Violet - Logo, headers, key elements */
+    --secondary-color: #1A1F3D;    /* Deep Navy - Dark mode BG, text, depth */
+    --accent-color: #00D9C0;       /* Electric Cyan - Icons, highlights, success */
+    --cta-color: #FF6B4A;          /* Warm Coral - Buttons, urgent actions */
+    --light-bg: #F8F9FA;           /* Off-White - Light mode background */
+    --dark-bg: #0D0D12;            /* Near-Black - Dark mode background */
+    
+    /* Hover states */
+    --primary-hover: #3828E0;      /* Darker Electric Violet */
+    --cta-hover: #E55A3A;          /* Darker Warm Coral */
+    
+    /* Legacy color variables (for compatibility) */
+    --dark-blue: #1A1F3D;
+    --orange-light: #FFF5F0;
+    --blue-light: #E8EEFF;
+    --pink-light: #FFE7F0;
+    --teal-light: #E0FFF9;
+    --green-light: #E7F7E7;
+    --purple-light: #EFEBFF;
+}
+
+/* Bootstrap Color Overrides */
+.btn-primary {
+    background-color: var(--cta-color);
+    border-color: var(--cta-color);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--cta-hover);
+    border-color: var(--cta-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.text-accent {
+    color: var(--accent-color) !important;
+}
+
+.bg-accent {
+    background-color: var(--accent-color) !important;
+}
+
+.text-cta {
+    color: var(--cta-color) !important;
+}
+
+.bg-cta {
+    background-color: var(--cta-color) !important;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand img {
+    max-height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+.nav-link {
+    color: #374151;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--primary-color);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
+}
+
+.badge.bg-orange-light {
+    background-color: var(--purple-light) !important;
+}
+
+.badge.bg-violet-light {
+    background-color: var(--purple-light) !important;
+}
+
+.text-orange {
+    color: var(--cta-color);
+}
+
+.text-violet {
+    color: var(--primary-color);
+}
+
+.hero-card {
+    max-width: 220px;
+}
+
+.hero-card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+}
+
+/* Service Cards */
+.service-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.service-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.service-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.1);
+    transition: transform 0.3s;
+}
+
+/* Color Classes */
+.bg-blue-light {
+    background-color: var(--blue-light);
+}
+
+.text-blue {
+    color: #3b82f6;
+}
+
+.bg-pink-light {
+    background-color: var(--pink-light);
+}
+
+.text-pink {
+    color: #ec4899;
+}
+
+.bg-teal-light {
+    background-color: var(--teal-light);
+}
+
+.text-teal {
+    color: var(--accent-color);
+}
+
+.bg-green-light {
+    background-color: var(--green-light);
+}
+
+.bg-purple-light {
+    background-color: var(--purple-light);
+}
+
+.text-purple {
+    color: var(--primary-color);
+}
+
+.bg-orange-light {
+    background-color: var(--orange-light);
+}
+
+/* Step Cards */
+.step-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+}
+
+.step-number {
+    top: -8px;
+    right: -8px;
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-connector::after {
+    content: '';
+    position: absolute;
+    top: 48px;
+    left: 60%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, rgba(74, 58, 255, 0.3), rgba(74, 58, 255, 0.2));
+}
+
+/* Feature Icons */
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 32px;
+}
+
+/* Testimonials */
+.bg-gradient-orange {
+    background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
+}
+
+.bg-gradient-violet {
+    background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
+}
+
+/* Accordion */
+.accordion-button {
+    font-weight: 600;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--purple-light);
+    color: var(--primary-color);
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(74, 58, 255, 0.3);
+}
+
+/* Footer */
+.footer-dark {
+    background-color: var(--secondary-color);
+}
+
+.footer-dark .footer-logo {
+    max-height: 50px;
+    width: auto;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+}
+
+.footer-dark a:hover {
+    color: var(--accent-color) !important;
+}
+
+/* Treatment Cards */
+.treatment-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.treatment-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.treatment-card:hover h5 {
+    color: var(--primary-color);
+}
+
+/* Category Filter */
+.category-filter {
+    overflow-x: auto;
+    white-space: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.category-filter::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f3f4f6;
+    color: #374151;
+    text-decoration: none;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Treatment Detail Page */
+.breadcrumb-link {
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.breadcrumb-link:hover {
+    color: var(--primary-color);
+}
+
+.sticky-cta {
+    position: sticky;
+    top: 100px;
+}
+
+/* Category Icons in Treatment Cards */
+.category-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Responsive Images */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Custom Shadows */
+.shadow-lg {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Input Focus */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 58, 255, 0.25);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+
+    .display-5 {
+        font-size: 1.75rem;
+    }
+
+    .hero-card {
+        max-width: 180px;
+        padding: 0.75rem !important;
+    }
+
+    .hero-card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--cta-color);
+    color: white;
+    border: none;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s;
+}
+
+.back-to-top:hover {
+    background-color: var(--cta-hover);
+    transform: translateY(-3px);
+}
+
+.back-to-top.show {
+    display: flex;
+}
+
+/* Success/Accent States */
+.text-success {
+    color: var(--accent-color) !important;
+}
+
+.badge-success,
+.bg-success {
+    background-color: var(--accent-color) !important;
+}
+
+/* Link colors */
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Selection highlight */
+::selection {
+    background-color: var(--primary-color);
+    color: white;
+}

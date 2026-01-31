@@ -158,19 +158,19 @@
                                     <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>{{__('Degree')}}</label>
-                                            <input type="text" value="{{ $education->degree }}" required name="degree[]" class="form-control">
+                                            <input type="text" value="{{ $education->degree }}" name="degree[]" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>{{__('College/Institute')}}</label>
-                                            <input type="text" value="{{ $education->college }}" required name="college[]" class="form-control">
+                                            <input type="text" value="{{ $education->college }}" name="college[]" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>{{__('Year of Completion')}}</label>
-                                            <input type="text" maxlength="4" value="{{ $education->year }}" pattern="^[0-9]{4}$" required name="year[]" class="form-control">
+                                            <input type="text" maxlength="4" value="{{ $education->year }}" pattern="^[0-9]{4}$" name="year[]" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -192,19 +192,19 @@
                                     <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>{{__('Degree')}}</label>
-                                            <input type="text" required name="degree[]" class="form-control">
+                                            <input type="text" name="degree[]" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>{{__('College/Institute')}}</label>
-                                            <input type="text" required name="college[]" class="form-control">
+                                            <input type="text" name="college[]" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label>{{__('Year of Completion')}}</label>
-                                            <input type="text" maxlength="4" pattern="^[0-9]{4}$" required name="year[]" class="form-control">
+                                            <input type="text" maxlength="4" pattern="^[0-9]{4}$" name="year[]" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -226,13 +226,13 @@
                             <div class="col-12 col-md-5">
                                 <div class="form-group">
                                     <label>{{__('certificate')}}</label>
-                                    <input type="text" value="{{ $certificate->certificate }}" required name="certificate[]" class="form-control">
+                                    <input type="text" value="{{ $certificate->certificate }}" name="certificate[]" class="form-control">
                                 </div>
                             </div>
                             <div class="col-12 col-md-5">
                                 <div class="form-group">
                                     <label>{{__('Year')}}</label>
-                                    <input type="text" required value="{{ $certificate->certificate_year }}" name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
+                                    <input type="text" value="{{ $certificate->certificate_year }}" name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
                                 </div>
                             </div>
                             @if ($loop->iteration != 1)
@@ -248,13 +248,13 @@
                             <div class="col-12 col-md-5">
                                 <div class="form-group">
                                     <label>{{__('certificate')}}</label>
-                                    <input type="text" required name="certificate[]" class="form-control">
+                                    <input type="text" name="certificate[]" class="form-control">
                                 </div>
                             </div>
                             <div class="col-12 col-md-5">
                                 <div class="form-group">
                                     <label>{{__('Year')}}</label>
-                                    <input type="text" required name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
+                                    <input type="text" name="certificate_year[]" maxlength="4" pattern="^[0-9]{4}$" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -297,10 +297,9 @@
                 <div class="row mt-4">
                     <div class="col-lg-4 form-group">
                         <label class="col-form-label">{{__('Treatments')}}</label>
-                        <select name="treatment_id" class="select2 @error('treatment_id') is-invalid @enderror">
+                        <select name="treatment_id[]" class="select2 @error('treatment_id') is-invalid @enderror" multiple>
                             @foreach ($treatments as $treatment)
-                            <option value="{{ $treatment->id }}" {{ $doctor->treatment_id == $treatment->id ? 'selected'
-                                : '' }}>{{ $treatment->name }}</option>
+                            <option value="{{ $treatment->id }}" {{ in_array($treatment->id, $doctor->selected_treatment_ids ?? []) ? 'selected' : '' }}>{{ $treatment->name }}</option>
                             @endforeach
                         </select>
                         @error('treatment_id')
@@ -311,10 +310,9 @@
                     </div>
                     <div class="col-lg-4 form-group">
                         <label class="col-form-label">{{__('Categories')}}</label>
-                        <select name="category_id" class="select2 @error('category_id') is-invalid @enderror">
+                        <select name="category_id[]" class="select2 @error('category_id') is-invalid @enderror" multiple>
                             @foreach ($categories as $category)
-                            <option value="{{ $category->id }}" {{ $doctor->category_id == $category->id ? 'selected' :
-                                '' }}>{{ $category->name }}</option>
+                            <option value="{{ $category->id }}" {{ in_array($category->id, $doctor->selected_category_ids ?? []) ? 'selected' : '' }}>{{ $category->name }}</option>
                             @endforeach
                         </select>
                         @error('category_id')
@@ -386,9 +384,7 @@
                     </div>
                     <div class="col-lg-6 form-group base_on_com {{ $doctor->based_on != 'commission' ? 'hide' : '' }}">
                         <label class="col-form-label">{{__('Commission Amount ( pr appointment ) ( in % )')}}</label>
-                        <input type="text" step="any" name="commission_amount" disabled {{ $doctor->based_on == 'commission_amount'
-                        ? 'required' : '' }} value="{{ $doctor->commission_amount }}" class="form-control
-                        base_on_com_text @error('commission_amount') is-invalid @enderror">
+                        <input type="text" step="any" name="commission_amount" disabled value="{{ $doctor->commission_amount }}" class="form-control base_on_com_text @error('commission_amount') is-invalid @enderror">
                         @error('commission_amount')
                         <div class="invalid-feedback">
                             {{ $message }}

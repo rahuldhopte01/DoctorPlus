@@ -47,6 +47,8 @@ class Setting extends Model
         'zoom_client_secret',
         'zoom_redirect_url',
         'zoom_page_content',
+        'stripe_webhook_secret',
+        'prescription_fee',
     ];
 
     protected $appends = ['companyWhite', 'logo', 'favicon'];

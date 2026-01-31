@@ -113,7 +113,15 @@ class HospitalController extends Controller
     {
         $doctors = Doctor::get();
         foreach ($doctors as $value) {
+            // Handle hospital_id - could be single integer or comma-separated string (legacy)
+            $hospital_id = [];
+            if ($value['hospital_id'] !== null) {
+                if (is_string($value['hospital_id']) && strpos($value['hospital_id'], ',') !== false) {
             $hospital_id = explode(',', $value['hospital_id']);
+                } else {
+                    $hospital_id = [$value['hospital_id']];
+                }
+            }
             if (($key = array_search($id, $hospital_id)) !== false) {
                 return response(['success' => false, 'data' => 'This hospital connected with Doctor.']);
             }

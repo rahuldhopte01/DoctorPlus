@@ -24,6 +24,8 @@ class QuestionnaireAnswer extends Model
         'flag_reason',
         'status',
         'submitted_at',
+        'reviewing_doctor_id',
+        'hospital_id',
     ];
 
     protected $casts = [
@@ -71,6 +73,22 @@ class QuestionnaireAnswer extends Model
     public function question()
     {
         return $this->belongsTo(QuestionnaireQuestion::class, 'question_id');
+    }
+
+    /**
+     * Get the doctor currently reviewing this answer.
+     */
+    public function reviewingDoctor()
+    {
+        return $this->belongsTo(Doctor::class, 'reviewing_doctor_id');
+    }
+
+    /**
+     * Get the hospital this answer belongs to.
+     */
+    public function hospital()
+    {
+        return $this->belongsTo(Hospital::class, 'hospital_id');
     }
 
     /**
@@ -143,6 +161,79 @@ class QuestionnaireAnswer extends Model
     {
         return $query->where('user_id', $userId)
             ->where('category_id', $categoryId);
+    }
+
+    /**
+     * Scope to get answers by hospital.
+     */
+    public function scopeByHospital($query, $hospitalId)
+    {
+        return $query->where('hospital_id', $hospitalId);
+    }
+
+    /**
+     * Scope to get answers being reviewed by a doctor.
+     */
+    public function scopeBeingReviewedBy($query, $doctorId)
+    {
+        return $query->where('reviewing_doctor_id', $doctorId)
+            ->whereIn('status', ['IN_REVIEW', 'under_review']);
+    }
+
+    /**
+     * Scope to get locked answers (in review).
+     */
+    public function scopeLocked($query)
+    {
+        return $query->whereIn('status', ['IN_REVIEW', 'under_review'])
+            ->whereNotNull('reviewing_doctor_id');
+    }
+
+    /**
+     * Scope to get unlocked answers (available for review).
+     */
+    public function scopeUnlocked($query)
+    {
+        return $query->where('status', 'pending')
+            ->whereNull('reviewing_doctor_id');
+    }
+
+    /**
+     * Lock this answer to a doctor for review.
+     */
+    public function lockForReview($doctorId)
+    {
+        $this->update([
+            'status' => 'IN_REVIEW',
+            'reviewing_doctor_id' => $doctorId,
+        ]);
+    }
+
+    /**
+     * Unlock this answer (release from review).
+     */
+    public function unlockFromReview()
+    {
+        $this->update([
+            'reviewing_doctor_id' => null,
+        ]);
+    }
+
+    /**
+     * Check if answer is locked.
+     */
+    public function isLocked(): bool
+    {
+        return in_array($this->status, ['IN_REVIEW', 'under_review']) 
+            && $this->reviewing_doctor_id !== null;
+    }
+
+    /**
+     * Check if answer is locked by a specific doctor.
+     */
+    public function isLockedBy($doctorId): bool
+    {
+        return $this->isLocked() && $this->reviewing_doctor_id == $doctorId;
     }
 }
 

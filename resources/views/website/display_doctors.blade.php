@@ -48,6 +48,7 @@
                             <div class="mb-10">
                                 <h2 class="font-fira-sans font-normal text-sm leading-4 text-gray">
                                     {{ isset($doctor['category']) ? $doctor['category']['name'] : '' }}</h2>
+                                @if(isset($doctor['hospital']) && is_array($doctor['hospital']) && count($doctor['hospital']) > 0)
                                 @foreach ($doctor['hospital'] as $hospital)
                                     @if ($loop->iteration <= 2)
                                         <p
@@ -68,6 +69,7 @@
                                         @break
                                     @endif
                                 @endforeach
+                                @endif
                             </div>
                             <h1
                                 class="font-fira-sans font-semibold text-2xl text-primary leading-7 pt-5 xmd:pt-2 sm:pt-1 mb-5">

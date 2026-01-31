@@ -9,7 +9,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/logo_black.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @elseif(auth()->user()->hasRole('doctor'))
@@ -17,7 +17,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/logo_black.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @elseif(auth()->user()->hasRole('pharmacy'))
@@ -25,7 +25,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/logo_black.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @elseif(auth()->user()->hasRole('laboratory'))
@@ -33,7 +33,7 @@
                     @if($settings->company_logo)
                     <img src="{{ $settings->logo }}" width="180" height="45" alt="Logo" style="object-fit: contain;">
                     @else
-                    <img src="{{url('/images/upload_empty/logo_black.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
+                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" width="180" height="45" alt="Logo" style="object-fit: contain;"/>
                     @endif
                 </a>
             @endif
@@ -91,14 +91,23 @@
                 @endcan
             @endif
 
-            @can('appointment_access')
-                <li class="{{ $activePage == 'appointment' ? 'active' : '' }}">
-                    <a href="{{ url('appointment') }}">
-                        <i class="far fa-calendar-check"></i>
-                        <span>{{__('appointment')}}</span>
-                    </a>
-                </li>
-            @endcan
+            {{-- Hidden from super admin sidebar, admin doctors and sub doctors - appointment --}}
+            @if(!auth()->user()->hasRole('super admin'))
+                @php
+                    $doctorForAppointment = auth()->user()->hasRole('doctor') ? \App\Models\Doctor::where('user_id', auth()->user()->id)->first() : null;
+                    $isDoctorRole = $doctorForAppointment && ($doctorForAppointment->isAdminDoctor() || $doctorForAppointment->isSubDoctor());
+                @endphp
+                @if(!$isDoctorRole)
+                    @can('appointment_access')
+                        <li class="{{ $activePage == 'appointment' ? 'active' : '' }}">
+                            <a href="{{ url('appointment') }}">
+                                <i class="far fa-calendar-check"></i>
+                                <span>{{__('appointment')}}</span>
+                            </a>
+                        </li>
+                    @endcan
+                @endif
+            @endif
 
             @if (auth()->user()->hasRole('doctor'))
                 <li class="{{ $activePage == 'questionnaire_submissions' ? 'active' : '' }}">
@@ -107,6 +116,19 @@
                         <span>{{__('Questionnaire Submissions')}}</span>
                     </a>
                 </li>
+                
+                {{-- Clinic Admin - Manage Sub-Doctors --}}
+                @php
+                    $currentDoctor = \App\Models\Doctor::where('user_id', auth()->user()->id)->first();
+                @endphp
+                @if($currentDoctor && $currentDoctor->isAdminDoctor() && $currentDoctor->hospital_id)
+                <li class="{{ $activePage == 'clinic_doctors' ? 'active' : '' }}">
+                    <a href="{{ route('clinic.doctors.index') }}">
+                        <i class="fas fa-user-md"></i>
+                        <span>{{__('Manage Sub-Doctors')}}</span>
+                    </a>
+                </li>
+                @endif
             @endif
 
             @can('treatment_access')
@@ -127,6 +149,8 @@
                 </li>
             @endcan
 
+            {{-- Hidden from super admin sidebar - expertise --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('expertise_access')
                 <li class="{{ $activePage == 'expertise' ? 'active' : '' }}">
                     <a href="{{ url('expertise') }}">
@@ -135,6 +159,7 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
             @can('questionnaire_access')
                 <li class="{{ $activePage == 'questionnaire' ? 'active' : '' }}">
@@ -166,8 +191,8 @@
             @can('hospital_access')
                 <li class="{{ $activePage == 'hospital' ? 'active' : '' }}">
                     <a href="{{ url('hospital') }}">
-                        <i class="far fa-hospital"></i>
-                        <span>{{__('hospital')}}</span>
+                        <i class="fas fa-clinic-medical"></i>
+                        <span>{{__('clinic')}}</span>
                     </a>
                 </li>
             @endcan
@@ -190,6 +215,8 @@
                 </li>
             @endcan
 
+            {{-- Hidden from super admin sidebar - laboratory --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('lab_access')
                 <li class="{{ $activePage == 'lab' ? 'active' : '' }}">
                     <a href="{{ url('laboratory') }}">
@@ -198,7 +225,10 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
+            {{-- Hidden from super admin sidebar - pathology category --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('pathology_category_access')
                 <li class="{{ $activePage == 'pathology_category' ? 'active' : '' }}">
                     <a href="{{ url('pathology_category') }}">
@@ -207,7 +237,10 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
+            {{-- Hidden from super admin sidebar - radiology category --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('radiology_category_access')
                 <li class="{{ $activePage == 'radiology_category' ? 'active' : '' }}">
                     <a href="{{ url('radiology_category') }}">
@@ -216,7 +249,10 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
+            {{-- Hidden from super admin sidebar - pathology --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('pathology_access')
                 <li class="{{ $activePage == 'pathology' ? 'active' : '' }}">
                     <a href="{{ url('pathology') }}">
@@ -225,7 +261,10 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
+            {{-- Hidden from super admin sidebar - radiology --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('radiology_access')
                 <li class="{{ $activePage == 'radiology' ? 'active' : '' }}">
                     <a href="{{ url('radiology') }}">
@@ -234,7 +273,10 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
+            {{-- Hidden from super admin sidebar - test reports --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('test_report')
                 <li class="{{ $activePage == 'test_report' ? 'active' : '' }}">
                     <a href="{{ url('test_reports') }}">
@@ -243,6 +285,7 @@
                     </a>
                 </li>
             @endcan
+            @endif
 
             @if (auth()->user()->hasRole('laboratory'))
                 @can('lab_commission')
@@ -264,25 +307,32 @@
                 @endcan
             @endif
 
+            {{-- Hidden from admin doctors and sub doctors - Users --}}
             @if(auth()->user()->can('patient_access') || auth()->user()->can('admin_user_access'))
-                <li class="{{ $activePage == 'patients' ? 'active' : '' }} || {{ $activePage == 'admin_users' ? 'active' : '' }}">
-                    <a href="javascript:void(0)" class="nav-link has-dropdown">
-                        <i class="fas fa-user-injured"></i>
-                        <span>{{__('Users')}}</span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        @can('admin_user_access')
-                        <li class="{{ $activePage == 'admin_users' ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ url('admin_users') }}">{{__('Admin users')}}</a>
-                        </li>
-                        @endcan
-                        @can('patient_access')
-                        <li class="{{ $activePage == 'patients' ? 'active' : '' }}">
-                            <a class="nav-link" href="{{ url('patient') }}">{{__('Patient')}}</a>
-                        </li>
-                        @endcan
-                    </ul>
-                </li>
+                @php
+                    $doctorForUsers = auth()->user()->hasRole('doctor') ? \App\Models\Doctor::where('user_id', auth()->user()->id)->first() : null;
+                    $isDoctorRoleUsers = $doctorForUsers && ($doctorForUsers->isAdminDoctor() || $doctorForUsers->isSubDoctor());
+                @endphp
+                @if(!$isDoctorRoleUsers)
+                    <li class="{{ $activePage == 'patients' ? 'active' : '' }} || {{ $activePage == 'admin_users' ? 'active' : '' }}">
+                        <a href="javascript:void(0)" class="nav-link has-dropdown">
+                            <i class="fas fa-user-injured"></i>
+                            <span>{{__('Users')}}</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @can('admin_user_access')
+                            <li class="{{ $activePage == 'admin_users' ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ url('admin_users') }}">{{__('Admin users')}}</a>
+                            </li>
+                            @endcan
+                            @can('patient_access')
+                            <li class="{{ $activePage == 'patients' ? 'active' : '' }}">
+                                <a class="nav-link" href="{{ url('patient') }}">{{__('Patient')}}</a>
+                            </li>
+                            @endcan
+                        </ul>
+                    </li>
+                @endif
             @endif
 
             @can('blog_access')
@@ -303,64 +353,67 @@
                 </li>
             @endcan
 
+            {{-- Hidden from super admin sidebar, admin doctors and sub doctors - subscriptions --}}
             @if (Gate::check('subscription_access') || Gate::check('subscription_history'))
                 @if (auth()->user()->hasRole('doctor'))
                     @php
                         $doctor = App\Models\Doctor::where('user_id',auth()->user()->id)->first();
                     @endphp
                     @if($doctor->based_on == 'subscription')
-                        <li class="{{ $activePage == 'subscription' ? 'active' : '' }} || {{ $activePage == 'subscription_history' ? 'active' : '' }}">
-                            <a href="javascript:void(0)" class="nav-link has-dropdown"><i class="fas fa-file-image"></i>
-                                <span>{{__('subscriptions')}}</span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li class="{{ $activePage == 'subscription' ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ url('subscription') }}">{{__('subscription')}}</a>
-                                </li>
-                                <li class="{{ $activePage == 'subscription_history' ? 'active' : '' }}">
-                                    <a class="nav-link" href="{{ url('subscription_history') }}">{{__('subscription history')}}</a>
-                                </li>
-                            </ul>
-                        </li>
+                        {{-- Hidden from admin and sub doctors - Subscriptions --}}
+                        @if(!$doctor->isAdminDoctor() && !$doctor->isSubDoctor())
+                            <li class="{{ $activePage == 'subscription' ? 'active' : '' }} || {{ $activePage == 'subscription_history' ? 'active' : '' }}">
+                                <a href="javascript:void(0)" class="nav-link has-dropdown"><i class="fas fa-file-image"></i>
+                                    <span>{{__('subscriptions')}}</span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class="{{ $activePage == 'subscription' ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ url('subscription') }}">{{__('subscription')}}</a>
+                                    </li>
+                                    <li class="{{ $activePage == 'subscription_history' ? 'active' : '' }}">
+                                        <a class="nav-link" href="{{ url('subscription_history') }}">{{__('subscription history')}}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
                     @endif
                     @if($doctor->based_on == 'commission')
-                        @can('commission_details')
-                            <li class="{{ $activePage == 'commission' ? 'active' : '' }}">
-                                <a href="{{ url('commission') }}">
-                                    <i class="far fa-money-bill-alt"></i>
-                                    <span>{{__('Commission details')}}</span>
-                                </a>
-                            </li>
-                        @endcan
+                        {{-- Hidden from admin and sub doctors - Commission details --}}
+                        @if(!$doctor->isAdminDoctor() && !$doctor->isSubDoctor())
+                            @can('commission_details')
+                                <li class="{{ $activePage == 'commission' ? 'active' : '' }}">
+                                    <a href="{{ url('commission') }}">
+                                        <i class="far fa-money-bill-alt"></i>
+                                        <span>{{__('Commission details')}}</span>
+                                    </a>
+                                </li>
+                            @endcan
+                        @endif
                     @endif
-                @else
-                    <li class="{{ $activePage == 'subscription' ? 'active' : '' }} || {{ $activePage == 'subscription_history' ? 'active' : '' }}">
-                        <a href="javascript:void(0)" class="nav-link has-dropdown"><i class="fas fa-file-image"></i>
-                            <span>{{__('subscriptions')}}</span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li class="{{ $activePage == 'subscription' ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ url('subscription') }}">{{__('subscription')}}</a>
-                            </li>
-                            <li class="{{ $activePage == 'subscription_history' ? 'active' : '' }}">
-                                <a class="nav-link" href="{{ url('subscription_history') }}">{{__('subscription history')}}</a>
-                            </li>
-                        </ul>
-                    </li>
+                {{-- @else block hidden for super admin --}}
                 @endif
             @endif
 
+            {{-- Hidden from admin doctors and sub doctors - Reviews --}}
             @if (Gate::check('doctor_review'))
                 @if (auth()->user()->hasRole('doctor'))
-                <li class="{{ $activePage == 'review' ? 'active' : '' }}">
-                    <a href="{{ url('doctor_review') }}">
-                        <i class="fas fa-star"></i>
-                        <span>{{__('Reviews')}}</span>
-                    </a>
-                </li>
+                    @php
+                        $doctorForReview = \App\Models\Doctor::where('user_id', auth()->user()->id)->first();
+                        $isDoctorRoleReview = $doctorForReview && ($doctorForReview->isAdminDoctor() || $doctorForReview->isSubDoctor());
+                    @endphp
+                    @if(!$isDoctorRoleReview)
+                        <li class="{{ $activePage == 'review' ? 'active' : '' }}">
+                            <a href="{{ url('doctor_review') }}">
+                                <i class="fas fa-star"></i>
+                                <span>{{__('Reviews')}}</span>
+                            </a>
+                        </li>
+                    @endif
                 @endif
             @endif
 
+            {{-- Hidden from super admin sidebar - offers --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('offer_access')
             <li class="{{ $activePage == 'offer' ? 'active' : '' }}">
                 <a href="{{ url('offer') }}">
@@ -369,7 +422,10 @@
                 </a>
             </li>
             @endcan
+            @endif
 
+            {{-- Hidden from super admin sidebar - notification template --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('email_template_access')
             <li class="{{ $activePage == 'template' ? 'active' : '' }}">
                 <a href="{{ url('notification_template') }}">
@@ -378,6 +434,7 @@
                 </a>
             </li>
             @endcan
+            @endif
 
             @can('role_access')
             <li class="{{ $activePage == 'role' ? 'active' : '' }}">
@@ -425,14 +482,21 @@
 
             {{-- Doctor --}}
             @if (auth()->user()->hasRole('doctor'))
-                @can('doctor_schedule')
-                <li class="{{ $activePage == 'schedule' ? 'active' : '' }}">
-                    <a href="{{ url('schedule') }}">
-                        <i class="fas fa-hourglass-start"></i>
-                        <span>{{__('Schedule Timings')}}</span>
-                    </a>
-                </li>
-                @endcan
+                {{-- Hidden from admin doctors and sub doctors - Schedule Timings --}}
+                @php
+                    $doctorForSchedule = \App\Models\Doctor::where('user_id', auth()->user()->id)->first();
+                    $isDoctorRoleSchedule = $doctorForSchedule && ($doctorForSchedule->isAdminDoctor() || $doctorForSchedule->isSubDoctor());
+                @endphp
+                @if(!$isDoctorRoleSchedule)
+                    @can('doctor_schedule')
+                    <li class="{{ $activePage == 'schedule' ? 'active' : '' }}">
+                        <a href="{{ url('schedule') }}">
+                            <i class="fas fa-hourglass-start"></i>
+                            <span>{{__('Schedule Timings')}}</span>
+                        </a>
+                    </li>
+                    @endcan
+                @endif
 
                 @can('zoom_setting')
                 <li class="{{ $activePage == 'setting' ? 'active' : '' }}">
@@ -473,6 +537,8 @@
                 </li>
                 @endcan
 
+                {{-- Hidden from pharmacy sidebar - Schedule Timings --}}
+                @if(false)
                 @can('pharmacy_schedule')
                 <li class="{{ $activePage == 'pharmacy_schedule' ? 'active' : '' }}">
                     <a href="{{ url('pharmacy_schedule') }}">
@@ -481,7 +547,10 @@
                     </a>
                 </li>
                 @endcan
+                @endif
 
+                {{-- Hidden from pharmacy sidebar - Commission Details --}}
+                @if(false)
                 @can('pharmacy_commission_access')
                 <li class="{{ $activePage == 'commission' ? 'active' : '' }}">
                     <a href="{{ url('pharmacyCommission') }}">
@@ -490,8 +559,11 @@
                     </a>
                 </li>
                 @endcan
+                @endif
             @endif
 
+            {{-- Hidden from super admin sidebar - insurer --}}
+            @if(!auth()->user()->hasRole('super admin'))
             @can('insurer_access')
             <li class="{{ $activePage == 'insurers' ? 'active' : '' }}">
                 <a href="{{ url('insurers') }}">
@@ -500,6 +572,7 @@
                 </a>
             </li>
             @endcan
+            @endif
         </ul>
     </aside>
 </div>

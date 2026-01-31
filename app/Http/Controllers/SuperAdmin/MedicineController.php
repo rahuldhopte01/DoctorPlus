@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SuperAdmin\CustomController;
+use App\Models\Category;
 use App\Models\Medicine;
 use App\Models\MedicineBrand;
 use App\Models\Setting;
@@ -35,8 +36,9 @@ class MedicineController extends Controller
     {
         abort_if(Gate::denies('admin_medicine_add'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $brands = MedicineBrand::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
 
-        return view('superAdmin.medicine.create_medicine', compact('brands'));
+        return view('superAdmin.medicine.create_medicine', compact('brands', 'categories'));
     }
 
     /**
@@ -52,10 +54,13 @@ class MedicineController extends Controller
             'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
             'description' => 'bail|required',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:category,id',
         ]);
-        $data = $request->all();
+        $data = $request->only(['name', 'strength', 'form', 'brand_id', 'description']);
         $data['status'] = $request->has('status') ? 1 : 0;
-        Medicine::create($data);
+        $medicine = Medicine::create($data);
+        $medicine->categories()->sync($request->input('category_ids', []));
 
         return redirect('medicine')->withStatus(__('Medicines created successfully..!!'));
     }
@@ -79,10 +84,11 @@ class MedicineController extends Controller
     public function edit($id)
     {
         abort_if(Gate::denies('admin_medicine_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $medicine = Medicine::with('brand')->find($id);
+        $medicine = Medicine::with(['brand', 'categories'])->find($id);
         $brands = MedicineBrand::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
 
-        return view('superAdmin.medicine.edit_medicine', compact('medicine', 'brands'));
+        return view('superAdmin.medicine.edit_medicine', compact('medicine', 'brands', 'categories'));
     }
 
     /**
@@ -99,11 +105,14 @@ class MedicineController extends Controller
             'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
             'description' => 'bail|required',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:category,id',
         ]);
         $medicine = Medicine::find($id);
-        $data = $request->all();
+        $data = $request->only(['name', 'strength', 'form', 'brand_id', 'description']);
         $data['status'] = $request->has('status') ? 1 : 0;
         $medicine->update($data);
+        $medicine->categories()->sync($request->input('category_ids', []));
 
         return redirect('medicine')->withStatus(__('Medicines updated successfully..!!'));
     }

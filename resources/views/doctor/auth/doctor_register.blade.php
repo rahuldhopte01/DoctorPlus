@@ -13,7 +13,7 @@
           @if(isset($setting->logo))
           <img src="{{ $setting->logo }}" alt="logo" width="180" class="mb-5 mt-2">
           @else
-          <img src="{{url('/images/upload_empty/logo_black.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" />
+          <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" />
           @endif
             @if ($errors->any())
                 @foreach ($errors->all() as $item)

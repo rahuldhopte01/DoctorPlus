@@ -43,6 +43,15 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
+                                    <label class="col-form-label">{{__('Description')}}</label>
+                                    <textarea name="description" class="form-control summernote @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                                    @error('description')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                                <div class="form-group">
                                     <label for="col-form-label">{{__('status')}}</label>
                                     <label class="cursor-pointer">
                                         <input type="checkbox" id="status" class="custom-switch-input" name="status">

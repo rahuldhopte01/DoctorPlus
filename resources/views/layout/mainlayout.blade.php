@@ -29,6 +29,13 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets_admin/css/datatables.min.css') }}" />
     <script type="text/javascript" src="{{ url('assets_admin/js/sweetalert2@10.js') }}"></script>
 
+    <!-- Bootstrap 5 CSS (for new design) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- New Design CSS -->
+    <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
+
     @yield('css')
     <style>
         :root {
@@ -84,6 +91,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.3/flowbite.js"></script>
         <script src="{{ url('assets/js/custom.js') }}"></script>
         <script src="{{ url('js/app.js') }}"></script>
+        <!-- Bootstrap 5 JS (for new design) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
         @yield('js')
     </body>
 

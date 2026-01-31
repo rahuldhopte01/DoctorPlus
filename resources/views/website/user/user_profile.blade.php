@@ -175,9 +175,9 @@
                                                                     @if($prescription->status === 'approved_pending_payment')
                                                                         <a href="{{ url('prescription/pay/' . $prescription->id) }}" type="button" class="justify-between px-4 pt-2.5 pb-2 bg-primary text-white border-solid border-2 border-primary font-semibold text-xs leading-normal uppercase rounded transition duration-150 ease-in-out flex align-center">
                                                                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                                                <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zm0 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm.5-9H7v6h1.5V5zm0-2H7v1.5h1.5V3z"/>
+                                                                                <path d="M14 2H2c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 10H2V4h12v8zm-6-6H4v2h4V6zm0 3H4v1h4V9zm5-3h-3v4h3V6z"/>
                                                                             </svg>
-                                                                            <span class="ml-2">{{ __('Pay Now') }}</span>
+                                                                            <span class="ml-2">{{ __('Pay') }} {{ $prescription->getFormattedPaymentAmount() }}</span>
                                                                         </a>
                                                                     @elseif(in_array($prescription->status, ['active', 'approved']) && $prescription->isValid())
                                                                         <a href="{{ url('downloadPDF/' . $prescription->id) }}" type="button" class="justify-between px-4 pt-2.5 pb-2 bg-white-50 border-solid border-2 border-primary font-semibold text-xs leading-normal uppercase rounded transition duration-150 ease-in-out flex align-center">

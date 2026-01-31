@@ -212,7 +212,7 @@ class DoctorController extends Controller
     public function doctor_profile()
     {
         abort_if(Gate::denies('doctor_profile'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+        $doctor = Doctor::with(['treatments', 'categories'])->where('user_id', auth()->user()->id)->first();
         $doctor->user = User::find($doctor->user_id);
         $countries = Country::get();
         $treatments = Treatments::whereStatus(1)->get();
@@ -221,8 +221,21 @@ class DoctorController extends Controller
         $hospitals = Hospital::whereStatus(1)->get();
         $doctor['start_time'] = Carbon::parse($doctor['start_time'])->format('H:i');
         $doctor['end_time'] = Carbon::parse($doctor['end_time'])->format('H:i');
+        // Handle hospital_id - could be single integer or comma-separated string (legacy)
+        if ($doctor->hospital_id !== null) {
+            if (is_string($doctor->hospital_id) && strpos($doctor->hospital_id, ',') !== false) {
         $doctor['hospital_id'] = explode(',', $doctor->hospital_id);
+            } else {
+                $doctor['hospital_id'] = [$doctor->hospital_id];
+            }
+        } else {
+            $doctor['hospital_id'] = [];
+        }
         $languages = Language::whereStatus(1)->get();
+        
+        // Get selected treatment and category IDs for the view
+        $doctor['selected_treatment_ids'] = $doctor->treatments->pluck('id')->toArray();
+        $doctor['selected_category_ids'] = $doctor->categories->pluck('id')->toArray();
 
         return view('doctor.doctor.doctor_profile', compact('doctor', 'countries', 'treatments', 'hospitals', 'categories', 'expertieses', 'languages'));
     }
@@ -232,22 +245,24 @@ class DoctorController extends Controller
         $id = Doctor::where('user_id', auth()->user()->id)->first()->id;
         $request->validate(
             [
-                'name' => 'bail|required|unique:doctor,name,'.$id.',id',
-                'treatment_id' => 'bail|required',
-                'category_id' => 'bail|required',
-                'dob' => 'bail|required',
-                'gender' => 'bail|required',
-                'phone' => 'bail|required|digits_between:6,12',
-                'expertise_id' => 'bail|required',
-                'timeslot' => 'bail|required',
-                'start_time' => 'bail|required',
-                'end_time' => 'bail|required|after:start_time',
-                'hospital_id' => 'bail|required',
-                'desc' => 'required',
-                'appointment_fees' => 'required|numeric',
-                'experience' => 'bail|required|numeric',
+                'name' => 'bail|nullable|unique:doctor,name,'.$id.',id',
+                'treatment_id' => 'bail|nullable|array',
+                'treatment_id.*' => 'bail|nullable|exists:treatments,id',
+                'category_id' => 'bail|nullable|array',
+                'category_id.*' => 'bail|nullable|exists:category,id',
+                'dob' => 'bail|nullable',
+                'gender' => 'bail|nullable',
+                'phone' => 'bail|nullable|digits_between:6,12',
+                'expertise_id' => 'bail|nullable',
+                'timeslot' => 'bail|nullable',
+                'start_time' => 'bail|nullable',
+                'end_time' => 'bail|nullable|after:start_time',
+                'hospital_id' => 'bail|nullable',
+                'desc' => 'nullable',
+                'appointment_fees' => 'nullable|numeric',
+                'experience' => 'bail|nullable|numeric',
                 'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
-                'custom_timeslot' => 'bail|required_if:timeslot,other',
+                'custom_timeslot' => 'bail|nullable',
             ],
             [
                 'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
@@ -279,11 +294,17 @@ class DoctorController extends Controller
         }
         $data['certificate'] = json_encode($certificate);
         $data['is_filled'] = 1;
-        $data['hospital_id'] = implode(',', $request->hospital_id);
+        $data['hospital_id'] = !empty($request->hospital_id) ? implode(',', $request->hospital_id) : $doctor->hospital_id;
         $data['custom_timeslot'] = $data['custom_timeslot'] == '' ? null : $data['custom_timeslot'];
         if ($data['timeslot'] != 'other') {
             $data['custom_timeslot'] = null;
         }
+        
+        // Remove treatment_id and category_id from data array as they're not in fillable anymore
+        $treatmentIds = $request->treatment_id ?? [];
+        $categoryIds = $request->category_id ?? [];
+        unset($data['treatment_id'], $data['category_id']);
+        
         if ($request->based_on == 'subscription') {
             if (! DoctorSubscription::where('doctor_id', $id)->exists()) {
                 $subscription = Subscription::where('name', 'free')->first();
@@ -300,6 +321,14 @@ class DoctorController extends Controller
             }
         }
         $doctor->update($data);
+        
+        // Sync treatments and categories (only if arrays are not empty)
+        if (!empty($treatmentIds)) {
+            $doctor->treatments()->sync($treatmentIds);
+        }
+        if (!empty($categoryIds)) {
+            $doctor->categories()->sync($categoryIds);
+        }
         $this->changeLanguage();
 
         return redirect('/doctor_home')->withStatus(__('Doctor updated successfully..!!'));

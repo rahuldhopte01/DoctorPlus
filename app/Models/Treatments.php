@@ -11,7 +11,7 @@ class Treatments extends Model
 
     protected $table = 'treatments';
 
-    protected $fillable = ['name', 'image', 'status'];
+    protected $fillable = ['name', 'description', 'image', 'status'];
 
     protected $appends = ['fullImage'];
 
@@ -22,12 +22,18 @@ class Treatments extends Model
 
     public function category()
     {
-        return $this->hasOne('App\Models\Category');
+        return $this->hasMany('App\Models\Category', 'treatment_id');
     }
 
+    public function doctors()
+    {
+        return $this->belongsToMany('App\Models\Doctor', 'doctor_treatment', 'treatment_id', 'doctor_id');
+    }
+
+    // Keep backward compatibility
     public function doctor()
     {
-        return $this->hasMany('App\Models\Doctor');
+        return $this->belongsToMany('App\Models\Doctor', 'doctor_treatment', 'treatment_id', 'doctor_id');
     }
 
 }

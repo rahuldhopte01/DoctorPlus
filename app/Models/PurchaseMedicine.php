@@ -29,4 +29,9 @@ class PurchaseMedicine extends Model
     {
         return $this->belongsTo('App\Models\UserAddress');
     }
+
+    public function pharmacy()
+    {
+        return $this->belongsTo('App\Models\Pharmacy');
+    }
 }

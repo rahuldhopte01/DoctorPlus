@@ -11,9 +11,13 @@ class Category extends Model
 
     protected $table = 'category';
 
-    protected $fillable = ['name', 'image', 'treatment_id', 'status'];
+    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'price', 'status'];
 
     protected $appends = ['fullImage'];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
 
     protected function getFullImageAttribute()
     {
@@ -30,9 +34,15 @@ class Category extends Model
         return $this->hasOne('App\Models\Expertise');
     }
 
+    public function doctors()
+    {
+        return $this->belongsToMany('App\Models\Doctor', 'doctor_category', 'category_id', 'doctor_id');
+    }
+
+    // Keep backward compatibility
     public function doctor()
     {
-        return $this->hasMany('App\Models\Doctor');
+        return $this->belongsToMany('App\Models\Doctor', 'doctor_category', 'category_id', 'doctor_id');
     }
 
     /**
@@ -49,5 +59,14 @@ class Category extends Model
     public function hasActiveQuestionnaire(): bool
     {
         return $this->questionnaire()->where('status', 1)->exists();
+    }
+
+    /**
+     * Medicines available for this category (questionnaire medicine selection).
+     */
+    public function medicines()
+    {
+        return $this->belongsToMany(Medicine::class, 'category_medicine', 'category_id', 'medicine_id')
+            ->withTimestamps();
     }
 }

@@ -375,25 +375,41 @@ class DoctorApiController extends Controller
     {
         $id = Doctor::where('user_id', auth()->user()->id)->first();
         $request->validate([
-            'name' => 'bail|required',
-            'treatment_id' => 'bail|required',
-            'category_id' => 'bail|required',
-            'dob' => 'bail|required|date_format:Y-m-d',
-            'gender' => 'bail|required',
-            'expertise_id' => 'bail|required',
-            'timeslot' => 'bail|required',
-            'start_time' => 'bail|required|date_format:h:i a',
-            'end_time' => 'bail|required|date_format:h:i a|after:start_time',
-            'hospital_id' => 'bail|required',
-            'desc' => 'required',
-            'appointment_fees' => 'required|numeric',
-            'experience' => 'bail|required|numeric',
-            'education' => 'bail|required',
-            'certificate' => 'bail|required',
+            'name' => 'bail|nullable',
+            'treatment_id' => 'bail|nullable|array',
+            'treatment_id.*' => 'bail|nullable|exists:treatments,id',
+            'category_id' => 'bail|nullable|array',
+            'category_id.*' => 'bail|nullable|exists:category,id',
+            'dob' => 'bail|nullable|date_format:Y-m-d',
+            'gender' => 'bail|nullable',
+            'expertise_id' => 'bail|nullable',
+            'timeslot' => 'bail|nullable',
+            'start_time' => 'bail|nullable|date_format:h:i a',
+            'end_time' => 'bail|nullable|date_format:h:i a|after:start_time',
+            'hospital_id' => 'bail|nullable',
+            'desc' => 'nullable',
+            'appointment_fees' => 'nullable|numeric',
+            'experience' => 'bail|nullable|numeric',
+            'education' => 'bail|nullable',
+            'certificate' => 'bail|nullable',
         ]);
         $data = $request->all();
         $data['is_filled'] = 1;
+        
+        // Remove treatment_id and category_id from data array as they're not in fillable anymore
+        $treatmentIds = $request->treatment_id ?? [];
+        $categoryIds = $request->category_id ?? [];
+        unset($data['treatment_id'], $data['category_id']);
+        
         $id->update($data);
+        
+        // Sync treatments and categories (only if arrays are not empty)
+        if (!empty($treatmentIds)) {
+            $id->treatments()->sync($treatmentIds);
+        }
+        if (!empty($categoryIds)) {
+            $id->categories()->sync($categoryIds);
+        }
 
         return response(['success' => true, 'msg' => 'successfully Update']);
     }
@@ -468,7 +484,7 @@ class DoctorApiController extends Controller
     public function apiAppointmentHistory()
     {
         (new CustomController)->cancel_max_order();
-        $doctor = Doctor::with('treatment:id,name')->where('user_id', auth()->user()->id)->first();
+        $doctor = Doctor::with('treatments:id,name')->where('user_id', auth()->user()->id)->first();
         $future = [];
         $past = [];
         $appointments = Appointment::with(['user:id,image', 'hospital:id,name,address'])->where('doctor_id', $doctor->id)->orderBy('id', 'DESC')->get(['id', 'date', 'time', 'user_id', 'hospital_id', 'patient_address', 'patient_name', 'appointment_status']);
@@ -478,7 +494,7 @@ class DoctorApiController extends Controller
                 $appointment['hospital'] = (object) [];
                 $appointment['hospital_id'] = 0;
             }
-            $appointment->treatment = $doctor->treatment['name'];
+            $appointment->treatment = $doctor->treatment ? $doctor->treatment['name'] : '';
             $appointment->doctor_name = $doctor->name;
             $appointment->timming = new DateTime($appointment['date'].$appointment['time']);
             if ($appointment->timming >= Carbon::now(env('timezone')) && $appointment->appointment_status != 'completed' && $appointment->appointment_status != 'canceled') {
@@ -632,7 +648,7 @@ class DoctorApiController extends Controller
 
     public function apiCancelAppointment()
     {
-        $doctor = Doctor::with('treatment:id,name')->where('user_id', auth()->user()->id)->first();
+        $doctor = Doctor::with('treatments:id,name')->where('user_id', auth()->user()->id)->first();
         $cancel_appointment = Appointment::with('user:id,image')->where([['doctor_id', $doctor->id], ['appointment_status', 'CANCELED']])->get(['id', 'date', 'time', 'user_id', 'patient_address', 'patient_name', 'age', 'amount']);
 
         return response(['success' => true, 'data' => $cancel_appointment]);

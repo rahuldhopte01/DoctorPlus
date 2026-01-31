@@ -43,7 +43,7 @@
                         <div class="col-lg-10 col-md-8">
                             <div class="form-group">
                                 <label class="col-form-label">{{__('Name')}}</label>
-                                <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" required>
+                                <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror">
                                 @error('name')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -52,7 +52,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">{{__('email')}}</label>
-                                <input type="email"  name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" required>
+                                <input type="email"  name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror">
                                 @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -71,7 +71,7 @@
                                         <option value="+{{$country->phonecode}}" {{(old('phone_code') == $country->phonecode) ? 'selected':''}}>+{{ $country->phonecode }}</option>
                                     @endforeach
                                 </select>
-                                <input type="number" min="1" name="phone" class="form-control" value="{{old('phone')}}" required>
+                                <input type="number" min="1" name="phone" class="form-control" value="{{old('phone')}}">
                             </div>
                             @error('phone')
                             <div class="invalid-feedback">
@@ -81,9 +81,10 @@
                         </div>
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('Hospital')}}</label>
-                            <select name="hospital_id[]" class="select2 @error('hospital_id') is-invalid @enderror" multiple required>
+                            <select name="hospital_id" class="form-control @error('hospital_id') is-invalid @enderror">
+                                <option value="">{{__('Select Hospital')}}</option>
                                 @foreach ($hospitals as $hospital)
-                                    <option value="{{ $hospital->id }}" {{in_array($hospital->id, old("hospital_id") ?: []) ? "selected" : ""}}>{{ $hospital->name }}</option>
+                                    <option value="{{ $hospital->id }}" {{old('hospital_id') == $hospital->id ? "selected" : ""}}>{{ $hospital->name }}</option>
                                 @endforeach
                             </select>
                             @error('hospital_id')
@@ -92,12 +93,25 @@
                                 </div>
                             @enderror
                         </div>
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">{{__('Doctor Role')}}</label>
+                            <select name="doctor_role" class="form-control @error('doctor_role') is-invalid @enderror" required>
+                                <option value="SUB_DOCTOR" {{old('doctor_role', 'SUB_DOCTOR') == 'SUB_DOCTOR' ? 'selected' : ''}}>{{__('Sub Doctor')}}</option>
+                                <option value="ADMIN_DOCTOR" {{old('doctor_role') == 'ADMIN_DOCTOR' ? 'selected' : ''}}>{{__('Admin Doctor')}}</option>
+                            </select>
+                            @error('doctor_role')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                            <small class="form-text text-muted">{{__('Admin Doctor can see all questionnaires in the hospital. Sub Doctor can only see assigned questionnaires.')}}</small>
+                        </div>
                     </div>
 
                     <div class="row mt-4">
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('Date of birth')}}</label>
-                            <input type="text" class="form-control datePicker @error('dob') is-invalid @enderror" value="{{old('dob')}}" name="dob" required>
+                            <input type="text" class="form-control datePicker @error('dob') is-invalid @enderror" value="{{old('dob')}}" name="dob">
                             @error('dob')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -122,7 +136,7 @@
                     <div class="row mt-4">
                         <div class="col-lg-12 form-group">
                             <label class="col-form-label">{{__('Professional Bio')}}</label>
-                            <textarea name="desc" rows="10" cols="10"  class="form-control @error('desc') is-invalid @enderror" required>{{old('desc')}}</textarea>
+                            <textarea name="desc" rows="10" cols="10"  class="form-control @error('desc') is-invalid @enderror">{{old('desc')}}</textarea>
                             @error('desc')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -147,19 +161,19 @@
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('Degree')}}</label>
-                                                <input type="text"  required name="degree[]" value="" class="form-control" >
+                                                <input type="text"  name="degree[]" value="" class="form-control" >
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('College/Institute')}}</label>
-                                                <input type="text" required name="college[]" value="" class="form-control" >
+                                                <input type="text" name="college[]" value="" class="form-control" >
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-lg-4">
                                             <div class="form-group">
                                                 <label>{{__('Year of Completion')}}</label>
-                                                <input type="text" maxlength="4" pattern="^[0-9]{4}$"  required name="year[]" value="" class="form-control" >
+                                                <input type="text" maxlength="4" pattern="^[0-9]{4}$"  name="year[]" value="" class="form-control" >
                                             </div>
                                         </div>
                                     </div>
@@ -178,13 +192,13 @@
                                     <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label>{{__('certificate')}}</label>
-                                            <input type="text"  required name="certificate[]" value="" class="form-control" >
+                                            <input type="text"  name="certificate[]" value="" class="form-control" >
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-5">
                                         <div class="form-group">
                                             <label>{{__('Year')}}</label>
-                                            <input type="text" required  name="certificate_year[]" maxlength="4" value="" pattern="^[0-9]{4}$" class="form-control" >
+                                            <input type="text"  name="certificate_year[]" maxlength="4" value="" pattern="^[0-9]{4}$" class="form-control" >
                                         </div>
                                     </div>
                                 </div>
@@ -204,7 +218,7 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label class="col-form-label">{{__('Experience (in years)')}}</label>
-                        <input type="number" min="1" name="experience" value="{{ old('experience') }}"  class="form-control @error('experience') is-invalid @enderror" required>
+                        <input type="number" min="1" name="experience" value="{{ old('experience') }}"  class="form-control @error('experience') is-invalid @enderror">
                         @error('number')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -213,7 +227,7 @@
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">{{__('Appointment fees')}}</label>
-                        <input type="number" min="1" name="appointment_fees" value="{{ old('appointment_fees') }}"  class="form-control @error('appointment_fees') is-invalid @enderror" required>
+                        <input type="number" min="1" name="appointment_fees" value="{{ old('appointment_fees') }}"  class="form-control @error('appointment_fees') is-invalid @enderror">
                         @error('appointment_fees')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -224,7 +238,7 @@
                     <div class="row mt-4">
                         <div class="col-lg-4 form-group">
                             <label class="col-form-label">{{__('Treatments')}}</label>
-                            <select name="treatment_id" class="select2 @error('treatment_id') is-invalid @enderror">
+                            <select name="treatment_id[]" class="select2 @error('treatment_id') is-invalid @enderror" multiple>
                                 @foreach ($treatments as $treatment)
                                     <option value="{{ $treatment->id }}">{{ $treatment->name }}</option>
                                 @endforeach
@@ -237,7 +251,7 @@
                         </div>
                         <div class="col-lg-4 form-group">
                             <label class="col-form-label">{{__('Categories')}}</label>
-                            <select name="category_id" class="select2 @error('category_id') is-invalid @enderror">
+                            <select name="category_id[]" class="select2 @error('category_id') is-invalid @enderror" multiple>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
@@ -318,7 +332,7 @@
                     <div class="row mt-4">
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('Start Time')}}</label>
-                            <input class="form-control timepicker @error('start_time') is-invalid @enderror"  name="start_time" value="{{old('start_time')}}" type="time" required>
+                            <input class="form-control timepicker @error('start_time') is-invalid @enderror"  name="start_time" value="{{old('start_time')}}" type="time">
                             @error('start_time')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -327,7 +341,7 @@
                         </div>
                         <div class="col-lg-6 form-group">
                             <label class="col-form-label">{{__('End Time')}}</label>
-                            <input class="form-control timepicker @error('end_time') is-invalid @enderror" name="end_time"  value="{{old('end_time')}}" type="time" required>
+                            <input class="form-control timepicker @error('end_time') is-invalid @enderror" name="end_time"  value="{{old('end_time')}}" type="time">
                             @error('end_time')
                                 <div class="invalid-feedback">
                                     {{ $message }}

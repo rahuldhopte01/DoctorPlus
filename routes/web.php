@@ -70,6 +70,11 @@ Route::get('/clear-cache', function () {
     return 'Cache is cleared';
 });
 
+// Stripe Webhook (must be outside auth and CSRF middleware)
+Route::post('/stripe/webhook', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'handleWebhook'])
+    ->name('stripe.webhook')
+    ->withoutMiddleware(['web']);
+
 Route::group(['middleware' => ['XssSanitizer']], function () {
     Route::get('/', [WebsiteController::class, 'index']);
     Route::any('/show-doctors', [WebsiteController::class, 'doctor']);
@@ -140,10 +145,21 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
         Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
         Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
+        Route::get('/questionnaire/category/{categoryId}/check-status', [WebQuestionnaireController::class, 'checkSubmissionStatus'])->name('questionnaire.check-status');
         Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
             return view('website.questionnaire.success', compact('categoryId'));
         })->name('questionnaire.success');
         Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
+
+        // Questionnaire Post-Submission Flow Routes
+        Route::get('/questionnaire/category/{categoryId}/delivery-choice', [\App\Http\Controllers\Website\QuestionnaireDeliveryController::class, 'showDeliveryChoice'])->name('questionnaire.delivery-choice');
+        Route::post('/questionnaire/category/{categoryId}/delivery-choice', [\App\Http\Controllers\Website\QuestionnaireDeliveryController::class, 'saveDeliveryChoice'])->name('questionnaire.save-delivery-choice');
+        Route::get('/questionnaire/category/{categoryId}/delivery-address', [\App\Http\Controllers\Website\QuestionnaireAddressController::class, 'showAddressForm'])->name('questionnaire.delivery-address');
+        Route::post('/questionnaire/category/{categoryId}/delivery-address', [\App\Http\Controllers\Website\QuestionnaireAddressController::class, 'saveAddress'])->name('questionnaire.save-address');
+        Route::get('/questionnaire/category/{categoryId}/pharmacy-selection', [\App\Http\Controllers\Website\QuestionnairePharmacyController::class, 'showPharmacySelection'])->name('questionnaire.pharmacy-selection');
+        Route::post('/questionnaire/category/{categoryId}/pharmacy-selection', [\App\Http\Controllers\Website\QuestionnairePharmacyController::class, 'savePharmacySelection'])->name('questionnaire.save-pharmacy');
+        Route::get('/questionnaire/category/{categoryId}/medicine-selection', [\App\Http\Controllers\Website\QuestionnaireMedicineController::class, 'showMedicineSelection'])->name('questionnaire.medicine-selection');
+        Route::post('/questionnaire/category/{categoryId}/medicine-selection', [\App\Http\Controllers\Website\QuestionnaireMedicineController::class, 'saveMedicineSelection'])->name('questionnaire.save-medicine');
 
         // User
         Route::get('/user_profile', [WebsiteController::class, 'userProfile']);
@@ -159,6 +175,13 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/update_user_profile', [WebsiteController::class, 'update_user_profile']);
         Route::post('/update_change_password', [WebsiteController::class, 'change_password']);
         Route::get('/delete_account', [WebsiteController::class, 'deleteAccount']);
+
+        // Prescription Payment Routes
+        Route::get('/prescription/pay/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'showPaymentPage'])->name('prescription.pay');
+        Route::post('/prescription/create-checkout-session/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'createCheckoutSession'])->name('prescription.checkout');
+        Route::post('/prescription/process-payment/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'processPayment'])->name('prescription.process');
+        Route::get('/prescription/payment/success/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'paymentSuccess'])->name('prescription.payment.success');
+        Route::get('/prescription/payment/cancel/{id}', [\App\Http\Controllers\Website\PrescriptionPaymentController::class, 'paymentCancel'])->name('prescription.payment.cancel');
 
     });
 
@@ -383,6 +406,15 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('create_zoom_meeting/{appointment_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'setupZoomMeeting']);
         Route::get('zoom-oauth-callback', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'oauthCallback']);
         Route::post('/store/{app_stor_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'storeZoomMeeting']);
+
+        // Clinic Admin - Sub-Doctor Management
+        Route::get('/doctor/clinic-doctors', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'index'])->name('clinic.doctors.index');
+        Route::get('/doctor/clinic-doctors/create', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'create'])->name('clinic.doctors.create');
+        Route::post('/doctor/clinic-doctors', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'store'])->name('clinic.doctors.store');
+        Route::get('/doctor/clinic-doctors/{id}/edit', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'edit'])->name('clinic.doctors.edit');
+        Route::put('/doctor/clinic-doctors/{id}', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'update'])->name('clinic.doctors.update');
+        Route::delete('/doctor/clinic-doctors/{id}', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'destroy'])->name('clinic.doctors.destroy');
+        Route::post('/doctor/clinic-doctors/change-status', [App\Http\Controllers\Doctor\ClinicDoctorController::class, 'changeStatus'])->name('clinic.doctors.status');
     });
 
     /******* PHARMACY PANEL */
