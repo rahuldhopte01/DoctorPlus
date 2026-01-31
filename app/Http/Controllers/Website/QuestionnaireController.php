@@ -541,6 +541,7 @@ class QuestionnaireController extends Controller
 
         // Get answers directly from request (single-page form submits all at once)
         $answers = $request->input('answers', []);
+        $submissionFlow = $request->input('submission_flow', 'with_medicine');
         
         // Normalize answers to ensure question IDs are integers and values are clean
         $normalizedAnswers = [];
@@ -738,6 +739,7 @@ class QuestionnaireController extends Controller
             ],
             [
                 'status' => 'pending',
+                'delivery_type' => $submissionFlow === 'prescription_only' ? 'prescription_only' : null,
             ]
         );
 
@@ -745,8 +747,12 @@ class QuestionnaireController extends Controller
             'success' => true,
             'has_warnings' => !empty($flagCheck['flags']),
             'flags' => $flagCheck['flags'],
-            'message' => __('Questionnaire submitted successfully. Please choose your delivery method.'),
-            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/delivery-choice'),
+            'message' => $submissionFlow === 'prescription_only'
+                ? __('Questionnaire submitted successfully. Please select your medicines.')
+                : __('Questionnaire submitted successfully. Please choose your delivery method.'),
+            'redirect_url' => $submissionFlow === 'prescription_only'
+                ? url('/questionnaire/category/' . $categoryId . '/medicine-selection')
+                : url('/questionnaire/category/' . $categoryId . '/delivery-choice'),
         ]);
     }
 

@@ -45,6 +45,7 @@
             @csrf
             <input type="hidden" name="category_id" value="{{ $category->id }}">
             <input type="hidden" name="questionnaire_id" value="{{ $questionnaire->id }}">
+            <input type="hidden" name="submission_flow" id="submissionFlow" value="with_medicine">
 
             <div class="p-6">
                 <!-- Progress Indicator -->
@@ -274,16 +275,28 @@
                 <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary">
                     <i class="fas fa-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
-                <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300" id="submitBtn"
-                    @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
-                    @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
-                        {{ __('Questionnaire Under Review') }}
-                        <i class="fas fa-lock ml-2"></i>
-                    @else
-                        {{ __('Submit Questionnaire') }}
-                        <i class="fas fa-check ml-2"></i>
-                    @endif
-                </button>
+                <div class="flex items-center gap-3">
+                    <button type="submit" class="bg-gray-200 text-gray-800 font-fira-sans font-medium px-6 py-3 rounded-lg hover:bg-gray-300 transition duration-300" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
+                        @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
+                        @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
+                            {{ __('Questionnaire Under Review') }}
+                            <i class="fas fa-lock ml-2"></i>
+                        @else
+                            {{ __('Create Prescription') }}
+                            <i class="fas fa-file-medical ml-2"></i>
+                        @endif
+                    </button>
+                    <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-6 py-3 rounded-lg hover:bg-opacity-90 transition duration-300" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
+                        @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
+                        @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
+                            {{ __('Questionnaire Under Review') }}
+                            <i class="fas fa-lock ml-2"></i>
+                        @else
+                            {{ __('Create Prescription with Medicine') }}
+                            <i class="fas fa-check ml-2"></i>
+                        @endif
+                    </button>
+                </div>
             </div>
         </form>
     </div>
@@ -296,7 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('questionnaireForm');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
-    const submitBtn = document.getElementById('submitBtn');
+    const submitButtons = document.querySelectorAll('[data-submission-flow]');
+    const submissionFlowInput = document.getElementById('submissionFlow');
     const blockedMessage = document.getElementById('blockedMessage');
     const warningFlags = document.getElementById('warningFlags');
     const warningList = document.getElementById('warningList');
@@ -308,6 +322,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     let saveTimeout;
     const SAVE_DELAY = 2000; // Auto-save after 2 seconds of no typing
+
+    let activeSubmitBtn = null;
+    let activeSubmitBtnHtml = '';
+
+    submitButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            activeSubmitBtn = this;
+            activeSubmitBtnHtml = this.innerHTML;
+            submissionFlowInput.value = this.dataset.submissionFlow || 'with_medicine';
+        });
+    });
 
     // Check submission status on page load
     function checkSubmissionStatus() {
@@ -322,9 +347,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success && !data.can_submit) {
                 // Patient has an active submission - disable submit button
-                submitBtn.disabled = true;
-                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                submitBtn.innerHTML = '{{ __("Questionnaire Under Review") }} <i class="fas fa-lock ml-2"></i>';
+                submitButtons.forEach(button => {
+                    button.disabled = true;
+                    button.classList.add('opacity-50', 'cursor-not-allowed');
+                    button.innerHTML = '{{ __("Questionnaire Under Review") }} <i class="fas fa-lock ml-2"></i>';
+                });
                 
                 // Show status message
                 submissionStatusMessage.classList.remove('hidden');
@@ -539,8 +566,22 @@ document.addEventListener('DOMContentLoaded', function() {
         warningList.innerHTML = '';
         document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
 
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Submitting...") }}';
+        const defaultButton = document.getElementById('submitWithMedicineBtn');
+        if (!activeSubmitBtn) {
+            activeSubmitBtn = defaultButton || submitButtons[0];
+            activeSubmitBtnHtml = activeSubmitBtn ? activeSubmitBtn.innerHTML : '';
+            if (submissionFlowInput.value !== 'prescription_only') {
+                submissionFlowInput.value = 'with_medicine';
+            }
+        }
+
+        submitButtons.forEach(button => {
+            button.disabled = true;
+            button.classList.add('opacity-50', 'cursor-not-allowed');
+        });
+        if (activeSubmitBtn) {
+            activeSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Submitting...") }}';
+        }
 
         const formData = new FormData(form);
 
@@ -554,8 +595,13 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '{{ __("Submit Questionnaire") }} <i class="fas fa-check ml-2"></i>';
+            submitButtons.forEach(button => {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+            if (activeSubmitBtn) {
+                activeSubmitBtn.innerHTML = activeSubmitBtnHtml;
+            }
 
             if (data.blocked) {
                 blockedMessage.classList.remove('hidden');
@@ -596,8 +642,13 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Error:', error);
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '{{ __("Submit Questionnaire") }} <i class="fas fa-check ml-2"></i>';
+            submitButtons.forEach(button => {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+            if (activeSubmitBtn) {
+                activeSubmitBtn.innerHTML = activeSubmitBtnHtml;
+            }
             alert('{{ __("An error occurred. Please try again.") }}');
         });
     });
