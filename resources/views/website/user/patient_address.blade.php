@@ -4,72 +4,100 @@
 <style>
   .sidebar li.active {
     background: linear-gradient(45deg, #00000000 50%, #f4f2ff);
-    border-left: 2px solid var(--site_color);
+    border-left: 2px solid #4A3AFF;
   }
 
   .mapClass {
     height: 200px;
     border-radius: 12px;
   }
+  
+  /* Custom Violet Color Styles */
+  .text-violet { color: #4A3AFF !important; }
+  .bg-violet { background-color: #4A3AFF !important; color: white !important; }
+  .btn-violet { background-color: #4A3AFF !important; color: white !important; }
+
+  /* DataTables & Font overrides */
+  .dataTables_wrapper, table.dataTable, table.dataTable thead th, table.dataTable tbody td {
+    font-family: 'Fira Sans', sans-serif !important;
+  }
+  
+  /* Fix DataTable Header Alignment */
+  table.dataTable thead th {
+     display: table-cell !important;
+     vertical-align: middle !important;
+     text-align: left !important;
+     white-space: nowrap !important;
+     border-bottom: 1px solid #e5e7eb !important;
+     padding-top: 1rem !important;
+     padding-bottom: 1rem !important;
+     background-image: none !important;
+  }
+
+  /* Inline Sort Icons */
+  table.dataTable thead th::before, table.dataTable thead th::after {
+     position: static !important;
+     display: inline-block !important;
+     vertical-align: middle !important;
+     opacity: 0.3 !important;
+     margin: 0 4px !important;
+  }
+  table.dataTable thead th.sorting_asc::after, table.dataTable thead th.sorting_desc::after {
+     opacity: 1 !important;
+     color: #4A3AFF !important;
+  }
 </style>
 @endsection
 
 @section('content')
-<div class="xl:w-3/4 mx-auto">
-  <div class="xxsm:mx-5 xl:mx-0 2xl:mx-0 pt-10">
-    <div class="flex h-full mb-20 xxsm:flex-col sm:flex-col xmd:flex-row xmd:space-x-5">
-      <div class="2xl:w-1/5 1xl:w-1/5 xl:w-1/4 xlg:w-80 lg:w-72 xxmd:w-72 xmd:w-72 md:w-72 h-auto">
-        @include('website.user.userSidebar',['active' => 'patientAddress'])
-      </div>
-      <div class="w-full md:w-full xxmd:w-full xmd:w-80 lg:w-2/3 xlg:w-2/3 1xl:w-full 2xl:w-full sm:ml-0 xxsm:ml-0 shadow-lg overflow-hidden p-5 mt-10 2xl:mt-0 xmd:mt-0">
-        <div class="border border-white-100 overflow-hidden">
-          <div class="flex flex-col p-3 rounded-md">
-            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="overflow-hidden table-responsive rounded-sm p-5">
-                  <div class="flex justify-end Appointment-detail">
-                    <a class="btn ms-auto font-fira-sans" type="button" data-from="add_new" data-modal-target="exampleModalScrollableLabel" data-modal-toggle="exampleModalScrollableLabel" data-te-ripple-color="light">{{ __('Add New') }}</a>
-                  </div>
-                  <table class="min-w-full datatable ">
-                    <thead class="border-b text-center">
-                      <tr>
-                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">#</th>
-                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Address')}}</th>
-                        <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Action')}}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach ($addresses as $address)
-                      <tr class="border-b border-white-100 transition duration-300 ease-in-out hover:bg-gray-50">
-                        <td class="text-sm px-6 py-4 font-fira-sans">{{ $loop->iteration }}</td>
-                        <td class="text-sm px-6 py-4 font-fira-sans">{{ $address->address }}</td>
-                        <td class="text-sm px-6 py-4 flex">
-                          <a href="javascript:void(0)" onclick="editAddress({{ $address->id }})" type="button" data-modal-target="editAddress" data-modal-toggle="editAddress" data-te-ripple-color="light" class="bg-[#eef7f2] px-6 whitespace-nowrap pt-2.5 pb-2  font-medium text-xs leading-normal uppercase rounded transition duration-150 ease-in-out align-center">
-                            <svg width="15" height="15" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M16.3 6.425L12.05 2.225L13.45 0.825C13.8333 0.441667 14.3043 0.25 14.863 0.25C15.421 0.25 15.8917 0.441667 16.275 0.825L17.675 2.225C18.0583 2.60833 18.2583 3.071 18.275 3.613C18.2917 4.15433 18.1083 4.61667 17.725 5L16.3 6.425ZM14.85 7.9L4.25 18.5H0V14.25L10.6 3.65L14.85 7.9Z" fill="#219653" />
-                            </svg>
-                            <span class="text-[#3ba267] font-fira-sans">{{ __('Edit') }}</span>
-                          </a>
-                          <a href="javascript:void(0)" onclick="deleteData({{ $address->id }})" class="bg-[#fcf0f2] ml-2 px-6 whitespace-nowrap pt-2.5 pb-2  font-medium text-xs leading-normal uppercase rounded transition duration-150 ease-in-out align-center">
-                            <svg width="15" height="15" viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M3 18.5C2.45 18.5 1.97933 18.3043 1.588 17.913C1.196 17.521 1 17.05 1 16.5V3.5H0V1.5H5V0.5H11V1.5H16V3.5H15V16.5C15 17.05 14.8043 17.521 14.413 17.913C14.021 18.3043 13.55 18.5 13 18.5H3ZM5 14.5H7V5.5H5V14.5ZM9 14.5H11V5.5H9V14.5Z" fill="#D34053" />
-                            </svg>
-                            <span class="text-[#d54b5d] font-fira-sans">{{ __('Delete') }}</span>
-                          </a>
-                        </td>
-                      </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+<div class="w-full px-4 sm:px-6 lg:px-8 pb-20">
+    <div class="pt-10">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="w-full lg:w-72 flex-shrink-0">
+                @include('website.user.userSidebar',['active' => 'patientAddress'])
             </div>
-          </div>
+            <div class="flex-grow w-full">
+                <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="flex justify-end mb-6">
+                        <a class="inline-flex items-center px-4 py-2 bg-violet text-white text-sm font-medium rounded-lg hover:opacity-90 transition font-fira-sans cursor-pointer shadow-sm shadow-violet/30" type="button" data-from="add_new" data-modal-target="exampleModalScrollableLabel" data-modal-toggle="exampleModalScrollableLabel" data-te-ripple-color="light">
+                            <i class="fas fa-plus mr-2"></i> {{ __('Add New') }}
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <div class="inline-block min-w-full align-middle">
+                            <table class="min-w-full datatable">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm text-gray-700">#</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm text-gray-700">{{ __('Address')}}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm text-gray-700">{{ __('Action')}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @foreach ($addresses as $address)
+                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                        <td class="text-sm px-6 py-4 font-fira-sans">{{ $loop->iteration }}</td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans">{{ $address->address }}</td>
+                                        <td class="text-sm px-6 py-4 flex gap-3">
+                                            <a href="javascript:void(0)" onclick="editAddress({{ $address->id }})" type="button" data-modal-target="editAddress" data-modal-toggle="editAddress" data-te-ripple-color="light" class="inline-flex items-center px-3 py-1.5 bg-green-50 text-green-600 rounded hover:bg-green-100 transition border border-green-100">
+                                                <i class="fas fa-edit mr-1.5"></i> <span class="font-fira-sans font-medium text-xs uppercase">{{ __('Edit') }}</span>
+                                            </a>
+                                            <a href="javascript:void(0)" onclick="deleteData({{ $address->id }})" class="inline-flex items-center px-3 py-1.5 bg-red-50 text-red-600 rounded hover:bg-red-100 transition border border-red-100">
+                                                <i class="fas fa-trash-alt mr-1.5"></i> <span class="font-fira-sans font-medium text-xs uppercase">{{ __('Delete') }}</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </div>
+
 {{-- add address --}}
 <div id="exampleModalScrollableLabel" class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" tabindex="-1">
   <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 transition-all duration-300 ease-in-out w-full max-w-2xl max-h-full">

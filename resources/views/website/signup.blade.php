@@ -32,6 +32,9 @@
     {
         display: block;
     } */
+    .iti__tel-input {
+        padding-left: 95px !important;
+    }
 </style>
 @endsection
 
@@ -99,7 +102,7 @@
                         </div>
                         <div class="pt-3">
                             <label for="phone" class="font-fira-sans text-black text-sm font-normal">{{__('Phone Number')}}</label>
-                            <input type="number" name="doc_phone" value="{{ old('doc_phone') }}" class="@error('doc_phone') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light doc_phone" placeholder="{{__('Enter Phone Number')}}">
+                            <input type="number" name="doc_phone" value="{{ old('doc_phone') }}" class="@error('doc_phone') is-invalid @enderror w-full text-sm font-fira-sans text-gray block z-20 border border-white-light doc_phone py-2.5" placeholder="{{__('Enter Phone Number')}}">
                             <input type="hidden" name="phone_code" value={{ "+".env('DEFAULT_DIALING_CODE') }}>
                             @error('doc_phone')
                             <div class="invalid-feedback">
@@ -118,7 +121,7 @@
                         </div>
                         <div class="pt-3">
                             <label for="doc_dob" class="font-fira-sans text-black text-sm font-normal">{{__('Birth Date')}}</label>
-                            <div class="relative mb-3" data-te-datepicker-init data-te-input-wrapper-init data-te-format="yyyy-mm-dd">
+                            <div class="relative mb-3" data-te-datepicker-init data-te-format="yyyy-mm-dd">
                                 <input name="doc_dob" value="{{ old('doc_dob') }}" placeholder="yyyy-mm-dd" class="@error('doc_dob') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20" data-te-datepicker-toggle-ref data-te-datepicker-toggle-button-ref />
                             </div>
                             @error('doc_dob')
@@ -174,7 +177,7 @@
                         </div>
                         <div class="pt-3">
                             <label for="phone" class="font-fira-sans text-black text-sm font-normal">{{__('Phone Number')}}</label>
-                            <input type="number" name="phone" value="{{ old('phone') }}" class="@error('phone') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light phone" placeholder="{{__('Enter Phone Number')}}">
+                            <input type="number" name="phone" value="{{ old('phone') }}" class="@error('phone') is-invalid @enderror w-full text-sm font-fira-sans text-gray block z-20 border border-white-light phone py-2.5" placeholder="{{__('Enter Phone Number')}}">
                             <input type="hidden" name="phone_code" value="+880">
                             @error('phone')
                             <div class="invalid-feedback">
@@ -193,7 +196,7 @@
                         </div>
                         <div class="pt-3">
                             <label for="dob" class="font-fira-sans text-black text-sm font-normal">{{__('Birth Date')}}</label>
-                            <div class="relative mb-3" data-te-datepicker-init data-te-input-wrapper-init data-te-format="yyyy-mm-dd">
+                            <div class="relative mb-3" data-te-datepicker-init data-te-format="yyyy-mm-dd">
                                 <input name="dob" value="{{ old('dob') }}" placeholder="yyyy-mm-dd" class="@error('dob') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20" data-te-datepicker-toggle-ref data-te-datepicker-toggle-button-ref />
                             </div>
                             @error('dob')

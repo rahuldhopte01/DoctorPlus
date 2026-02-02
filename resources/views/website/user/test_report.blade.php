@@ -2,79 +2,116 @@
 
 @section('css')
 <style>
+    /* Custom Violet Color Styles */
+    .text-violet { color: #4A3AFF !important; }
+    .bg-violet { background-color: #4A3AFF !important; color: white !important; }
+    .btn-violet { background-color: #4A3AFF !important; color: white !important; }
+    .btn-violet:hover { opacity: 0.9; }
+
+    /* Sidebar Active State defaults */
     .sidebar li.active {
         background: linear-gradient(45deg, #00000000 50%, #f4f2ff);
-        border-left: 2px solid var(--site_color);
+        border-left: 2px solid #4A3AFF;
+    }
+
+    /* DataTables & Font overrides */
+    .dataTables_wrapper, table.dataTable, table.dataTable thead th, table.dataTable tbody td {
+        font-family: 'Fira Sans', sans-serif !important;
+    }
+    
+    /* Fix DataTable Header Alignment */
+    table.dataTable thead th {
+        display: table-cell !important;
+        vertical-align: middle !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+        background-image: none !important;
+    }
+
+    /* Inline Sort Icons */
+    table.dataTable thead th::before, table.dataTable thead th::after {
+        position: static !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+        opacity: 0.3 !important;
+        margin: 0 4px !important;
+    }
+    table.dataTable thead th.sorting_asc::after, table.dataTable thead th.sorting_desc::after {
+        opacity: 1 !important;
+        color: #4A3AFF !important;
     }
 </style>
 @endsection
 
 @section('content')
-<div class="xl:w-3/4 mx-auto">
-    <div class="xxsm:mx-5 xl:mx-0 2xl:mx-0 pt-10 h-full">
-        <div class="flex h-full mb-20 xxsm:flex-col sm:flex-col xmd:flex-row xmd:space-x-5">
-            <div class="2xl:w-1/5 1xl:w-1/5 xl:w-1/4 xlg:w-80 lg:w-72 xxmd:w-72 !xmd:w-72 md:w-72 h-auto">
+<div class="w-full px-4 sm:px-6 lg:px-8 pb-20">
+    <div class="pt-10">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="w-full lg:w-72 flex-shrink-0">
                 @include('website.user.userSidebar',['active' => 'testReport'])
             </div>
-            <div class="w-full md:w-full xxmd:w-full xmd:w-80 lg:w-2/3 xlg:w-2/3 1xl:w-full 2xl:w-full sm:ml-0 xxsm:ml-0 shadow-lg overflow-hidden p-5 mt-10 2xl:mt-0 xmd:mt-0">
-                <div class="border border-white-100 overflow-hidden">
-                    <div class="flex flex-col p-3">
-                        <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                                <div class="overflow-hidden table-responsive p-5">
-                                    <table class="min-w-full datatable">
-                                        <thead class="border-b">
-                                            <tr>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">#</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Laboratory Name') }}</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Prescription') }}</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Date & time') }}</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Payment Type') }}</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Amount') }}</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Report') }}</th>
-                                                <th scope="col" class="text-sm font-semibold font-fira-sans px-6 py-4 text-left">{{ __('Action') }}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($test_reports as $test_report)
-                                            <tr class="border-b transition duration-300 ease-in-out hover:bg-gray-50">
-                                                <td class="text-sm px-6 py-4 font-fira-sans">{{ $loop->iteration }}</td>
-                                                <td class="text-sm px-6 py-4 font-fira-sans">{{ $test_report->lab['name'] }}</td>
-                                                <td class="text-sm px-6 py-4 font-fira-sans">
-                                                    @if ($test_report->prescription != null)
-                                                    <a href="{{ 'report_prescription/upload/'.$test_report->prescription }}" data-fancybox="gallery2">
-                                                        <img src="{{ 'report_prescription/upload/'.$test_report->prescription}}" alt="Feature Image" width="50px" height="50px">
-                                                    </a>
-                                                    @else
-                                                    {{__('Prescription Not available')}}
-                                                    @endif
-                                                </td>
-                                                <td class="text-sm px-6 py-4 font-fira-sans">{{ $test_report->date }}<span class="block text-primary">{{ $test_report->time }}</span></td>
-                                                <td class="text-sm px-6 py-4 font-fira-sans">{{ $test_report->payment_type }}</td>
-                                                <td class="text-sm px-6 py-4 font-fira-sans">{{ $currency }}{{ $test_report->amount }}</td>
-                                                <td class="text-sm px-6 py-4 font-fira-sans">
-                                                    @if ($test_report->upload_report == null)
-                                                    {{ __('Report Not Available.') }}
-                                                    @else
-                                                    <a class="text-primary" href="{{ 'download_report/'.$test_report->id }}">
-                                                        {{ __('Download Report') }}
-                                                    </a>
-                                                    @endif
-                                                </td>
-                                                <td class="text-sm px-6 py-4">
-                                                    <a onclick="single_report({{ $test_report->id }})" class="px-6 whitespace-nowrap pt-2.5 pb-2 border-solid border-2 border-primary font-medium text-xs leading-normal uppercase rounded transition duration-150 ease-in-out align-center" href="javascript:void(0)" data-modal-toggle="exampleModalScrollable" data-modal-target="#exampleModalScrollable">
-                                                        <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M8 9.27219C8.90909 9.27219 9.68194 8.95413 10.3185 8.31801C10.9547 7.68141 11.2727 6.90856 11.2727 5.99947C11.2727 5.09038 10.9547 4.31753 10.3185 3.68092C9.68194 3.0448 8.90909 2.72674 8 2.72674C7.09091 2.72674 6.31806 3.0448 5.68146 3.68092C5.04533 4.31753 4.72727 5.09038 4.72727 5.99947C4.72727 6.90856 5.04533 7.68141 5.68146 8.31801C6.31806 8.95413 7.09091 9.27219 8 9.27219ZM8 7.9631C7.45455 7.9631 6.99103 7.77207 6.60946 7.39001C6.22739 7.00844 6.03636 6.54492 6.03636 5.99947C6.03636 5.45401 6.22739 4.99026 6.60946 4.60819C6.99103 4.22662 7.45455 4.03583 8 4.03583C8.54545 4.03583 9.00921 4.22662 9.39127 4.60819C9.77285 4.99026 9.96364 5.45401 9.96364 5.99947C9.96364 6.54492 9.77285 7.00844 9.39127 7.39001C9.00921 7.77207 8.54545 7.9631 8 7.9631ZM8 11.454C6.2303 11.454 4.61818 10.96 3.16364 9.97183C1.70909 8.98419 0.654545 7.66007 0 5.99947C0.654545 4.33886 1.70909 3.0145 3.16364 2.02638C4.61818 1.03874 6.2303 0.544922 8 0.544922C9.7697 0.544922 11.3818 1.03874 12.8364 2.02638C14.2909 3.0145 15.3455 4.33886 16 5.99947C15.3455 7.66007 14.2909 8.98419 12.8364 9.97183C11.3818 10.96 9.7697 11.454 8 11.454Z" />
-                                                        </svg>
-                                                        <span class="ml-2 text-primary font-fira-sans">{{ __('View') }}</span>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+            <div class="flex-grow w-full">
+                <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <div class="inline-block min-w-full align-middle">
+                            <table class="min-w-full datatable">
+                                <thead class="border-b bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">#</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Laboratory Name') }}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Prescription') }}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Date & time') }}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Payment Type') }}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Amount') }}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Report') }}</th>
+                                        <th scope="col" class="px-6 py-4 text-left font-semibold font-fira-sans text-sm">{{ __('Action') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    @foreach ($test_reports as $test_report)
+                                    <tr class="hover:bg-gray-50 transition duration-200">
+                                        <td class="text-sm px-6 py-4 font-fira-sans">{{ $loop->iteration }}</td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans">{{ $test_report->lab['name'] }}</td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans">
+                                            @if ($test_report->prescription != null)
+                                            <a href="{{ 'report_prescription/upload/'.$test_report->prescription }}" data-fancybox="gallery2">
+                                                <img src="{{ 'report_prescription/upload/'.$test_report->prescription}}" class="rounded-md object-cover" alt="Prescription" width="50px" height="50px">
+                                            </a>
+                                            @else
+                                            <span class="text-gray-400 text-xs">{{__('Not available')}}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans">
+                                            <div class="flex flex-col">
+                                                <span>{{ $test_report->date }}</span>
+                                                <span class="text-xs text-gray-500">{{ $test_report->time }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans">
+                                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">{{ $test_report->payment_type }}</span>
+                                        </td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans font-medium text-violet">{{ $currency }}{{ $test_report->amount }}</td>
+                                        <td class="text-sm px-6 py-4 font-fira-sans">
+                                            @if ($test_report->upload_report == null)
+                                            <span class="text-gray-400 text-xs">{{ __('Pending') }}</span>
+                                            @else
+                                            <a class="text-violet hover:underline text-sm font-medium" href="{{ 'download_report/'.$test_report->id }}">
+                                                <i class="fa fa-download mr-1"></i> {{ __('Download') }}
+                                            </a>
+                                            @endif
+                                        </td>
+                                        <td class="text-sm px-6 py-4">
+                                            <a onclick="single_report({{ $test_report->id }})" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white btn-violet focus:outline-none" href="javascript:void(0)" data-modal-toggle="exampleModalScrollable" data-modal-target="#exampleModalScrollable">
+                                                {{ __('View') }}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
