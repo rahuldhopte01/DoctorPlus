@@ -3,41 +3,43 @@
 @section('title', $questionnaire->name . ' - ' . $currentSection->name)
 
 @section('content')
-<div class="xl:w-3/4 mx-auto py-10">
-    <!-- Breadcrumb -->
-    <nav class="mb-6" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-gray">
-            <li><a href="{{ url('/') }}" class="hover:text-primary">{{ __('Home') }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{{ route('categories') }}" class="hover:text-primary">{{ __('Categories') }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="hover:text-primary">{{ $category->name }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li class="text-black">{{ __('Questionnaire') }}</li>
-        </ol>
-    </nav>
-
-    <!-- Category/Treatment Info Card -->
-    <div class="bg-white shadow-xl rounded-lg p-6 mb-6">
-        <div class="flex items-center gap-4">
-            @if($category->image)
-            <img src="{{ $category->fullImage }}" alt="{{ $category->name }}" class="h-16 w-16 object-cover rounded-lg">
-            @endif
-            <div>
-                <h2 class="font-fira-sans font-medium text-2xl text-black">{{ $category->name }}</h2>
-                @if($treatment)
-                <p class="font-fira-sans text-gray">{{ $treatment->name }}</p>
-                @endif
-            </div>
-        </div>
+{{-- Hero Banner Section --}}
+<div class="relative w-full bg-cover bg-center flex items-center justify-center" 
+     style="min-height: 350px; background-image: url('https://placehold.co/1920x600/e2e8f0/64748b?text=Pharmacy+Banner'); background-color: #0b2c4e;">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div> {{-- Dark Overlay --}}
+    <div class="z-10 text-center px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-white font-fira-sans mb-4 tracking-wide">{{ $questionnaire->name }}</h1>
+        <nav class="flex justify-center" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-sm text-gray-200">
+                <li><a href="{{ url('/') }}" class="hover:text-white transition-colors">{{ __('Home') }}</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{{ route('categories') }}" class="hover:text-white transition-colors">{{ __('Categories') }}</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="hover:text-white transition-colors">{{ $category->name }}</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-white font-medium">{{ __('Questionnaire') }}</li>
+            </ol>
+        </nav>
     </div>
+</div>
 
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Questionnaire Card -->
-    <div class="bg-white shadow-xl rounded-lg overflow-hidden">
-        <div class="bg-primary text-white p-6">
-            <h3 class="font-fira-sans font-medium text-2xl mb-2">{{ $questionnaire->name }}</h3>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="p-8 border-b border-gray-100">
+             <div class="flex items-center gap-4 mb-2">
+                 <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-clipboard-list text-2xl text-primary"></i>
+                 </div>
+                 <div>
+                    <h2 class="text-2xl font-bold text-gray-900 font-fira-sans">{{ $questionnaire->name }}</h2>
+                    @if($treatment)
+                    <p class="font-fira-sans text-gray-500 text-sm">{{ $treatment->name }}</p>
+                    @endif
+                 </div>
+            </div>
             @if($questionnaire->description)
-            <p class="text-white text-opacity-90">{{ $questionnaire->description }}</p>
+            <p class="text-gray-600 mt-4 leading-relaxed font-fira-sans">{{ $questionnaire->description }}</p>
             @endif
         </div>
 
