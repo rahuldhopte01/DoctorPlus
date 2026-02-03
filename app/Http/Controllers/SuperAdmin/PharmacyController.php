@@ -129,16 +129,7 @@ class PharmacyController extends Controller
         $message .= "Thank you!";
         
         try {
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
+            (new CustomController)->applyMailConfig($setting);
             Mail::to($user->email)->send(new SendMail($message, 'Pharmacy Account Approved'));
         } catch (\Exception $e) {
             info($e);
@@ -280,16 +271,7 @@ class PharmacyController extends Controller
                     $message .= "Thank you!";
 
                     try {
-                        $config = [
-                            'driver' => $setting->mail_mailer,
-                            'host' => $setting->mail_host,
-                            'port' => $setting->mail_port,
-                            'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                            'encryption' => $setting->mail_encryption,
-                            'username' => $setting->mail_username,
-                            'password' => $setting->mail_password,
-                        ];
-                        Config::set('mail', $config);
+                        (new CustomController)->applyMailConfig($setting);
                         Mail::to($user->email)->send(new SendMail($message, 'Pharmacy Account Approved'));
                     } catch (\Exception $e) {
                         info($e);

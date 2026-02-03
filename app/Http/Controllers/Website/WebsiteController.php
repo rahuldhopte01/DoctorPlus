@@ -146,7 +146,7 @@ class WebsiteController extends Controller
         if ($user == null) {
             return redirect('patient-login');
         }
-        $user = (new CustomController)->sendOtp($user);
+        $user = (new CustomController)->sendOtp($user, true);
         Session::put('verified_user', $user);
         $status = '';
         $setting = Setting::first();
@@ -179,6 +179,13 @@ class WebsiteController extends Controller
                 $user->save();
                 if (Auth::loginUsingId($user->id)) {
                     session()->forget('verified_user');
+                    $questionnaireIntent = session()->get('questionnaire_intent');
+                    if ($questionnaireIntent && isset($questionnaireIntent['redirect_to'])) {
+                        $redirectUrl = $questionnaireIntent['redirect_to'];
+                        session()->forget('questionnaire_intent');
+
+                        return redirect($redirectUrl);
+                    }
                     if (auth()->user()->hasRole('doctor')) {
                         return redirect('doctor_home');
                     }
@@ -781,25 +788,10 @@ class WebsiteController extends Controller
                 $user = Auth::user();
 
                 if ($user->status) {
-                    if ($user->verify) {
-                        // Check for questionnaire intent (Phase 3: Authentication Gate)
-                        $questionnaireIntent = session()->get('questionnaire_intent');
-                        if ($questionnaireIntent && isset($questionnaireIntent['redirect_to'])) {
-                            $redirectUrl = $questionnaireIntent['redirect_to'];
-                            session()->forget('questionnaire_intent');
-                            return redirect($redirectUrl);
-                        }
+                    Session::put('verified_user', $user);
+                    Auth::logout();
 
-                        if (auth()->user()->hasRole('doctor')) {
-                            return redirect()->intended('doctor_home');
-                        } else {
-                            return redirect()->intended('/');
-                        }
-                    } else {
-                        Session::put('verified_user', $user);
-
-                        return redirect('send_otp');
-                    }
+                    return redirect('send_otp');
                 } else {
                     Auth::logout();
 
@@ -939,16 +931,7 @@ class WebsiteController extends Controller
          * Send Mail to Doctor
          */
         if ($setting->doctor_mail == 1) {
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
+            (new CustomController)->applyMailConfig($setting);
             Mail::to($doctor_user->email)->send(new SendMail($mail1, $template->subject));
         }
 
@@ -1036,16 +1019,7 @@ class WebsiteController extends Controller
         $msg1 = str_ireplace($placeholder_keys, $placeholder_values, $msg_content);
 
         if ($setting->patient_mail == 1) {
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
+            (new CustomController)->applyMailConfig($setting);
             Mail::to(auth()->user()->email)->send(new SendMail($mail1, $template->subject));
         }
 
@@ -1674,16 +1648,7 @@ class WebsiteController extends Controller
             $mail_content = str_ireplace($placeholder_keys, $placeholder_values, $template->mail_content);
 
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to($user->email)->send(new SendMail($mail_content, $template->subject));
             } catch (\Exception $e) {
                 info($e);

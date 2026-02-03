@@ -30,6 +30,27 @@ use Twilio\Rest\Client;
 
 class CustomController extends Controller
 {
+    public function applyMailConfig($setting)
+    {
+        $mailer = strtolower(trim($setting->mail_mailer ?: 'smtp'));
+        $mailers = config('mail.mailers');
+        if (! is_array($mailers) || ! array_key_exists($mailer, $mailers)) {
+            $mailer = 'smtp';
+        }
+
+        Config::set('mail.default', $mailer);
+        Config::set('mail.from.address', $setting->mail_from_address ?: config('mail.from.address'));
+        Config::set('mail.from.name', $setting->mail_from_name ?: config('mail.from.name'));
+
+        if ($mailer === 'smtp') {
+            Config::set('mail.mailers.smtp.host', $setting->mail_host ?: config('mail.mailers.smtp.host'));
+            Config::set('mail.mailers.smtp.port', (int) ($setting->mail_port ?: config('mail.mailers.smtp.port')));
+            Config::set('mail.mailers.smtp.encryption', $setting->mail_encryption ?: config('mail.mailers.smtp.encryption'));
+            Config::set('mail.mailers.smtp.username', $setting->mail_username ?: config('mail.mailers.smtp.username'));
+            Config::set('mail.mailers.smtp.password', $setting->mail_password ?: config('mail.mailers.smtp.password'));
+        }
+    }
+
     public function imageUpload($image)
     {
         $file = $image;
@@ -147,16 +168,7 @@ class CustomController extends Controller
             }
             if ($setting->patient_mail == 1) {
                 try {
-                    $config = [
-                        'driver' => $setting->mail_mailer,
-                        'host' => $setting->mail_host,
-                        'port' => $setting->mail_port,
-                        'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                        'encryption' => $setting->mail_encryption,
-                        'username' => $setting->mail_username,
-                        'password' => $setting->mail_password,
-                    ];
-                    Config::set('mail', $config);
+                    $this->applyMailConfig($setting);
                     Mail::to($user->email)->send(new SendMail($mail1, $notification_template->subject));
                 } catch (\Exception $e) {
                     info($e);
@@ -183,16 +195,7 @@ class CustomController extends Controller
             }
             if ($setting->doctor_mail == 1) {
                 try {
-                    $config = [
-                        'driver' => $setting->mail_mailer,
-                        'host' => $setting->mail_host,
-                        'port' => $setting->mail_port,
-                        'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                        'encryption' => $setting->mail_encryption,
-                        'username' => $setting->mail_username,
-                        'password' => $setting->mail_password,
-                    ];
-                    Config::set('mail', $config);
+                    $this->applyMailConfig($setting);
                     Mail::to($user->email)->send(new SendMail($mail1, $notification_template->subject));
                 } catch (\Exception $e) {
                     info($e);
@@ -299,11 +302,11 @@ class CustomController extends Controller
         }
     }
 
-    public function sendOtp($user)
+    public function sendOtp($user, $force = false)
     {
         $setting = Setting::first();
         $isVerificationRequire = $setting->verification;
-        if ($isVerificationRequire == 1) {
+        if ($isVerificationRequire == 1 || $force) {
             $otp = mt_rand(1000, 9999);
             $user->update(['otp' => $otp]);
 
@@ -327,16 +330,7 @@ class CustomController extends Controller
 
             if ($isMailNotificationON == 1) {
                 try {
-                    $config = [
-                        'driver' => $setting->mail_mailer,
-                        'host' => $setting->mail_host,
-                        'port' => $setting->mail_port,
-                        'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                        'encryption' => $setting->mail_encryption,
-                        'username' => $setting->mail_username,
-                        'password' => $setting->mail_password,
-                    ];
-                    Config::set('mail', $config);
+                    $this->applyMailConfig($setting);
                     Mail::to($user->email)->send(new SendMail($mail1, $subject));
                 } catch (\Exception $e) {
                     info($e);

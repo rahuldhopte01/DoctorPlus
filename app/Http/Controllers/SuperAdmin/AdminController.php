@@ -161,16 +161,7 @@ class AdminController extends Controller
             $mail1 = str_ireplace($placeholder_keys, $placeholder_values, $mail1);
 
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to($user->email)->send(new SendMail($mail1, $notification_template->subject));
             } catch (\Exception $e) {
                 info($e);
@@ -286,16 +277,7 @@ class AdminController extends Controller
             $setting = Setting::first();
             $subject = 'Test Mail From Admin Panel';
             $message = 'This is a test email sent from the admin panel to ensure the proper configuration';
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
+            (new CustomController)->applyMailConfig($setting);
             Mail::to($request->to)->send(new TestMail($message, $subject, $setting->business_name));
 
             return response()->json(['success' => true, 'message' => 'Mail Sent Successfully!'], 200);

@@ -16,9 +16,40 @@ class Pharmacy extends Model
 
     protected $appends = ['fullImage'];
 
+    public const STATUS_PENDING = 0;
+    public const STATUS_APPROVED = 1;
+    public const STATUS_REJECTED = 2;
+
+    protected static array $statusMap = [
+        'pending' => self::STATUS_PENDING,
+        'approved' => self::STATUS_APPROVED,
+        'rejected' => self::STATUS_REJECTED,
+    ];
+
     protected function getFullImageAttribute()
     {
         return url('images/upload').'/'.$this->image;
+    }
+
+    public function getStatusAttribute($value)
+    {
+        if (is_numeric($value)) {
+            $reverseMap = array_flip(self::$statusMap);
+            return $reverseMap[(int) $value] ?? $value;
+        }
+
+        return $value;
+    }
+
+    public function setStatusAttribute($value)
+    {
+        if (is_string($value)) {
+            $mapped = self::$statusMap[strtolower($value)] ?? $value;
+            $this->attributes['status'] = $mapped;
+            return;
+        }
+
+        $this->attributes['status'] = $value;
     }
 
     public function scopeGetByDistance($query, $lat, $lng, $radius)

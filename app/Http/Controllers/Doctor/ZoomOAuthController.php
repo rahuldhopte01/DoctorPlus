@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SuperAdmin\CustomController;
 use App\Mail\SendMail;
 use App\Models\Appointment;
 use App\Models\Doctor;
@@ -210,16 +211,7 @@ class ZoomOAuthController extends Controller
 
         if ($setting->patient_mail == 1) {
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to($patient->email)->send(new SendMail($mail_content, 'Zoom Meeting Schedule'));
             } catch (\Exception $e) {
                 info($e);
