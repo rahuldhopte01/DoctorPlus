@@ -11,6 +11,7 @@
 </head>
 
 <body>
+    @include('layout.partials.skeleton_loader')
     <nav class="border-gray-200 rounded dark:bg-gray-900 m-0  pb-8">
         {{-- navbar --}}
         <div

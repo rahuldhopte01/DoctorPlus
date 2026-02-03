@@ -78,6 +78,7 @@ $api = new LicenseBoxExternalAPI(); // Initialize a new LicenseBoxAPI object
 </head>
 
 <body>
+    @include('layout.partials.skeleton_loader')
     <div id="cover-spin"></div>
     <?php
 $errors = false;

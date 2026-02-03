@@ -30,6 +30,7 @@
 </head>
 
 <body>
+    @include('layout.partials.skeleton_loader')
     <div id="loader">
         <div class="loader">
             <span></span>

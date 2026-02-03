@@ -55,6 +55,7 @@
 
     <body>
         @endif
+        @include('layout.partials.skeleton_loader')
         @include('layout.partials.navbar_website')
 
         @if(auth()->check())

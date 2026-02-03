@@ -21,6 +21,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
+    @include('layout.partials.skeleton_loader')
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
     <div class="container">

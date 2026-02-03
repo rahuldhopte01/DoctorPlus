@@ -33,6 +33,7 @@
     </style>
 </head>
 <body>
+    @include('layout.partials.skeleton_loader')
 <!-- changes -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
     <div class="container"> 

@@ -282,6 +282,7 @@
     </style>
 	</head>
 	<body>
+		@include('layout.partials.skeleton_loader')
 
 		<!-- Banner -->
         <section id="banner">

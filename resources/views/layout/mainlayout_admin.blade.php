@@ -6,6 +6,7 @@
 </head>
 
 <body>
+    @include('layout.partials.skeleton_loader')
     <div id="app">
         @if (Auth::check())
         {{-- @if (auth::check() && auth()->user()->hasRole('doctor') || auth::check() && auth()->user()->hasRole('super admin')) --}}
