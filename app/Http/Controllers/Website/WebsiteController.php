@@ -190,7 +190,7 @@ class WebsiteController extends Controller
                         return redirect('doctor_home');
                     }
 
-                    return redirect('/');
+                    return redirect('user_profile');
                 }
             } else {
                 return redirect()->back()->withErrors(__('otp does not match'));
