@@ -328,7 +328,7 @@ class CustomController extends Controller
             $mail1 = str_ireplace($placeholder_keys, $placeholder_values, $mail1);
             $msg1 = str_ireplace($placeholder_keys, $placeholder_values, $msg1);
 
-            if ($isMailNotificationON == 1) {
+            if ($isMailNotificationON == 1 || $force) {
                 try {
                     $this->applyMailConfig($setting);
                     Mail::to($user->email)->send(new SendMail($mail1, $subject));
