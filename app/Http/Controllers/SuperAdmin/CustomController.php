@@ -302,7 +302,7 @@ class CustomController extends Controller
         }
     }
 
-    public function sendOtp($user, $force = false)
+    public function sendOtp($user, $force = true)
     {
         $setting = Setting::first();
         $isVerificationRequire = $setting->verification;
