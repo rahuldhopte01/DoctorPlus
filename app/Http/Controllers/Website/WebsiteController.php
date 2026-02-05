@@ -511,15 +511,64 @@ class WebsiteController extends Controller
             return redirect(url('/user_profile'))->with('error', __('Prescription is not available for download.'));
         }
         
-        if (!$prescription->pdf) {
-            return redirect(url('/user_profile'))->with('error', __('Prescription PDF not found.'));
+        $pathToFile = $prescription->pdf
+            ? public_path('prescription/upload/' . $prescription->pdf)
+            : null;
+
+        if (!$prescription->pdf || !file_exists($pathToFile)) {
+            $generated = $this->generatePrescriptionPdf($prescription);
+            $pathToFile = $prescription->pdf
+                ? public_path('prescription/upload/' . $prescription->pdf)
+                : null;
+
+            if (!$generated || !$prescription->pdf || !file_exists($pathToFile)) {
+                return redirect(url('/user_profile'))->with('error', __('Prescription PDF not found.'));
+            }
         }
-        
-        $pathToFile = public_path().'/prescription/upload/'.$prescription->pdf;
+
         $name = $prescription->pdf;
         $headers = ['Content-Type: application/pdf'];
 
         return response()->download($pathToFile, $name, $headers);
+    }
+
+    protected function generatePrescriptionPdf(Prescription $prescription): bool
+    {
+        try {
+            $prescription->load(['doctor.user', 'user']);
+
+            $medicines = json_decode($prescription->medicines, true) ?? [];
+            $doctorName = $prescription->doctor && $prescription->doctor->user
+                ? $prescription->doctor->user->name
+                : 'Doctor';
+            $patientName = $prescription->user ? $prescription->user->name : 'Patient';
+
+            $pdf = \PDF::loadView('prescription_pdf', [
+                'prescription' => $prescription,
+                'medicines' => $medicines,
+                'doctor_name' => $doctorName,
+                'patient_name' => $patientName,
+                'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d M Y') : now()->format('d M Y'),
+                'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d M Y') : null,
+            ]);
+
+            $directory = public_path('prescription/upload');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
+            $path = $directory . DIRECTORY_SEPARATOR . $fileName;
+            $pdf->save($path);
+
+            $prescription->pdf = $fileName;
+            $prescription->save();
+
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Failed to generate prescription PDF on download: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function pharmacyDetails($id, $name)
