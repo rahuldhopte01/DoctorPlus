@@ -522,6 +522,11 @@ class WebsiteController extends Controller
                 : null;
 
             if (!$generated || !$prescription->pdf || !file_exists($pathToFile)) {
+                \Log::warning('Prescription PDF missing after generate', [
+                    'prescription_id' => $prescription->id,
+                    'pdf' => $prescription->pdf,
+                    'path' => $pathToFile,
+                ]);
                 return redirect(url('/user_profile'))->with('error', __('Prescription PDF not found.'));
             }
         }
@@ -543,14 +548,20 @@ class WebsiteController extends Controller
                 : 'Doctor';
             $patientName = $prescription->user ? $prescription->user->name : 'Patient';
 
-            $pdf = \PDF::loadView('prescription_pdf', [
-                'prescription' => $prescription,
-                'medicines' => $medicines,
-                'doctor_name' => $doctorName,
-                'patient_name' => $patientName,
-                'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d M Y') : now()->format('d M Y'),
-                'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d M Y') : null,
-            ]);
+            $usePrescriptionView = \Illuminate\Support\Facades\View::exists('prescription_pdf');
+            if ($usePrescriptionView) {
+                $pdf = \PDF::loadView('prescription_pdf', [
+                    'prescription' => $prescription,
+                    'medicines' => $medicines,
+                    'doctor_name' => $doctorName,
+                    'patient_name' => $patientName,
+                    'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d M Y') : now()->format('d M Y'),
+                    'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d M Y') : null,
+                ]);
+            } else {
+                $medicineName = $this->buildTempMedicineJson($medicines);
+                $pdf = \PDF::loadView('temp', ['medicineName' => $medicineName]);
+            }
 
             $directory = public_path('prescription/upload');
             if (!is_dir($directory)) {
@@ -566,9 +577,28 @@ class WebsiteController extends Controller
 
             return true;
         } catch (\Exception $e) {
-            \Log::error('Failed to generate prescription PDF on download: ' . $e->getMessage());
+            \Log::error('Failed to generate prescription PDF on download', [
+                'prescription_id' => $prescription->id,
+                'error' => $e->getMessage(),
+            ]);
             return false;
         }
+    }
+
+    protected function buildTempMedicineJson(array $medicines): string
+    {
+        $rows = [];
+        foreach ($medicines as $item) {
+            $rows[] = [
+                'medicine' => data_get($item, 'medicine', ''),
+                'days' => data_get($item, 'days', ''),
+                'morning' => (int) (data_get($item, 'morning', 0) ? 1 : 0),
+                'afternoon' => (int) (data_get($item, 'afternoon', 0) ? 1 : 0),
+                'night' => (int) (data_get($item, 'night', 0) ? 1 : 0),
+            ];
+        }
+
+        return json_encode($rows);
     }
 
     public function pharmacyDetails($id, $name)
