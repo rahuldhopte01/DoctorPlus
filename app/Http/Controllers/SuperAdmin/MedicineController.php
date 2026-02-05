@@ -48,12 +48,24 @@ class MedicineController extends Controller
      */
     public function store(Request $request)
     {
+        $brandId = $request->input('brand_id');
+        if (is_string($brandId)) {
+            $brandId = trim($brandId);
+        }
+        if ($brandId === null || $brandId === '' || $brandId === '0' || $brandId === 0) {
+            $request->merge(['brand_id' => null]);
+        }
+        $description = $request->input('description');
+        if (is_string($description) && trim($description) === '') {
+            $request->merge(['description' => null]);
+        }
+
         $request->validate([
             'name' => 'bail|required|max:255|unique:medicine',
             'strength' => 'nullable|max:100',
             'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
-            'description' => 'bail|required',
+            'description' => 'nullable',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:category,id',
         ]);
@@ -99,12 +111,24 @@ class MedicineController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $brandId = $request->input('brand_id');
+        if (is_string($brandId)) {
+            $brandId = trim($brandId);
+        }
+        if ($brandId === null || $brandId === '' || $brandId === '0' || $brandId === 0) {
+            $request->merge(['brand_id' => null]);
+        }
+        $description = $request->input('description');
+        if (is_string($description) && trim($description) === '') {
+            $request->merge(['description' => null]);
+        }
+
         $request->validate([
             'name' => 'bail|required|max:255|unique:medicine,name,'.$id.',id',
             'strength' => 'nullable|max:100',
             'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
-            'description' => 'bail|required',
+            'description' => 'nullable',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:category,id',
         ]);
