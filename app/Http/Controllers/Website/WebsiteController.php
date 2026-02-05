@@ -540,11 +540,11 @@ class WebsiteController extends Controller
     protected function generatePrescriptionPdf(Prescription $prescription): bool
     {
         try {
-            $prescription->load(['doctor.user', 'user']);
+            $prescription->load(['doctor', 'user']);
 
             $medicines = json_decode($prescription->medicines, true) ?? [];
-            $doctorName = $prescription->doctor && $prescription->doctor->user
-                ? $prescription->doctor->user->name
+            $doctorName = $prescription->doctor && $prescription->doctor->name
+                ? $prescription->doctor->name
                 : 'Doctor';
             $patientName = $prescription->user ? $prescription->user->name : 'Patient';
 
