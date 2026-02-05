@@ -291,7 +291,7 @@ class CustomController extends Controller
             } catch (\Exception $e) {
                 info('OneSignal Scheduled Notification Cancel Error - Patient: '.$e->getMessage());
             }
-        }p
+        }
         if ($notification_id_doctor) {
             try {
                 $client = new OneSignalClient($setting->doctor_app_id, $setting->doctor_api_key, $setting->doctor_auth_key);
