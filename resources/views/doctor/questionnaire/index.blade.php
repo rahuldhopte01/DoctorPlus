@@ -21,8 +21,36 @@
                 </div>
                 @endif
                 
-                @if($submissions->count() > 0)
-                <div class="table-responsive">
+                @if($doctor->isAdminDoctor())
+                <form method="GET" class="mb-3">
+                    <div class="row align-items-end">
+                        <div class="col-md-6">
+                            <div class="form-group mb-0">
+                                <label>{{ __('Filter by Doctor') }}</label>
+                                <select name="review_doctor_id" class="form-control">
+                                    <option value="{{ $doctor->id }}" {{ (int)($selectedReviewDoctorId ?? $doctor->id) === $doctor->id ? 'selected' : '' }}>
+                                        {{ __('My Questionnaires') }}
+                                    </option>
+                                    @foreach($reviewDoctors as $reviewDoctor)
+                                        <option value="{{ $reviewDoctor->id }}" {{ (int)($selectedReviewDoctorId ?? 0) === $reviewDoctor->id ? 'selected' : '' }}>
+                                            {{ $reviewDoctor->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-filter mr-1"></i>{{ __('Apply') }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                @endif
+
+                <h5 class="mb-3">{{ __('Questionnaires Under Review') }}</h5>
+                @if($reviewSubmissions->count() > 0)
+                <div class="table-responsive mb-4">
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr>
@@ -31,12 +59,16 @@
                                 <th>{{ __('Questionnaire') }}</th>
                                 <th>{{ __('Submitted At') }}</th>
                                 <th>{{ __('Status') }}</th>
+                                <th>{{ __('Selected Medicines') }}</th>
+                                @if($doctor->isAdminDoctor())
+                                <th>{{ __('Reviewing Doctor') }}</th>
+                                @endif
                                 <th>{{ __('Flagged') }}</th>
                                 <th>{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($submissions as $submission)
+                            @foreach($reviewSubmissions as $submission)
                             <tr>
                                 <td>
                                     <strong>{{ $submission['user']->name ?? 'N/A' }}</strong><br>
@@ -68,6 +100,25 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if(!empty($submission['selected_medicines']))
+                                        @foreach($submission['selected_medicines'] as $medicine)
+                                            <span class="badge badge-light">
+                                                {{ $medicine['name'] }}
+                                                @if(!empty($medicine['strength']))
+                                                    <small>({{ $medicine['strength'] }})</small>
+                                                @endif
+                                            </span>
+                                        @endforeach
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                @if($doctor->isAdminDoctor())
+                                <td>
+                                    {{ $submission['reviewing_doctor']->name ?? __('Unassigned') }}
+                                </td>
+                                @endif
+                                <td>
                                     @if($submission['flagged_count'] > 0)
                                         <span class="badge badge-danger">
                                             <i class="fas fa-flag"></i> {{ $submission['flagged_count'] }}
@@ -92,9 +143,93 @@
                     </table>
                 </div>
                 @else
-                <div class="text-center py-5">
-                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">{{ __('No questionnaire submissions found.') }}</p>
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">{{ __('No questionnaires under review found.') }}</p>
+                </div>
+                @endif
+
+                <h5 class="mb-3">{{ __('Pending Questionnaires') }}</h5>
+                @if($pendingSubmissions->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Patient') }}</th>
+                                <th>{{ __('Category') }}</th>
+                                <th>{{ __('Questionnaire') }}</th>
+                                <th>{{ __('Submitted At') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Selected Medicines') }}</th>
+                                @if($doctor->isAdminDoctor())
+                                <th>{{ __('Reviewing Doctor') }}</th>
+                                @endif
+                                <th>{{ __('Flagged') }}</th>
+                                <th>{{ __('Actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($pendingSubmissions as $submission)
+                            <tr>
+                                <td>
+                                    <strong>{{ $submission['user']->name ?? 'N/A' }}</strong><br>
+                                    <small class="text-muted">{{ $submission['user']->email ?? '' }}</small>
+                                </td>
+                                <td>{{ $submission['category']->name ?? 'N/A' }}</td>
+                                <td>{{ $submission['questionnaire']->name ?? 'N/A' }}</td>
+                                <td>
+                                    {{ $submission['submitted_at'] ? \Carbon\Carbon::parse($submission['submitted_at'])->format('M d, Y H:i') : 'N/A' }}
+                                </td>
+                                <td>
+                                    <span class="badge badge-warning">{{ __('Pending') }}</span>
+                                </td>
+                                <td>
+                                    @if(!empty($submission['selected_medicines']))
+                                        @foreach($submission['selected_medicines'] as $medicine)
+                                            <span class="badge badge-light">
+                                                {{ $medicine['name'] }}
+                                                @if(!empty($medicine['strength']))
+                                                    <small>({{ $medicine['strength'] }})</small>
+                                                @endif
+                                            </span>
+                                        @endforeach
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                @if($doctor->isAdminDoctor())
+                                <td>
+                                    {{ $submission['reviewing_doctor']->name ?? __('Unassigned') }}
+                                </td>
+                                @endif
+                                <td>
+                                    @if($submission['flagged_count'] > 0)
+                                        <span class="badge badge-danger">
+                                            <i class="fas fa-flag"></i> {{ $submission['flagged_count'] }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('doctor.questionnaire.show', [
+                                        'userId' => $submission['user']->id,
+                                        'categoryId' => $submission['category']->id,
+                                        'questionnaireId' => $submission['questionnaire']->id
+                                    ]) }}" 
+                                    class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> {{ __('Review') }}
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                @else
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">{{ __('No pending questionnaires found.') }}</p>
                 </div>
                 @endif
             </div>

@@ -55,65 +55,141 @@ class QuestionnaireReviewController extends Controller
         }
         
         $submissions = collect([]);
+        $reviewSubmissions = collect([]);
+        $pendingSubmissions = collect([]);
+        $reviewDoctors = collect([]);
+        $selectedReviewDoctorId = null;
         
+        $reviewStatuses = ['under_review', 'IN_REVIEW', 'approved', 'rejected', 'REVIEW_COMPLETED'];
         $baseQuery = QuestionnaireAnswer::whereNull('questionnaire_answers.appointment_id')
-            ->whereIn('questionnaire_answers.status', ['pending', 'under_review', 'IN_REVIEW', 'approved', 'rejected', 'REVIEW_COMPLETED'])
+            ->whereIn('questionnaire_answers.status', array_merge(['pending'], $reviewStatuses))
             ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor']);
+        
+        $baseQuery->where(function ($query) use ($doctor) {
+            $query->where('questionnaire_answers.hospital_id', $doctor->hospital_id)
+                ->orWhereNull('questionnaire_answers.hospital_id');
+        });
         
         if ($doctor->isSubDoctor()) {
             $doctorCategoryIds = $doctor->categories->pluck('id')->toArray();
             
-            $baseQuery->where(function ($query) use ($doctor, $doctorCategoryIds) {
-                // (a) I am the reviewer -> always show
-                $query->where('questionnaire_answers.reviewing_doctor_id', $doctor->id)
-                    ->orWhere(function ($q) use ($doctor, $doctorCategoryIds) {
-                        // (b) Pending, unlocked, in my categories, same hospital
-                        $q->where(function ($h) use ($doctor) {
-                            $h->where('questionnaire_answers.hospital_id', $doctor->hospital_id)
-                                ->orWhereNull('questionnaire_answers.hospital_id');
-                        })
-                        ->where('questionnaire_answers.status', 'pending')
-                        ->whereNull('questionnaire_answers.reviewing_doctor_id')
-                        ->whereIn('questionnaire_answers.category_id', $doctorCategoryIds);
-                    });
-            });
-            $answers = $baseQuery->orderBy('questionnaire_answers.submitted_at', 'desc')->get();
+            $reviewAnswers = (clone $baseQuery)
+                ->where('questionnaire_answers.reviewing_doctor_id', $doctor->id)
+                ->whereIn('questionnaire_answers.status', $reviewStatuses)
+                ->orderBy('questionnaire_answers.submitted_at', 'desc')
+                ->get();
+            
+            $pendingAnswers = (clone $baseQuery)
+                ->where('questionnaire_answers.status', 'pending')
+                ->whereNull('questionnaire_answers.reviewing_doctor_id')
+                ->whereIn('questionnaire_answers.category_id', $doctorCategoryIds)
+                ->orderBy('questionnaire_answers.submitted_at', 'desc')
+                ->get();
         } else {
-            $baseQuery->where(function ($query) use ($doctor) {
-                $query->where('questionnaire_answers.hospital_id', $doctor->hospital_id)
-                    ->orWhereNull('questionnaire_answers.hospital_id');
-            });
-            $answers = $baseQuery->orderBy('questionnaire_answers.submitted_at', 'desc')->get();
+            $reviewDoctors = Doctor::byHospital($doctor->hospital_id)
+                ->subDoctors()
+                ->orderBy('name')
+                ->get();
+            
+            $selectedReviewDoctorId = (int) request()->get('review_doctor_id', $doctor->id);
+            $selectedDoctor = Doctor::byHospital($doctor->hospital_id)
+                ->where('id', $selectedReviewDoctorId)
+                ->first();
+            if (!$selectedDoctor) {
+                $selectedReviewDoctorId = $doctor->id;
+            }
+            
+            $reviewAnswers = (clone $baseQuery)
+                ->where('questionnaire_answers.reviewing_doctor_id', $selectedReviewDoctorId)
+                ->whereIn('questionnaire_answers.status', $reviewStatuses)
+                ->orderBy('questionnaire_answers.submitted_at', 'desc')
+                ->get();
+            
+            $pendingAnswers = (clone $baseQuery)
+                ->where('questionnaire_answers.status', 'pending')
+                ->whereNull('questionnaire_answers.reviewing_doctor_id')
+                ->orderBy('questionnaire_answers.submitted_at', 'desc')
+                ->get();
         }
         
-        // Group by user_id, category_id, questionnaire_id, and submitted_at (grouping key)
-        $submissions = $answers->groupBy(function($answer) {
-            $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
-            return $answer->user_id . '_' . $answer->category_id . '_' . $answer->questionnaire_id . '_' . $submittedAt;
-        })
-        ->map(function($group) use ($doctor) {
-            $first = $group->first();
-            $isLocked = $first->isLocked();
-            $isLockedByMe = $first->isLockedBy($doctor->id);
-            $canEdit = $doctor->isAdminDoctor() ? false : $isLockedByMe; // Admin can't edit, sub-doctor can only edit if locked by them
+        $buildSubmissions = function ($answers) use ($doctor) {
+            if ($answers->isEmpty()) {
+                return collect([]);
+            }
             
-            return [
-                'user' => $first->user,
-                'category' => $first->category,
-                'questionnaire' => $first->questionnaire,
-                'status' => $first->status,
-                'submitted_at' => $first->submitted_at ?? $first->created_at,
-                'answers' => $group->keyBy('question_id'),
-                'flagged_count' => $group->where('is_flagged', true)->count(),
-                'is_locked' => $isLocked,
-                'is_locked_by_me' => $isLockedByMe,
-                'reviewing_doctor' => $first->reviewingDoctor,
-                'can_edit' => $canEdit,
-            ];
-        })
-        ->values();
+            $submissionRecords = QuestionnaireSubmission::whereIn('user_id', $answers->pluck('user_id')->unique())
+                ->whereIn('category_id', $answers->pluck('category_id')->unique())
+                ->whereIn('questionnaire_id', $answers->pluck('questionnaire_id')->unique())
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            $submissionMap = $submissionRecords->groupBy(function ($submission) {
+                return $submission->user_id . '_' . $submission->category_id . '_' . $submission->questionnaire_id;
+            })->map(function ($group) {
+                return $group->first();
+            });
+            
+            $medicineIds = $submissionRecords->flatMap(function ($submission) {
+                return collect($submission->selected_medicines ?? [])->pluck('medicine_id');
+            })->filter()->unique()->values();
+            
+            $medicineMap = $medicineIds->isNotEmpty()
+                ? Medicine::with('brand')->whereIn('id', $medicineIds)->get()->keyBy('id')
+                : collect([]);
+            
+            return $answers->groupBy(function ($answer) {
+                $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
+                return $answer->user_id . '_' . $answer->category_id . '_' . $answer->questionnaire_id . '_' . $submittedAt;
+            })->map(function ($group) use ($doctor, $submissionMap, $medicineMap) {
+                $first = $group->first();
+                $isLocked = $first->isLocked();
+                $isLockedByMe = $first->isLockedBy($doctor->id);
+                $canEdit = $doctor->isAdminDoctor() ? $isLockedByMe : $isLockedByMe; 
+                
+                $submissionKey = $first->user_id . '_' . $first->category_id . '_' . $first->questionnaire_id;
+                $submission = $submissionMap->get($submissionKey);
+                $selectedMedicines = [];
+                if ($submission && $submission->selected_medicines) {
+                    foreach ($submission->selected_medicines as $selected) {
+                        $medicine = $medicineMap->get($selected['medicine_id'] ?? null);
+                        if ($medicine) {
+                            $selectedMedicines[] = [
+                                'name' => $medicine->name,
+                                'strength' => $medicine->strength ?? '',
+                                'brand' => $medicine->brand->name ?? null,
+                            ];
+                        }
+                    }
+                }
+                
+                return [
+                    'user' => $first->user,
+                    'category' => $first->category,
+                    'questionnaire' => $first->questionnaire,
+                    'status' => $first->status,
+                    'submitted_at' => $first->submitted_at ?? $first->created_at,
+                    'answers' => $group->keyBy('question_id'),
+                    'flagged_count' => $group->where('is_flagged', true)->count(),
+                    'is_locked' => $isLocked,
+                    'is_locked_by_me' => $isLockedByMe,
+                    'reviewing_doctor' => $first->reviewingDoctor,
+                    'can_edit' => $canEdit,
+                    'submission' => $submission,
+                    'selected_medicines' => $selectedMedicines,
+                ];
+            })->values();
+        };
         
-        return view('doctor.questionnaire.index', compact('submissions', 'doctor'));
+        $reviewSubmissions = $buildSubmissions($reviewAnswers ?? collect([]));
+        $pendingSubmissions = $buildSubmissions($pendingAnswers ?? collect([]));
+        
+        return view('doctor.questionnaire.index', compact(
+            'reviewSubmissions',
+            'pendingSubmissions',
+            'doctor',
+            'reviewDoctors',
+            'selectedReviewDoctorId'
+        ));
     }
     
     /**
@@ -239,8 +315,8 @@ class QuestionnaireReviewController extends Controller
         // - Sub-doctors can edit if: they are the reviewer, it's unlocked, OR it's approved (and they have category access)
         $canEdit = false;
         if ($doctor->isAdminDoctor()) {
-            // Admin can edit any questionnaire in their hospital
-            $canEdit = true;
+            // Admin can edit only questionnaires assigned to them
+            $canEdit = $firstAnswer->reviewing_doctor_id == $doctor->id;
         } elseif ($doctor->isSubDoctor()) {
             // Sub-doctor can edit if:
             // 1. They are the reviewer (locked by them or approved by them)
@@ -382,13 +458,12 @@ class QuestionnaireReviewController extends Controller
             $firstAnswer->save();
         }
         
-        // Sub-doctor: can update only if they are the reviewer. Admin: can update any questionnaire in their hospital.
-        if ($doctor->isSubDoctor()) {
+        // Sub-doctor: can update only if they are the reviewer. Admin: can update only if assigned.
+        if ($doctor->isSubDoctor() || $doctor->isAdminDoctor()) {
             if (!$firstAnswer->isLockedBy($doctor->id)) {
                 abort(403, 'You can only update questionnaires you are reviewing');
             }
         }
-        // Admin doctor for this hospital can always update status (submission is already hospital-scoped above).
         
         // Only unlock (clear reviewing_doctor_id) for rejected or REVIEW_COMPLETED
         // Keep reviewing_doctor_id for approved so the reviewing doctor can still access it to create prescription
