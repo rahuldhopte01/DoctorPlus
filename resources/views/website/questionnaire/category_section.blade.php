@@ -217,18 +217,22 @@
                                         : [];
                                 @endphp
                                 @foreach($question->options ?? [] as $optionIndex => $option)
-                                <div class="flex items-center">
-                                    <input type="checkbox" 
-                                        id="q{{ $question->id }}_opt{{ $optionIndex }}"
-                                        name="answers[{{ $question->id }}][]" 
-                                        value="{{ $option }}"
-                                        class="question-input"
-                                        data-question-id="{{ $question->id }}"
-                                        {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
-                                    <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="ml-2 font-fira-sans text-gray">
+                                <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-300 group mb-3 last:mb-0 shadow-sm">
+                                    <span class="font-fira-sans text-gray-700 font-medium text-base group-hover:text-blue-700 transition-colors">
                                         {{ $option }}
-                                    </label>
-                                </div>
+                                    </span>
+                                    
+                                    <div class="relative">
+                                        <input type="checkbox" 
+                                            id="q{{ $question->id }}_opt{{ $optionIndex }}"
+                                            name="answers[{{ $question->id }}][]" 
+                                            value="{{ $option }}"
+                                            class="sr-only peer question-input"
+                                            data-question-id="{{ $question->id }}"
+                                            {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
+                                        <div class="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-100 rounded-full peer-checked:bg-blue-600 transition-colors duration-200 flex items-center px-1 after:content-[''] after:w-6 after:h-6 after:bg-white after:border-gray-300 after:border after:rounded-full after:shadow-sm after:transition-transform after:duration-200 peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+                                    </div>
+                                </label>
                                 @endforeach
                             </div>
                             @break
