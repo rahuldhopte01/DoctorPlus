@@ -85,6 +85,14 @@
                                     @endif
                                 </td>
                             </tr>
+                            @if($doctor->isAdminDoctor())
+                            <tr>
+                                <td class="text-muted">{{ __('Reviewing Doctor') }}</td>
+                                <td>
+                                    {{ $firstAnswer->reviewingDoctor->name ?? __('Unassigned') }}
+                                </td>
+                            </tr>
+                            @endif
                         </table>
                     </div>
                 </div>

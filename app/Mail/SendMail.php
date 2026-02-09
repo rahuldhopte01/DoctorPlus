@@ -32,7 +32,10 @@ class SendMail extends Mailable
      */
     public function build()
     {
-        return $this->from(env('MAIL_FROM_ADDRESS'))->subject($this->subject)
+        $fromAddress = config('mail.from.address', env('MAIL_FROM_ADDRESS'));
+        $fromName = config('mail.from.name', env('MAIL_FROM_NAME'));
+
+        return $this->from($fromAddress, $fromName)->subject($this->subject)
             ->view('send_mail')->with([
             'content' => $this->content,
         ]);

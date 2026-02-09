@@ -146,7 +146,7 @@ class WebsiteController extends Controller
         if ($user == null) {
             return redirect('patient-login');
         }
-        $user = (new CustomController)->sendOtp($user);
+        $user = (new CustomController)->sendOtp($user, true);
         Session::put('verified_user', $user);
         $status = '';
         $setting = Setting::first();
@@ -179,11 +179,18 @@ class WebsiteController extends Controller
                 $user->save();
                 if (Auth::loginUsingId($user->id)) {
                     session()->forget('verified_user');
+                    $questionnaireIntent = session()->get('questionnaire_intent');
+                    if ($questionnaireIntent && isset($questionnaireIntent['redirect_to'])) {
+                        $redirectUrl = $questionnaireIntent['redirect_to'];
+                        session()->forget('questionnaire_intent');
+
+                        return redirect($redirectUrl);
+                    }
                     if (auth()->user()->hasRole('doctor')) {
                         return redirect('doctor_home');
                     }
 
-                    return redirect('/');
+                    return redirect('user_profile');
                 }
             } else {
                 return redirect()->back()->withErrors(__('otp does not match'));
@@ -504,15 +511,94 @@ class WebsiteController extends Controller
             return redirect(url('/user_profile'))->with('error', __('Prescription is not available for download.'));
         }
         
-        if (!$prescription->pdf) {
-            return redirect(url('/user_profile'))->with('error', __('Prescription PDF not found.'));
+        $pathToFile = $prescription->pdf
+            ? public_path('prescription/upload/' . $prescription->pdf)
+            : null;
+
+        if (!$prescription->pdf || !file_exists($pathToFile)) {
+            $generated = $this->generatePrescriptionPdf($prescription);
+            $pathToFile = $prescription->pdf
+                ? public_path('prescription/upload/' . $prescription->pdf)
+                : null;
+
+            if (!$generated || !$prescription->pdf || !file_exists($pathToFile)) {
+                \Log::warning('Prescription PDF missing after generate', [
+                    'prescription_id' => $prescription->id,
+                    'pdf' => $prescription->pdf,
+                    'path' => $pathToFile,
+                ]);
+                return redirect(url('/user_profile'))->with('error', __('Prescription PDF not found.'));
+            }
         }
-        
-        $pathToFile = public_path().'/prescription/upload/'.$prescription->pdf;
+
         $name = $prescription->pdf;
         $headers = ['Content-Type: application/pdf'];
 
         return response()->download($pathToFile, $name, $headers);
+    }
+
+    protected function generatePrescriptionPdf(Prescription $prescription): bool
+    {
+        try {
+            $prescription->load(['doctor', 'user']);
+
+            $medicines = json_decode($prescription->medicines, true) ?? [];
+            $doctorName = $prescription->doctor && $prescription->doctor->name
+                ? $prescription->doctor->name
+                : 'Doctor';
+            $patientName = $prescription->user ? $prescription->user->name : 'Patient';
+
+            $usePrescriptionView = \Illuminate\Support\Facades\View::exists('prescription_pdf');
+            if ($usePrescriptionView) {
+                $pdf = \PDF::loadView('prescription_pdf', [
+                    'prescription' => $prescription,
+                    'medicines' => $medicines,
+                    'doctor_name' => $doctorName,
+                    'patient_name' => $patientName,
+                    'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d M Y') : now()->format('d M Y'),
+                    'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d M Y') : null,
+                ]);
+            } else {
+                $medicineName = $this->buildTempMedicineJson($medicines);
+                $pdf = \PDF::loadView('temp', ['medicineName' => $medicineName]);
+            }
+
+            $directory = public_path('prescription/upload');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
+            $path = $directory . DIRECTORY_SEPARATOR . $fileName;
+            $pdf->save($path);
+
+            $prescription->pdf = $fileName;
+            $prescription->save();
+
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Failed to generate prescription PDF on download', [
+                'prescription_id' => $prescription->id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    protected function buildTempMedicineJson(array $medicines): string
+    {
+        $rows = [];
+        foreach ($medicines as $item) {
+            $rows[] = [
+                'medicine' => data_get($item, 'medicine', ''),
+                'days' => data_get($item, 'days', ''),
+                'morning' => (int) (data_get($item, 'morning', 0) ? 1 : 0),
+                'afternoon' => (int) (data_get($item, 'afternoon', 0) ? 1 : 0),
+                'night' => (int) (data_get($item, 'night', 0) ? 1 : 0),
+            ];
+        }
+
+        return json_encode($rows);
     }
 
     public function pharmacyDetails($id, $name)
@@ -781,25 +867,10 @@ class WebsiteController extends Controller
                 $user = Auth::user();
 
                 if ($user->status) {
-                    if ($user->verify) {
-                        // Check for questionnaire intent (Phase 3: Authentication Gate)
-                        $questionnaireIntent = session()->get('questionnaire_intent');
-                        if ($questionnaireIntent && isset($questionnaireIntent['redirect_to'])) {
-                            $redirectUrl = $questionnaireIntent['redirect_to'];
-                            session()->forget('questionnaire_intent');
-                            return redirect($redirectUrl);
-                        }
+                    Session::put('verified_user', $user);
+                    Auth::logout();
 
-                        if (auth()->user()->hasRole('doctor')) {
-                            return redirect()->intended('doctor_home');
-                        } else {
-                            return redirect()->intended('/');
-                        }
-                    } else {
-                        Session::put('verified_user', $user);
-
-                        return redirect('send_otp');
-                    }
+                    return redirect('send_otp');
                 } else {
                     Auth::logout();
 
@@ -939,16 +1010,7 @@ class WebsiteController extends Controller
          * Send Mail to Doctor
          */
         if ($setting->doctor_mail == 1) {
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
+            (new CustomController)->applyMailConfig($setting);
             Mail::to($doctor_user->email)->send(new SendMail($mail1, $template->subject));
         }
 
@@ -1036,16 +1098,7 @@ class WebsiteController extends Controller
         $msg1 = str_ireplace($placeholder_keys, $placeholder_values, $msg_content);
 
         if ($setting->patient_mail == 1) {
-            $config = [
-                'driver' => $setting->mail_mailer,
-                'host' => $setting->mail_host,
-                'port' => $setting->mail_port,
-                'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                'encryption' => $setting->mail_encryption,
-                'username' => $setting->mail_username,
-                'password' => $setting->mail_password,
-            ];
-            Config::set('mail', $config);
+            (new CustomController)->applyMailConfig($setting);
             Mail::to(auth()->user()->email)->send(new SendMail($mail1, $template->subject));
         }
 
@@ -1674,16 +1727,7 @@ class WebsiteController extends Controller
             $mail_content = str_ireplace($placeholder_keys, $placeholder_values, $template->mail_content);
 
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to($user->email)->send(new SendMail($mail_content, $template->subject));
             } catch (\Exception $e) {
                 info($e);

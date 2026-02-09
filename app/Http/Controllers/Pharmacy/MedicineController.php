@@ -57,12 +57,26 @@ class MedicineController extends Controller
      */
     public function store(Request $request)
     {
+        $brandId = $request->input('brand_id');
+        if (is_string($brandId)) {
+            $brandId = trim($brandId);
+        }
+        if ($brandId === null || $brandId === '' || $brandId === '0' || $brandId === 0) {
+            $request->merge(['brand_id' => null]);
+        }
+        $description = $request->input('description');
+        if (is_string($description) && trim($description) === '') {
+            $request->merge(['description' => null]);
+        }
+
         $request->validate([
             'name' => 'bail|required|max:255|unique:medicine',
+            'strength' => 'nullable|max:100',
+            'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
-            'description' => 'bail|required',
+            'description' => 'nullable',
         ]);
-        $data = $request->all();
+        $data = $request->only(['name', 'strength', 'form', 'brand_id', 'description']);
         $data['status'] = $request->has('status') ? 1 : 0;
         Medicine::create($data);
 
@@ -104,13 +118,27 @@ class MedicineController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $brandId = $request->input('brand_id');
+        if (is_string($brandId)) {
+            $brandId = trim($brandId);
+        }
+        if ($brandId === null || $brandId === '' || $brandId === '0' || $brandId === 0) {
+            $request->merge(['brand_id' => null]);
+        }
+        $description = $request->input('description');
+        if (is_string($description) && trim($description) === '') {
+            $request->merge(['description' => null]);
+        }
+
         $request->validate([
             'name' => 'bail|required|max:255|unique:medicine,name,'.$id.',id',
+            'strength' => 'nullable|max:100',
+            'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
-            'description' => 'bail|required',
+            'description' => 'nullable',
         ]);
         $medicine = Medicine::find($id);
-        $data = $request->all();
+        $data = $request->only(['name', 'strength', 'form', 'brand_id', 'description']);
         $data['status'] = $request->has('status') ? 1 : 0;
         $medicine->update($data);
 

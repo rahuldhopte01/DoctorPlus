@@ -65,16 +65,10 @@ class UserApiController extends Controller
                         $user->device_token = $request->device_token;
                         $user->save();
                     }
-                    if ($user['verify'] == 1) {
-                        $user['token'] = $user->createToken('doctro')->accessToken;
-                        $user->makeHidden('roles');
+                    (new CustomController)->sendOtp($user, true);
+                    $user->makeHidden('roles');
 
-                        return response()->json(['success' => true, 'data' => $user, 'msg' => 'successfully login'], 200);
-                    } else {
-                        (new CustomController)->sendOtp($user);
-
-                        return response(['success' => true, 'data' => $user, 'msg' => 'Otp send in your account']);
-                    }
+                    return response(['success' => true, 'data' => $user, 'msg' => 'Otp send in your account']);
                 } else {
                     return response(['success' => false, 'msg' => 'You are blocked please contact to admin.']);
                 }
@@ -160,7 +154,7 @@ class UserApiController extends Controller
     {
         $user = User::find($user_id);
         if ($user) {
-            (new CustomController)->sendOtp($user);
+            (new CustomController)->sendOtp($user, true);
 
             return response()->json(['success' => true, 'msg' => 'OTP resend']);
         } else {
@@ -411,16 +405,7 @@ class UserApiController extends Controller
         $doctor_user = User::where('id', $doctor->user_id)->first();
         if ($setting->doctor_mail == 1) {
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to($doctor_user->email)->send(new SendMail($mail1, $notification_template1->subject));
             } catch (\Exception $e) {
                 info($e->getMessage());
@@ -470,16 +455,7 @@ class UserApiController extends Controller
 
         if ($setting->patient_mail == 1) {
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to(auth()->user()->email)->send(new SendMail($mail1, $notification_template->subject));
             } catch (\Exception $e) {
                 info($e->getMessage());
@@ -756,16 +732,7 @@ class UserApiController extends Controller
             $msg1 = str_ireplace($placeholder_keys, $placeholder_values, $msg1);
 
             try {
-                $config = [
-                    'driver' => $setting->mail_mailer,
-                    'host' => $setting->mail_host,
-                    'port' => $setting->mail_port,
-                    'from' => ['address' => $setting->mail_from_address, 'name' => $setting->mail_from_name],
-                    'encryption' => $setting->mail_encryption,
-                    'username' => $setting->mail_username,
-                    'password' => $setting->mail_password,
-                ];
-                Config::set('mail', $config);
+                (new CustomController)->applyMailConfig($setting);
                 Mail::to($user->email)->send(new SendMail($mail1, $notification_template->subject));
             } catch (\Exception $e) {
                 info($e);
