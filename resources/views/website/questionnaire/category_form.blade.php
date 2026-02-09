@@ -164,18 +164,19 @@
                                     $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
                                     $savedValue = is_array($savedValue) ? null : $savedValue;
                                 @endphp
-                                <div class="space-y-2">
+                                <div class="flex flex-wrap gap-4">
                                     @foreach($question->options ?? [] as $optionIndex => $option)
-                                    <div class="flex items-center">
+                                    <div class="relative">
                                         <input type="radio" 
                                             id="q{{ $question->id }}_opt{{ $optionIndex }}"
                                             name="answers[{{ $question->id }}]" 
                                             value="{{ $option }}"
-                                            class="question-input"
+                                            class="question-input peer sr-only"
                                             data-question-id="{{ $question->id }}"
                                             {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                             @if($question->required) required @endif>
-                                        <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="ml-2 font-fira-sans text-gray">
+                                        <label for="q{{ $question->id }}_opt{{ $optionIndex }}" 
+                                            class="flex items-center justify-center w-[150px] px-3 py-2 text-sm font-medium text-primary bg-blue-50 border-2 border-blue-100 rounded-lg cursor-pointer hover:bg-blue-100 hover:border-blue-200 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary peer-focus:ring-2 peer-focus:ring-primary peer-focus:ring-offset-2 transition-all duration-200 font-fira-sans shadow-sm text-center h-full">
                                             {{ $option }}
                                         </label>
                                     </div>
@@ -273,28 +274,28 @@
                 </div>
             </div>
 
-            <div class="bg-gray-50 px-6 py-4 flex justify-between items-center">
-                <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary">
+            <div class="bg-white border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+                <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary transition-colors duration-200">
                     <i class="fas fa-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
                 <div class="flex items-center gap-3">
-                    <button type="submit" class="bg-gray-200 text-gray-800 font-fira-sans font-medium px-6 py-3 rounded-lg hover:bg-gray-300 transition duration-300" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
+                    <button type="submit" class="bg-white text-gray-700 border border-gray-300 font-fira-sans font-medium px-6 py-3 rounded-xl hover:bg-gray-50 transition duration-300 shadow-sm" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
-                            {{ __('Questionnaire Under Review') }}
+                            {{ __('Under Review') }}
                             <i class="fas fa-lock ml-2"></i>
                         @else
-                            {{ __('Create Prescription') }}
+                            {{ __('Prescription Only') }}
                             <i class="fas fa-file-medical ml-2"></i>
                         @endif
                     </button>
-                    <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-6 py-3 rounded-lg hover:bg-opacity-90 transition duration-300" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
+                    <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-6 py-3 rounded-xl hover:bg-opacity-90 transition duration-300 shadow-lg shadow-primary/30" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
-                            {{ __('Questionnaire Under Review') }}
+                            {{ __('Under Review') }}
                             <i class="fas fa-lock ml-2"></i>
                         @else
-                            {{ __('Create Prescription with Medicine') }}
+                            {{ __('With Medicine') }}
                             <i class="fas fa-check ml-2"></i>
                         @endif
                     </button>
