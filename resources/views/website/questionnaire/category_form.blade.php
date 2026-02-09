@@ -2,6 +2,15 @@
 
 @section('title', $questionnaire->name)
 
+@section('css')
+<style>
+    /* Force white text on selected radio buttons */
+    input[type="radio"]:checked + label {
+        color: #ffffff !important;
+    }
+</style>
+@endsection
+
 @section('content')
 {{-- Hero Banner Section --}}
 <div class="relative w-full bg-cover bg-center flex items-center justify-center" 
@@ -25,7 +34,7 @@
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Questionnaire Card -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
         <div class="p-8 border-b border-gray-100">
              <div class="flex items-center gap-4 mb-2">
                  <div class="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
@@ -100,9 +109,10 @@
                                 @endphp
                                 <input type="text" 
                                     name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input placeholder-gray-400 text-gray-800"
                                     data-question-id="{{ $question->id }}"
                                     value="{{ $savedValue }}"
+                                    placeholder="{{ __('Type your answer here...') }}"
                                     @if($question->required) required @endif
                                     @if($question->validation_rules)
                                         @if(isset($question->validation_rules['min'])) minlength="{{ $question->validation_rules['min'] }}" @endif
@@ -117,9 +127,10 @@
                                 @endphp
                                 <textarea 
                                     name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input placeholder-gray-400 text-gray-800"
                                     data-question-id="{{ $question->id }}"
                                     rows="4"
+                                    placeholder="{{ __('Type your detailed answer here...') }}"
                                     @if($question->required) required @endif>{{ $savedValue }}</textarea>
                                 @break
 
@@ -130,9 +141,10 @@
                                 @endphp
                                 <input type="number" 
                                     name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input placeholder-gray-400 text-gray-800"
                                     data-question-id="{{ $question->id }}"
                                     value="{{ $savedValue }}"
+                                    placeholder="0"
                                     @if($question->required) required @endif
                                     @if($question->validation_rules)
                                         @if(isset($question->validation_rules['min'])) min="{{ $question->validation_rules['min'] }}" @endif
@@ -146,7 +158,7 @@
                                     $savedValue = is_array($savedValue) ? null : $savedValue;
                                 @endphp
                                 <select name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input text-gray-800 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat"
                                     data-question-id="{{ $question->id }}"
                                     @if($question->required) required @endif>
                                     <option value="">{{ __('Select an option') }}</option>
@@ -176,7 +188,7 @@
                                             {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                             @if($question->required) required @endif>
                                         <label for="q{{ $question->id }}_opt{{ $optionIndex }}" 
-                                            class="flex items-center justify-center w-[150px] px-3 py-2 text-sm font-medium text-primary bg-blue-50 border-2 border-blue-100 rounded-lg cursor-pointer hover:bg-blue-100 hover:border-blue-200 peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary peer-focus:ring-2 peer-focus:ring-primary peer-focus:ring-offset-2 transition-all duration-200 font-fira-sans shadow-sm text-center h-full">
+                                            class="flex items-center justify-center w-[150px] px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 border-2 border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 hover:border-blue-300 peer-checked:bg-blue-600 peer-checked:!text-white peer-checked:border-blue-600 peer-focus:ring-2 peer-focus:ring-blue-600 peer-focus:ring-offset-2 transition-all duration-200 font-fira-sans shadow-sm text-center h-full">
                                             {{ $option }}
                                         </label>
                                     </div>
@@ -185,7 +197,7 @@
                                 @break
 
                             @case('checkbox')
-                                <div class="space-y-2">
+                                <div class="space-y-3">
                                     @php
                                         $savedCheckboxes = isset($savedAnswers['answers'][$question->id]) 
                                             ? (is_array($savedAnswers['answers'][$question->id]) 
@@ -194,15 +206,17 @@
                                             : [];
                                     @endphp
                                     @foreach($question->options ?? [] as $optionIndex => $option)
-                                    <div class="flex items-center">
-                                        <input type="checkbox" 
-                                            id="q{{ $question->id }}_opt{{ $optionIndex }}"
-                                            name="answers[{{ $question->id }}][]" 
-                                            value="{{ $option }}"
-                                            class="question-input"
-                                            data-question-id="{{ $question->id }}"
-                                            {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
-                                        <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="ml-2 font-fira-sans text-gray">
+                                    <div class="flex items-start">
+                                        <div class="flex items-center h-5">
+                                            <input type="checkbox" 
+                                                id="q{{ $question->id }}_opt{{ $optionIndex }}"
+                                                name="answers[{{ $question->id }}][]" 
+                                                value="{{ $option }}"
+                                                class="question-input w-5 h-5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-2 transition duration-150 ease-in-out cursor-pointer"
+                                                data-question-id="{{ $question->id }}"
+                                                {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
+                                        </div>
+                                        <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="ml-3 font-fira-sans text-gray-700 font-medium cursor-pointer select-none">
                                             {{ $option }}
                                         </label>
                                     </div>
@@ -214,10 +228,14 @@
                                 @php
                                     $savedFilePath = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : '';
                                     $savedFilePath = is_array($savedFilePath) ? '' : (string) $savedFilePath;
-                                @endphp<div class="border border-gray-300 rounded-lg p-4">
+                                @endphp
+                                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 text-center group">
+                                    <div class="mb-3">
+                                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 group-hover:text-primary transition-colors duration-200"></i>
+                                    </div>
                                     <input type="file" 
                                         name="files[{{ $question->id }}]" 
-                                        class="question-input"
+                                        class="question-input w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
                                         data-question-id="{{ $question->id }}"
                                         id="file{{ $question->id }}"
                                         @if($question->required) required @endif
@@ -225,8 +243,8 @@
                                             accept=".{{ implode(',.', $question->validation_rules['file_types']) }}"
                                         @endif>
                                     @if($question->validation_rules && isset($question->validation_rules['file_types']))
-                                        <p class="mt-2 text-sm text-gray font-fira-sans">
-                                            {{ __('Allowed types:') }} {{ implode(', ', $question->validation_rules['file_types']) }}
+                                        <p class="mt-3 text-xs text-gray-500 font-fira-sans">
+                                            {{ __('Allowed types:') }} <span class="font-medium text-gray-700">{{ implode(', ', $question->validation_rules['file_types']) }}</span>
                                         </p>
                                     @endif
                                 </div>

@@ -2,6 +2,15 @@
 
 @section('title', $questionnaire->name . ' - ' . $currentSection->name)
 
+@section('css')
+<style>
+    /* Force white text on selected radio buttons */
+    input[type="radio"]:checked + label {
+        color: #ffffff !important;
+    }
+</style>
+@endsection
+
 @section('content')
 {{-- Hero Banner Section --}}
 <div class="relative w-full bg-cover bg-center flex items-center justify-center" 
@@ -111,9 +120,10 @@
                             @endphp
                             <input type="text" 
                                 name="answers[{{ $question->id }}]" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input placeholder-gray-400 text-gray-800"
                                 data-question-id="{{ $question->id }}"
                                 value="{{ $savedValue }}"
+                                placeholder="{{ __('Type your answer here...') }}"
                                 @if($question->required) required @endif
                                 @if($question->validation_rules)
                                     @if(isset($question->validation_rules['min'])) minlength="{{ $question->validation_rules['min'] }}" @endif
@@ -128,9 +138,10 @@
                             @endphp
                             <textarea 
                                 name="answers[{{ $question->id }}]" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input placeholder-gray-400 text-gray-800"
                                 data-question-id="{{ $question->id }}"
                                 rows="4"
+                                placeholder="{{ __('Type your detailed answer here...') }}"
                                 @if($question->required) required @endif>{{ $savedValue }}</textarea>
                             @break
 
@@ -141,9 +152,10 @@
                             @endphp
                             <input type="number" 
                                 name="answers[{{ $question->id }}]" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input placeholder-gray-400 text-gray-800"
                                 data-question-id="{{ $question->id }}"
                                 value="{{ $savedValue }}"
+                                placeholder="0"
                                 @if($question->required) required @endif
                                 @if($question->validation_rules)
                                     @if(isset($question->validation_rules['min'])) min="{{ $question->validation_rules['min'] }}" @endif
@@ -157,7 +169,7 @@
                                 $savedValue = is_array($savedValue) ? null : $savedValue;
                             @endphp
                             <select name="answers[{{ $question->id }}]" 
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg font-fira-sans question-input"
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-fira-sans question-input text-gray-800 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat"
                                 data-question-id="{{ $question->id }}"
                                 @if($question->required) required @endif>
                                 <option value="">{{ __('Select an option') }}</option>
@@ -175,18 +187,19 @@
                                 $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
                                 $savedValue = is_array($savedValue) ? null : $savedValue;
                             @endphp
-                            <div class="space-y-2">
+                            <div class="flex flex-wrap gap-4">
                                 @foreach($question->options ?? [] as $optionIndex => $option)
-                                <div class="flex items-center">
+                                <div class="relative">
                                     <input type="radio" 
                                         id="q{{ $question->id }}_opt{{ $optionIndex }}"
                                         name="answers[{{ $question->id }}]" 
                                         value="{{ $option }}"
-                                        class="question-input"
+                                        class="question-input peer sr-only"
                                         data-question-id="{{ $question->id }}"
                                         {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                         @if($question->required) required @endif>
-                                    <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="ml-2 font-fira-sans text-gray">
+                                    <label for="q{{ $question->id }}_opt{{ $optionIndex }}" 
+                                        class="flex items-center justify-center w-[150px] px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 border-2 border-blue-200 rounded-lg cursor-pointer hover:bg-blue-100 hover:border-blue-300 peer-checked:bg-blue-600 peer-checked:!text-white peer-checked:border-blue-600 peer-focus:ring-2 peer-focus:ring-blue-600 peer-focus:ring-offset-2 transition-all duration-200 font-fira-sans shadow-sm text-center h-full">
                                         {{ $option }}
                                     </label>
                                 </div>
@@ -222,16 +235,20 @@
 
                         @case('file')
                             <!-- Issue 3: File upload field (supports birth certificate and other files) -->
-                            <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+                            <!-- Issue 3: File upload field (supports birth certificate and other files) -->
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 bg-gray-50 hover:bg-gray-100 transition-colors duration-200 text-center group">
+                                <div class="mb-3">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 group-hover:text-primary transition-colors duration-200"></i>
+                                </div>
                                 <input type="file" 
                                     name="files[{{ $question->id }}]" 
-                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark question-input"
+                                    class="question-input w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer"
                                     data-question-id="{{ $question->id }}"
                                     id="file{{ $question->id }}"
                                     @if($question->required) required @endif
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     data-max-size="5242880">
-                                <p class="mt-2 text-xs text-gray-600 font-fira-sans">
+                                <p class="mt-3 text-xs text-gray-500 font-fira-sans">
                                     {{ __('Allowed types: PDF, JPG, PNG. Max size: 5MB') }}
                                 </p>
                                 @if(isset($savedAnswers['answers'][$question->id]) && !empty($savedAnswers['answers'][$question->id]))
@@ -256,26 +273,27 @@
             </div>
 
             <!-- Navigation Buttons (Issue 2: Section-wise navigation) -->
-            <div class="bg-gray-50 px-6 py-4 flex justify-between items-center">
+            <!-- Navigation Buttons (Issue 2: Section-wise navigation) -->
+            <div class="bg-white border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
                 <div>
                     @if($sectionIndex > 0)
-                    <button type="button" id="prevBtn" class="font-fira-sans text-gray hover:text-primary">
+                    <button type="button" id="prevBtn" class="font-fira-sans text-gray hover:text-primary transition-colors duration-200">
                         <i class="fas fa-arrow-left mr-2"></i>{{ __('Previous') }}
                     </button>
                     @else
-                    <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary">
+                    <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary transition-colors duration-200">
                         <i class="fas fa-arrow-left mr-2"></i>{{ __('Back to Category') }}
                     </a>
                     @endif
                 </div>
                 <div>
                     @if($sectionIndex < $totalSections - 1)
-                    <button type="button" id="nextBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300">
+                    <button type="button" id="nextBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-xl hover:bg-opacity-90 transition duration-300 shadow-lg shadow-primary/30">
                         {{ __('Next Section') }}
                         <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                     @else
-                    <button type="button" id="submitBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300">
+                    <button type="button" id="submitBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-xl hover:bg-opacity-90 transition duration-300 shadow-lg shadow-primary/30">
                         {{ __('Submit Questionnaire') }}
                         <i class="fas fa-check ml-2"></i>
                     </button>
