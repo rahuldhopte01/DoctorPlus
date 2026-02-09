@@ -293,7 +293,7 @@
             </div>
 
             <div class="bg-white border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-                <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary transition-colors duration-200">
+                <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-fira-sans text-gray hover:text-primary transition-colors duration-200 no-underline hover:no-underline">
                     <i class="fas fa-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
                 <div class="flex items-center gap-3">
