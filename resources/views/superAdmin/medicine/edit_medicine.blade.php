@@ -12,10 +12,25 @@
 
     <div class="section_body">
         <div class="card">
-            <form action="{{ url('medicine/'.$medicine->id) }}" method="post" class="myform">
+            <form action="{{ url('medicine/'.$medicine->id) }}" method="post" class="myform" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="card-body">
+                    <div class="form-group">
+                        <label class="col-form-label">{{__('Image')}}</label>
+                        @if($medicine->image)
+                        <div class="mb-2">
+                            <img src="{{ asset('images/upload/'.$medicine->image) }}" alt="{{ $medicine->name }}" class="img-thumbnail" style="max-height: 120px;">
+                        </div>
+                        @endif
+                        <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp">
+                        <small class="form-text text-muted">{{__('Optional. Leave empty to keep current image.')}}</small>
+                        @error('image')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
                     <div class="form-group">
                         <label class="col-form-label">{{__('Name')}}</label>
                         <input type="text" value="{{ old('name', $medicine->name) }}" name="name" class="form-control @error('name') is-invalid @enderror" required>

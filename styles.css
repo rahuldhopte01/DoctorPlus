@@ -1,0 +1,335 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #ffffff;
+    min-height: 100vh;
+}
+
+/* Header Styles */
+.header {
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    padding: 1rem 2rem;
+}
+
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    background-color: #ccfbf1;
+}
+
+.logo-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: #374151;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #111827;
+}
+
+.user-avatar {
+    width: 2rem;
+    height: 2rem;
+    overflow: hidden;
+    border-radius: 50%;
+    background-color: #d1d5db;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.btn-primary {
+    border-radius: 0.5rem;
+    background-color: #FF6B4A;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #FF5436;
+}
+
+/* Main Content */
+.main-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.breadcrumb-link {
+    font-weight: 500;
+    color: #14b8a6;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+    color: #0d9488;
+}
+
+.breadcrumb-arrow {
+    color: #9ca3af;
+}
+
+.breadcrumb-current {
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* Title Section */
+.title-section {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.title {
+    margin-bottom: 1rem;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.subtitle {
+    font-size: 1.125rem;
+    color: #4b5563;
+}
+
+/* Medicine Grid */
+.medicine-grid {
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .medicine-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .medicine-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Medicine Card */
+.medicine-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    text-align: left;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.medicine-card:not(.selected):hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
+}
+
+.medicine-card.selected {
+    border-color: #14b8a6;
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+/* Image Section */
+.medicine-image-container {
+    position: relative;
+    height: 224px;
+    width: 100%;
+    overflow: hidden;
+    background-color: #f3f4f6;
+    flex-shrink: 0;
+}
+
+.medicine-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.checkmark-badge {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #14b8a6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+/* Text Content */
+.medicine-content {
+    padding: 1.25rem;
+    background-color: #ffffff;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-name {
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.medicine-subtitle {
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+}
+
+.medicine-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.medicine-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.medicine-detail-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.medicine-detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+/* Selection Indicator */
+.selection-indicator {
+    height: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.selection-indicator.hidden {
+    opacity: 0;
+}
+
+.selection-indicator-content {
+    background: linear-gradient(90deg, #14b8a6 0%, #0d9488 100%);
+    padding: 0.75rem 1.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.selection-indicator-text {
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+}
+
+/* Info Box */
+.info-box {
+    border-radius: 0.5rem;
+    background-color: #eff6ff;
+    padding: 1.5rem;
+}
+
+.info-content {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.info-icon {
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+    color: #2563eb;
+}
+
+.info-text {
+    color: #374151;
+}
+
+.info-selected {
+    font-weight: 600;
+    color: #1e3a8a;
+}

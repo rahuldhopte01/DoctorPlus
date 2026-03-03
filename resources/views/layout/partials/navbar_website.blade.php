@@ -14,10 +14,10 @@
 
             <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-8 items-center ml-auto mr-8">
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Treatments') }}</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('How it works') }}</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('About us') }}</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Help') }}</a>
+                <a href="#" class="text-gray-600 hover:text-primary font-body font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Treatments') }}</a>
+                <a href="#" class="text-gray-600 hover:text-primary font-body font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('How it works') }}</a>
+                <a href="#" class="text-gray-600 hover:text-primary font-body font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('About us') }}</a>
+                <a href="#" class="text-gray-600 hover:text-primary font-body font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Help') }}</a>
             </div>
 
             <!-- Right Side -->
@@ -30,14 +30,14 @@
                             <button type="button" class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary items-center gap-2" id="user-menu-button" aria-expanded="false" aria-haspopup="true" onclick="document.getElementById('user-dropdown').classList.toggle('hidden')">
                                 <span class="sr-only">Open user menu</span>
                                 <div class="flex flex-col text-right hidden sm:block mr-1">
-                                    <span class="text-sm font-medium text-gray-700 font-fira-sans">{{ auth()->user()->name }}</span>
+                                    <span class="text-sm font-medium text-gray-700 font-body">{{ auth()->user()->name }}</span>
                                 </div>
                                 <img class="h-8 w-8 rounded-full object-cover" src="{{ url('images/upload/'.auth()->user()->image) }}" alt="">
                             </button>
                         </div>
                         <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-dropdown">
-                            <a href="{{ url('user_profile') }}" class="block px-4 py-2 text-sm text-gray-700 font-fira-sans hover:bg-gray-100 no-underline hover:no-underline" role="menuitem">{{ __('Dashboard') }}</a>
-                            <a href="javascript:void(0)" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="block px-4 py-2 text-sm text-gray-700 font-fira-sans hover:bg-gray-100 no-underline hover:no-underline" role="menuitem">{{ __('Sign out') }}</a>
+                            <a href="{{ url('user_profile') }}" class="block px-4 py-2 text-sm text-gray-700 font-body hover:bg-gray-100 no-underline hover:no-underline" role="menuitem">{{ __('Dashboard') }}</a>
+                            <a href="javascript:void(0)" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="block px-4 py-2 text-sm text-gray-700 font-body hover:bg-gray-100 no-underline hover:no-underline" role="menuitem">{{ __('Sign out') }}</a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
                             </form>
@@ -45,11 +45,11 @@
                     </div>
                 @else
                     <!-- Login Link -->
-                    <a href="{{ url('/patient-login') }}" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm hidden sm:block no-underline hover:no-underline">{{ __('Log in') }}</a>
+                    <a href="{{ url('/patient-login') }}" class="text-gray-600 hover:text-primary font-body font-medium text-sm hidden sm:block no-underline hover:no-underline">{{ __('Log in') }}</a>
                 @endif
 
                 <!-- Start Treatment Button -->
-                <a href="{{ url('/') }}" class="bg-cta hover:bg-orange-600 text-white font-fira-sans font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors shadow-sm no-underline hover:no-underline">
+                <a href="{{ url('/') }}" class="bg-cta hover:bg-orange-600 text-white font-body font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors shadow-sm no-underline hover:no-underline">
                     {{ __('Start treatment') }}
                 </a>
 
@@ -72,12 +72,12 @@
     <!-- Mobile Menu -->
     <div class="hidden md:hidden" id="mobile-menu">
         <div class="pt-2 pb-3 space-y-1 px-4">
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Treatments') }}</a>
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('How it works') }}</a>
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('About us') }}</a>
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Help') }}</a>
+            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-body no-underline hover:no-underline">{{ __('Treatments') }}</a>
+            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-body no-underline hover:no-underline">{{ __('How it works') }}</a>
+            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-body no-underline hover:no-underline">{{ __('About us') }}</a>
+            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-body no-underline hover:no-underline">{{ __('Help') }}</a>
             @if (!auth()->check())
-                <a href="{{ url('/patient-login') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Log in') }}</a>
+                <a href="{{ url('/patient-login') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-body no-underline hover:no-underline">{{ __('Log in') }}</a>
             @endif
         </div>
     </div>

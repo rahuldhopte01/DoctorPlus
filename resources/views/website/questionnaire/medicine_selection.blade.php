@@ -3,27 +3,29 @@
 @section('title', __('Select Medicines'))
 
 @section('content')
-<div class="xl:w-3/4 mx-auto py-10">
-    <nav class="mb-6" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-gray">
-            <li><a href="{{ url('/') }}" class="hover:text-primary">{{ __('Home') }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{{ route('categories') }}" class="hover:text-primary">{{ __('Categories') }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="hover:text-primary">{{ $category->name }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li class="text-black">{{ __('Select Medicines') }}</li>
-        </ol>
-    </nav>
+<main class="main-content medicine-selection-page">
+    <div class="xl:w-3/4 mx-auto py-10 px-4">
+        <!-- Breadcrumb (same structure as index.html) -->
+        <nav class="breadcrumb-medicine" aria-label="Breadcrumb">
+            <a href="{{ url('/') }}" class="breadcrumb-link">{{ __('Home') }}</a>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="breadcrumb-arrow">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <a href="{{ route('categories') }}" class="breadcrumb-link">{{ __('Categories') }}</a>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="breadcrumb-arrow">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="breadcrumb-link">{{ $category->name }}</a>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="breadcrumb-arrow">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="breadcrumb-current">{{ __('Select Medicines') }}</span>
+        </nav>
 
-    <div class="bg-white shadow-xl rounded-lg p-8">
-        <div class="text-center mb-8">
-            <h1 class="font-fira-sans font-medium text-3xl text-black mb-4">
-                {{ __('Select Your Medicines') }}
-            </h1>
-            <p class="font-fira-sans text-gray text-lg">
-                {{ __('Choose up to 3 medicines you need for this category. Doctor can modify if needed.') }}
-            </p>
+        <!-- Title Section (same as index.html) -->
+        <div class="title-section-medicine">
+            <h1 class="title">{{ __('Select Your Medicines') }}</h1>
+            <p class="subtitle">{{ __('Choose up to 3 medicines you need for this category. Doctor can modify if needed.') }}</p>
         </div>
 
         <form id="medicineForm" method="POST" action="{{ route('questionnaire.save-medicine', ['categoryId' => $category->id]) }}">
@@ -33,37 +35,66 @@
             @php
                 $selectedIds = array_column($selectedMedicines ?? [], 'medicine_id');
             @endphp
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8" id="medicineList">
+            <!-- Medicine Cards Grid (same structure as index.html) -->
+            <div class="medicine-grid" id="medicineGrid">
                 @foreach($medicines as $medicine)
-                <label class="block relative cursor-pointer">
-                    <div class="medicine-card relative border-2 rounded-lg p-4 transition-all
-                        {{ in_array($medicine->id, $selectedIds) ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary' }}">
-                        <input type="checkbox" name="medicine_ids[]" value="{{ $medicine->id }}"
-                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer medicine-checkbox"
-                               {{ in_array($medicine->id, $selectedIds) ? 'checked' : '' }}>
-                        <h3 class="font-fira-sans font-medium text-lg text-black mb-2">{{ $medicine->name }}</h3>
-                        @if($medicine->brand)
-                        <p class="font-fira-sans text-primary text-sm mb-2">{{ $medicine->brand->name }}</p>
-                        @endif
-                        @if($medicine->strength)
-                        <p class="font-fira-sans text-gray text-sm mb-2">{{ __('Strength') }}: {{ $medicine->strength }}</p>
-                        @endif
-                        @if($medicine->form)
-                        <p class="font-fira-sans text-gray text-sm">{{ __('Form') }}: {{ $medicine->form }}</p>
-                        @endif
+                @php $isSelected = in_array($medicine->id, $selectedIds); @endphp
+                <label class="medicine-card-wrapper" style="cursor: pointer; margin: 0;">
+                    <input type="checkbox" name="medicine_ids[]" value="{{ $medicine->id }}" class="medicine-checkbox"
+                           {{ $isSelected ? 'checked' : '' }} data-medicine-id="{{ $medicine->id }}">
+                    <div class="medicine-card {{ $isSelected ? 'selected' : '' }}">
+                        <!-- Image Section -->
+                        <div class="medicine-image-container">
+                            <img src="{{ $medicine->image_url }}" alt="{{ $medicine->name }}" class="medicine-image">
+                            @if($isSelected)
+                            <div class="checkmark-badge">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M13.333 4L6 11.333L2.667 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            @endif
+                        </div>
+                        <!-- Text Content -->
+                        <div class="medicine-content">
+                            <h3 class="medicine-name">{{ $medicine->name }}</h3>
+                            <p class="medicine-subtitle">{{ $medicine->brand ? $medicine->brand->name : $medicine->name }}</p>
+                            <div class="medicine-details">
+                                @if($medicine->strength)
+                                <div class="medicine-detail-row">
+                                    <span class="medicine-detail-label">{{ __('Strength') }}:</span>
+                                    <span class="medicine-detail-value">{{ $medicine->strength }}</span>
+                                </div>
+                                @endif
+                                @if($medicine->form)
+                                <div class="medicine-detail-row">
+                                    <span class="medicine-detail-label">{{ __('Form') }}:</span>
+                                    <span class="medicine-detail-value">{{ $medicine->form }}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        <!-- Selection Indicator -->
+                        <div class="selection-indicator {{ !$isSelected ? 'hidden' : '' }}">
+                            <div class="selection-indicator-content">
+                                <p class="selection-indicator-text">✓ {{ __('SELECTED') }}</p>
+                            </div>
+                        </div>
                     </div>
                 </label>
                 @endforeach
             </div>
 
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-                <p class="font-fira-sans text-blue-800 text-sm">
-                    <i class="fas fa-info-circle"></i>
-                    {{ __('You can select up to 3 medicines. The doctor will review and may modify your selection if medically required.') }}
-                </p>
-                <p class="font-fira-sans text-blue-800 text-sm mt-2" id="selectionCount">
-                    <strong>{{ __('Selected:') }} <span id="selectedCount">0</span> / 3</strong>
-                </p>
+            <!-- Info Box (same as index.html) -->
+            <div class="info-box">
+                <div class="info-content">
+                    <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <p class="info-text">{{ __('You can select up to 3 medicines. The doctor will review and may modify your selection if medically required.') }}</p>
+                </div>
+                <p class="info-selected">Selected: <span id="selectedCountNum">{{ count($selectedIds) }}</span> / 3</p>
             </div>
             @else
             <div class="text-center py-12 mb-8">
@@ -72,87 +103,92 @@
             </div>
             @endif
 
-            <div class="flex justify-end gap-4">
+            <div class="flex justify-end gap-4 mt-6">
                 <a href="{{ $submission->delivery_type === 'delivery' ? route('questionnaire.delivery-address', ['categoryId' => $category->id]) : route('questionnaire.pharmacy-selection', ['categoryId' => $category->id]) }}"
-                   class="bg-gray-200 text-gray-700 font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-gray-300 transition duration-300">
+                   class="bg-gray-200 text-gray-700 font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-gray-300 transition duration-300 no-underline">
                     {{ __('Back') }}
                 </a>
                 @if($medicines->count() > 0)
-                <button type="submit" id="medicineSubmitBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300">
+                <button type="submit" id="medicineSubmitBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300 border-0 cursor-pointer">
                     {{ __('Continue') }}
                 </button>
                 @endif
             </div>
         </form>
     </div>
-</div>
+</main>
 
 @if($medicines->count() > 0)
 <script>
 (function() {
     var form = document.getElementById('medicineForm');
     var submitBtn = document.getElementById('medicineSubmitBtn');
+    var countNumEl = document.getElementById('selectedCountNum');
+    var maxSelection = 3;
     var cards = form.querySelectorAll('.medicine-card');
+    var wrappers = form.querySelectorAll('.medicine-card-wrapper');
     var checkboxes = form.querySelectorAll('.medicine-checkbox');
 
-    var maxSelection = 3;
-    
-    function updateCardStyles() {
-        cards.forEach(function(card, i) {
+    function updateUi() {
+        var checked = form.querySelectorAll('.medicine-checkbox:checked');
+        var count = checked.length;
+        if (countNumEl) countNumEl.textContent = count;
+
+        wrappers.forEach(function(wrap, i) {
             var cb = checkboxes[i];
-            if (cb && cb.checked) {
-                card.classList.add('border-primary', 'bg-primary/5');
-                card.classList.remove('border-gray-200');
+            var card = wrap.querySelector('.medicine-card');
+            var indicator = card ? card.querySelector('.selection-indicator') : null;
+            var imgContainer = card ? card.querySelector('.medicine-image-container') : null;
+            var checkmark = card ? card.querySelector('.checkmark-badge') : null;
+            if (!card) return;
+            var isSelected = cb && cb.checked;
+            card.classList.toggle('selected', isSelected);
+            if (indicator) indicator.classList.toggle('hidden', !isSelected);
+            if (isSelected && imgContainer && !checkmark) {
+                var badge = document.createElement('div');
+                badge.className = 'checkmark-badge';
+                badge.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13.333 4L6 11.333L2.667 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                imgContainer.appendChild(badge);
+            } else if (!isSelected && checkmark) {
+                checkmark.remove();
+            }
+        });
+
+        checkboxes.forEach(function(cb) {
+            var wrap = cb.closest('.medicine-card-wrapper');
+            if (count >= maxSelection && !cb.checked) {
+                cb.disabled = true;
+                if (wrap) wrap.style.opacity = '0.5';
+                if (wrap) wrap.style.pointerEvents = 'none';
             } else {
-                card.classList.remove('border-primary', 'bg-primary/5');
-                card.classList.add('border-gray-200');
+                cb.disabled = false;
+                if (wrap) wrap.style.opacity = '1';
+                if (wrap) wrap.style.pointerEvents = '';
             }
         });
     }
-    
-    function updateSelectionCount() {
-        var checked = form.querySelectorAll('.medicine-checkbox:checked');
-        var count = checked.length;
-        var countElement = document.getElementById('selectedCount');
-        if (countElement) {
-            countElement.textContent = count;
-        }
-        
-        // Disable unchecked checkboxes if max selection reached
-        if (count >= maxSelection) {
-            checkboxes.forEach(function(cb) {
-                if (!cb.checked) {
-                    cb.disabled = true;
-                    cb.closest('label').style.opacity = '0.5';
-                    cb.closest('label').style.cursor = 'not-allowed';
-                }
-            });
-        } else {
-            checkboxes.forEach(function(cb) {
-                cb.disabled = false;
-                cb.closest('label').style.opacity = '1';
-                cb.closest('label').style.cursor = 'pointer';
-            });
-        }
-    }
+
+    wrappers.forEach(function(wrap) {
+        wrap.addEventListener('click', function(e) {
+            if (e.target.tagName === 'INPUT') return;
+            var cb = wrap.querySelector('.medicine-checkbox');
+            if (!cb) return;
+            if (cb.disabled && !cb.checked) return;
+            cb.checked = !cb.checked;
+            if (form.querySelectorAll('.medicine-checkbox:checked').length > maxSelection) cb.checked = false;
+            updateUi();
+        });
+    });
 
     checkboxes.forEach(function(cb) {
         cb.addEventListener('change', function() {
             var checked = form.querySelectorAll('.medicine-checkbox:checked');
-            if (checked.length > maxSelection) {
-                // Prevent selecting more than max
-                this.checked = false;
-                alert('{{ __("You can select a maximum of 3 medicines.") }}');
-                return;
-            }
-            updateCardStyles();
-            updateSelectionCount();
+            if (checked.length > maxSelection) this.checked = false;
+            updateUi();
         });
     });
-    
-    // Initialize selection count
-    updateSelectionCount();
-    updateCardStyles();
+
+    updateUi();
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();

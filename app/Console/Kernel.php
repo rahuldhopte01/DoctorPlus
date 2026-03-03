@@ -24,6 +24,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+
+        // Cannaleo/Curobo catalog sync every 30 minutes
+        $schedule->command('cannaleo:catalog-sync')->everyThirtyMinutes()->withoutOverlapping(35);
     }
 
     /**

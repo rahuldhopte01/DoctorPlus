@@ -1,16 +1,20 @@
-/* Dr Fuxx Brand Color Palette */
+/* Bold Differentiation – Brand Color Palette */
 :root {
     /* Primary Brand Colors */
-    --primary-color: #4A3AFF;      /* Electric Violet - Logo, headers, key elements */
-    --secondary-color: #1A1F3D;    /* Deep Navy - Dark mode BG, text, depth */
-    --accent-color: #00D9C0;       /* Electric Cyan - Icons, highlights, success */
-    --cta-color: #FF6B4A;          /* Warm Coral - Buttons, urgent actions */
-    --light-bg: #F8F9FA;           /* Off-White - Light mode background */
-    --dark-bg: #0D0D12;            /* Near-Black - Dark mode background */
+    --primary-color: #4A3AFF;      /* Electric Violet - Primary, differentiation */
+    --secondary-color: #00167A;   /* Twilight Navy - Secondary, trust anchor */
+    --accent-color: #00D9C0;      /* Electric Cyan - Accent, digital clarity */
+    --cta-color: #FF6B4A;         /* Warm Coral - CTA, conversion */
+    --light-bg: #F8F9FA;          /* Off-White - Light mode background */
+    --dark-bg: #0D0D12;           /* Near-Black - Dark mode background */
     
     /* Hover states */
     --primary-hover: #3828E0;      /* Darker Electric Violet */
-    --cta-hover: #E55A3A;          /* Darker Warm Coral */
+    --cta-hover: #E55A3A;         /* Darker Warm Coral */
+    
+    /* Typography */
+    --font-heading: 'Clash Display', sans-serif;
+    --font-body: 'Inter', sans-serif;
     
     /* Legacy color variables (for compatibility) */
     --dark-blue: #1A1F3D;
@@ -20,6 +24,29 @@
     --teal-light: #E0FFF9;
     --green-light: #E7F7E7;
     --purple-light: #EFEBFF;
+}
+
+/* Typography – Clash Display (headings), Inter (body) */
+html,
+body,
+p,
+span,
+label,
+input,
+select,
+textarea,
+.nav-link,
+.font-body {
+    font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6,
+.navbar-brand,
+.accordion-button,
+.font-heading {
+    font-family: var(--font-heading);
 }
 
 /* Bootstrap Color Overrides */
@@ -428,4 +455,245 @@ a:hover {
 ::selection {
     background-color: var(--primary-color);
     color: white;
+}
+
+/* ===== Medicine Selection Page (questionnaire) ===== */
+.medicine-selection-page .medicine-card-wrapper {
+    position: relative;
+    display: block;
+}
+
+.medicine-selection-page .medicine-card-wrapper input.medicine-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+.medicine-selection-page .breadcrumb-medicine {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    flex-wrap: wrap;
+}
+
+.medicine-selection-page .breadcrumb-medicine a {
+    font-weight: 500;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.medicine-selection-page .breadcrumb-medicine a:hover {
+    color: var(--primary-hover);
+}
+
+.medicine-selection-page .breadcrumb-arrow {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.medicine-selection-page .breadcrumb-current {
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.medicine-selection-page .title-section-medicine {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.medicine-selection-page .title-section-medicine .title {
+    margin-bottom: 1rem;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.medicine-selection-page .title-section-medicine .subtitle {
+    font-size: 1.125rem;
+    color: #4b5563;
+}
+
+.medicine-selection-page .medicine-grid {
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .medicine-selection-page .medicine-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .medicine-selection-page .medicine-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.medicine-selection-page .medicine-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    text-align: left;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.medicine-selection-page .medicine-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
+}
+
+.medicine-selection-page .medicine-card.selected {
+    border-color: var(--primary-color);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(74, 58, 255, 0.15);
+}
+
+.medicine-selection-page .medicine-image-container {
+    position: relative;
+    height: 224px;
+    width: 100%;
+    overflow: hidden;
+    background-color: #f3f4f6;
+    flex-shrink: 0;
+}
+
+.medicine-selection-page .medicine-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.medicine-selection-page .checkmark-badge {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.medicine-selection-page .medicine-content {
+    padding: 1.25rem;
+    background-color: #ffffff;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-selection-page .medicine-name {
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.medicine-selection-page .medicine-subtitle {
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+}
+
+.medicine-selection-page .medicine-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.medicine-selection-page .medicine-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.medicine-selection-page .medicine-detail-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.medicine-selection-page .medicine-detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.medicine-selection-page .selection-indicator {
+    height: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.medicine-selection-page .selection-indicator.hidden {
+    opacity: 0;
+}
+
+.medicine-selection-page .selection-indicator-content {
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    padding: 0.75rem 1.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.medicine-selection-page .selection-indicator-text {
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+}
+
+.medicine-selection-page .info-box {
+    border-radius: 0.5rem;
+    background-color: #eff6ff;
+    padding: 1.5rem;
+}
+
+.medicine-selection-page .info-box .info-content {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.medicine-selection-page .info-box .info-icon {
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+    color: #2563eb;
+}
+
+.medicine-selection-page .info-box .info-text {
+    color: #374151;
+}
+
+.medicine-selection-page .info-box .info-selected {
+    font-weight: 600;
+    color: #1e3a8a;
 }

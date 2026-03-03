@@ -259,6 +259,29 @@
                 </div>
                 @endif
 
+                @if(isset($selectedCannaleoMedicines) && count($selectedCannaleoMedicines) > 0)
+                <div class="mb-3">
+                    <strong class="d-block mb-2">{{ __('Patient selected (Cannaleo partner)') }}</strong>
+                    <ul class="list-unstyled mb-0">
+                        @foreach($selectedCannaleoMedicines as $item)
+                        <li>
+                            <strong>{{ $item['cannaleo_medicine']->name }}</strong>
+                            @if($item['cannaleo_medicine']->thc !== null || $item['cannaleo_medicine']->cbd !== null)
+                                <span class="text-muted">(THC {{ $item['cannaleo_medicine']->thc ?? 0 }}% / CBD {{ $item['cannaleo_medicine']->cbd ?? 0 }}%)</span>
+                            @endif
+                            @if($item['pharmacy'])
+                                <span class="badge badge-info">{{ $item['pharmacy']->name }}</span>
+                            @endif
+                            @if($item['cannaleo_medicine']->price !== null)
+                                <span class="text-muted">— {{ number_format($item['cannaleo_medicine']->price, 2) }} €</span>
+                            @endif
+                        </li>
+                        @endforeach
+                    </ul>
+                    <p class="text-muted small mb-0 mt-1">{{ __('Fulfilment via Cannaleo partner; prescription approval applies.') }}</p>
+                </div>
+                @endif
+
                 <!-- Medicine Assignment Form -->
                 <form id="prescription-form" action="{{ route('doctor.questionnaire.store-prescription', [
                     'userId' => $firstAnswer->user_id,

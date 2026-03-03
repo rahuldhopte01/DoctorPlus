@@ -66,11 +66,15 @@ class MedicineController extends Controller
             'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
             'description' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:category,id',
         ]);
         $data = $request->only(['name', 'strength', 'form', 'brand_id', 'description']);
         $data['status'] = $request->has('status') ? 1 : 0;
+        if ($request->hasFile('image')) {
+            $data['image'] = (new CustomController)->imageUpload($request->image);
+        }
         $medicine = Medicine::create($data);
         $medicine->categories()->sync($request->input('category_ids', []));
 
@@ -129,12 +133,19 @@ class MedicineController extends Controller
             'form' => 'nullable|max:100',
             'brand_id' => 'nullable|exists:medicine_brands,id',
             'description' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'category_ids' => 'nullable|array',
             'category_ids.*' => 'exists:category,id',
         ]);
         $medicine = Medicine::find($id);
         $data = $request->only(['name', 'strength', 'form', 'brand_id', 'description']);
         $data['status'] = $request->has('status') ? 1 : 0;
+        if ($request->hasFile('image')) {
+            if ($medicine->image) {
+                (new CustomController)->deleteFile($medicine->image);
+            }
+            $data['image'] = (new CustomController)->imageUpload($request->image);
+        }
         $medicine->update($data);
         $medicine->categories()->sync($request->input('category_ids', []));
 
