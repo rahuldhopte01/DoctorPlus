@@ -225,8 +225,8 @@
                     
                     <div class="bg-white p-4 rounded-4 mb-3 shadow-sm">
                         <div class="d-flex align-items-start">
-                            <div class="p-3 rounded-circle me-3" style="background-color: rgba(74, 58, 255, 0.1);">
-                                <i class="bi bi-shield-lock-fill text-primary fs-4"></i>
+                            <div class="p-4 rounded-circle me-4 d-flex align-items-center justify-content-center" style="background-color: rgba(74, 58, 255, 0.1); width: 64px; height: 64px;">
+                                <i class="bi bi-shield-lock-fill text-primary fs-3"></i>
                             </div>
                             <div>
                                 <h6 class="fw-bold fs-5 mb-2">Datenschutz & Sicherheit</h6>
@@ -237,8 +237,8 @@
                     
                     <div class="bg-white p-4 rounded-4 mb-3 shadow-sm">
                         <div class="d-flex align-items-start">
-                            <div class="p-3 rounded-circle me-3" style="background-color: rgba(40, 167, 69, 0.1);">
-                                <i class="bi bi-credit-card-2-front text-success fs-4"></i>
+                            <div class="p-4 rounded-circle me-4 d-flex align-items-center justify-content-center" style="background-color: rgba(40, 167, 69, 0.1); width: 64px; height: 64px;">
+                                <i class="bi bi-credit-card-2-front text-success fs-3"></i>
                             </div>
                             <div>
                                 <h6 class="fw-bold fs-5 mb-2">PCI-konform</h6>
@@ -249,8 +249,8 @@
                     
                     <div class="bg-white p-4 rounded-4 shadow-sm">
                         <div class="d-flex align-items-start">
-                            <div class="p-3 rounded-circle me-3" style="background-color: rgba(23, 162, 184, 0.1);">
-                                <i class="bi bi-building text-info fs-4"></i>
+                            <div class="p-4 rounded-circle me-4 d-flex align-items-center justify-content-center" style="background-color: rgba(23, 162, 184, 0.1); width: 64px; height: 64px;">
+                                <i class="bi bi-building text-info fs-3"></i>
                             </div>
                             <div>
                                 <h6 class="fw-bold fs-5 mb-2">Offizieller Sitz</h6>
