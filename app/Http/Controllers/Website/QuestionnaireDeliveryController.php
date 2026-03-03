@@ -19,8 +19,27 @@ class QuestionnaireDeliveryController extends Controller
             return redirect('/patient-login')->with('info', __('Please login to continue'));
         }
 
-        $category = Category::findOrFail($categoryId);
+        $category = Category::with('cannaleoMedicines')->findOrFail($categoryId);
         $user = Auth::user();
+
+        // Cannaleo-only categories: no delivery choice; go straight to Cannaleo pharmacy selection
+        if ($category->is_cannaleo_only) {
+            $submission = QuestionnaireSubmission::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'category_id' => $categoryId,
+                ],
+                [
+                    'questionnaire_id' => $category->questionnaire->id ?? null,
+                    'status' => 'pending',
+                    'delivery_type' => 'cannaleo',
+                ]
+            );
+            if ($submission->delivery_type !== 'cannaleo') {
+                $submission->update(['delivery_type' => 'cannaleo']);
+            }
+            return redirect()->route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $categoryId]);
+        }
 
         // Get or create submission record
         $submission = QuestionnaireSubmission::firstOrCreate(
@@ -68,26 +87,23 @@ class QuestionnaireDeliveryController extends Controller
             ]
         );
 
-        // Redirect based on choice
+        // Redirect based on choice (Cannaleo-only categories are redirected before this page)
         if ($request->delivery_type === 'delivery') {
-            // Check if address exists and is complete
             if (!$submission->hasCompleteDeliveryAddress()) {
                 return response()->json([
                     'success' => true,
                     'redirect_url' => url('/questionnaire/category/' . $categoryId . '/delivery-address'),
                 ]);
             }
-            // Address is complete, proceed to medicine selection
             return response()->json([
                 'success' => true,
                 'redirect_url' => url('/questionnaire/category/' . $categoryId . '/medicine-selection'),
             ]);
-        } else {
-            // Pickup - redirect to pharmacy selection
-            return response()->json([
-                'success' => true,
-                'redirect_url' => url('/questionnaire/category/' . $categoryId . '/pharmacy-selection'),
-            ]);
         }
+        // Pickup
+        return response()->json([
+            'success' => true,
+            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/pharmacy-selection'),
+        ]);
     }
 }

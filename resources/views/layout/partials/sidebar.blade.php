@@ -147,6 +147,18 @@
                         <span>{{__('category')}}</span>
                     </a>
                 </li>
+                <li class="{{ $activePage == 'cannaleo_pharmacy' ? 'active' : '' }}">
+                    <a href="{{ url('cannaleo/pharmacies') }}">
+                        <i class="fas fa-store-alt"></i>
+                        <span>{{__('Cannaleo Pharmacies')}}</span>
+                    </a>
+                </li>
+                <li class="{{ $activePage == 'cannaleo_medicine' ? 'active' : '' }}">
+                    <a href="{{ url('cannaleo/medicines') }}">
+                        <i class="fas fa-cannabis"></i>
+                        <span>{{__('Cannaleo Medicines')}}</span>
+                    </a>
+                </li>
             @endcan
 
             {{-- Hidden from super admin sidebar - expertise --}}

@@ -11,12 +11,13 @@ class Category extends Model
 
     protected $table = 'category';
 
-    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'price', 'status'];
+    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'price', 'status', 'is_cannaleo_only'];
 
     protected $appends = ['fullImage'];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'is_cannaleo_only' => 'boolean',
     ];
 
     protected function getFullImageAttribute()
@@ -67,6 +68,15 @@ class Category extends Model
     public function medicines()
     {
         return $this->belongsToMany(Medicine::class, 'category_medicine', 'category_id', 'medicine_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Cannaleo (API) medicines assigned to this category (questionnaire medicine selection).
+     */
+    public function cannaleoMedicines()
+    {
+        return $this->belongsToMany(CannaleoMedicine::class, 'category_cannaleo_medicine', 'category_id', 'cannaleo_medicine_id')
             ->withTimestamps();
     }
 }

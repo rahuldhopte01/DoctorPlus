@@ -19,7 +19,19 @@ class Medicine extends Model
         'brand_id',
         'status',
         'description',
+        'image',
     ];
+
+    /**
+     * Get the image URL for this medicine, or a placeholder if none set.
+     */
+    public function getImageUrlAttribute(): string
+    {
+        if (!empty($this->image)) {
+            return asset('images/upload/' . $this->image);
+        }
+        return asset('images/upload_empty/medicine_placeholder.svg');
+    }
 
     /**
      * Get the brand for this medicine.

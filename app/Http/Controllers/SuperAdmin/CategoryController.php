@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CannaleoMedicine;
 use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Treatments;
@@ -61,6 +62,7 @@ class CategoryController extends Controller
             $data['image'] = 'prod_default.png';
         }
         $data['status'] = $request->has('status') ? 1 : 0;
+        $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
         Category::create($data);
 
         return redirect('category')->withStatus(__('Category created successfully..!'));
@@ -86,9 +88,10 @@ class CategoryController extends Controller
     {
         abort_if(Gate::denies('category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $treats = Treatments::whereStatus(1)->orderBy('id', 'DESC')->get();
-        $category = Category::find($id);
+        $category = Category::with('cannaleoMedicines')->find($id);
+        $cannaleoMedicines = CannaleoMedicine::with('cannaleoPharmacy')->orderBy('name')->get();
 
-        return view('superAdmin.category.edit_category', compact('category', 'treats'));
+        return view('superAdmin.category.edit_category', compact('category', 'treats', 'cannaleoMedicines'));
     }
 
     /**
@@ -103,17 +106,21 @@ class CategoryController extends Controller
             'name' => 'bail|required|unique:category,name,'.$id.',id',
             'price' => 'bail|required|numeric|min:0',
             'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'cannaleo_medicine_ids' => 'nullable|array',
+            'cannaleo_medicine_ids.*' => 'exists:cannaleo_medicine,id',
         ],
             [
                 'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
             ]);
-        $data = $request->all();
+        $data = $request->only(['name', 'description', 'price', 'image', 'treatment_id']);
+        $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
         $category = Category::find($id);
         if ($request->hasFile('image')) {
             (new CustomController)->deleteFile($category->image);
             $data['image'] = (new CustomController)->imageUpload($request->image);
         }
         $category->update($data);
+        $category->cannaleoMedicines()->sync($request->input('cannaleo_medicine_ids', []));
 
         return redirect('category')->withStatus(__('Category updated successfully..!!'));
     }

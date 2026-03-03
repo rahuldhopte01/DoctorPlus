@@ -10,10 +10,20 @@
         'urlTitle' => __('Medicine')
     ])
     <div class="section_body">
-        <form action="{{ url('medicine') }}" method="post" class="myform">
+        <form action="{{ url('medicine') }}" method="post" class="myform" enctype="multipart/form-data">
             @csrf
             <div class="card">
                 <div class="card-body">
+                    <div class="form-group">
+                        <label class="col-form-label">{{__('Image')}}</label>
+                        <input type="file" name="image" class="form-control @error('image') is-invalid @enderror" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp">
+                        <small class="form-text text-muted">{{__('Optional. Recommended for medicine selection page.')}}</small>
+                        @error('image')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
                     <div class="form-group">
                         <label class="col-form-label">{{__('Name')}}</label>
                         <input type="text" value="{{ old('name') }}" name="name" class="form-control @error('name') is-invalid @enderror" required>

@@ -22,6 +22,7 @@ class QuestionnaireSubmission extends Model
         'delivery_state',
         'delivery_address',
         'selected_pharmacy_id',
+        'selected_cannaleo_pharmacy_id',
         'selected_medicines',
         'status',
     ];
@@ -71,6 +72,14 @@ class QuestionnaireSubmission extends Model
     }
 
     /**
+     * Get the selected Cannaleo pharmacy (if Cannaleo partner flow).
+     */
+    public function selectedCannaleoPharmacy()
+    {
+        return $this->belongsTo(CannaleoPharmacy::class, 'selected_cannaleo_pharmacy_id');
+    }
+
+    /**
      * Get questionnaire answers for this submission.
      */
     public function answers()
@@ -108,6 +117,14 @@ class QuestionnaireSubmission extends Model
     public function hasSelectedPharmacy(): bool
     {
         return $this->delivery_type === 'pickup' && !empty($this->selected_pharmacy_id);
+    }
+
+    /**
+     * Check if Cannaleo pharmacy is selected (Cannaleo partner flow).
+     */
+    public function hasSelectedCannaleoPharmacy(): bool
+    {
+        return $this->delivery_type === 'cannaleo' && !empty($this->selected_cannaleo_pharmacy_id);
     }
 
     /**

@@ -730,18 +730,32 @@ class QuestionnaireController extends Controller
             'user_id' => Auth::id(),
         ]);
 
+        // Cannaleo-only category: no delivery choice; go straight to Cannaleo pharmacy → medicine
+        $isCannaleoOnly = (bool) $category->is_cannaleo_only;
+
         // Create or update questionnaire submission record
+        $submissionData = [
+            'status' => 'pending',
+            'delivery_type' => $isCannaleoOnly ? 'cannaleo' : ($submissionFlow === 'prescription_only' ? 'prescription_only' : null),
+        ];
         $submission = \App\Models\QuestionnaireSubmission::updateOrCreate(
             [
                 'user_id' => Auth::id(),
                 'category_id' => $categoryId,
                 'questionnaire_id' => $questionnaire->id,
             ],
-            [
-                'status' => 'pending',
-                'delivery_type' => $submissionFlow === 'prescription_only' ? 'prescription_only' : null,
-            ]
+            $submissionData
         );
+
+        if ($isCannaleoOnly) {
+            return response()->json([
+                'success' => true,
+                'has_warnings' => !empty($flagCheck['flags']),
+                'flags' => $flagCheck['flags'],
+                'message' => __('Questionnaire submitted. Please select your partner pharmacy, then your medicines.'),
+                'redirect_url' => url('/questionnaire/category/' . $categoryId . '/cannaleo-pharmacy-selection'),
+            ]);
+        }
 
         return response()->json([
             'success' => true,

@@ -1,16 +1,20 @@
-/* Dr Fuxx Brand Color Palette */
+/* Bold Differentiation – Brand Color Palette */
 :root {
     /* Primary Brand Colors */
-    --primary-color: #4A3AFF;      /* Electric Violet - Logo, headers, key elements */
-    --secondary-color: #1A1F3D;    /* Deep Navy - Dark mode BG, text, depth */
-    --accent-color: #00D9C0;       /* Electric Cyan - Icons, highlights, success */
-    --cta-color: #FF6B4A;          /* Warm Coral - Buttons, urgent actions */
-    --light-bg: #F8F9FA;           /* Off-White - Light mode background */
-    --dark-bg: #0D0D12;            /* Near-Black - Dark mode background */
+    --primary-color: #4A3AFF;      /* Electric Violet - Primary, differentiation */
+    --secondary-color: #00167A;   /* Twilight Navy - Secondary, trust anchor */
+    --accent-color: #00D9C0;      /* Electric Cyan - Accent, digital clarity */
+    --cta-color: #FF6B4A;         /* Warm Coral - CTA, conversion */
+    --light-bg: #F8F9FA;          /* Off-White - Light mode background */
+    --dark-bg: #0D0D12;           /* Near-Black - Dark mode background */
     
     /* Hover states */
     --primary-hover: #3828E0;      /* Darker Electric Violet */
-    --cta-hover: #E55A3A;          /* Darker Warm Coral */
+    --cta-hover: #E55A3A;         /* Darker Warm Coral */
+    
+    /* Typography */
+    --font-heading: 'Clash Display', sans-serif;
+    --font-body: 'Inter', sans-serif;
     
     /* Legacy color variables (for compatibility) */
     --dark-blue: #1A1F3D;
@@ -20,6 +24,29 @@
     --teal-light: #E0FFF9;
     --green-light: #E7F7E7;
     --purple-light: #EFEBFF;
+}
+
+/* Typography – Clash Display (headings), Inter (body) */
+html,
+body,
+p,
+span,
+label,
+input,
+select,
+textarea,
+.nav-link,
+.font-body {
+    font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.display-1, .display-2, .display-3, .display-4, .display-5, .display-6,
+.navbar-brand,
+.accordion-button,
+.font-heading {
+    font-family: var(--font-heading);
 }
 
 /* Bootstrap Color Overrides */

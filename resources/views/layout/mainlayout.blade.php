@@ -18,6 +18,10 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
 
+    <!-- Bold Differentiation typography: Clash Display (headings) + Inter (body) -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{{url('assets/plugins/fancybox/jquery.fancybox.min.css')}}">
     <link rel="stylesheet" type="text/css" href="{{asset('assets_admin/css/select2.min.css')}}">
     <link href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/index.min.css" />
@@ -44,6 +48,8 @@
             --site_color_hover: <?php echo $setting->website_color . '70';
                                 ?>;
         }
+        body { font-family: var(--font-body, 'Inter', sans-serif); }
+        h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading, 'Clash Display', sans-serif); }
     </style>
 </head>
 

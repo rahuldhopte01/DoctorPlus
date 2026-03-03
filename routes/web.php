@@ -160,6 +160,11 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/questionnaire/category/{categoryId}/pharmacy-selection', [\App\Http\Controllers\Website\QuestionnairePharmacyController::class, 'savePharmacySelection'])->name('questionnaire.save-pharmacy');
         Route::get('/questionnaire/category/{categoryId}/medicine-selection', [\App\Http\Controllers\Website\QuestionnaireMedicineController::class, 'showMedicineSelection'])->name('questionnaire.medicine-selection');
         Route::post('/questionnaire/category/{categoryId}/medicine-selection', [\App\Http\Controllers\Website\QuestionnaireMedicineController::class, 'saveMedicineSelection'])->name('questionnaire.save-medicine');
+        // Cannaleo partner flow: pharmacy then medicine
+        Route::get('/questionnaire/category/{categoryId}/cannaleo-pharmacy-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'showPharmacySelection'])->name('questionnaire.cannaleo-pharmacy-selection');
+        Route::post('/questionnaire/category/{categoryId}/cannaleo-pharmacy-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'savePharmacySelection'])->name('questionnaire.save-cannaleo-pharmacy');
+        Route::get('/questionnaire/category/{categoryId}/cannaleo-medicine-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'showMedicineSelection'])->name('questionnaire.cannaleo-medicine-selection');
+        Route::post('/questionnaire/category/{categoryId}/cannaleo-medicine-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'saveMedicineSelection'])->name('questionnaire.save-cannaleo-medicine');
 
         // User
         Route::get('/user_profile', [WebsiteController::class, 'userProfile']);
@@ -230,6 +235,10 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         
         // Category routes - defined separately to avoid conflict with public /category/{id} route
         Route::resource('category', CategoryController::class)->except(['show']);
+
+        // Cannaleo (partner catalog) – listings and category assignment
+        Route::get('cannaleo/pharmacies', [\App\Http\Controllers\SuperAdmin\CannaleoPharmacyController::class, 'index'])->name('cannaleo.pharmacies.index');
+        Route::get('cannaleo/medicines', [\App\Http\Controllers\SuperAdmin\CannaleoMedicineController::class, 'index'])->name('cannaleo.medicines.index');
 
         Route::get('/login-as-doctor/{id}', [AdminController::class, 'loginAsDoctor'])->name('loginAsDoctor');
         Route::get('/login-as-patient/{id}', [AdminController::class, 'loginAsPatient'])->name('loginAsPatient');

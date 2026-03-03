@@ -28,6 +28,13 @@ class QuestionnaireMedicineController extends Controller
             ->where('category_id', $categoryId)
             ->firstOrFail();
 
+        if ($submission->delivery_type === 'cannaleo') {
+            if (!$submission->hasSelectedCannaleoPharmacy()) {
+                return redirect()->route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $categoryId]);
+            }
+            return redirect()->route('questionnaire.cannaleo-medicine-selection', ['categoryId' => $categoryId]);
+        }
+
         if (!$submission->hasDeliveryType()) {
             return redirect()->route('questionnaire.delivery-choice', ['categoryId' => $categoryId])
                 ->with('error', __('Please select delivery method first'));

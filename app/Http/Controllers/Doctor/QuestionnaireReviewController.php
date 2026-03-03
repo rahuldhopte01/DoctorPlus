@@ -130,34 +130,52 @@ class QuestionnaireReviewController extends Controller
             });
             
             $medicineIds = $submissionRecords->flatMap(function ($submission) {
-                return collect($submission->selected_medicines ?? [])->pluck('medicine_id');
-            })->filter()->unique()->values();
-            
+                return collect($submission->selected_medicines ?? [])->pluck('medicine_id')->filter();
+            })->unique()->values();
+            $cannaleoMedicineIds = $submissionRecords->flatMap(function ($submission) {
+                return collect($submission->selected_medicines ?? [])->pluck('cannaleo_medicine_id')->filter();
+            })->unique()->values();
+
             $medicineMap = $medicineIds->isNotEmpty()
                 ? Medicine::with('brand')->whereIn('id', $medicineIds)->get()->keyBy('id')
                 : collect([]);
-            
+            $cannaleoMedicineMap = $cannaleoMedicineIds->isNotEmpty()
+                ? \App\Models\CannaleoMedicine::with('cannaleoPharmacy')->whereIn('id', $cannaleoMedicineIds)->get()->keyBy('id')
+                : collect([]);
+
             return $answers->groupBy(function ($answer) {
                 $submittedAt = $answer->submitted_at ? $answer->submitted_at->format('Y-m-d H:i:s') : $answer->created_at->format('Y-m-d H:i:s');
                 return $answer->user_id . '_' . $answer->category_id . '_' . $answer->questionnaire_id . '_' . $submittedAt;
-            })->map(function ($group) use ($doctor, $submissionMap, $medicineMap) {
+            })->map(function ($group) use ($doctor, $submissionMap, $medicineMap, $cannaleoMedicineMap) {
                 $first = $group->first();
                 $isLocked = $first->isLocked();
                 $isLockedByMe = $first->isLockedBy($doctor->id);
-                $canEdit = $doctor->isAdminDoctor() ? $isLockedByMe : $isLockedByMe; 
-                
+                $canEdit = $doctor->isAdminDoctor() ? $isLockedByMe : $isLockedByMe;
+
                 $submissionKey = $first->user_id . '_' . $first->category_id . '_' . $first->questionnaire_id;
                 $submission = $submissionMap->get($submissionKey);
                 $selectedMedicines = [];
                 if ($submission && $submission->selected_medicines) {
                     foreach ($submission->selected_medicines as $selected) {
-                        $medicine = $medicineMap->get($selected['medicine_id'] ?? null);
-                        if ($medicine) {
-                            $selectedMedicines[] = [
-                                'name' => $medicine->name,
-                                'strength' => $medicine->strength ?? '',
-                                'brand' => $medicine->brand->name ?? null,
-                            ];
+                        if (!empty($selected['medicine_id'])) {
+                            $medicine = $medicineMap->get($selected['medicine_id']);
+                            if ($medicine) {
+                                $selectedMedicines[] = [
+                                    'name' => $medicine->name,
+                                    'strength' => $medicine->strength ?? '',
+                                    'brand' => $medicine->brand->name ?? null,
+                                ];
+                            }
+                        }
+                        if (!empty($selected['cannaleo_medicine_id'])) {
+                            $cm = $cannaleoMedicineMap->get($selected['cannaleo_medicine_id']);
+                            if ($cm) {
+                                $selectedMedicines[] = [
+                                    'name' => $cm->name,
+                                    'strength' => ($cm->thc !== null || $cm->cbd !== null) ? ('THC ' . ($cm->thc ?? 0) . '% / CBD ' . ($cm->cbd ?? 0) . '%') : '',
+                                    'brand' => $cm->cannaleoPharmacy ? $cm->cannaleoPharmacy->name . ' (Cannaleo)' : 'Cannaleo',
+                                ];
+                            }
                         }
                     }
                 }
@@ -353,13 +371,25 @@ class QuestionnaireReviewController extends Controller
             ->with(['selectedPharmacy', 'deliveryAddress'])
             ->first();
         
-        // Get selected medicines with details (no type; category-based selection only)
+        // Get selected medicines with details (internal medicine_id or cannaleo_medicine_id)
         $selectedMedicines = [];
+        $selectedCannaleoMedicines = [];
         if ($submission && $submission->selected_medicines) {
             foreach ($submission->selected_medicines as $selected) {
-                $medicine = Medicine::with('brand')->find($selected['medicine_id'] ?? null);
-                if ($medicine) {
-                    $selectedMedicines[] = ['medicine' => $medicine];
+                if (!empty($selected['medicine_id'])) {
+                    $medicine = Medicine::with('brand')->find($selected['medicine_id']);
+                    if ($medicine) {
+                        $selectedMedicines[] = ['medicine' => $medicine];
+                    }
+                }
+                if (!empty($selected['cannaleo_medicine_id'])) {
+                    $cannaleoMedicine = \App\Models\CannaleoMedicine::with('cannaleoPharmacy')->find($selected['cannaleo_medicine_id']);
+                    if ($cannaleoMedicine) {
+                        $selectedCannaleoMedicines[] = [
+                            'cannaleo_medicine' => $cannaleoMedicine,
+                            'pharmacy' => $cannaleoMedicine->cannaleoPharmacy,
+                        ];
+                    }
                 }
             }
         }
@@ -405,15 +435,16 @@ class QuestionnaireReviewController extends Controller
         }
         
         return view('doctor.questionnaire.review_submission', compact(
-            'answers', 
-            'firstAnswer', 
-            'groupedAnswers', 
-            'hasFlaggedAnswers', 
-            'doctor', 
-            'prescription', 
+            'answers',
+            'firstAnswer',
+            'groupedAnswers',
+            'hasFlaggedAnswers',
+            'doctor',
+            'prescription',
             'canEdit',
             'submission',
             'selectedMedicines',
+            'selectedCannaleoMedicines',
             'orders',
             'categoryMedicines'
         ));
