@@ -163,7 +163,7 @@
     <div class="container position-relative z-index-1">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 mb-3">Wer wir sind</span>
+                <span class="badge rounded-pill px-3 py-2 mb-3" style="background-color: rgba(74, 58, 255, 0.1); color: #4A3AFF;">Wer wir sind</span>
                 <h1 class="display-3 fw-bold mb-4">Über <span class="bg-primary-green-gradient bg-clip-text text-transparent" style="-webkit-text-fill-color:transparent">{{ $setting->business_name }}</span></h1>
                 <p class="lead text-muted mb-5 px-md-5" style="line-height: 1.8;">
                     {{ $setting->business_name }} ist eine vertrauenswürdige europäische Telemedizinplattform. Sie verbindet Patienten, zugelassene Ärzte und Partnerapotheken, um Online-Konsultationen, Rezepte und die Lieferung von Medikamenten in ganz Europa anzubieten.
@@ -220,12 +220,12 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="card info-card p-5 border-0 bg-primary bg-opacity-10">
+                <div class="card info-card p-5 border-0" style="background-color: rgba(74, 58, 255, 0.05);">
                     <h3 class="mb-4 fw-bold">Zertifizierungen & Sicherheit</h3>
                     
                     <div class="bg-white p-4 rounded-4 mb-3 shadow-sm">
                         <div class="d-flex align-items-start">
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                            <div class="p-3 rounded-circle me-3" style="background-color: rgba(74, 58, 255, 0.1);">
                                 <i class="bi bi-shield-lock-fill text-primary fs-4"></i>
                             </div>
                             <div>
@@ -237,7 +237,7 @@
                     
                     <div class="bg-white p-4 rounded-4 mb-3 shadow-sm">
                         <div class="d-flex align-items-start">
-                            <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                            <div class="p-3 rounded-circle me-3" style="background-color: rgba(40, 167, 69, 0.1);">
                                 <i class="bi bi-credit-card-2-front text-success fs-4"></i>
                             </div>
                             <div>
@@ -249,7 +249,7 @@
                     
                     <div class="bg-white p-4 rounded-4 shadow-sm">
                         <div class="d-flex align-items-start">
-                            <div class="bg-info bg-opacity-10 p-3 rounded-circle me-3">
+                            <div class="p-3 rounded-circle me-3" style="background-color: rgba(23, 162, 184, 0.1);">
                                 <i class="bi bi-building text-info fs-4"></i>
                             </div>
                             <div>
@@ -263,7 +263,7 @@
         </div>
 
         <div class="text-center my-6 py-5">
-            <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2 mb-3">Medizinische Fachkräfte</span>
+            <span class="badge rounded-pill px-3 py-2 mb-3" style="background-color: rgba(108, 117, 125, 0.1); color: #6c757d;">Medizinische Fachkräfte</span>
             <h2 class="fw-bold display-6 mb-5">Behandelnde Ärzte</h2>
             <div class="row g-4 justify-content-center">
                 <div class="col-md-6 col-xl-3">
@@ -327,7 +327,7 @@
         <!-- Pharmacies Section -->
         <div class="bg-white p-5 rounded-4 shadow-sm border mb-5">
             <div class="text-center mb-5">
-                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 mb-3">Sichere Lieferung</span>
+                <span class="badge rounded-pill px-3 py-2 mb-3" style="background-color: rgba(40, 167, 69, 0.1); color: #28a745;">Sichere Lieferung</span>
                 <h2 class="fw-bold display-6 mb-3">Unsere Partnerapotheken</h2>
                 <div class="mx-auto text-muted lead" style="max-width: 700px;">
                     Sollten Sie die Option einer Medikamentenlieferung beim Bestellvorgang auswählen, werden wir Ihr Rezept automatisch an eine von uns empfohlene Versandapotheke weiterleiten.
