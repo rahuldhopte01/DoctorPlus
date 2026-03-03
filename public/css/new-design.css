@@ -179,9 +179,60 @@ h6,
     cursor: pointer;
 }
 
+.service-card h5,
+.service-card p,
+.service-card a,
+.service-card .text-muted,
+.service-card .text-primary,
+.service-card .service-icon {
+    transition: all 0.3s ease;
+}
+
 .service-card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25) !important;
+    border-color: rgb(13, 110, 253) !important;
+    background-color: rgb(13, 110, 253) !important;
     transform: translateY(-2px);
+    color: white !important;
+}
+
+.service-card:hover h5,
+.service-card:hover p,
+.service-card:hover a,
+.service-card:hover .text-muted,
+.service-card:hover .text-primary {
+    color: white !important;
+}
+
+.service-card:hover .service-icon {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    transform: scale(1.1);
+}
+
+/* Treatment Page Cards Hover Effect */
+.treatment-page-card {
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.treatment-page-card h3,
+.treatment-page-card p,
+.treatment-page-card span {
+    transition: all 0.3s ease;
+}
+
+.treatment-page-card:hover {
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25) !important;
+    border-color: rgb(13, 110, 253) !important;
+    background-color: rgb(13, 110, 253) !important;
+    transform: scale(1.05);
+}
+
+.treatment-page-card:hover h3,
+.treatment-page-card:hover p,
+.treatment-page-card:hover span {
+    color: white !important;
 }
 
 .service-icon {
@@ -392,13 +443,35 @@ h6,
     cursor: pointer;
 }
 
+.treatment-card h5,
+.treatment-card p,
+.treatment-card span,
+.treatment-card .text-muted,
+.treatment-card .text-primary,
+.treatment-card i {
+    transition: all 0.3s ease;
+}
+
 .treatment-card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25) !important;
+    border-color: rgb(13, 110, 253) !important;
+    background-color: rgb(13, 110, 253) !important;
     transform: translateY(-2px);
 }
 
-.treatment-card:hover h5 {
-    color: var(--primary-color);
+.treatment-card:hover h5,
+.treatment-card:hover p,
+.treatment-card:hover span,
+.treatment-card:hover .text-muted,
+.treatment-card:hover .text-primary,
+.treatment-card:hover i.text-success {
+    color: white !important;
+}
+
+.treatment-card:hover .btn-primary {
+    background-color: white !important;
+    color: rgb(13, 110, 253) !important;
+    border-color: white !important;
 }
 
 /* Category Filter */

@@ -12,7 +12,7 @@
     @if(count($categories) > 0)
     <div class="grid xlg:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 msm:grid-cols-1 xsm:grid-cols-1 xxsm:grid-cols-1 gap-6">
         @foreach($categories as $category)
-        <div class="bg-white shadow-xl rounded-lg overflow-hidden transform hover:scale-105 transition duration-300 cursor-pointer"
+        <div class="bg-white shadow-xl rounded-lg overflow-hidden transform hover:scale-105 transition duration-300 cursor-pointer treatment-page-card"
              onclick="window.location.href='{{ route('category.detail', ['id' => $category->id]) }}'">
             <div class="p-6">
                 @if($category->image)
