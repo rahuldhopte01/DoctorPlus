@@ -1,0 +1,283 @@
+/* Medicine Selection page – UI from index.html (scoped to avoid affecting other pages) */
+.medicine-selection-ui.main-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.medicine-selection-ui .breadcrumb {
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    flex-wrap: wrap;
+}
+
+.medicine-selection-ui .breadcrumb-link {
+    font-weight: 500;
+    color: #14b8a6;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.medicine-selection-ui .breadcrumb-link:hover {
+    color: #0d9488;
+}
+
+.medicine-selection-ui .breadcrumb-arrow {
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.medicine-selection-ui .breadcrumb-current {
+    font-weight: 500;
+    color: #6b7280;
+}
+
+.medicine-selection-ui .title-section {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.medicine-selection-ui .title-section .title {
+    margin-bottom: 1rem;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.medicine-selection-ui .title-section .subtitle {
+    font-size: 1.125rem;
+    color: #4b5563;
+}
+
+.medicine-selection-ui .medicine-grid {
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .medicine-selection-ui .medicine-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .medicine-selection-ui .medicine-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.medicine-selection-ui .medicine-card-wrap {
+    display: block;
+    cursor: pointer;
+}
+
+.medicine-selection-ui .medicine-card-wrap input.medicine-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+.medicine-selection-ui .medicine-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    text-align: left;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.medicine-selection-ui .medicine-card:not(.selected):hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border-color: #d1d5db;
+}
+
+.medicine-selection-ui .medicine-card.selected {
+    border-color: #14b8a6;
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.medicine-selection-ui .medicine-image-container {
+    position: relative;
+    height: 224px;
+    width: 100%;
+    overflow: hidden;
+    background-color: #f3f4f6;
+    flex-shrink: 0;
+}
+
+.medicine-selection-ui .medicine-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.medicine-selection-ui .checkmark-badge {
+    position: absolute;
+    right: 0.75rem;
+    top: 0.75rem;
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #14b8a6;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.medicine-selection-ui .medicine-content {
+    padding: 1.25rem;
+    background-color: #ffffff;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-selection-ui .medicine-name {
+    margin-bottom: 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.medicine-selection-ui .medicine-subtitle {
+    margin-bottom: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+}
+
+.medicine-selection-ui .medicine-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.medicine-selection-ui .medicine-detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+.medicine-selection-ui .medicine-detail-label {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #6b7280;
+}
+
+.medicine-selection-ui .medicine-detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.medicine-selection-ui .selection-indicator {
+    height: 48px;
+    min-height: 48px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.medicine-selection-ui .selection-indicator.hidden {
+    opacity: 0;
+}
+
+.medicine-selection-ui .selection-indicator-content {
+    background: linear-gradient(90deg, #14b8a6 0%, #0d9488 100%);
+    padding: 0.75rem 1.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.medicine-selection-ui .selection-indicator-text {
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+}
+
+.medicine-selection-ui .info-box {
+    border-radius: 0.5rem;
+    background-color: #eff6ff;
+    padding: 1.5rem;
+}
+
+.medicine-selection-ui .info-box .info-content {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.medicine-selection-ui .info-box .info-icon {
+    margin-top: 0.125rem;
+    flex-shrink: 0;
+    color: #2563eb;
+}
+
+.medicine-selection-ui .info-box .info-text {
+    color: #374151;
+}
+
+.medicine-selection-ui .info-box .info-selected {
+    font-weight: 600;
+    color: #1e3a8a;
+}
+
+.medicine-selection-ui .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.medicine-selection-ui .btn-back {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    background-color: #e5e7eb;
+    color: #374151;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.medicine-selection-ui .btn-back:hover {
+    background-color: #d1d5db;
+}
+
+.medicine-selection-ui .btn-continue {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    background-color: #FF6B4A;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.medicine-selection-ui .btn-continue:hover {
+    background-color: #FF5436;
+}
