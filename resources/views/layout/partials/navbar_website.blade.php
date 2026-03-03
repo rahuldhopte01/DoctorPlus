@@ -16,7 +16,7 @@
             <div class="hidden md:flex space-x-8 items-center ml-auto mr-8">
                 <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Treatments') }}</a>
                 <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('How it works') }}</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('About us') }}</a>
+                <a href="{{ url('about-us') }}" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('About us') }}</a>
                 <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Help') }}</a>
             </div>
 
@@ -74,7 +74,7 @@
         <div class="pt-2 pb-3 space-y-1 px-4">
             <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Treatments') }}</a>
             <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('How it works') }}</a>
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('About us') }}</a>
+            <a href="{{ url('about-us') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('About us') }}</a>
             <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Help') }}</a>
             @if (!auth()->check())
                 <a href="{{ url('/patient-login') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Log in') }}</a>

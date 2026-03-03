@@ -46,7 +46,7 @@
                     <a class="nav-link" href="{{ url('/') }}#how-it-works">How it works</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/') }}#about">About us</a>
+                    <a class="nav-link" href="{{ url('/about-us') }}">About us</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/') }}#faq">Help</a>
@@ -253,7 +253,7 @@
             <div class="col-md-6 col-lg-3">
                 <h5 class="text-white mb-3">Company</h5>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ url('/') }}#about" class="text-light text-decoration-none">About us</a></li>
+                    <li class="mb-2"><a href="{{ url('/about-us') }}" class="text-light text-decoration-none">About us</a></li>
                     <li class="mb-2"><a href="{{ url('/') }}#how-it-works" class="text-light text-decoration-none">How it works</a></li>
                     <li class="mb-2"><a href="{{ url('show-doctors') }}" class="text-light text-decoration-none">Our doctors</a></li>
                     <li class="mb-2"><a href="{{ url('our_blogs') }}" class="text-light text-decoration-none">Blog</a></li>
