@@ -1,21 +1,29 @@
 /* Bold Differentiation – Brand Color Palette */
 :root {
     /* Primary Brand Colors */
-    --primary-color: #4A3AFF;      /* Electric Violet - Primary, differentiation */
-    --secondary-color: #00167A;   /* Twilight Navy - Secondary, trust anchor */
-    --accent-color: #00D9C0;      /* Electric Cyan - Accent, digital clarity */
-    --cta-color: #FF6B4A;         /* Warm Coral - CTA, conversion */
-    --light-bg: #F8F9FA;          /* Off-White - Light mode background */
-    --dark-bg: #0D0D12;           /* Near-Black - Dark mode background */
-    
+    --primary-color: #4A3AFF;
+    /* Electric Violet - Primary, differentiation */
+    --secondary-color: #00167A;
+    /* Twilight Navy - Secondary, trust anchor */
+    --accent-color: #00D9C0;
+    /* Electric Cyan - Accent, digital clarity */
+    --cta-color: #FF6B4A;
+    /* Warm Coral - CTA, conversion */
+    --light-bg: #F8F9FA;
+    /* Off-White - Light mode background */
+    --dark-bg: #0D0D12;
+    /* Near-Black - Dark mode background */
+
     /* Hover states */
-    --primary-hover: #3828E0;      /* Darker Electric Violet */
-    --cta-hover: #E55A3A;         /* Darker Warm Coral */
-    
+    --primary-hover: #3828E0;
+    /* Darker Electric Violet */
+    --cta-hover: #E55A3A;
+    /* Darker Warm Coral */
+
     /* Typography */
     --font-heading: 'Clash Display', sans-serif;
     --font-body: 'Inter', sans-serif;
-    
+
     /* Legacy color variables (for compatibility) */
     --dark-blue: #1A1F3D;
     --orange-light: #FFF5F0;
@@ -40,9 +48,24 @@ textarea,
     font-family: var(--font-body);
 }
 
-h1, h2, h3, h4, h5, h6,
-.h1, .h2, .h3, .h4, .h5, .h6,
-.display-1, .display-2, .display-3, .display-4, .display-5, .display-6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+.display-1,
+.display-2,
+.display-3,
+.display-4,
+.display-5,
+.display-6,
 .navbar-brand,
 .accordion-button,
 .font-heading {
@@ -257,19 +280,94 @@ h1, h2, h3, h4, h5, h6,
     background: linear-gradient(135deg, var(--light-bg) 0%, var(--purple-light) 100%);
 }
 
-/* Accordion */
+/* Custom Accordion to match Bloomwell Style */
+.accordion {
+    --bs-accordion-bg: transparent;
+    --bs-accordion-border-width: 0;
+    --bs-accordion-transition: color 0.4s ease-in-out, background-color 0.4s ease-in-out, border-color 0.4s ease-in-out, box-shadow 0.4s ease-in-out, border-radius 0.4s ease-in-out;
+}
+
+.accordion-item {
+    background-color: #fff;
+    border: none !important;
+    border-radius: 20px !important;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .accordion-button {
-    font-weight: 600;
+    font-weight: 700 !important;
+    font-size: 1.15rem;
+    color: #000 !important;
+    background-color: transparent !important;
+    border: none;
+    padding: 1.5rem 1.5rem;
+    box-shadow: none !important;
+    border-radius: 20px !important;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accordion-item:hover,
+.accordion-item:hover .accordion-button,
+.accordion-item:hover .accordion-collapse {
+    background-color: #00d9c0 !important;
+    color: #000 !important;
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: var(--purple-light);
-    color: var(--primary-color);
+    background-color: #00d9c0 !important;
+    /* Bright cyan */
+    color: #000 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
-.accordion-button:focus {
-    box-shadow: none;
-    border-color: rgba(74, 58, 255, 0.3);
+.accordion-collapse {
+    border: none;
+    border-radius: 0 0 20px 20px;
+    background-color: #fff;
+    transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure the Bootstrap expanding/collapsing transition is smooth too */
+.collapsing {
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Color the body container when active */
+.accordion-item:has(.accordion-button:not(.collapsed)) .accordion-collapse {
+    background-color: #00d9c0 !important;
+}
+
+/* Fallback for browsers that do not support :has() */
+.accordion-button:not(.collapsed)+.accordion-collapse {
+    background-color: #00d9c0 !important;
+}
+
+.accordion-body {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: #000 !important;
+    font-size: 1rem;
+    background-color: transparent;
+}
+
+/* Reverse Chevron Behavior */
+.accordion-button::after {
+    /* Points UP when collapsed */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%231f4a38'%3e%3cpath fill-rule='evenodd' d='M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z'/%3e%3c/svg%3e") !important;
+    transform: rotate(0deg) !important;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 20px;
+    height: 20px;
+    background-size: 20px;
+}
+
+.accordion-button:not(.collapsed)::after {
+    /* Points DOWN when expanded */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%231f4a38'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+    transform: rotate(0deg) !important;
 }
 
 /* Footer */
