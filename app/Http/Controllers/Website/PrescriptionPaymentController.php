@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Prescription;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\UserAddress;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -410,21 +412,49 @@ class PrescriptionPaymentController extends Controller
     protected function generatePrescriptionPdf(Prescription $prescription): void
     {
         try {
-            $prescription->load(['doctor.user', 'user']);
-            
+            $prescription->load(['doctor.user', 'doctor.hospital', 'user']);
+
             $medicines = json_decode($prescription->medicines, true) ?? [];
-            $doctorName = $prescription->doctor && $prescription->doctor->user 
-                ? $prescription->doctor->user->name 
-                : 'Doctor';
+            $doctor = $prescription->doctor;
+            $doctorName = $doctor && $doctor->user && $doctor->user->name
+                ? $doctor->user->name
+                : ($doctor && $doctor->name ? $doctor->name : 'Doctor');
             $patientName = $prescription->user ? $prescription->user->name : 'Patient';
-            
+
+            $patientAddress = '';
+            $patientCity = '';
+            $patientDob = null;
+            if ($prescription->user) {
+                $firstAddress = UserAddress::where('user_id', $prescription->user_id)->first();
+                if ($firstAddress) {
+                    $patientAddress = $firstAddress->address ?? '';
+                }
+                if ($prescription->user->dob) {
+                    $patientDob = Carbon::parse($prescription->user->dob)->format('d.m.Y');
+                }
+            }
+
+            $doctorPhone = ($doctor && $doctor->user && $doctor->user->phone) ? $doctor->user->phone : '';
+            $doctorAddress = ($doctor && $doctor->hospital && $doctor->hospital->address) ? $doctor->hospital->address : '';
+            $doctorLanr = '';
+            $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
+
             $pdf = \PDF::loadView('prescription_pdf', [
                 'prescription' => $prescription,
                 'medicines' => $medicines,
                 'doctor_name' => $doctorName,
                 'patient_name' => $patientName,
-                'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d M Y') : now()->format('d M Y'),
-                'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d M Y') : null,
+                'patient_address' => $patientAddress,
+                'patient_city' => $patientCity,
+                'patient_country' => 'Deutschland',
+                'patient_dob' => $patientDob,
+                'doctor_phone' => $doctorPhone,
+                'doctor_address' => $doctorAddress,
+                'doctor_lanr' => $doctorLanr,
+                'doctor_title' => 'Arzt/Ärztin',
+                'receipt_nr' => $receiptNr,
+                'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d.m.Y') : now()->format('d.m.Y'),
+                'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d.m.Y') : null,
             ]);
             
             $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
