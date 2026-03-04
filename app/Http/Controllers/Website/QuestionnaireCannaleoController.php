@@ -38,9 +38,13 @@ class QuestionnaireCannaleoController extends Controller
                 ->with('error', __('Invalid flow. Please choose delivery method first.'));
         }
 
-        // Pharmacies that have at least one Cannaleo medicine assigned to this category
-        $pharmacyIds = $category->cannaleoMedicines()->pluck('cannaleo_pharmacy_id')->unique()->filter()->values();
-        $pharmacies = CannaleoPharmacy::whereIn('id', $pharmacyIds)->orderBy('name')->get();
+        // Cannaleo-only category: show all partner pharmacies; otherwise only those with medicines assigned to this category
+        if ($category->is_cannaleo_only) {
+            $pharmacies = CannaleoPharmacy::has('cannaleoMedicines')->orderBy('name')->get();
+        } else {
+            $pharmacyIds = $category->cannaleoMedicines()->pluck('cannaleo_pharmacy_id')->unique()->filter()->values();
+            $pharmacies = CannaleoPharmacy::whereIn('id', $pharmacyIds)->orderBy('name')->get();
+        }
 
         $selectedPharmacyId = $submission->selected_cannaleo_pharmacy_id;
         $isCannaleoOnly = $category->is_cannaleo_only;
@@ -80,8 +84,12 @@ class QuestionnaireCannaleoController extends Controller
             return response()->json(['success' => false, 'message' => __('Invalid flow.')], 422);
         }
 
-        // Verify pharmacy has medicines for this category
-        $allowedPharmacyIds = $category->cannaleoMedicines()->pluck('cannaleo_pharmacy_id')->unique()->toArray();
+        // Cannaleo-only: any pharmacy with medicines is allowed; otherwise verify pharmacy has medicines for this category
+        if ($category->is_cannaleo_only) {
+            $allowedPharmacyIds = CannaleoPharmacy::has('cannaleoMedicines')->pluck('id')->toArray();
+        } else {
+            $allowedPharmacyIds = $category->cannaleoMedicines()->pluck('cannaleo_pharmacy_id')->unique()->toArray();
+        }
         if (!in_array((int) $request->cannaleo_pharmacy_id, $allowedPharmacyIds, true)) {
             return response()->json(['success' => false, 'message' => __('Selected pharmacy is not available for this category.')], 422);
         }
@@ -118,11 +126,19 @@ class QuestionnaireCannaleoController extends Controller
                 ->with('error', __('Please select a Cannaleo pharmacy first.'));
         }
 
-        $medicines = $category->cannaleoMedicines()
-            ->where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
-            ->with('cannaleoPharmacy')
-            ->orderBy('name')
-            ->get();
+        // Cannaleo-only category: show all medicines from selected pharmacy; otherwise only those assigned to this category
+        if ($category->is_cannaleo_only) {
+            $medicines = CannaleoMedicine::where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
+                ->with('cannaleoPharmacy')
+                ->orderBy('name')
+                ->get();
+        } else {
+            $medicines = $category->cannaleoMedicines()
+                ->where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
+                ->with('cannaleoPharmacy')
+                ->orderBy('name')
+                ->get();
+        }
 
         $selectedMedicines = $submission->selected_medicines ?? [];
         $selectedCannaleoIds = array_filter(array_column($selectedMedicines, 'cannaleo_medicine_id'));
@@ -170,10 +186,14 @@ class QuestionnaireCannaleoController extends Controller
         }
 
         $category = Category::findOrFail($categoryId);
-        $allowedIds = $category->cannaleoMedicines()
-            ->where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
-            ->pluck('id')
-            ->toArray();
+        if ($category->is_cannaleo_only) {
+            $allowedIds = CannaleoMedicine::where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)->pluck('id')->toArray();
+        } else {
+            $allowedIds = $category->cannaleoMedicines()
+                ->where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
+                ->pluck('id')
+                ->toArray();
+        }
 
         $normalized = [];
         foreach ($request->medicines as $m) {

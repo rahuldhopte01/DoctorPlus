@@ -299,6 +299,7 @@
                     <i class="fas fa-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
                 <div class="flex items-center gap-3">
+                    @if(empty($category->is_cannaleo_only))
                     <button type="submit" class="bg-white text-gray-700 border border-gray-300 font-fira-sans font-medium px-6 py-3 rounded-xl hover:bg-gray-50 transition duration-300 shadow-sm" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
@@ -309,6 +310,7 @@
                             <i class="fas fa-file-medical ml-2"></i>
                         @endif
                     </button>
+                    @endif
                     <button type="submit" class="bg-primary text-white font-fira-sans font-medium px-6 py-3 rounded-xl hover:bg-opacity-90 transition duration-300 shadow-lg shadow-primary/30" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])

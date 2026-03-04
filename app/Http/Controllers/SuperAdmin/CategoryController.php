@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CannaleoMedicine;
 use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Treatments;
@@ -88,10 +87,9 @@ class CategoryController extends Controller
     {
         abort_if(Gate::denies('category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $treats = Treatments::whereStatus(1)->orderBy('id', 'DESC')->get();
-        $category = Category::with('cannaleoMedicines')->find($id);
-        $cannaleoMedicines = CannaleoMedicine::with('cannaleoPharmacy')->orderBy('name')->get();
+        $category = Category::find($id);
 
-        return view('superAdmin.category.edit_category', compact('category', 'treats', 'cannaleoMedicines'));
+        return view('superAdmin.category.edit_category', compact('category', 'treats'));
     }
 
     /**
@@ -106,8 +104,6 @@ class CategoryController extends Controller
             'name' => 'bail|required|unique:category,name,'.$id.',id',
             'price' => 'bail|required|numeric|min:0',
             'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
-            'cannaleo_medicine_ids' => 'nullable|array',
-            'cannaleo_medicine_ids.*' => 'exists:cannaleo_medicine,id',
         ],
             [
                 'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
@@ -120,7 +116,6 @@ class CategoryController extends Controller
             $data['image'] = (new CustomController)->imageUpload($request->image);
         }
         $category->update($data);
-        $category->cannaleoMedicines()->sync($request->input('cannaleo_medicine_ids', []));
 
         return redirect('category')->withStatus(__('Category updated successfully..!!'));
     }

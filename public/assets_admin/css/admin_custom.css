@@ -232,3 +232,19 @@ input[type=number]::-webkit-outer-spin-button {
 .note-editable {
     text-transform: none !important;
 }
+
+/* Table row hover – theme-friendly (replaces default gray / strong yellow) */
+.table-hover tbody tr:hover {
+    background-color: #f4f6fb;
+    color: inherit;
+}
+.table-hover tbody tr:hover > td,
+.table-hover tbody tr:hover > th {
+    background-color: #f4f6fb;
+}
+/* Softer hover for flagged/warning rows (no bright yellow) */
+.table-hover .table-warning:hover,
+.table-hover .table-warning:hover > td,
+.table-hover .table-warning:hover > th {
+    background-color: #fef9e6;
+}

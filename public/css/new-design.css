@@ -188,29 +188,34 @@ h6,
     transition: all 0.3s ease;
 }
 
+/* Same hover as categories listing (.treatment-page-card) */
 .service-card:hover {
-    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25) !important;
-    border-color: rgb(13, 110, 253) !important;
-    background-color: rgb(13, 110, 253) !important;
-    transform: translateY(-2px);
-    color: white !important;
+    box-shadow: 0 10px 25px rgba(74, 58, 255, 0.18) !important;
+    border-color: var(--primary-color) !important;
+    background-color: var(--purple-light) !important;
+    transform: scale(1.05);
 }
 
-.service-card:hover h5,
+.service-card:hover h5 {
+    color: var(--primary-hover) !important;
+}
+
 .service-card:hover p,
 .service-card:hover a,
-.service-card:hover .text-muted,
+.service-card:hover .text-muted {
+    color: var(--dark-blue) !important;
+}
+
 .service-card:hover .text-primary {
-    color: white !important;
+    color: var(--primary-color) !important;
 }
 
 .service-card:hover .service-icon {
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    color: white !important;
     transform: scale(1.1);
+    transition: transform 0.3s;
 }
 
-/* Treatment Page Cards Hover Effect */
+/* Treatment Page Cards Hover Effect – theme-aligned (primary violet, subtle tint) */
 .treatment-page-card {
     border: 1px solid transparent;
     transition: all 0.3s ease;
@@ -223,27 +228,29 @@ h6,
 }
 
 .treatment-page-card:hover {
-    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25) !important;
-    border-color: rgb(13, 110, 253) !important;
-    background-color: rgb(13, 110, 253) !important;
+    box-shadow: 0 10px 25px rgba(74, 58, 255, 0.18) !important;
+    border-color: var(--primary-color) !important;
+    background-color: var(--purple-light) !important;
     transform: scale(1.05);
 }
 
-.treatment-page-card:hover h3,
+.treatment-page-card:hover h3 {
+    color: var(--primary-hover) !important;
+}
+
 .treatment-page-card:hover p,
 .treatment-page-card:hover span {
-    color: white !important;
+    color: var(--dark-blue) !important;
+}
+
+.treatment-page-card:hover .text-primary {
+    color: var(--primary-color) !important;
 }
 
 .service-icon {
     width: 48px;
     height: 48px;
     font-size: 24px;
-}
-
-.service-card:hover .service-icon {
-    transform: scale(1.1);
-    transition: transform 0.3s;
 }
 
 /* Color Classes */
@@ -453,25 +460,31 @@ h6,
 }
 
 .treatment-card:hover {
-    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25) !important;
-    border-color: rgb(13, 110, 253) !important;
-    background-color: rgb(13, 110, 253) !important;
+    box-shadow: 0 10px 25px rgba(74, 58, 255, 0.18) !important;
+    border-color: var(--primary-color) !important;
+    background-color: var(--purple-light) !important;
     transform: translateY(-2px);
 }
 
-.treatment-card:hover h5,
+.treatment-card:hover h5 {
+    color: var(--primary-hover) !important;
+}
+
 .treatment-card:hover p,
 .treatment-card:hover span,
-.treatment-card:hover .text-muted,
+.treatment-card:hover .text-muted {
+    color: var(--dark-blue) !important;
+}
+
 .treatment-card:hover .text-primary,
 .treatment-card:hover i.text-success {
-    color: white !important;
+    color: var(--primary-color) !important;
 }
 
 .treatment-card:hover .btn-primary {
-    background-color: white !important;
-    color: rgb(13, 110, 253) !important;
-    border-color: white !important;
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
 }
 
 /* Category Filter */

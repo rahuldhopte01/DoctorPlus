@@ -282,7 +282,27 @@
                 </div>
                 @endif
 
-                <!-- Medicine Assignment Form -->
+                @php $isCannaleoPrescription = isset($submission) && $submission && $submission->delivery_type === 'cannaleo' && isset($selectedCannaleoMedicines) && count($selectedCannaleoMedicines) > 0; @endphp
+
+                @if($isCannaleoPrescription)
+                <!-- Cannaleo: create prescription from patient's selection (no category medicine dropdown) -->
+                <form id="prescription-form" action="{{ route('doctor.questionnaire.store-prescription', [
+                    'userId' => $firstAnswer->user_id,
+                    'categoryId' => $firstAnswer->category_id,
+                    'questionnaireId' => $firstAnswer->questionnaire_id
+                ]) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="cannaleo_prescription" value="1">
+                    <p class="text-muted mb-3">{{ __('The prescription will be generated from the patient’s selected Cannaleo medicines above.') }}</p>
+                    <div class="text-right mt-4 pt-3 border-top">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-prescription-bottle-alt mr-2"></i>
+                            {{ __('Approve & Generate Prescription') }}
+                        </button>
+                    </div>
+                </form>
+                @else
+                <!-- Medicine Assignment Form (non-Cannaleo) -->
                 <form id="prescription-form" action="{{ route('doctor.questionnaire.store-prescription', [
                     'userId' => $firstAnswer->user_id,
                     'categoryId' => $firstAnswer->category_id,
@@ -383,6 +403,7 @@
                         </button>
                     </div>
                 </form>
+                @endif
                 @endif
             </div>
         </div>

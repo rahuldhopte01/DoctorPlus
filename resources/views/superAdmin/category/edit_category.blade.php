@@ -86,17 +86,6 @@
                                 </label>
                                 <small class="form-text text-muted">{{ __('When enabled: no delivery choice is shown. After questionnaire submit the customer goes directly to partner pharmacy selection, then medicine selection (Cannaleo handles delivery).') }}</small>
                             </div>
-                            <div class="form-group">
-                                <label class="col-form-label">{{ __('Cannaleo medicines (questionnaire flow)') }}</label>
-                                <select name="cannaleo_medicine_ids[]" class="form-control select2" multiple data-placeholder="{{ __('Select Cannaleo medicines for this category') }}">
-                                    @foreach ($cannaleoMedicines ?? [] as $cm)
-                                        <option value="{{ $cm->id }}" {{ in_array($cm->id, old('cannaleo_medicine_ids', $category->cannaleoMedicines->pluck('id')->toArray())) ? 'selected' : '' }}>
-                                            {{ $cm->name }} ({{ $cm->cannaleoPharmacy->name ?? '—' }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <small class="form-text text-muted">{{ __('When the customer chooses "Cannaleo partner" for this category, they will select a pharmacy then these medicines.') }}</small>
-                            </div>
                         </div>
                     </div>
                     <div class="text-right">

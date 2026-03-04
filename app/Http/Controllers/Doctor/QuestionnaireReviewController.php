@@ -837,77 +837,104 @@ class QuestionnaireReviewController extends Controller
     
     /**
      * Store prescription for approved questionnaire.
+     * Handles both regular (category medicines) and Cannaleo (patient-selected partner medicines) flows.
      */
     public function storePrescription(Request $request, $userId, $categoryId, $questionnaireId)
     {
-        $request->validate([
-            'medicines' => 'required|array|min:1',
-            'medicines.*' => 'required|exists:medicine,id',
-            'strength' => 'required|array',
-            'strength.*' => 'nullable|string|max:100',
-        ]);
-        
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
-        
+
         if (!$doctor || !$doctor->hospital_id) {
             abort(403, 'Unauthorized access - Doctor not assigned to hospital');
         }
-        
+
+        $submission = QuestionnaireSubmission::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->where('questionnaire_id', $questionnaireId)
+            ->first();
+
+        $isCannaleoPrescription = $request->boolean('cannaleo_prescription')
+            && $submission
+            && $submission->delivery_type === 'cannaleo'
+            && !empty($submission->selected_medicines)
+            && collect($submission->selected_medicines)->contains(fn ($m) => !empty($m['cannaleo_medicine_id']));
+
+        if (!$isCannaleoPrescription) {
+            $request->validate([
+                'medicines' => 'required|array|min:1',
+                'medicines.*' => 'required|exists:medicine,id',
+                'strength' => 'required|array',
+                'strength.*' => 'nullable|string|max:100',
+            ]);
+        }
+
         $answers = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
             ->where('hospital_id', $doctor->hospital_id)
             ->whereNull('appointment_id')
             ->first();
-            
+
         if (!$answers) {
             return redirect()->route('doctor.questionnaire.index')
                 ->with('error', __('Questionnaire submission not found'));
         }
-        
-        // Allow prescription creation if status is IN_REVIEW or approved
-        // If IN_REVIEW, we'll auto-approve it when creating prescription
+
         if (!in_array($answers->status, ['approved', 'IN_REVIEW', 'under_review'])) {
             return redirect()->route('doctor.questionnaire.index')
                 ->with('error', __('Questionnaire must be under review or approved before creating prescription'));
         }
-        
+
         $existingPrescription = Prescription::where('user_id', $userId)
             ->where('doctor_id', $doctor->id)
             ->whereNull('appointment_id')
             ->where('status', '!=', 'expired')
             ->first();
-            
+
         if ($existingPrescription) {
             return redirect()->route('doctor.questionnaire.index')
                 ->with('info', __('Prescription already exists for this questionnaire.'));
         }
-        
-        $medicineNames = $request->input('medicine_names', []);
-        $strengths = $request->input('strength', []);
+
         $prescriptionMedicines = [];
         $selectedForOrders = [];
-        
-        for ($i = 0; $i < count($request->medicines); $i++) {
-            $medicineId = $request->medicines[$i];
-            $medicine = Medicine::find($medicineId);
-            $medicineName = $medicine ? $medicine->name : ($medicineNames[$i] ?? '');
-            $strength = $strengths[$i] ?? '';
-            $prescriptionMedicines[] = ['medicine' => $medicineName, 'strength' => $strength];
-            $selectedForOrders[] = ['medicine_id' => (int) $medicineId];
+
+        if ($isCannaleoPrescription) {
+            foreach ($submission->selected_medicines as $selected) {
+                if (empty($selected['cannaleo_medicine_id'])) {
+                    continue;
+                }
+                $cannaleoMedicine = \App\Models\CannaleoMedicine::find($selected['cannaleo_medicine_id']);
+                if ($cannaleoMedicine) {
+                    $strength = null;
+                    if ($cannaleoMedicine->thc !== null || $cannaleoMedicine->cbd !== null) {
+                        $strength = 'THC ' . ($cannaleoMedicine->thc ?? 0) . '% / CBD ' . ($cannaleoMedicine->cbd ?? 0) . '%';
+                    }
+                    $prescriptionMedicines[] = [
+                        'medicine' => $cannaleoMedicine->name,
+                        'strength' => $strength ?? '',
+                    ];
+                }
+            }
+            if (empty($prescriptionMedicines)) {
+                return redirect()->back()->with('error', __('No Cannaleo medicines found in patient selection.'));
+            }
+        } else {
+            $medicineNames = $request->input('medicine_names', []);
+            $strengths = $request->input('strength', []);
+            for ($i = 0; $i < count($request->medicines); $i++) {
+                $medicineId = $request->medicines[$i];
+                $medicine = Medicine::find($medicineId);
+                $medicineName = $medicine ? $medicine->name : ($medicineNames[$i] ?? '');
+                $strength = $strengths[$i] ?? '';
+                $prescriptionMedicines[] = ['medicine' => $medicineName, 'strength' => $strength];
+                $selectedForOrders[] = ['medicine_id' => (int) $medicineId];
+            }
         }
-        
-        $submission = QuestionnaireSubmission::where('user_id', $userId)
-            ->where('category_id', $categoryId)
-            ->where('questionnaire_id', $questionnaireId)
-            ->first();
-        
-        // Get prescription fee from settings
+
         $setting = \App\Models\Setting::first();
         $prescriptionFee = $setting->prescription_fee ?? 50.00;
-        
-        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $prescriptionMedicines, $submission, $selectedForOrders, $answers, $prescriptionFee) {
-            // Auto-approve questionnaire if status is IN_REVIEW
+
+        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $prescriptionMedicines, $submission, $selectedForOrders, $answers, $prescriptionFee, $isCannaleoPrescription) {
             if (in_array($answers->status, ['IN_REVIEW', 'under_review'])) {
                 QuestionnaireAnswer::where('user_id', $userId)
                     ->where('category_id', $categoryId)
@@ -916,7 +943,7 @@ class QuestionnaireReviewController extends Controller
                     ->where('hospital_id', $doctor->hospital_id)
                     ->update(['status' => 'approved']);
             }
-            
+
             Prescription::create([
                 'appointment_id' => null,
                 'user_id' => $userId,
@@ -929,33 +956,25 @@ class QuestionnaireReviewController extends Controller
                 'payment_amount' => $prescriptionFee,
                 'payment_status' => 0,
             ]);
-            
-            if ($submission) {
-                // Respect patient's delivery type choice from questionnaire submission
+
+            // Do not create internal orders for Cannaleo (fulfilment via partner)
+            if (!$isCannaleoPrescription && $submission) {
                 if ($submission->delivery_type === 'pickup' && $submission->selected_pharmacy_id) {
-                    // Patient selected PICKUP: Use the pharmacy they selected, no delivery address
                     $this->createPurchaseMedicineOrder($submission, $selectedForOrders, $submission->selected_pharmacy_id, null);
                 } elseif ($submission->delivery_type === 'delivery' && $submission->hasCompleteDeliveryAddress()) {
-                    // Patient selected DELIVERY: Find a shipping-enabled pharmacy and use their delivery address
                     $pharmacy = \App\Models\Pharmacy::where('status', 'approved')
                         ->where('is_shipping', 1)
                         ->first();
-                    
-                    // If no shipping pharmacy found, get any approved pharmacy as fallback
                     if (!$pharmacy) {
                         $pharmacy = \App\Models\Pharmacy::where('status', 'approved')->first();
                     }
-                    
-                    // Only create order if pharmacy is found
                     if ($pharmacy) {
-                        // Pass the patient's delivery address to create a delivery order
                         $this->createPurchaseMedicineOrder($submission, $selectedForOrders, $pharmacy->id, $submission->delivery_address_id);
                     }
-                    // If no pharmacy found, skip order creation (prescription is already created)
                 }
             }
         });
-        
+
         return redirect()->route('doctor.questionnaire.show', [
             'userId' => $userId,
             'categoryId' => $categoryId,
