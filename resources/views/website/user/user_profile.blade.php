@@ -166,16 +166,16 @@
                                                             </td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-left align-middle">
                                                                 <div class="flex items-center space-x-2">
-                                                                    <a onclick="show_appointment({{ $appointment->id }})" class="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors" href="javascript:void(0)" data-modal-toggle="exampleModalCenter" data-modal-target="#exampleModalCenter">
+                                                                    <a onclick="show_appointment({{ $appointment->id }})" class="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors" href="javascript:void(0)" data-modal-toggle="exampleModalCenter" data-modal-target="exampleModalCenter">
                                                                         <i class="fa fa-eye"></i>
                                                                     </a>
                                                                     @if ($appointment->appointment_status == 'complete' && $appointment->isReview == false)
-                                                                    <a onclick="appointId({{ $appointment->id }})" class="p-2 text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors" href="javascript:void(0)" data-modal-toggle="addReview" data-modal-target="#addReview">
+                                                                    <a onclick="appointId({{ $appointment->id }})" class="p-2 text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors" href="javascript:void(0)" data-modal-toggle="addReview" data-modal-target="addReview">
                                                                         <i class="fa fa-star"></i>
                                                                     </a>
                                                                     @endif
                                                                     @if ($appointment->appointment_status != 'cancel' && $appointment->appointment_status != 'complete')
-                                                                    <a onclick="appointId({{ $appointment->id }})" class="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors" href="javascript:void(0)" data-modal-toggle="cancel_reason" data-modal-target="#cancel_reason">
+                                                                    <a onclick="appointId({{ $appointment->id }})" class="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors" href="javascript:void(0)" data-modal-toggle="cancel_reason" data-modal-target="cancel_reason">
                                                                         <i class="fa-solid fa-trash-can"></i>
                                                                     </a>
                                                                     @endif
@@ -266,6 +266,10 @@
                                                                         <i class="fas fa-download mr-1.5"></i>
                                                                         {{ __('Download') }}
                                                                     </a>
+                                                                    <a href="{{ url('downloadPDF/' . $prescription->id) }}?regenerate=1" class="inline-flex items-center px-3 py-1.5 ml-1 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-600 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400" title="{{ __('Regenerate and download PDF with current layout') }}">
+                                                                        <i class="fas fa-sync-alt mr-1.5"></i>
+                                                                        {{ __('Regenerate') }}
+                                                                    </a>
                                                                 @else
                                                                     <span class="text-xs text-gray-400 font-fira-sans">{{ __('Not Available') }}</span>
                                                                 @endif
@@ -322,7 +326,7 @@
                                                                 @endif
                                                             </td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-left align-middle">
-                                                                <a onclick="show_medicines({{ $purchaseMedicine->id }})" class="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors" href="javascript:void(0)" data-modal-toggle="purchased_medicine" data-modal-target="#purchased_medicine">
+                                                                <a onclick="show_medicines({{ $purchaseMedicine->id }})" class="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors" href="javascript:void(0)" data-modal-toggle="purchased_medicine" data-modal-target="purchased_medicine">
                                                                     <i class="fa fa-eye"></i>
                                                                 </a>
                                                             </td>
@@ -389,7 +393,7 @@
 </div>
 
 {{-- Review Modal --}}
-<div data-te-modal-init class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
+<div class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" id="addReview" tabindex="-1" aria-labelledby="addReviewLabel" aria-hidden="true">
     <div class="relative w-full max-w-lg max-h-full m-auto mt-20">
         <div class="relative bg-white rounded-xl shadow-2xl border-0 overflow-hidden">
              <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
@@ -443,7 +447,7 @@
     </div>
 </div>
 
-<div data-te-modal-init class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" id="purchased_medicine" tabindex="-1" aria-labelledby="purchased_medicineLabel" aria-hidden="true">
+<div class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" id="purchased_medicine" tabindex="-1" aria-labelledby="purchased_medicineLabel" aria-hidden="true">
     <div class="relative w-full max-w-2xl max-h-full m-auto mt-20">
         <div class="relative bg-white rounded-xl shadow-2xl border-0 overflow-hidden">
              <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
@@ -495,7 +499,7 @@
     </div>
 </div>
 
-<div data-te-modal-init class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" id="cancel_reason" tabindex="-1" aria-labelledby="cancel_reasonLabel" aria-hidden="true">
+<div class="fixed top-0 left-0 z-[1055] hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none" id="cancel_reason" tabindex="-1" aria-labelledby="cancel_reasonLabel" aria-hidden="true">
     <div class="relative w-full max-w-md max-h-full m-auto mt-20">
          <div class="relative bg-white rounded-xl shadow-2xl border-0 overflow-hidden">
             <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-red-50">

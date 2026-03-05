@@ -1,4 +1,4 @@
-/* Medicine Selection page – UI from index.html (scoped to avoid affecting other pages) */
+/* Medicine Selection page – New UI (scoped to avoid affecting other pages) */
 .medicine-selection-ui.main-content {
     max-width: 1280px;
     margin: 0 auto;
@@ -52,6 +52,7 @@
     color: #4b5563;
 }
 
+/* Medicine Grid */
 .medicine-selection-ui .medicine-grid {
     margin-bottom: 2rem;
     display: grid;
@@ -85,6 +86,7 @@
     pointer-events: none;
 }
 
+/* Medicine Card */
 .medicine-selection-ui .medicine-card {
     position: relative;
     display: flex;
@@ -110,6 +112,7 @@
     box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
 }
 
+/* Image Section */
 .medicine-selection-ui .medicine-image-container {
     position: relative;
     height: 224px;
@@ -140,6 +143,7 @@
     z-index: 10;
 }
 
+/* Text Content */
 .medicine-selection-ui .medicine-content {
     padding: 1.25rem;
     background-color: #ffffff;
@@ -189,6 +193,7 @@
     color: #111827;
 }
 
+/* Selection Indicator */
 .medicine-selection-ui .selection-indicator {
     height: 48px;
     min-height: 48px;
@@ -218,6 +223,7 @@
     color: #ffffff;
 }
 
+/* Info Box */
 .medicine-selection-ui .info-box {
     border-radius: 0.5rem;
     background-color: #eff6ff;
@@ -246,6 +252,7 @@
     color: #1e3a8a;
 }
 
+/* Form actions (Back / Continue) */
 .medicine-selection-ui .form-actions {
     display: flex;
     justify-content: flex-end;

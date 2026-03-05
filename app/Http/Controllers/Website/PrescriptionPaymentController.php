@@ -455,8 +455,8 @@ class PrescriptionPaymentController extends Controller
                 'receipt_nr' => $receiptNr,
                 'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d.m.Y') : now()->format('d.m.Y'),
                 'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d.m.Y') : null,
-            ]);
-            
+            ])->setPaper([0, 0, 297.64, 419.53], 'portrait'); // A6: [left, top, width, height] in points (105×148mm)
+
             $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
             $path = public_path('prescription/upload/' . $fileName);
             

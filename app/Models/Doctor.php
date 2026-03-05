@@ -44,6 +44,14 @@ class Doctor extends Model
     }
 
     /**
+     * Get the user (login account) associated with this doctor.
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User', 'user_id');
+    }
+
+    /**
      * Get questionnaire answers being reviewed by this doctor.
      */
     public function reviewingQuestionnaireAnswers()

@@ -1,5 +1,5 @@
 <script>
-    var msg = "<?php echo $error; ?>"
+    var msg = {!! json_encode($error ?? '') !!};
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
