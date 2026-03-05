@@ -155,23 +155,22 @@
 </nav>
 
 <!-- Hero Section -->
-<section class="hero-section text-center position-relative overflow-hidden">
-    <!-- Decorative background elements -->
-    <div class="position-absolute" style="top: -50px; left: -50px; width: 200px; height: 200px; background: rgba(42, 157, 143, 0.1); border-radius: 50%; filter: blur(30px);"></div>
-    <div class="position-absolute" style="bottom: -50px; right: -50px; width: 250px; height: 250px; background: rgba(69, 123, 157, 0.1); border-radius: 50%; filter: blur(40px);"></div>
+<section class="hero-section text-center position-relative overflow-hidden" style="background-image: url('https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=1920&auto=format&fit=crop'); background-size: cover; background-position: center 30%; min-height: 500px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px; padding: 0;">
+    <!-- Dark Overlay to make text legible -->
+    <div class="position-absolute w-100 h-100" style="top: 0; left: 0; background-color: rgba(0, 0, 0, 0.65); z-index: 1;"></div>
     
-    <div class="container position-relative z-index-1">
+    <div class="container position-relative z-index-2 py-5" style="z-index: 2;">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <span class="badge rounded-pill px-3 py-2 mb-3" style="background-color: rgba(74, 58, 255, 0.1); color: #4A3AFF;">Wer wir sind</span>
-                <h1 class="display-3 fw-bold mb-4">Über <span class="bg-primary-green-gradient bg-clip-text text-transparent" style="-webkit-text-fill-color:transparent">{{ $setting->business_name }}</span></h1>
-                <p class="lead text-muted mb-5 px-md-5" style="line-height: 1.8;">
+            <div class="col-lg-10">
+                <span class="badge rounded-pill px-3 py-2 mb-3 bg-white" style="color: #4A3AFF; background-color: rgba(255, 255, 255, 0.9);">Wer wir sind</span>
+                <h1 class="display-3 fw-bold mb-4 text-white">Über <span style="color: #00D9C0;">{{ $setting->business_name }}</span></h1>
+                <p class="lead mb-5 px-md-5 text-white" style="line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">
                     {{ $setting->business_name }} ist eine vertrauenswürdige europäische Telemedizinplattform. Sie verbindet Patienten, zugelassene Ärzte und Partnerapotheken, um Online-Konsultationen, Rezepte und die Lieferung von Medikamenten in ganz Europa anzubieten.
                 </p>
                 <div class="d-flex flex-wrap justify-content-center gap-3 mt-2">
-                    <span class="badge bg-white text-dark border p-2 px-3 rounded-pill shadow-sm"><i class="bi bi-shield-check text-success fs-5 me-2 align-middle"></i>DSGVO-konform</span>
-                    <span class="badge bg-white text-dark border p-2 px-3 rounded-pill shadow-sm"><i class="bi bi-check-circle text-primary fs-5 me-2 align-middle"></i>In Deutschland zugelassen</span>
-                    <span class="badge bg-white text-dark border p-2 px-3 rounded-pill shadow-sm"><i class="bi bi-lock text-warning fs-5 me-2 align-middle"></i>PCI-konform</span>
+                    <span class="badge text-dark border p-2 px-3 rounded-pill shadow-sm" style="background-color: rgba(255, 255, 255, 0.95);"><i class="bi bi-shield-check text-success fs-5 me-2 align-middle"></i>DSGVO-konform</span>
+                    <span class="badge text-dark border p-2 px-3 rounded-pill shadow-sm" style="background-color: rgba(255, 255, 255, 0.95);"><i class="bi bi-check-circle text-primary fs-5 me-2 align-middle"></i>In Deutschland zugelassen</span>
+                    <span class="badge text-dark border p-2 px-3 rounded-pill shadow-sm" style="background-color: rgba(255, 255, 255, 0.95);"><i class="bi bi-lock text-warning fs-5 me-2 align-middle"></i>PCI-konform</span>
                 </div>
             </div>
         </div>

@@ -78,73 +78,96 @@
 </nav>
 
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container py-5">
-        <div class="row align-items-center g-4">
-            <div class="col-lg-6">
-                <span class="badge bg-orange-light text-orange mb-3">Certified Online Medical Practice</span>
+<section class="hero-bloomwell text-start text-white">
+    <div class="container position-relative z-index-2 w-100 h-100 d-flex align-items-center">
+        <div class="row align-items-center justify-content-between w-100">
+            
+            <!-- Left Column: Text & Search -->
+            <div class="col-lg-6 col-xl-5 mb-5 mb-lg-0">
+                <!-- Trustpilot / Rating Badge -->
+                <div class="mb-4 d-inline-flex align-items-center gap-2 px-3 py-2 bg-dark rounded-pill" style="border: 1px solid rgba(255,255,255,0.1);">
+                    <div class="d-flex text-success">
+                        <i class="bi bi-star-fill mx-1"></i>
+                        <i class="bi bi-star-fill mx-1"></i>
+                        <i class="bi bi-star-fill mx-1"></i>
+                        <i class="bi bi-star-fill mx-1"></i>
+                        <i class="bi bi-star-fill mx-1"></i>
+                    </div>
+                    <span class="fw-bold small ms-1">Hervorragend {{ number_format($reviews->count() * 12500) }}+</span>
+                </div>
+
+                <!-- Main Heading -->
+                <h1 class="display-5 fw-bold mb-4" style="line-height: 1.25;">
+                    Behandlung & Rezepte <span class="text-primary text-nowrap">bequem online</span> erhalten
+                </h1>
                 
-                <h1 class="display-4 fw-bold mb-3">Online Doctor Visit – Simple, Discreet & Secure</h1>
-                
-                <p class="lead text-muted mb-4">
-                    Get medical consultation and your prescription from the comfort of your home. 
-                    Delivered discreetly and free of charge.
+                <p class="lead mb-4" style="color: rgba(255,255,255,0.8);">
+                    Ihr legaler & sicherer Weg zur telemedizinischen Behandlung von zu Hause.
                 </p>
 
                 <!-- Search Bar -->
-                <form action="{{ route('categories') }}" method="GET" class="mb-4">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-text bg-white">
+                <form action="{{ route('categories') }}" method="GET" class="mb-5 bloomwell-search w-100">
+                    <div class="input-group input-group-lg shadow-lg rounded-3 overflow-hidden">
+                        <span class="input-group-text border-0">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" class="form-control" placeholder="What are you looking for? (e.g. Hair loss, Birth control)" value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary">Search</button>
+                        <input type="text" name="search" class="form-control border-0" placeholder="Was suchen Sie? (z.B. Haarausfall)" value="{{ request('search') }}">
+                        <button type="submit" class="bloomwell-btn ms-0 rounded-0 rounded-end">Suchen</button>
                     </div>
                 </form>
-
+                
                 <!-- Trust Indicators -->
                 <div class="d-flex flex-wrap gap-3">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        <span class="small">EU-registered doctors</span>
+                    <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+                        <span class="small fw-medium">EU-registered doctors</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        <span class="small">Free shipping</span>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        <span class="small">Discreet packaging</span>
+                    <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+                        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
+                        <span class="small fw-medium">Free shipping</span>
                     </div>
                 </div>
             </div>
 
-            <div class="col-lg-6">
-                <div class="position-relative">
-                    @if($setting->banner_image && file_exists(public_path('images/upload/'.$setting->banner_image)))
-                        <img src="{{ url('images/upload/'.$setting->banner_image) }}" 
-                             alt="Online medical consultation" 
-                             class="img-fluid rounded-3 shadow-lg">
-                    @else
-                        <img src="https://images.unsplash.com/photo-1758691463198-dc663b8a64e4?w=600&h=400&fit=crop" 
-                             alt="Online medical consultation" 
-                             class="img-fluid rounded-3 shadow-lg">
-                    @endif
+            <!-- Right Column: Image & Floating Cards -->
+            <div class="col-lg-6 col-xl-6 position-relative d-flex justify-content-center justify-content-lg-end align-items-center" style="z-index: 2;">
+                <div class="hero-image-container ms-auto me-auto me-lg-0 mt-4 mt-lg-0 w-100">
+                    <!-- Central Subject (Using a transparent cutout style image) -->
+                    <img src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=600&auto=format&fit=crop&bg=transparent" alt="Telemedicine Patient" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 20%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);">
                     
-                    <!-- Floating card -->
-                    <div class="hero-card position-absolute bottom-0 start-0 ms-4 mb-4 bg-white rounded-3 shadow p-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="hero-card-icon bg-orange-light rounded-circle d-flex align-items-center justify-content-center">
-                                <i class="bi bi-check-circle text-primary"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold">{{ number_format($reviews->count() * 12500) }}+</div>
-                                <div class="small text-muted">Satisfied patients</div>
-                            </div>
+                    <!-- Floating Feature Cards -->
+                    <div class="bloomwell-floating-card card-1 d-none d-md-flex text-dark">
+                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6">Bestellung online</div>
+                            <div class="small text-muted">in weniger als 5 Min*</div>
+                        </div>
+                    </div>
+
+                    <div class="bloomwell-floating-card card-2 d-none d-md-flex text-dark">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6">Kostenloser Versand</div>
+                            <div class="small text-muted">Diskret verpackt</div>
+                        </div>
+                    </div>
+
+                    <div class="bloomwell-floating-card card-3 d-none d-md-flex text-dark">
+                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-6">EU zugelassen</div>
+                            <div class="small text-muted">Zertifizierte Ärzte</div>
                         </div>
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </section>
