@@ -173,7 +173,7 @@
 </section>
 
 <!-- Services Section -->
-<section class="py-5 bg-white" id="services">
+<section class="py-5" style="background-color: #f2efea !important;" id="services">
     <div class="container py-4">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold mb-3">Our Treatment Areas</h2>
