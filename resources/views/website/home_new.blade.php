@@ -31,7 +31,7 @@
 <body>
     @include('layout.partials.skeleton_loader')
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top border-bottom" style="background-color: #f2efea !important;">
     <div class="container">
         <a class="navbar-brand" href="{{ url('/') }}">
             @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))

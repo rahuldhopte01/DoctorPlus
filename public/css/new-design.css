@@ -581,18 +581,33 @@ h6,
 
 /* Footer */
 .footer-dark {
-    background-color: var(--secondary-color);
+    background-color: #f2efea !important;
+    color: #161616 !important;
+}
+
+.footer-dark h1,
+.footer-dark h2,
+.footer-dark h3,
+.footer-dark h4,
+.footer-dark h5,
+.footer-dark h6,
+.footer-dark p,
+.footer-dark span,
+.footer-dark a,
+.footer-dark .text-white,
+.footer-dark .text-muted {
+    color: #161616 !important;
 }
 
 .footer-dark .footer-logo {
     max-height: 50px;
     width: auto;
     object-fit: contain;
-    filter: brightness(0) invert(1);
+    filter: brightness(0);
 }
 
 .footer-dark a:hover {
-    color: var(--accent-color) !important;
+    color: var(--primary-color) !important;
 }
 
 /* Treatment Cards */
@@ -790,4 +805,52 @@ a:hover {
 ::selection {
     background-color: var(--primary-color);
     color: white;
+}
+
+/* Global Button Color Overrides */
+.btn-primary,
+button.bg-primary,
+a.bg-primary,
+input[type="submit"].bg-primary,
+.bloomwell-btn {
+    background-color: #00d9c0 !important;
+    border-color: #00d9c0 !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+button.bg-primary:hover,
+button.bg-primary:focus,
+button.bg-primary:active,
+a.bg-primary:hover,
+input[type="submit"].bg-primary:hover,
+.bloomwell-btn:hover {
+    background-color: #00bda6 !important;
+    border-color: #00bda6 !important;
+    color: #ffffff !important;
+}
+
+/* Global Icon Color Overrides */
+i.fa,
+i.fas,
+i.far,
+i.fal,
+i.fab,
+i.fad,
+i[class*="fa-"],
+i.bi,
+i[class*="bi-"] {
+    color: #ff6b4a !important;
+}
+
+/* Exempt icons inside primary buttons or white text wrappers so they don't break contrast */
+.btn-primary i,
+button.bg-primary i,
+a.bg-primary i,
+input[type="submit"].bg-primary i,
+.bloomwell-btn i,
+.text-white i {
+    color: inherit !important;
 }
