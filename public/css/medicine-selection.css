@@ -53,6 +53,7 @@
 }
 
 /* Medicine Grid */
+/* Medicine Grid (same as reference styles.css) */
 .medicine-selection-ui .medicine-grid {
     margin-bottom: 2rem;
     display: grid;
@@ -72,21 +73,7 @@
     }
 }
 
-.medicine-selection-ui .medicine-card-wrap {
-    display: block;
-    cursor: pointer;
-}
-
-.medicine-selection-ui .medicine-card-wrap input.medicine-checkbox {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    margin: 0;
-    pointer-events: none;
-}
-
-/* Medicine Card */
+/* Medicine Card (same as reference: button with .medicine-card) */
 .medicine-selection-ui .medicine-card {
     position: relative;
     display: flex;
@@ -287,4 +274,16 @@
 
 .medicine-selection-ui .btn-continue:hover {
     background-color: #FF5436;
+}
+
+/* Empty state when no medicines */
+.medicine-selection-ui .info-box--empty {
+    text-align: center;
+    padding: 2rem;
+}
+
+.medicine-selection-ui .info-text--muted {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
 }

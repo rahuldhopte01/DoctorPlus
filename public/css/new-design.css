@@ -817,7 +817,6 @@ a:hover {
     background-color: var(--primary-color);
     color: white;
 }
-
 /* Global Button Color Overrides */
 .btn-primary,
 button.bg-primary,
@@ -842,26 +841,253 @@ input[type="submit"].bg-primary:hover,
     border-color: #00bda6 !important;
     color: #ffffff !important;
 }
-
-/* Global Icon Color Overrides */
-i.fa,
-i.fas,
-i.far,
-i.fal,
-i.fab,
-i.fad,
-i[class*="fa-"],
-i.bi,
-i[class*="bi-"] {
-    color: #ff6b4a !important;
+/* ===== Our Treatment Areas Carousel ===== */
+.treatment-areas-section {
+    font-family: var(--font-body);
 }
 
-/* Exempt icons inside primary buttons or white text wrappers so they don't break contrast */
-.btn-primary i,
-button.bg-primary i,
-a.bg-primary i,
-input[type="submit"].bg-primary i,
-.bloomwell-btn i,
-.text-white i {
-    color: inherit !important;
+.treatment-areas-header {
+    max-width: 640px;
+}
+
+.treatment-areas-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.treatment-areas-viewport {
+    overflow: hidden;
+    padding: 1rem 0 1.5rem;
+    cursor: grab;
+    user-select: none;
+}
+
+.treatment-areas-viewport:active {
+    cursor: grabbing;
+}
+
+.treatment-areas-track {
+    display: flex;
+    gap: 1.25rem;
+    transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+}
+
+.treatment-area-card {
+    min-width: 280px;
+    max-width: 280px;
+    flex-shrink: 0;
+    background: var(--light-bg);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.treatment-area-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+.treatment-area-card a:hover {
+    color: inherit;
+}
+
+.treatment-card-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.treatment-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.treatment-area-card:hover .treatment-card-image img {
+    transform: scale(1.04);
+}
+
+.treatment-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #fff;
+}
+
+.treatment-badge-primary {
+    background: var(--primary-color);
+}
+
+.treatment-card-body {
+    padding: 1.25rem;
+    color: #111;
+}
+
+.treatment-card-title {
+    font-family: var(--font-heading);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+    min-height: 2.875rem;
+    color: #111;
+}
+
+.treatment-card-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+}
+
+.treatment-tag {
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 0.65625rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.treatment-tag-type {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.treatment-tag-info {
+    background: var(--blue-light);
+    color: var(--secondary-color, #00167A);
+}
+
+.treatment-card-sub {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+}
+
+.treatment-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    transition: color 0.2s;
+}
+
+.treatment-area-card:hover .treatment-card-cta {
+    color: var(--cta-color);
+}
+
+.treatment-areas-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.treatment-controls-right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.treatment-btn-discover {
+    white-space: nowrap;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+}
+
+.treatment-dots {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+}
+
+.treatment-dots .treatment-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.treatment-dots .treatment-dot.active {
+    background: var(--primary-color);
+    transform: scale(1.5);
+}
+
+.treatment-arrow-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.treatment-arrow-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.06);
+    border: 2px solid rgba(0, 0, 0, 0.12);
+    color: #111;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+}
+
+.treatment-arrow-btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+    transform: scale(1.08);
+}
+
+.treatment-arrow-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .treatment-area-card {
+        min-width: 260px;
+        max-width: 260px;
+    }
+    .treatment-card-image {
+        height: 180px;
+    }
+    .treatment-arrow-btn {
+        width: 42px;
+        height: 42px;
+    }
+    .treatment-areas-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .treatment-controls-right {
+        justify-content: flex-end;
+    }
 }

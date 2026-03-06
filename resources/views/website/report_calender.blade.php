@@ -3,10 +3,13 @@
 
 <head>
     <title>{{__('doctro')}}</title>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
     <link href="{{asset('css/vanilla-calendar.min.css')}}" rel="stylesheet" />
     <script src="{{asset('js/vanilla-calendar.min.js')}}"></script>
     <link href="{{asset('css/app.css')}}" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif !important; } h1, h2, h3, h4, h5, h6 { font-family: 'Clash Display', sans-serif !important; }</style>
 
 </head>
 

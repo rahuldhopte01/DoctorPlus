@@ -10,6 +10,10 @@
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
+<!-- Global typography: Inter (body) + Clash Display (headings) -->
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" type="text/css" href="{{asset('assets_admin/css/bootstrap.min.css')}}">
 
 <link rel="stylesheet" type="text/css" href="{{ asset('assets_admin/css/fontawesome.css') }}">
@@ -52,5 +56,9 @@
     :root{
         --primary_color : <?php echo $color ?>;
         --primary_color_hover : <?php echo $color.'cc' ?>;
+        --font-body: 'Inter', sans-serif;
+        --font-heading: 'Clash Display', sans-serif;
     }
+    body { font-family: var(--font-body); }
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 { font-family: var(--font-heading); }
 </style>

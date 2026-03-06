@@ -1,4 +1,4 @@
-yzz@extends('layout.mainlayout_admin',['activePage' => 'questionnaire_submissions'])
+@extends('layout.mainlayout_admin',['activePage' => 'questionnaire_submissions'])
 
 @section('title', __('Questionnaire Review'))
 
@@ -282,18 +282,96 @@ yzz@extends('layout.mainlayout_admin',['activePage' => 'questionnaire_submission
                 </div>
                 @endif
 
-                @php $isCannaleoPrescription = isset($submission) && $submission && $submission->delivery_type === 'cannaleo' && isset($selectedCannaleoMedicines) && count($selectedCannaleoMedicines) > 0; @endphp
+                @php $isCannaleoPrescription = isset($submission) && $submission && $submission->delivery_type === 'cannaleo' && isset($availableCannaleoMedicines) && $availableCannaleoMedicines->isNotEmpty(); @endphp
 
                 @if($isCannaleoPrescription)
-                <!-- Cannaleo: create prescription from patient's selection (no category medicine dropdown) -->
-                <form id="prescription-form" action="{{ route('doctor.questionnaire.store-prescription', [
+                <!-- Cannaleo: doctor can add/remove medicines; prescription = doctor final list -->
+                <form id="prescription-form-cannaleo" action="{{ route('doctor.questionnaire.store-prescription', [
                     'userId' => $firstAnswer->user_id,
                     'categoryId' => $firstAnswer->category_id,
                     'questionnaireId' => $firstAnswer->questionnaire_id
                 ]) }}" method="POST">
                     @csrf
                     <input type="hidden" name="cannaleo_prescription" value="1">
-                    <p class="text-muted mb-3">{{ __('The prescription will be generated from the patient’s selected Cannaleo medicines above.') }}</p>
+                    <p class="text-muted mb-3">{{ __('Review the patient selected Cannaleo medicines below. You can add or remove any medication; the final list will be the approved prescription.') }}</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="cannaleoMedicinesTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th width="70%">{{ __('Cannaleo Medicine') }}</th>
+                                    <th width="25%">{{ __('Details') }}</th>
+                                    <th width="5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cannaleoMedicinesBody">
+                                @forelse(isset($selectedCannaleoMedicines) && count($selectedCannaleoMedicines) > 0 ? $selectedCannaleoMedicines : [] as $item)
+                                <tr class="cannaleo-medicine-row">
+                                    <td>
+                                        <select name="cannaleo_medicine_ids[]" class="form-control select2 cannaleo-medicine-select" required>
+                                            @foreach(isset($availableCannaleoMedicines) ? $availableCannaleoMedicines : [] as $cm)
+                                            <option value="{{ $cm->id }}" {{ ($item['cannaleo_medicine']->id ?? null) == $cm->id ? 'selected' : '' }}>
+                                                {{ $cm->name }}
+                                                @if($cm->thc !== null || $cm->cbd !== null)
+                                                    (THC {{ $cm->thc ?? 0 }}% / CBD {{ $cm->cbd ?? 0 }}%)
+                                                @endif
+                                                @if($cm->cannaleoPharmacy)
+                                                    — {{ $cm->cannaleoPharmacy->name }}
+                                                @endif
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        @if($item['cannaleo_medicine']->price !== null)
+                                            <span class="text-muted">{{ number_format($item['cannaleo_medicine']->price, 2) }} €</span>
+                                        @else
+                                            <span class="text-muted">—</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-cannaleo-medicine">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @empty
+                                @if(isset($availableCannaleoMedicines) && $availableCannaleoMedicines->count() > 0)
+                                <tr class="cannaleo-medicine-row">
+                                    <td>
+                                        <select name="cannaleo_medicine_ids[]" class="form-control select2 cannaleo-medicine-select" required>
+                                            <option value="">{{ __('Select Medicine') }}</option>
+                                            @foreach($availableCannaleoMedicines as $cm)
+                                            <option value="{{ $cm->id }}">
+                                                {{ $cm->name }}
+                                                @if($cm->thc !== null || $cm->cbd !== null)
+                                                    (THC {{ $cm->thc ?? 0 }}% / CBD {{ $cm->cbd ?? 0 }}%)
+                                                @endif
+                                                @if($cm->cannaleoPharmacy)
+                                                    — {{ $cm->cannaleoPharmacy->name }}
+                                                @endif
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td><span class="text-muted">—</span></td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-sm remove-cannaleo-medicine" style="display:none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endif
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    @if(isset($availableCannaleoMedicines) && $availableCannaleoMedicines->count() > 0)
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-primary" id="addCannaleoMedicine">
+                            <i class="fas fa-plus mr-2"></i>{{ __('Add Medicine') }}
+                        </button>
+                    </div>
+                    @endif
                     <div class="text-right mt-4 pt-3 border-top">
                         <button type="submit" class="btn btn-success btn-lg">
                             <i class="fas fa-prescription-bottle-alt mr-2"></i>
@@ -653,6 +731,20 @@ yzz@extends('layout.mainlayout_admin',['activePage' => 'questionnaire_submission
             ];
         }
     }
+    $cannaleoMedicinesForJs = [];
+    if (isset($availableCannaleoMedicines) && $availableCannaleoMedicines) {
+        foreach ($availableCannaleoMedicines as $cm) {
+            $thcCbd = '';
+            if ($cm->thc !== null || $cm->cbd !== null) {
+                $thcCbd = ' (THC ' . ($cm->thc ?? 0) . '% / CBD ' . ($cm->cbd ?? 0) . '%)';
+            }
+            $pharmacy = $cm->cannaleoPharmacy ? ' — ' . $cm->cannaleoPharmacy->name : '';
+            $cannaleoMedicinesForJs[] = [
+                'id' => $cm->id,
+                'label' => $cm->name . $thcCbd . $pharmacy
+            ];
+        }
+    }
 @endphp
 <script>
 $(document).ready(function() {
@@ -750,6 +842,37 @@ $(document).ready(function() {
     // Initialize
     attachMedicineSelectHandler();
     updateRemoveButtons();
+
+    // Cannaleo prescription: add/remove medicine rows
+    const cannaleoMedicines = @json($cannaleoMedicinesForJs ?? []);
+    const selectMedicineTextCannaleo = @json(__('Select Medicine'));
+
+    $('#addCannaleoMedicine').on('click', function() {
+        if (cannaleoMedicines.length === 0) return;
+        let optionsHtml = '<option value="">' + selectMedicineTextCannaleo + '</option>';
+        cannaleoMedicines.forEach(function(m) {
+            optionsHtml += '<option value="' + m.id + '">' + m.label + '</option>';
+        });
+        const newRow = '<tr class="cannaleo-medicine-row">' +
+            '<td><select name="cannaleo_medicine_ids[]" class="form-control select2 cannaleo-medicine-select" required>' + optionsHtml + '</select></td>' +
+            '<td><span class="text-muted">—</span></td>' +
+            '<td><button type="button" class="btn btn-danger btn-sm remove-cannaleo-medicine"><i class="fas fa-times"></i></button></td>' +
+            '</tr>';
+        $('#cannaleoMedicinesBody').append(newRow);
+        if (typeof $.fn.select2 !== 'undefined') { $('.select2').select2(); }
+        updateCannaleoRemoveButtons();
+    });
+
+    $(document).on('click', '.remove-cannaleo-medicine', function() {
+        $(this).closest('tr').remove();
+        updateCannaleoRemoveButtons();
+    });
+
+    function updateCannaleoRemoveButtons() {
+        const rows = $('#cannaleoMedicinesBody tr').length;
+        $('#cannaleoMedicinesBody .remove-cannaleo-medicine').toggle(rows > 1);
+    }
+    updateCannaleoRemoveButtons();
     
     // Initialize select2 if available
     if (typeof $.fn.select2 !== 'undefined') {
