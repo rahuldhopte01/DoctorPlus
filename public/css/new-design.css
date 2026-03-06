@@ -270,6 +270,13 @@ h6,
     z-index: 1;
 }
 
+.bg-bloomwell-dark {
+    background-color: #0b0d17;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: white;
+}
+
 /* The neon center glow (using secondary brand color or violet) */
 .hero-bloomwell::before {
     content: '';
@@ -324,11 +331,15 @@ h6,
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 40px rgba(74, 58, 255, 0.45);
     position: absolute;
     z-index: 5;
     white-space: nowrap;
     animation: float 6s ease-in-out infinite;
+}
+
+.shadow-bloomwell {
+    box-shadow: 0 10px 40px rgba(74, 58, 255, 0.45) !important;
 }
 
 .bloomwell-floating-card.card-1 {

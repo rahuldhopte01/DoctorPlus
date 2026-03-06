@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
     <!-- Custom CSS -->
-    <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
+    <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -237,16 +237,16 @@
 </section>
 
 <!-- How It Works Section -->
-<section class="py-5 bg-light" id="how-it-works">
+<section class="py-5 bg-bloomwell-dark text-white" id="how-it-works">
     <div class="container py-4">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold mb-3">How It Works</h2>
-            <p class="lead text-muted">Your treatment in just 4 simple steps</p>
+            <p class="lead" style="color: rgba(255,255,255,0.8);">Your treatment in just 4 simple steps</p>
         </div>
 
         <div class="row g-4 mb-4">
             <div class="col-md-6 col-lg-3">
-                <div class="card bg-white border-0 rounded-3 p-4 text-center h-100 position-relative">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 position-relative shadow-bloomwell">
                     <div class="step-connector d-none d-lg-block"></div>
                     <div class="position-relative mb-3">
                         <div class="step-icon bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto">
@@ -260,7 +260,7 @@
             </div>
 
             <div class="col-md-6 col-lg-3">
-                <div class="card bg-white border-0 rounded-3 p-4 text-center h-100 position-relative">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 position-relative shadow-bloomwell">
                     <div class="step-connector d-none d-lg-block"></div>
                     <div class="position-relative mb-3">
                         <div class="step-icon bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto">
@@ -274,7 +274,7 @@
             </div>
 
             <div class="col-md-6 col-lg-3">
-                <div class="card bg-white border-0 rounded-3 p-4 text-center h-100 position-relative">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 position-relative shadow-bloomwell">
                     <div class="step-connector d-none d-lg-block"></div>
                     <div class="position-relative mb-3">
                         <div class="step-icon bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto">
@@ -288,7 +288,7 @@
             </div>
 
             <div class="col-md-6 col-lg-3">
-                <div class="card bg-white border-0 rounded-3 p-4 text-center h-100">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
                     <div class="position-relative mb-3">
                         <div class="step-icon bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mx-auto">
                             <i class="bi bi-check-circle text-white"></i>
