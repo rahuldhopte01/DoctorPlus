@@ -15,7 +15,7 @@
 
     /* Font Enforcement */
     body, .sidebar, input, select, textarea, button, .form-control, .form-select {
-        font-family: 'Fira Sans', sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
     }
 
     .sidebar li.active {

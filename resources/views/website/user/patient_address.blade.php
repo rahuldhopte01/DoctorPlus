@@ -19,7 +19,7 @@
 
   /* DataTables & Font overrides */
   .dataTables_wrapper, table.dataTable, table.dataTable thead th, table.dataTable tbody td {
-    font-family: 'Fira Sans', sans-serif !important;
+    font-family: 'Inter', sans-serif !important;
   }
   
   /* Fix DataTable Header Alignment */

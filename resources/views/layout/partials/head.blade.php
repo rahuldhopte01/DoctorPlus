@@ -1,3 +1,7 @@
+<!-- Global typography: Inter (body) + Clash Display (headings) -->
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <link href="{{ url('assets/css/bootstrap.min.css') }}" rel="stylesheet">
 
 <link rel="stylesheet" href="{{ url('assets/css/boxicons.min.css') }}">
@@ -25,7 +29,11 @@
     :root{
         --site_color : <?php echo $setting->website_color; ?>;
         --site_color_hover : <?php echo $setting->website_color.'e8'; ?>;
+        --font-body: 'Inter', sans-serif;
+        --font-heading: 'Clash Display', sans-serif;
     }
+    body { font-family: var(--font-body); }
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 { font-family: var(--font-heading); }
 </style>
 
 @if (session('direction') == 'rtl')

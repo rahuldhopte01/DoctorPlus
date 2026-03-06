@@ -9,6 +9,8 @@ $api = new LicenseBoxExternalAPI(); // Initialize a new LicenseBoxAPI object
     <meta charset="utf-8" />
     <title>Doctro - Installer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets_admin/css/bulma.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets_admin/css/normalize.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets_admin/css/fontawesome.css') }}"
@@ -74,6 +76,8 @@ $api = new LicenseBoxExternalAPI(); // Initialize a new LicenseBoxAPI object
             font-size: 80%;
             color: #dc3545;
         }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Clash Display', sans-serif; }
     </style>
 </head>
 

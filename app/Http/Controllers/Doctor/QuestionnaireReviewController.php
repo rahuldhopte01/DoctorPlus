@@ -408,6 +408,24 @@ class QuestionnaireReviewController extends Controller
                 ->get();
         }
 
+        // For Cannaleo flow: get available Cannaleo medicines so doctor can add/remove when building prescription
+        $availableCannaleoMedicines = collect([]);
+        $category = $firstAnswer->category;
+        if ($submission && $submission->delivery_type === 'cannaleo' && $submission->selected_cannaleo_pharmacy_id && $category) {
+            if ($category->is_cannaleo_only) {
+                $availableCannaleoMedicines = \App\Models\CannaleoMedicine::where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
+                    ->with('cannaleoPharmacy')
+                    ->orderBy('name')
+                    ->get();
+            } else {
+                $availableCannaleoMedicines = $category->cannaleoMedicines()
+                    ->where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
+                    ->with('cannaleoPharmacy')
+                    ->orderBy('name')
+                    ->get();
+            }
+        }
+
         // Get PurchaseMedicine orders for this user (related to this questionnaire submission)
         // Orders created after approval will be for this user
         $orders = collect([]);
@@ -445,6 +463,7 @@ class QuestionnaireReviewController extends Controller
             'submission',
             'selectedMedicines',
             'selectedCannaleoMedicines',
+            'availableCannaleoMedicines',
             'orders',
             'categoryMedicines'
         ));
@@ -854,11 +873,14 @@ class QuestionnaireReviewController extends Controller
 
         $isCannaleoPrescription = $request->boolean('cannaleo_prescription')
             && $submission
-            && $submission->delivery_type === 'cannaleo'
-            && !empty($submission->selected_medicines)
-            && collect($submission->selected_medicines)->contains(fn ($m) => !empty($m['cannaleo_medicine_id']));
+            && $submission->delivery_type === 'cannaleo';
 
-        if (!$isCannaleoPrescription) {
+        if ($isCannaleoPrescription) {
+            $request->validate([
+                'cannaleo_medicine_ids' => 'required|array|min:1',
+                'cannaleo_medicine_ids.*' => 'required|exists:cannaleo_medicine,id',
+            ]);
+        } else {
             $request->validate([
                 'medicines' => 'required|array|min:1',
                 'medicines.*' => 'required|exists:medicine,id',
@@ -899,11 +921,27 @@ class QuestionnaireReviewController extends Controller
         $selectedForOrders = [];
 
         if ($isCannaleoPrescription) {
-            foreach ($submission->selected_medicines as $selected) {
-                if (empty($selected['cannaleo_medicine_id'])) {
-                    continue;
+            $category = \App\Models\Category::find($categoryId);
+            $pharmacyId = $submission->selected_cannaleo_pharmacy_id;
+            if (!$pharmacyId) {
+                return redirect()->back()->with('error', __('Cannaleo pharmacy not selected.'));
+            }
+            // Restrict to medicines from the same pharmacy (and category when not cannaleo_only)
+            if ($category && $category->is_cannaleo_only) {
+                $allowedIds = \App\Models\CannaleoMedicine::where('cannaleo_pharmacy_id', $pharmacyId)->pluck('id')->toArray();
+            } else {
+                $allowedIds = $category
+                    ? $category->cannaleoMedicines()->where('cannaleo_pharmacy_id', $pharmacyId)->pluck('id')->toArray()
+                    : [];
+            }
+            $requestedIds = array_map('intval', $request->input('cannaleo_medicine_ids', []));
+            foreach ($requestedIds as $id) {
+                if (!in_array($id, $allowedIds, true)) {
+                    return redirect()->back()->with('error', __('One or more selected Cannaleo medicines are not allowed for this category/pharmacy.'));
                 }
-                $cannaleoMedicine = \App\Models\CannaleoMedicine::find($selected['cannaleo_medicine_id']);
+            }
+            foreach ($requestedIds as $id) {
+                $cannaleoMedicine = \App\Models\CannaleoMedicine::find($id);
                 if ($cannaleoMedicine) {
                     $strength = null;
                     if ($cannaleoMedicine->thc !== null || $cannaleoMedicine->cbd !== null) {
@@ -916,8 +954,12 @@ class QuestionnaireReviewController extends Controller
                 }
             }
             if (empty($prescriptionMedicines)) {
-                return redirect()->back()->with('error', __('No Cannaleo medicines found in patient selection.'));
+                return redirect()->back()->with('error', __('No valid Cannaleo medicines selected.'));
             }
+            // Update submission so the doctor-approved list is the approved prescription for the customer
+            $submission->update([
+                'selected_medicines' => array_map(fn ($id) => ['cannaleo_medicine_id' => $id], $requestedIds),
+            ]);
         } else {
             $medicineNames = $request->input('medicine_names', []);
             $strengths = $request->input('strength', []);

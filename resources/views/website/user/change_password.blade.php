@@ -12,7 +12,7 @@
     .border-primary { border-color: #4A3AFF !important; }
 
     body, .sidebar, input, select, textarea, button, .form-control {
-        font-family: 'Fira Sans', sans-serif !important;
+        font-family: 'Inter', sans-serif !important;
     }
 
     .sidebar li.active {

@@ -20,9 +20,13 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <!-- Global typography: Inter (body) + Clash Display (headings) -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
-            font-family: 'Inter', 'Fira Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: #fcfcfc;
         }
         .hero-section {
@@ -94,8 +98,8 @@
             margin-bottom: 15px;
         }
         
-        h1, h2, h3, h4, h5 {
-            font-family: 'Fira Sans', sans-serif;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Clash Display', sans-serif;
             color: #2b2b2b;
         }
         
