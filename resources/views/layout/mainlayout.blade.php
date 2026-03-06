@@ -55,12 +55,8 @@
 
 @if (session()->has('direction') && session()->get('direction') == 'rtl')
 <link rel="stylesheet" href="{{ asset('css/rtl.css') }}">
-
-<body dir="rtl">
-    @else
-
-    <body>
-        @endif
+@endif
+<body @if (session()->has('direction') && session()->get('direction') == 'rtl') dir="rtl" @endif>
         @include('layout.partials.skeleton_loader')
         @include('layout.partials.navbar_website')
 
