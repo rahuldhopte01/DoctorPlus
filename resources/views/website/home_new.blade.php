@@ -321,29 +321,79 @@
 </section>
 
 <!-- About Section -->
-<section class="py-5" style="background-color: #f2efea !important;" id="about">
-    <div class="container py-4">
+<section class="py-5 position-relative overflow-hidden" style="background-color: #f2efea !important;" id="about">
+    <div class="container py-5">
         <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <h2 class="display-5 fw-bold mb-4">About {{ $setting->business_name }}</h2>
-                <p class="lead text-muted mb-4">
-                    We are a certified online medical practice dedicated to providing accessible, 
-                    discreet, and professional healthcare services.
-                </p>
-                <p class="text-muted mb-4">
-                    Our team of licensed doctors is committed to helping you access the treatments 
-                    you need from the comfort and privacy of your home. With over {{ number_format($reviews->count() * 12500) }} satisfied 
-                    patients, we've built a reputation for excellence in online healthcare.
-                </p>
-                <p class="text-muted">
-                    All our services are fully compliant with medical regulations and GDPR data 
-                    protection standards, ensuring your health information remains completely confidential.
-                </p>
+            <div class="col-lg-6 order-2 order-lg-1 position-relative">
+                <div class="position-relative z-index-1">
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=600&fit=crop" 
+                         alt="Medical team" 
+                         class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; border: 8px solid rgba(255,255,255,0.5);">
+                    
+                    <!-- Floating Stat Card 1 -->
+                    <div class="position-absolute bg-white rounded-4 p-3 shadow-bloomwell d-flex align-items-center gap-3" style="bottom: -20px; left: -20px; z-index: 2; animation: float 5s ease-in-out infinite;">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <i class="bi bi-shield-check fs-4"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold fs-5 text-dark">Certified</div>
+                            <div class="small text-muted mb-0">EU Doctors</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Decorative background blur shape -->
+                <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-25" style="width: 120%; height: 120%; filter: blur(60px); z-index: 0;"></div>
             </div>
-            <div class="col-lg-6">
-                <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop" 
-                     alt="Medical team" 
-                     class="img-fluid rounded-3 shadow">
+            <div class="col-lg-6 order-1 order-lg-2 ps-lg-5">
+                <div class="mb-4">
+                    <span class="badge bg-white text-primary rounded-pill px-3 py-2 border shadow-sm fw-semibold mb-3">
+                        <i class="bi bi-stars me-1 text-warning"></i> About Us
+                    </span>
+                    <h2 class="display-4 fw-bold mb-3 text-dark" style="line-height: 1.1;">Welcome to <span class="text-primary">{{ $setting->business_name }}</span></h2>
+                    <p class="lead text-muted mb-4" style="line-height: 1.8;">
+                        Your trusted, discreet, and reliable partner for telemedical health queries. We blend technology with professional medical care to provide accessible treatments.
+                    </p>
+                </div>
+                
+                <div class="d-flex flex-column gap-3 mb-5">
+                    <div class="d-flex align-items-start gap-3 bg-white p-3 rounded-4 shadow-sm border border-light hover-lift flex-column flex-sm-row">
+                        <div class="bg-purple-light text-primary rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <i class="bi bi-laptop fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-semibold mb-1 text-dark">Comfortable & Private</h5>
+                            <p class="text-muted small mb-0">Consultations matching your schedule from the comfort and privacy of your home.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-start gap-3 bg-white p-3 rounded-4 shadow-sm border border-light hover-lift flex-column flex-sm-row">
+                        <div class="bg-teal-light text-accent rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                            <i class="bi bi-file-earmark-medical fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-semibold mb-1 text-dark">Compliant & Secure</h5>
+                            <p class="text-muted small mb-0">Strict adherence to medical regulations and total GDPR data protection.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center gap-4 flex-wrap">
+                    <a href="{{ url('/about-us') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm align-items-center d-inline-flex gap-2">
+                        Discover Our Story
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                    
+                    <div class="d-flex align-items-center gap-2 bg-white rounded-pill px-3 py-2 shadow-sm border">
+                        <div class="d-flex" style="font-size: 0.9rem;">
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </div>
+                        <span class="fw-bold small text-dark">{{ number_format($reviews->count() * 12500) }}+ Patients</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
