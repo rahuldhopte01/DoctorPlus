@@ -620,7 +620,6 @@ h6,
     max-height: 50px;
     width: auto;
     object-fit: contain;
-    filter: brightness(0);
 }
 
 .footer-dark a:hover {
