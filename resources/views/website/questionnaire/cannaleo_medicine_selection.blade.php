@@ -1,182 +1,216 @@
 @extends('layout.mainlayout', ['activePage' => 'questionnaire'])
 
-@section('title', __('Select Cannaleo Medicines'))
+@section('title', __('Select Medicines'))
+
+@section('css')
+<link href="{{ asset('css/medicine-selection.css') }}" rel="stylesheet">
+@endsection
 
 @section('content')
-<div class="xl:w-3/4 mx-auto py-10">
-    <nav class="mb-6" aria-label="Breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-gray">
-            <li><a href="{{ url('/') }}" class="hover:text-primary">{{ __('Home') }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{{ route('categories') }}" class="hover:text-primary">{{ __('Categories') }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="hover:text-primary">{{ $category->name }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li class="text-black">{{ __('Select Medicines') }}</li>
-        </ol>
+<main class="main-content medicine-selection-ui">
+    <!-- Breadcrumb (same structure as non-Cannaleo medicine selection) -->
+    <nav class="breadcrumb">
+        <a href="{{ url('/') }}" class="breadcrumb-link">{{ __('Home') }}</a>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="breadcrumb-arrow">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <a href="{{ route('categories') }}" class="breadcrumb-link">{{ __('Categories') }}</a>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="breadcrumb-arrow">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="breadcrumb-link">{{ $category->name }}</a>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="breadcrumb-arrow">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="breadcrumb-current">{{ __('Select Medicines') }}</span>
     </nav>
 
-    <div class="bg-white shadow-xl rounded-lg p-8">
-        <div class="text-center mb-8">
-            <h1 class="font-fira-sans font-medium text-3xl text-black mb-4">
-                {{ __('Select Your Medicines') }}
-            </h1>
-            <p class="font-fira-sans text-gray text-lg">
-                {{ __('Choose up to 3 medicines from the partner pharmacy. Doctor will review your selection.') }}
-            </p>
+    <!-- Title Section (same as non-Cannaleo medicine selection) -->
+    <div class="title-section">
+        <h1 class="title">{{ __('Select Your Medicines') }}</h1>
+        <p class="subtitle">{{ __('Choose up to 3 medicines you need for this category. Doctor can modify if needed.') }}</p>
+    </div>
+
+    <form id="medicineForm" method="POST" action="{{ route('questionnaire.save-cannaleo-medicine', ['categoryId' => $category->id]) }}">
+        @csrf
+
+        @if($medicines->count() > 0)
+        @php
+            $selectedIds = array_map('strval', $selectedCannaleoIds ?? []);
+            $medicinesForJs = $medicines->map(function ($m) {
+                $strength = '';
+                if ($m->thc !== null || $m->cbd !== null) {
+                    $strength = 'THC: ' . number_format($m->thc ?? 0, 1) . '% / CBD: ' . number_format($m->cbd ?? 0, 1) . '%';
+                }
+                return [
+                    'id' => (string) $m->id,
+                    'name' => $m->name,
+                    'subtitle' => $m->category ?: 'Cannaleo',
+                    'strength' => $strength,
+                    'form' => $m->price !== null ? number_format($m->price, 2) . ' €' : '',
+                    'image' => asset('images/upload_empty/medicine_placeholder.svg'),
+                ];
+            })->values();
+        @endphp
+        <!-- Info Bar (sticky at top) -->
+        <div class="info-box info-box--sticky">
+            <div class="info-content">
+                <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <p class="info-text">{{ __('You can select up to 3 medicines. The doctor will review and may modify your selection if medically required.') }}</p>
+            </div>
+            <p class="info-selected" id="selectedCount">{{ __('Selected') }}: {{ count($selectedIds) }} / 3</p>
+        </div>
+        <!-- Medicine Cards Grid - cards rendered by script (same as non-Cannaleo) -->
+        <div class="medicine-grid" id="medicineGrid">
+            <!-- Cards will be dynamically generated by JavaScript -->
         </div>
 
-        <form id="medicineForm" method="POST" action="{{ route('questionnaire.save-cannaleo-medicine', ['categoryId' => $category->id]) }}">
-            @csrf
-
-            @if($medicines->count() > 0)
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8" id="medicineList">
-                @foreach($medicines as $medicine)
-                <label class="block relative cursor-pointer">
-                    <div class="medicine-card relative border-2 rounded-lg p-4 transition-all
-                        {{ in_array($medicine->id, $selectedCannaleoIds ?? []) ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary' }}">
-                        <input type="checkbox" name="cannaleo_medicine_ids[]" value="{{ $medicine->id }}"
-                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer medicine-checkbox"
-                               {{ in_array($medicine->id, $selectedCannaleoIds ?? []) ? 'checked' : '' }}>
-                        <h3 class="font-fira-sans font-medium text-lg text-black mb-2">{{ $medicine->name }}</h3>
-                        @if($medicine->price !== null)
-                        <p class="font-fira-sans text-primary text-sm mb-2">{{ number_format($medicine->price, 2) }} €</p>
-                        @endif
-                        @if($medicine->thc !== null || $medicine->cbd !== null)
-                        <p class="font-fira-sans text-gray text-sm mb-2">THC: {{ number_format($medicine->thc ?? 0, 1) }}% / CBD: {{ number_format($medicine->cbd ?? 0, 1) }}%</p>
-                        @endif
-                        @if($medicine->category)
-                        <p class="font-fira-sans text-gray text-sm">{{ $medicine->category }}</p>
-                        @endif
-                    </div>
-                </label>
-                @endforeach
-            </div>
-
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
-                <p class="font-fira-sans text-blue-800 text-sm">
-                    <i class="fas fa-info-circle"></i>
-                    {{ __('You can select up to 3 medicines. The doctor will review and may modify your selection if medically required.') }}
-                </p>
-                <p class="font-fira-sans text-blue-800 text-sm mt-2" id="selectionCount">
-                    <strong>{{ __('Selected:') }} <span id="selectedCount">0</span> / 3</strong>
-                </p>
-            </div>
-            @else
-            <div class="text-center py-12 mb-8">
-                <p class="font-fira-sans text-gray text-lg">{{ __('No medicines available for this pharmacy and category.') }}</p>
-            </div>
-            @endif
-
-            <div class="flex justify-end gap-4">
-                <a href="{{ route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $category->id]) }}"
-                   class="bg-gray-200 text-gray-700 font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-gray-300 transition duration-300">
-                    {{ __('Back') }}
-                </a>
-                @if($medicines->count() > 0)
-                <button type="submit" id="medicineSubmitBtn" class="bg-primary text-white font-fira-sans font-medium px-8 py-3 rounded-lg hover:bg-opacity-90 transition duration-300">
-                    {{ __('Continue') }}
-                </button>
-                @endif
-            </div>
-        </form>
-    </div>
-</div>
+        <div class="form-actions">
+            <a href="{{ route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $category->id]) }}" class="btn-back">{{ __('Back') }}</a>
+            <button type="submit" id="medicineSubmitBtn" class="btn-continue">{{ __('Continue') }}</button>
+        </div>
+        @else
+        <div class="info-box info-box--empty">
+            <p class="info-text">{{ __('No medicines available for this pharmacy and category.') }}</p>
+            <p class="info-text info-text--muted">{{ __('Please go back and choose another pharmacy or contact support.') }}</p>
+        </div>
+        <div class="form-actions">
+            <a href="{{ route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $category->id]) }}" class="btn-back">{{ __('Back') }}</a>
+        </div>
+        @endif
+    </form>
+</main>
 
 @if($medicines->count() > 0)
 <script>
 (function() {
-    var form = document.getElementById('medicineForm');
-    var submitBtn = document.getElementById('medicineSubmitBtn');
-    var checkboxes = form.querySelectorAll('.medicine-checkbox');
-    var cards = form.querySelectorAll('.medicine-card');
-    var maxSelection = 3;
+    const medicines = @json($medicinesForJs);
+    const initialSelected = @json($selectedIds);
+    let selectedMedicines = initialSelected.length ? initialSelected.slice() : [];
 
-    function updateCardStyles() {
-        cards.forEach(function(card, i) {
-            var cb = checkboxes[i];
-            if (cb && cb.checked) {
-                card.classList.add('border-primary', 'bg-primary/5');
-                card.classList.remove('border-gray-200');
-            } else {
-                card.classList.remove('border-primary', 'bg-primary/5');
-                card.classList.add('border-gray-200');
-            }
-        });
+    const maxSelection = 3;
+    const grid = document.getElementById('medicineGrid');
+    const form = document.getElementById('medicineForm');
+    const submitBtn = document.getElementById('medicineSubmitBtn');
+    const countEl = document.getElementById('selectedCount');
+
+    function createMedicineCard(medicine) {
+        const isSelected = selectedMedicines.includes(medicine.id);
+        return `
+            <button type="button" class="medicine-card ${isSelected ? 'selected' : ''}" data-id="${medicine.id}">
+                <div class="medicine-image-container">
+                    <img src="${medicine.image}" alt="${medicine.name}" class="medicine-image">
+                    ${isSelected ? `
+                        <div class="checkmark-badge">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.333 4L6 11.333L2.667 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="medicine-content">
+                    <h3 class="medicine-name">${medicine.name}</h3>
+                    ${medicine.subtitle ? `<p class="medicine-subtitle">${medicine.subtitle}</p>` : ''}
+                    <div class="medicine-details">
+                        ${medicine.strength ? `
+                        <div class="medicine-detail-row">
+                            <span class="medicine-detail-label">{{ __('Strength') }}:</span>
+                            <span class="medicine-detail-value">${medicine.strength}</span>
+                        </div>
+                        ` : ''}
+                        ${medicine.form ? `
+                        <div class="medicine-detail-row">
+                            <span class="medicine-detail-label">{{ __('Price') }}:</span>
+                            <span class="medicine-detail-value">${medicine.form}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="selection-indicator ${!isSelected ? 'hidden' : ''}">
+                    <div class="selection-indicator-content">
+                        <p class="selection-indicator-text">✓ {{ __('SELECTED') }}</p>
+                    </div>
+                </div>
+            </button>
+        `;
     }
-    function updateSelectionCount() {
-        var checked = form.querySelectorAll('.medicine-checkbox:checked');
-        var count = checked.length;
-        var el = document.getElementById('selectedCount');
-        if (el) el.textContent = count;
-        checkboxes.forEach(function(cb) {
-            var label = cb.closest('label');
-            if (count >= maxSelection && !cb.checked) {
-                cb.disabled = true;
-                if (label) { label.style.opacity = '0.5'; label.style.cursor = 'not-allowed'; }
-            } else {
-                cb.disabled = false;
-                if (label) { label.style.opacity = '1'; label.style.cursor = 'pointer'; }
-            }
+
+    function renderMedicineCards() {
+        grid.innerHTML = medicines.map(function(medicine) { return createMedicineCard(medicine); }).join('');
+        var cards = grid.querySelectorAll('.medicine-card');
+        cards.forEach(function(card) {
+            card.addEventListener('click', function() {
+                var id = card.getAttribute('data-id');
+                toggleMedicine(id);
+            });
         });
+        updateSelectedCount();
     }
-    checkboxes.forEach(function(cb) {
-        cb.addEventListener('change', function() {
-            var checked = form.querySelectorAll('.medicine-checkbox:checked');
-            if (checked.length > maxSelection) {
-                this.checked = false;
-                alert('{{ __("You can select a maximum of 3 medicines.") }}');
-                return;
+
+    function toggleMedicine(id) {
+        if (selectedMedicines.indexOf(id) !== -1) {
+            selectedMedicines = selectedMedicines.filter(function(medId) { return medId !== id; });
+        } else {
+            if (selectedMedicines.length < maxSelection) {
+                selectedMedicines.push(id);
             }
-            updateCardStyles();
-            updateSelectionCount();
-        });
-    });
-    updateSelectionCount();
-    updateCardStyles();
+        }
+        renderMedicineCards();
+    }
+
+    function updateSelectedCount() {
+        if (countEl) countEl.textContent = '{{ __("Selected") }}: ' + selectedMedicines.length + ' / ' + maxSelection;
+    }
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-        var checked = form.querySelectorAll('.medicine-checkbox:checked');
-        if (checked.length === 0) {
+        if (selectedMedicines.length === 0) {
             alert('{{ __("Please select at least one medicine.") }}');
+            return;
+        }
+        if (selectedMedicines.length > maxSelection) {
+            alert('{{ __("You can select a maximum of 3 medicines.") }}');
             return;
         }
         if (submitBtn.disabled) return;
         submitBtn.disabled = true;
         submitBtn.textContent = '{{ __("Saving...") }}';
-
         var formData = new FormData();
         formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-        checked.forEach(function(cb, i) {
-            formData.append('medicines[' + i + '][cannaleo_medicine_id]', cb.value);
+        selectedMedicines.forEach(function(id, i) {
+            formData.append('medicines[' + i + '][cannaleo_medicine_id]', id);
         });
-
         fetch(form.action, {
             method: 'POST',
             body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-            }
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' }
         })
-        .then(function(res) { return res.json().then(function(data) { return { ok: res.ok, data: data }; }); })
-        .then(function(_) {
-            var ok = _.ok, data = _.data;
-            if (ok && data.success) {
-                window.location.href = data.redirect_url;
+        .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+        .then(function(res) {
+            if (res.ok && res.data.success) {
+                window.location.href = res.data.redirect_url;
                 return;
             }
             submitBtn.disabled = false;
             submitBtn.textContent = '{{ __("Continue") }}';
-            alert((data && data.message) || '{{ __("An error occurred. Please try again.") }}');
+            alert(res.data.message || (res.data.errors && JSON.stringify(res.data.errors)) || '{{ __("An error occurred. Please try again.") }}');
         })
-        .catch(function(err) {
+        .catch(function() {
             submitBtn.disabled = false;
             submitBtn.textContent = '{{ __("Continue") }}';
             alert('{{ __("An error occurred. Please try again.") }}');
         });
     });
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderMedicineCards);
+    } else {
+        renderMedicineCards();
+    }
 })();
 </script>
 @endif

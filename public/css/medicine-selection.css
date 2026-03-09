@@ -217,6 +217,15 @@
     padding: 1.5rem;
 }
 
+/* Sticky info bar at top (scrolls with page like navbar) */
+.medicine-selection-ui .info-box--sticky {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+}
+
 .medicine-selection-ui .info-box .info-content {
     margin-bottom: 0.75rem;
     display: flex;

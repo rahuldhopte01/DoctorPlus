@@ -239,6 +239,8 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // Cannaleo (partner catalog) – listings and category assignment
         Route::get('cannaleo/pharmacies', [\App\Http\Controllers\SuperAdmin\CannaleoPharmacyController::class, 'index'])->name('cannaleo.pharmacies.index');
         Route::get('cannaleo/medicines', [\App\Http\Controllers\SuperAdmin\CannaleoMedicineController::class, 'index'])->name('cannaleo.medicines.index');
+        Route::get('cannaleo/prescription-logs', [\App\Http\Controllers\SuperAdmin\CannaleoPrescriptionLogController::class, 'index'])->name('cannaleo.prescription-logs.index');
+        Route::get('cannaleo/prescription-logs/{id}', [\App\Http\Controllers\SuperAdmin\CannaleoPrescriptionLogController::class, 'show'])->name('cannaleo.prescription-logs.show');
 
         Route::get('/login-as-doctor/{id}', [AdminController::class, 'loginAsDoctor'])->name('loginAsDoctor');
         Route::get('/login-as-patient/{id}', [AdminController::class, 'loginAsPatient'])->name('loginAsPatient');
