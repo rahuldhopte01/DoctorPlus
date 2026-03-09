@@ -128,12 +128,18 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('doctor.questionnaire.show', [
-                                        'userId' => $submission['user']->id,
-                                        'categoryId' => $submission['category']->id,
-                                        'questionnaireId' => $submission['questionnaire']->id
-                                    ]) }}" 
-                                    class="btn btn-sm btn-primary">
+                                    @php
+                                        $reviewUrl = route('doctor.questionnaire.show', [
+                                            'userId' => $submission['user']->id,
+                                            'categoryId' => $submission['category']->id,
+                                            'questionnaireId' => $submission['questionnaire']->id
+                                        ]);
+                                        $submittedAt = $submission['submitted_at'] ?? null;
+                                        if ($submittedAt) {
+                                            $reviewUrl .= '?submitted_at=' . urlencode(\Carbon\Carbon::parse($submittedAt)->format('Y-m-d H:i:s'));
+                                        }
+                                    @endphp
+                                    <a href="{{ $reviewUrl }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i> {{ __('Review') }}
                                     </a>
                                 </td>
@@ -212,12 +218,18 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('doctor.questionnaire.show', [
-                                        'userId' => $submission['user']->id,
-                                        'categoryId' => $submission['category']->id,
-                                        'questionnaireId' => $submission['questionnaire']->id
-                                    ]) }}" 
-                                    class="btn btn-sm btn-primary">
+                                    @php
+                                        $reviewUrlPending = route('doctor.questionnaire.show', [
+                                            'userId' => $submission['user']->id,
+                                            'categoryId' => $submission['category']->id,
+                                            'questionnaireId' => $submission['questionnaire']->id
+                                        ]);
+                                        $submittedAtPending = $submission['submitted_at'] ?? null;
+                                        if ($submittedAtPending) {
+                                            $reviewUrlPending .= '?submitted_at=' . urlencode(\Carbon\Carbon::parse($submittedAtPending)->format('Y-m-d H:i:s'));
+                                        }
+                                    @endphp
+                                    <a href="{{ $reviewUrlPending }}" class="btn btn-sm btn-primary">
                                         <i class="fas fa-eye"></i> {{ __('Review') }}
                                     </a>
                                 </td>

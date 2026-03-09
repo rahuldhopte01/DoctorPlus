@@ -664,6 +664,76 @@ h6,
     border-color: var(--primary-color) !important;
 }
 
+/* Treatment listing (categories page) carousel/grid cards – same hover as .treatment-card */
+#treatmentsContainer .treatment-area-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid #e5e7eb;
+}
+#treatmentsContainer .treatment-area-card:hover {
+    box-shadow: 0 10px 25px rgba(74, 58, 255, 0.18) !important;
+    border-color: var(--primary-color) !important;
+    background-color: var(--purple-light) !important;
+    transform: translateY(-2px);
+}
+#treatmentsContainer .treatment-area-card:hover .treatment-card-title {
+    color: var(--primary-hover) !important;
+}
+#treatmentsContainer .treatment-area-card:hover .treatment-card-sub,
+#treatmentsContainer .treatment-area-card:hover .treatment-card-tags {
+    color: var(--dark-blue) !important;
+}
+#treatmentsContainer .treatment-area-card:hover .treatment-tag-type,
+#treatmentsContainer .treatment-area-card:hover .treatment-tag-info {
+    color: var(--primary-color) !important;
+}
+#treatmentsContainer .treatment-area-card:hover .treatment-tag-type {
+    background-color: var(--primary-color);
+    color: #fff !important;
+}
+#treatmentsContainer .treatment-area-card:hover .treatment-tag-info {
+    background-color: rgba(74, 58, 255, 0.15);
+    color: var(--primary-color) !important;
+}
+#treatmentsContainer .treatment-area-card:hover .treatment-card-cta {
+    color: var(--primary-color) !important;
+}
+
+/* Landing page treatment carousel – same default border and hover as categories page */
+.treatment-areas-section .treatment-area-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid #e5e7eb;
+}
+.treatment-areas-section .treatment-area-card:hover {
+    box-shadow: 0 10px 25px rgba(74, 58, 255, 0.18) !important;
+    border-color: var(--primary-color) !important;
+    background-color: var(--purple-light) !important;
+    transform: translateY(-2px);
+}
+.treatment-areas-section .treatment-area-card:hover .treatment-card-title {
+    color: var(--primary-hover) !important;
+}
+.treatment-areas-section .treatment-area-card:hover .treatment-card-sub,
+.treatment-areas-section .treatment-area-card:hover .treatment-card-tags {
+    color: var(--dark-blue) !important;
+}
+.treatment-areas-section .treatment-area-card:hover .treatment-tag-type,
+.treatment-areas-section .treatment-area-card:hover .treatment-tag-info {
+    color: var(--primary-color) !important;
+}
+.treatment-areas-section .treatment-area-card:hover .treatment-tag-type {
+    background-color: var(--primary-color);
+    color: #fff !important;
+}
+.treatment-areas-section .treatment-area-card:hover .treatment-tag-info {
+    background-color: rgba(74, 58, 255, 0.15);
+    color: var(--primary-color) !important;
+}
+.treatment-areas-section .treatment-area-card:hover .treatment-card-cta {
+    color: var(--primary-color) !important;
+}
+
 /* Category Filter */
 .category-filter {
     overflow-x: auto;

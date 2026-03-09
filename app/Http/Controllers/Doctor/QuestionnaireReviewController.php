@@ -8,17 +8,24 @@ use App\Models\Doctor;
 use App\Models\QuestionnaireAnswer;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\CannaleoMedicine;
+use App\Models\CannaleoPharmacy;
+use App\Models\CannaleoPrescriptionLog;
 use App\Models\Prescription;
 use App\Models\Medicine;
 use App\Models\QuestionnaireSubmission;
 use App\Models\PurchaseMedicine;
 use App\Models\MedicineChild;
 use App\Models\PharmacySettle;
+use App\Services\Curobo\CuroboPrescriptionApi;
+use App\Services\Curobo\CuroboPrescriptionPayloadBuilder;
+use App\Services\PrescriptionPdfService;
 use App\Services\QuestionnaireService;
 use Gate;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class QuestionnaireReviewController extends Controller
 {
@@ -226,10 +233,10 @@ class QuestionnaireReviewController extends Controller
             abort(403, 'Unauthorized access - Doctor not assigned to hospital');
         }
         
-        // Get all answers for this submission - must be from same hospital
+        // Get all answers for this user/category/questionnaire (all submission dates)
         // Query fresh to ensure we get the latest data, especially after status updates
         // Handle both hospital_id match and null hospital_id (for backward compatibility)
-        $answers = QuestionnaireAnswer::where('user_id', $userId)
+        $allAnswers = QuestionnaireAnswer::where('user_id', $userId)
             ->where('category_id', $categoryId)
             ->where('questionnaire_id', $questionnaireId)
             ->where(function($query) use ($doctor) {
@@ -238,16 +245,18 @@ class QuestionnaireReviewController extends Controller
             })
             ->whereNull('appointment_id')
             ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
+            ->orderBy('submitted_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->orderBy('question_id')
             ->get();
         
-        if ($answers->isEmpty()) {
+        if ($allAnswers->isEmpty()) {
             return redirect()->route('doctor.questionnaire.index')->with('error', __('Questionnaire submission not found'));
         }
         
         // Ensure all answers have hospital_id set (for consistency)
         $needsHospitalIdUpdate = false;
-        foreach ($answers as $answer) {
+        foreach ($allAnswers as $answer) {
             if (!$answer->hospital_id) {
                 $answer->hospital_id = $doctor->hospital_id;
                 $needsHospitalIdUpdate = true;
@@ -262,8 +271,7 @@ class QuestionnaireReviewController extends Controller
                     ->whereNull('hospital_id')
                     ->update(['hospital_id' => $doctor->hospital_id]);
             });
-            // Refresh answers after update
-            $answers = QuestionnaireAnswer::where('user_id', $userId)
+            $allAnswers = QuestionnaireAnswer::where('user_id', $userId)
                 ->where('category_id', $categoryId)
                 ->where('questionnaire_id', $questionnaireId)
                 ->where(function($query) use ($doctor) {
@@ -272,11 +280,48 @@ class QuestionnaireReviewController extends Controller
                 })
                 ->whereNull('appointment_id')
                 ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
+                ->orderBy('submitted_at', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->orderBy('question_id')
                 ->get();
         }
         
-        $firstAnswer = $answers->first();
+        // Group answers by submission date (patient history by date)
+        $submissionsByDate = $allAnswers->groupBy(function ($answer) {
+            $dt = $answer->submitted_at ?? $answer->created_at;
+            return $dt->format('Y-m-d H:i:s');
+        })->map(function ($batch, $dateKey) {
+            $batch = $batch->sortBy('question_id')->values();
+            $first = $batch->first();
+            $submittedAt = $first->submitted_at ?? $first->created_at;
+            return [
+                'submitted_at' => $submittedAt,
+                'answers' => $batch,
+                'groupedAnswers' => $this->groupAnswersBySection($batch),
+                'firstAnswer' => $first,
+                'hasFlagged' => $batch->where('is_flagged', true)->isNotEmpty(),
+            ];
+        })->sortByDesc(function ($item) {
+            return $item['submitted_at']->getTimestamp();
+        })->values();
+        
+        // Which submission is "current" (for status, prescription, locking): from query param or latest
+        $requestedSubmittedAt = request()->get('submitted_at');
+        $currentBatch = null;
+        if ($requestedSubmittedAt) {
+            foreach ($submissionsByDate as $batch) {
+                if ($batch['submitted_at']->format('Y-m-d H:i:s') === $requestedSubmittedAt) {
+                    $currentBatch = $batch;
+                    break;
+                }
+            }
+        }
+        if (!$currentBatch) {
+            $currentBatch = $submissionsByDate->first();
+        }
+        
+        $answers = $currentBatch['answers'];
+        $firstAnswer = $currentBatch['firstAnswer'];
         
         // SUB_DOCTOR: Must be assigned to this category. If locked by another sub-doctor, deny access.
         if ($doctor->isSubDoctor()) {
@@ -293,25 +338,37 @@ class QuestionnaireReviewController extends Controller
         }
         
         // Lock when any doctor (sub or admin) opens an unlocked questionnaire: status -> IN_REVIEW, set reviewer
-        // Only lock if status is 'pending' - don't lock if already approved/rejected
+        // Only lock if status is 'pending' - don't lock if already approved/rejected. Lock only the current batch.
         if (!$firstAnswer->isLocked() && $firstAnswer->status === 'pending') {
-            DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor) {
-                QuestionnaireAnswer::where('user_id', $userId)
+            $currentSubmittedAtKey = $currentBatch['submitted_at']->format('Y-m-d H:i:s');
+            DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $currentSubmittedAtKey) {
+                $lockQuery = QuestionnaireAnswer::where('user_id', $userId)
                     ->where('category_id', $categoryId)
                     ->where('questionnaire_id', $questionnaireId)
                     ->whereNull('appointment_id')
                     ->where(function($query) use ($doctor) {
                         $query->where('hospital_id', $doctor->hospital_id)
                               ->orWhereNull('hospital_id');
-                    })
-                    ->update([
-                        'status' => 'IN_REVIEW',
-                        'reviewing_doctor_id' => $doctor->id,
-                        'hospital_id' => $doctor->hospital_id,
-                    ]);
+                    });
+                $dt = \Carbon\Carbon::parse($currentSubmittedAtKey);
+                $lockQuery->where(function ($q) use ($dt) {
+                    $q->where(function ($q2) use ($dt) {
+                        $q2->where('submitted_at', '>=', $dt->copy()->startOfSecond())
+                           ->where('submitted_at', '<=', $dt->copy()->endOfSecond());
+                    })->orWhere(function ($q2) use ($dt) {
+                        $q2->whereNull('submitted_at')
+                           ->where('created_at', '>=', $dt->copy()->startOfSecond())
+                           ->where('created_at', '<=', $dt->copy()->endOfSecond());
+                    });
+                });
+                $lockQuery->update([
+                    'status' => 'IN_REVIEW',
+                    'reviewing_doctor_id' => $doctor->id,
+                    'hospital_id' => $doctor->hospital_id,
+                ]);
             });
-            // Refresh answers after locking
-            $answers = QuestionnaireAnswer::where('user_id', $userId)
+            // Refresh all answers and re-build current batch after locking
+            $allAnswers = QuestionnaireAnswer::where('user_id', $userId)
                 ->where('category_id', $categoryId)
                 ->where('questionnaire_id', $questionnaireId)
                 ->where(function($query) use ($doctor) {
@@ -320,13 +377,38 @@ class QuestionnaireReviewController extends Controller
                 })
                 ->whereNull('appointment_id')
                 ->with(['user', 'category', 'questionnaire', 'question.section', 'reviewingDoctor'])
+                ->orderBy('submitted_at', 'desc')
+                ->orderBy('created_at', 'desc')
                 ->orderBy('question_id')
                 ->get();
-            $firstAnswer = $answers->first();
+            $submissionsByDate = $allAnswers->groupBy(function ($answer) {
+                $dt = $answer->submitted_at ?? $answer->created_at;
+                return $dt->format('Y-m-d H:i:s');
+            })->map(function ($batch, $dateKey) {
+                $batch = $batch->sortBy('question_id')->values();
+                $first = $batch->first();
+                $submittedAt = $first->submitted_at ?? $first->created_at;
+                return [
+                    'submitted_at' => $submittedAt,
+                    'answers' => $batch,
+                    'groupedAnswers' => $this->groupAnswersBySection($batch),
+                    'firstAnswer' => $first,
+                    'hasFlagged' => $batch->where('is_flagged', true)->isNotEmpty(),
+                ];
+            })->sortByDesc(function ($item) {
+                return $item['submitted_at']->getTimestamp();
+            })->values();
+            $currentBatch = $submissionsByDate->firstWhere(function ($b) use ($currentSubmittedAtKey) {
+                return $b['submitted_at']->format('Y-m-d H:i:s') === $currentSubmittedAtKey;
+            }) ?? $submissionsByDate->first();
+            $answers = $currentBatch['answers'];
+            $firstAnswer = $currentBatch['firstAnswer'];
+            $groupedAnswers = $currentBatch['groupedAnswers'];
+            $hasFlaggedAnswers = $currentBatch['hasFlagged'];
         }
         
-        $groupedAnswers = $this->groupAnswersBySection($answers);
-        $hasFlaggedAnswers = $answers->where('is_flagged', true)->isNotEmpty();
+        $groupedAnswers = $currentBatch['groupedAnswers'];
+        $hasFlaggedAnswers = $currentBatch['hasFlagged'];
         
         // Determine if doctor can edit:
         // - Admin doctors can always edit questionnaires in their hospital
@@ -357,11 +439,16 @@ class QuestionnaireReviewController extends Controller
             }
         }
         
-        // Get prescription for this questionnaire if it exists
+        // Get prescription for this questionnaire review only if it was generated for THIS answer batch.
+        // Do not show a prescription from a previous questionnaire as "generated" for this review.
+        $submittedAt = $firstAnswer->submitted_at ?? $firstAnswer->created_at;
         $prescription = Prescription::where('user_id', $userId)
             ->where('doctor_id', $doctor->id)
             ->whereNull('appointment_id')
             ->where('status', '!=', 'expired')
+            ->whereNotNull('questionnaire_submitted_at')
+            ->where('questionnaire_submitted_at', '<=', $submittedAt->copy()->addSecond())
+            ->where('questionnaire_submitted_at', '>=', $submittedAt->copy()->subSecond())
             ->first();
         
         // Get questionnaire submission data (delivery choice, medicines, pharmacy, address)
@@ -452,6 +539,7 @@ class QuestionnaireReviewController extends Controller
                 ->take(5); // Limit to 5 most recent matching orders
         }
         
+        $currentSubmittedAtKey = $currentBatch['submitted_at']->format('Y-m-d H:i:s');
         return view('doctor.questionnaire.review_submission', compact(
             'answers',
             'firstAnswer',
@@ -465,7 +553,9 @@ class QuestionnaireReviewController extends Controller
             'selectedCannaleoMedicines',
             'availableCannaleoMedicines',
             'orders',
-            'categoryMedicines'
+            'categoryMedicines',
+            'submissionsByDate',
+            'currentSubmittedAtKey'
         ));
     }
     
@@ -521,7 +611,9 @@ class QuestionnaireReviewController extends Controller
         $hospitalId = $firstAnswer->hospital_id ?? $doctor->hospital_id;
         $isApproved = $request->status === 'approved';
 
-        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $request, $shouldUnlock, $hospitalId, $doctor, $isApproved) {
+        $submittedAtFilter = $request->input('submitted_at');
+
+        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $request, $shouldUnlock, $hospitalId, $doctor, $isApproved, $submittedAtFilter) {
             // Always ensure hospital_id is set in update data
             $updateData = [
                 'status' => $request->status,
@@ -531,18 +623,29 @@ class QuestionnaireReviewController extends Controller
                 $updateData['reviewing_doctor_id'] = null;
             }
             
-            // Update ALL answers for this submission (user/category/questionnaire combination)
-            // Filter by hospital_id to ensure we only update the correct hospital's records
-            // Also handle backward compatibility with null hospital_id
-            $updated = QuestionnaireAnswer::where('user_id', $userId)
+            $query = QuestionnaireAnswer::where('user_id', $userId)
                 ->where('category_id', $categoryId)
                 ->where('questionnaire_id', $questionnaireId)
                 ->whereNull('appointment_id')
                 ->where(function($query) use ($hospitalId) {
                     $query->where('hospital_id', $hospitalId)
                           ->orWhereNull('hospital_id');
-                })
-                ->update($updateData);
+                });
+            // When multiple submissions exist (same user/category/questionnaire), only update the batch for this submitted_at
+            if ($submittedAtFilter) {
+                $dt = \Carbon\Carbon::parse($submittedAtFilter);
+                $query->where(function ($q) use ($dt) {
+                    $q->where(function ($q2) use ($dt) {
+                        $q2->where('submitted_at', '>=', $dt->copy()->startOfSecond())
+                           ->where('submitted_at', '<=', $dt->copy()->endOfSecond());
+                    })->orWhere(function ($q2) use ($dt) {
+                        $q2->whereNull('submitted_at')
+                           ->where('created_at', '>=', $dt->copy()->startOfSecond())
+                           ->where('created_at', '<=', $dt->copy()->endOfSecond());
+                    });
+                });
+            }
+            $query->update($updateData);
 
             // Doctor selects medicines and creates prescription/orders via Create Prescription flow (no auto-create on approve)
         });
@@ -555,11 +658,15 @@ class QuestionnaireReviewController extends Controller
             $message = __('Questionnaire approved. Create prescription to select medicines and generate prescription and orders.');
         }
 
-        return redirect()->route('doctor.questionnaire.show', [
+        $url = route('doctor.questionnaire.show', [
             'userId' => $userId,
             'categoryId' => $categoryId,
             'questionnaireId' => $questionnaireId,
-        ])->with('success', $message);
+        ]);
+        if ($request->input('submitted_at')) {
+            $url .= '?submitted_at=' . urlencode($request->input('submitted_at'));
+        }
+        return redirect($url)->with('success', $message);
     }
     
     /**
@@ -584,9 +691,7 @@ class QuestionnaireReviewController extends Controller
             ->where('status', '!=', 'expired')
             ->first();
 
-        if ($existingPrescription) {
-            return; // Prescription already exists
-        }
+        
 
         // Build prescription medicines array from selected medicines
         $prescriptionMedicines = [];
@@ -824,10 +929,10 @@ class QuestionnaireReviewController extends Controller
             ->where('status', '!=', 'expired')
             ->first();
             
-        if ($existingPrescription) {
-            return redirect()->route('doctor.questionnaire.index')
-                ->with('info', __('Prescription already exists for this questionnaire.'));
-        }
+        //if ($existingPrescription) {
+        //    return redirect()->route('doctor.questionnaire.index')
+        //        ->with('info', __('Prescription already exists for this questionnaire.'));
+        //}
         
         $user = User::find($userId);
         $category = Category::find($categoryId);
@@ -912,10 +1017,10 @@ class QuestionnaireReviewController extends Controller
             ->where('status', '!=', 'expired')
             ->first();
 
-        if ($existingPrescription) {
-            return redirect()->route('doctor.questionnaire.index')
-                ->with('info', __('Prescription already exists for this questionnaire.'));
-        }
+        //if ($existingPrescription) {
+        //    return redirect()->route('doctor.questionnaire.index')
+        //        ->with('info', __('Prescription already exists for this questionnaire.'));
+        //}
 
         $prescriptionMedicines = [];
         $selectedForOrders = [];
@@ -976,7 +1081,8 @@ class QuestionnaireReviewController extends Controller
         $setting = \App\Models\Setting::first();
         $prescriptionFee = $setting->prescription_fee ?? 50.00;
 
-        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $prescriptionMedicines, $submission, $selectedForOrders, $answers, $prescriptionFee, $isCannaleoPrescription) {
+        $prescription = null;
+        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $prescriptionMedicines, $submission, $selectedForOrders, $answers, $prescriptionFee, $isCannaleoPrescription, &$prescription) {
             if (in_array($answers->status, ['IN_REVIEW', 'under_review'])) {
                 QuestionnaireAnswer::where('user_id', $userId)
                     ->where('category_id', $categoryId)
@@ -986,8 +1092,11 @@ class QuestionnaireReviewController extends Controller
                     ->update(['status' => 'approved']);
             }
 
-            Prescription::create([
+            $questionnaireSubmittedAt = $answers->submitted_at ?? $answers->created_at;
+
+            $createData = [
                 'appointment_id' => null,
+                'questionnaire_submitted_at' => $questionnaireSubmittedAt,
                 'user_id' => $userId,
                 'doctor_id' => $doctor->id,
                 'medicines' => json_encode($prescriptionMedicines),
@@ -997,7 +1106,13 @@ class QuestionnaireReviewController extends Controller
                 'validity_days' => null,
                 'payment_amount' => $prescriptionFee,
                 'payment_status' => 0,
-            ]);
+            ];
+            if ($isCannaleoPrescription) {
+                $createData['is_cannaleo'] = true;
+                $prescription = Prescription::create($createData);
+            } else {
+                Prescription::create($createData);
+            }
 
             // Do not create internal orders for Cannaleo (fulfilment via partner)
             if (!$isCannaleoPrescription && $submission) {
@@ -1016,6 +1131,107 @@ class QuestionnaireReviewController extends Controller
                 }
             }
         });
+
+        // Cannaleo: generate PDF, then call Curobo prescription API and log
+        if ($isCannaleoPrescription && $prescription) {
+            $pdfResult = app(PrescriptionPdfService::class)->generate($prescription);
+            if ($pdfResult !== true) {
+                Log::warning('Cannaleo prescription PDF generation failed', ['prescription_id' => $prescription->id, 'error' => $pdfResult]);
+                CannaleoPrescriptionLog::create([
+                    'prescription_id' => $prescription->id,
+                    'questionnaire_submission_id' => $submission->id,
+                    'called_at' => now(),
+                    'request_payload' => null,
+                    'response_status' => null,
+                    'response_body' => null,
+                    'external_order_id' => null,
+                    'products_snapshot' => [],
+                    'total_medicine_cost' => null,
+                    'prescription_fee' => $prescription->payment_amount,
+                    'error_message' => 'PDF generation failed',
+                ]);
+            } else {
+                $prescription->refresh();
+                $prescriptionUrl = rtrim(config('app.url'), '/') . '/prescription/upload/' . $prescription->pdf;
+                $customer = User::find($prescription->user_id);
+                if (! $customer) {
+                    Log::warning('Cannaleo prescription: customer not found', ['prescription_id' => $prescription->id]);
+                    CannaleoPrescriptionLog::create([
+                        'prescription_id' => $prescription->id,
+                        'questionnaire_submission_id' => $submission->id,
+                        'called_at' => now(),
+                        'request_payload' => null,
+                        'response_status' => null,
+                        'response_body' => null,
+                        'external_order_id' => null,
+                        'products_snapshot' => [],
+                        'total_medicine_cost' => null,
+                        'prescription_fee' => $prescription->payment_amount,
+                        'error_message' => 'Customer not found',
+                    ]);
+                } else {
+                $prescription->load(['doctor.user', 'doctor.hospital']);
+                $doctorLoaded = $prescription->doctor;
+                $pharmacy = $submission->selectedCannaleoPharmacy;
+                $cannaleoMedicineIds = collect($submission->selected_medicines ?? [])->pluck('cannaleo_medicine_id')->filter()->values()->all();
+                $products = CannaleoMedicine::whereIn('id', $cannaleoMedicineIds)->get();
+                $payload = CuroboPrescriptionPayloadBuilder::build($prescription, $submission, $customer, $doctorLoaded, $products, $prescriptionUrl, $pharmacy);
+                $productsSnapshot = [];
+                $totalMedicineCost = 0;
+                foreach ($products as $med) {
+                    $qty = 1;
+                    $price = (float) $med->price;
+                    $productsSnapshot[] = [
+                        'cannaleo_medicine_id' => $med->id,
+                        'name' => $med->name,
+                        'price' => $price,
+                        'quantity' => $qty,
+                        'category' => $med->category ?? 'flower',
+                    ];
+                    $totalMedicineCost += $price * $qty;
+                }
+                $prescriptionFee = (float) $prescription->payment_amount;
+                try {
+                    $api = new CuroboPrescriptionApi();
+                    $response = $api->submitPrescription($payload);
+                    CannaleoPrescriptionLog::create([
+                        'prescription_id' => $prescription->id,
+                        'questionnaire_submission_id' => $submission->id,
+                        'called_at' => now(),
+                        'request_payload' => $payload,
+                        'response_status' => 200,
+                        'response_body' => is_array($response) ? json_encode($response) : (string) $response,
+                        'external_order_id' => $response['order_id'] ?? $response['id'] ?? null,
+                        'products_snapshot' => $productsSnapshot,
+                        'total_medicine_cost' => $totalMedicineCost,
+                        'prescription_fee' => $prescriptionFee,
+                        'error_message' => null,
+                    ]);
+                } catch (\Throwable $e) {
+                    Log::warning('Curobo prescription API call failed', ['prescription_id' => $prescription->id, 'error' => $e->getMessage()]);
+                    CannaleoPrescriptionLog::create([
+                        'prescription_id' => $prescription->id,
+                        'questionnaire_submission_id' => $submission->id,
+                        'called_at' => now(),
+                        'request_payload' => $payload,
+                        'response_status' => null,
+                        'response_body' => $e->getMessage(),
+                        'external_order_id' => null,
+                        'products_snapshot' => $productsSnapshot,
+                        'total_medicine_cost' => $totalMedicineCost,
+                        'prescription_fee' => $prescriptionFee,
+                        'error_message' => $e->getMessage(),
+                    ]);
+                    return redirect()->route('doctor.questionnaire.show', [
+                        'userId' => $userId,
+                        'categoryId' => $categoryId,
+                        'questionnaireId' => $questionnaireId,
+                    ])->with('success', __('Prescription and orders created successfully.'))
+                        ->with('warning', __('Prescription saved but partner API could not be notified; our team will follow up.'));
+                }
+                }
+            }
+        }
 
         return redirect()->route('doctor.questionnaire.show', [
             'userId' => $userId,

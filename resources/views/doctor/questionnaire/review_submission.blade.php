@@ -196,6 +196,9 @@
                     'questionnaireId' => $firstAnswer->questionnaire_id
                 ]) }}" method="POST">
                     @csrf
+                    @if(isset($currentSubmittedAtKey))
+                    <input type="hidden" name="submitted_at" value="{{ $currentSubmittedAtKey }}">
+                    @endif
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -625,88 +628,99 @@
         </div>
         @endif
 
-        <!-- Questionnaire Answers -->
+        <!-- Patient questionnaire history by date -->
         <div class="card">
             <div class="card-header">
-                <h4><i class="fas fa-file-medical-alt mr-2"></i>{{ __('Questionnaire Answers') }}</h4>
+                <h4><i class="fas fa-history mr-2"></i>{{ __('Patient Questionnaire History') }}</h4>
+                <p class="text-muted mb-0 mt-1 small">{{ __('Previous submissions are grouped by date. The current submission is marked.') }}</p>
             </div>
             <div class="card-body">
-                @forelse($groupedAnswers as $sectionName => $sectionAnswers)
-                <div class="mb-4">
-                    <h5 class="border-bottom pb-2 mb-3">
-                        <i class="fas fa-folder-open text-primary mr-2"></i>
-                        {{ $sectionName }}
-                    </h5>
-                    
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th width="5%">#</th>
-                                    <th width="40%">{{ __('Question') }}</th>
-                                    <th width="35%">{{ __('Answer') }}</th>
-                                    <th width="20%">{{ __('Notes') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($sectionAnswers as $index => $answer)
-                                <tr class="{{ $answer['is_flagged'] ? 'table-warning' : '' }}">
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>
-                                        {{ $answer['question'] }}
-                                        @if($answer['is_flagged'])
-                                            <span class="badge badge-danger ml-2">
-                                                <i class="fas fa-flag"></i> {{ __('Flagged') }}
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($answer['field_type'] === 'file' && $answer['file_url'])
-                                            <a href="{{ $answer['file_url'] }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-download mr-1"></i>{{ __('Download File') }}
-                                            </a>
-                                            @if(isset($answer['file_name']))
-                                                <br><small class="text-muted d-block mt-1">
-                                                    <i class="fas fa-file mr-1"></i>{{ basename($answer['file_name']) }}
-                                                </small>
-                                            @endif
-                                        @else
-                                            <div class="answer-text">
-                                                {{ $answer['answer'] }}
-                                            </div>
-                                        @endif
-                                        
-                                        @if($answer['is_flagged'] && $answer['flag_reason'])
-                                            <div class="mt-2 p-2 bg-danger-light rounded">
-                                                <small class="text-danger font-weight-bold">
-                                                    <i class="fas fa-exclamation-circle mr-1"></i>
-                                                    <strong>{{ __('Flag Reason:') }}</strong> {{ $answer['flag_reason'] }}
-                                                </small>
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($answer['doctor_notes'])
-                                            <small class="text-info d-block">
-                                                <i class="fas fa-sticky-note mr-1"></i>
-                                                {{ $answer['doctor_notes'] }}
-                                            </small>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                @empty
+                @if(isset($submissionsByDate) && $submissionsByDate->count() > 0)
+                    @foreach($submissionsByDate as $batch)
+                        @php
+                            $submittedAt = $batch['submitted_at'];
+                            $dateKey = $submittedAt->format('Y-m-d H:i:s');
+                            $isCurrent = isset($currentSubmittedAtKey) && $currentSubmittedAtKey === $dateKey;
+                            $batchGrouped = $batch['groupedAnswers'];
+                        @endphp
+                        <div class="submission-by-date mb-4 pb-4 {{ $isCurrent ? 'border-left border-primary pl-3' : '' }}" style="{{ !$loop->last ? 'border-bottom: 1px solid #dee2e6;' : '' }}">
+                            <h5 class="mb-3 d-flex align-items-center flex-wrap">
+                                <i class="fas fa-calendar-alt text-primary mr-2"></i>
+                                {{ __('Submission') }} — {{ $submittedAt->format('l, F j, Y \a\t g:i A') }}
+                                @if($isCurrent)
+                                    <span class="badge badge-primary ml-2">{{ __('Current') }}</span>
+                                @else
+                                    <a href="{{ route('doctor.questionnaire.show', ['userId' => $firstAnswer->user_id, 'categoryId' => $firstAnswer->category_id, 'questionnaireId' => $firstAnswer->questionnaire_id]) }}?submitted_at={{ urlencode($dateKey) }}" class="btn btn-sm btn-outline-primary ml-2">{{ __('View this submission') }}</a>
+                                @endif
+                                @if($batch['hasFlagged'])
+                                    <span class="badge badge-danger ml-2"><i class="fas fa-flag"></i> {{ __('Flagged') }}</span>
+                                @endif
+                            </h5>
+                            @forelse($batchGrouped as $sectionName => $sectionAnswers)
+                            <div class="mb-3">
+                                <h6 class="text-secondary mb-2">
+                                    <i class="fas fa-folder-open mr-1"></i>{{ $sectionName }}
+                                </h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th width="5%">#</th>
+                                                <th width="40%">{{ __('Question') }}</th>
+                                                <th width="35%">{{ __('Answer') }}</th>
+                                                <th width="20%">{{ __('Notes') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($sectionAnswers as $index => $answer)
+                                            <tr class="{{ $answer['is_flagged'] ? 'table-warning' : '' }}">
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>
+                                                    {{ $answer['question'] }}
+                                                    @if($answer['is_flagged'])
+                                                        <span class="badge badge-danger ml-2"><i class="fas fa-flag"></i> {{ __('Flagged') }}</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($answer['field_type'] === 'file' && $answer['file_url'])
+                                                        <a href="{{ $answer['file_url'] }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-download mr-1"></i>{{ __('Download File') }}</a>
+                                                        @if(isset($answer['file_name']))
+                                                            <br><small class="text-muted d-block mt-1"><i class="fas fa-file mr-1"></i>{{ basename($answer['file_name']) }}</small>
+                                                        @endif
+                                                    @else
+                                                        <div class="answer-text">{{ $answer['answer'] }}</div>
+                                                    @endif
+                                                    @if($answer['is_flagged'] && $answer['flag_reason'])
+                                                        <div class="mt-2 p-2 bg-danger-light rounded">
+                                                            <small class="text-danger font-weight-bold"><i class="fas fa-exclamation-circle mr-1"></i><strong>{{ __('Flag Reason:') }}</strong> {{ $answer['flag_reason'] }}</small>
+                                                        </div>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($answer['doctor_notes'])
+                                                        <small class="text-info d-block"><i class="fas fa-sticky-note mr-1"></i>{{ $answer['doctor_notes'] }}</small>
+                                                    @else
+                                                        <span class="text-muted">-</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @empty
+                            <p class="text-muted small">{{ __('No answers in this submission.') }}</p>
+                            @endforelse
+                        </div>
+                    @endforeach
+                @else
                 <div class="text-center py-4">
                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                     <p class="text-muted">{{ __('No questionnaire answers found.') }}</p>
                 </div>
-                @endforelse
+                @endif
             </div>
             <div class="card-footer">
                 <a href="{{ route('doctor.questionnaire.index') }}" class="btn btn-secondary">

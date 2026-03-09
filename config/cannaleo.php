@@ -15,4 +15,13 @@ return [
     | Keep true in production. .env: CUROBO_CATALOG_SSL_VERIFY=false
     */
     'curobo_ssl_verify' => filter_var(env('CUROBO_CATALOG_SSL_VERIFY', true), FILTER_VALIDATE_BOOLEAN),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Curobo Prescription API (Cannaleo)
+    |--------------------------------------------------------------------------
+    */
+    'prescription_api_path' => env('CUROBO_PRESCRIPTION_API_PATH', '/api/v1/prescription/'),
+    'prescription_callback_url' => env('CUROBO_PRESCRIPTION_CALLBACK_URL', ''),
+    'default_signature_city' => env('CUROBO_DEFAULT_SIGNATURE_CITY', ''),
 ];

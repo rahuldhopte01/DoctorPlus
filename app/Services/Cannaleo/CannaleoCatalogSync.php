@@ -28,12 +28,14 @@ class CannaleoCatalogSync
     }
 
     /**
-     * Run full sync: fetch catalog, upsert pharmacies and medicines, optionally write sync log.
+     * Run full sync: fetch pharmacies API first, create/update pharmacies; then fetch catalog
+     * and save only medicines whose pharmacy_id exists in the synced pharmacies.
      */
     public function sync(): array
     {
         $startedAt = Carbon::now();
         $stats = [
+            'pharmacies_fetched' => 0,
             'items_fetched' => 0,
             'pharmacies_created' => 0,
             'pharmacies_updated' => 0,
@@ -49,10 +51,14 @@ class CannaleoCatalogSync
         }
 
         try {
+            // 1. Fetch pharmacies from GET /api/v1/pharmacies/ and create/update
+            $pharmaciesFromApi = $this->api->getPharmacies();
+            $stats['pharmacies_fetched'] = count($pharmaciesFromApi);
+            $pharmaciesByExternalId = $this->syncPharmaciesFromApi($pharmaciesFromApi, $stats);
+
+            // 2. Fetch catalog and save only medicines for pharmacies we just synced
             $items = $this->api->getCatalog();
             $stats['items_fetched'] = count($items);
-
-            $pharmaciesByExternalId = $this->syncPharmacies($items, $stats);
             $this->syncMedicines($items, $pharmaciesByExternalId, $stats);
 
             if ($this->log) {
@@ -86,38 +92,32 @@ class CannaleoCatalogSync
     }
 
     /**
-     * Build unique pharmacies from catalog items and upsert. Returns map external_id => CannaleoPharmacy.
+     * Create/update Cannaleo pharmacies from GET /api/v1/pharmacies/ response.
+     * Returns map external_id (pharmacy id) => CannaleoPharmacy for use when syncing medicines.
      *
-     * @param array<int, array<string, mixed>> $items
+     * @param array<int, array<string, mixed>> $pharmaciesFromApi
      * @param array<string, int> $stats
      * @return array<string|int, CannaleoPharmacy>
      */
-    protected function syncPharmacies(array $items, array &$stats): array
+    protected function syncPharmaciesFromApi(array $pharmaciesFromApi, array &$stats): array
     {
-        $unique = [];
-        foreach ($items as $item) {
-            $pharmacyId = $item['pharmacy_id'] ?? null;
-            if ($pharmacyId === null) {
-                continue;
-            }
-            $key = (string) $pharmacyId;
-            if (! isset($unique[$key])) {
-                $unique[$key] = [
-                    'external_id' => $key,
-                    'name' => $item['pharmacy_name'] ?? '',
-                    'domain' => $item['pharmacy_domain'] ?? null,
-                ];
-            }
-        }
-
         $now = Carbon::now();
         $result = [];
-        foreach ($unique as $externalId => $attrs) {
+
+        foreach ($pharmaciesFromApi as $p) {
+            $externalId = (string) ($p['id'] ?? '');
+            if ($externalId === '') {
+                continue;
+            }
+
+            $name = $p['cannabis_pharmacy_name'] ?? $p['official_name'] ?? '';
+            $domain = $p['domain'] ?? null;
+
             $pharmacy = CannaleoPharmacy::updateOrCreate(
                 ['external_id' => $externalId],
                 [
-                    'name' => $attrs['name'],
-                    'domain' => $attrs['domain'],
+                    'name' => $name,
+                    'domain' => $domain,
                     'last_synced_at' => $now,
                 ]
             );
