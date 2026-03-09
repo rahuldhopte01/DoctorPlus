@@ -817,30 +817,43 @@ a:hover {
     background-color: var(--primary-color);
     color: white;
 }
-/* Global Button Color Overrides */
+
+/* Custom Global Button Styling (Matching 'Sign in' Style) */
+.btn,
 .btn-primary,
+.btn-secondary,
+.btn-outline-primary,
+.bloomwell-btn,
+.filter-btn,
 button.bg-primary,
 a.bg-primary,
-input[type="submit"].bg-primary,
-.bloomwell-btn {
-    background-color: #00d9c0 !important;
-    border-color: #00d9c0 !important;
-    color: #ffffff !important;
+input[type="submit"].bg-primary {
+    background-color: transparent !important;
+    color: #00bda6 !important;
+    border: 1px solid #00bda6 !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
 }
 
+.btn:hover,
 .btn-primary:hover,
+.btn-secondary:hover,
+.btn-outline-primary:hover,
+.btn:focus,
 .btn-primary:focus,
+.btn:active,
 .btn-primary:active,
+.bloomwell-btn:hover,
+.filter-btn:hover,
+.filter-btn.active,
 button.bg-primary:hover,
-button.bg-primary:focus,
-button.bg-primary:active,
 a.bg-primary:hover,
-input[type="submit"].bg-primary:hover,
-.bloomwell-btn:hover {
+input[type="submit"].bg-primary:hover {
     background-color: #00bda6 !important;
-    border-color: #00bda6 !important;
     color: #ffffff !important;
+    border-color: #00bda6 !important;
 }
+
 /* ===== Our Treatment Areas Carousel ===== */
 .treatment-areas-section {
     font-family: var(--font-body);
@@ -1076,17 +1089,21 @@ input[type="submit"].bg-primary:hover,
         min-width: 260px;
         max-width: 260px;
     }
+
     .treatment-card-image {
         height: 180px;
     }
+
     .treatment-arrow-btn {
         width: 42px;
         height: 42px;
     }
+
     .treatment-areas-controls {
         flex-direction: column;
         align-items: stretch;
     }
+
     .treatment-controls-right {
         justify-content: flex-end;
     }
