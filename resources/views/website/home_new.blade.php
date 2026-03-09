@@ -459,36 +459,36 @@
         <!-- Trust Features -->
         <div class="row g-4 mb-5">
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                        <i class="bi bi-award text-primary"></i>
+                <div class="card bg-bloomwell-dark text-white border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-award text-primary fs-4"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">Certified doctors</h5>
-                    <p class="text-muted small">All our doctors are registered and licensed</p>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">All our doctors are registered and licensed</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                        <i class="bi bi-lock text-primary"></i>
+                <div class="card bg-bloomwell-dark text-white border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-lock text-primary fs-4"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">Privacy guaranteed</h5>
-                    <p class="text-muted small">Your data is encrypted and protected according to GDPR</p>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">Your data is encrypted and protected according to GDPR</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                        <i class="bi bi-clock text-primary"></i>
+                <div class="card bg-bloomwell-dark text-white border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-clock text-primary fs-4"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">Fast delivery</h5>
-                    <p class="text-muted small">Shipping within 24-48 hours after medical approval</p>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">Shipping within 24-48 hours after medical approval</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                        <i class="bi bi-star-fill text-primary"></i>
+                <div class="card bg-bloomwell-dark text-white border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="bi bi-star-fill text-primary fs-4"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">
                         @if($reviews->count() > 0)
@@ -497,7 +497,7 @@
                         4.8/5 rating
                         @endif
                     </h5>
-                    <p class="text-muted small">Over {{ number_format($reviews->count() * 12500) }} satisfied patients trust us</p>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">Over {{ number_format($reviews->count() * 12500) }} satisfied patients trust us</p>
                 </div>
             </div>
         </div>
