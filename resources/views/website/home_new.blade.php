@@ -558,11 +558,11 @@
 </section>
 
 <!-- FAQ Section -->
-<section class="py-5 bg-bloomwell-dark text-white" id="faq">
+<section class="py-5" style="background-color: #f2efea !important;" id="faq">
     <div class="container py-4">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Frequently Asked Questions</h2>
-            <p class="lead" style="color: rgba(255,255,255,0.8);">Everything you need to know about our service</p>
+            <h2 class="display-5 fw-bold mb-3 text-dark">Frequently Asked Questions</h2>
+            <p class="lead text-muted">Everything you need to know about our service</p>
         </div>
 
         <div class="row justify-content-center">
