@@ -334,7 +334,7 @@
 </section>
 
 <!-- About Section -->
-<section class="py-5 bg-white" id="about">
+<section class="py-5" style="background-color: #f2efea !important;" id="about">
     <div class="container py-4">
         <div class="row align-items-center g-5">
             <div class="col-lg-6">
@@ -363,48 +363,48 @@
 </section>
 
 <!-- Why Choose Us Section -->
-<section class="py-5 bg-light" id="why-choose-us">
+<section class="py-5 bg-bloomwell-dark text-white" id="why-choose-us">
     <div class="container py-4">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold mb-3">Why Choose Us</h2>
-            <p class="lead text-muted">The advantages of our online medical practice</p>
+            <p class="lead" style="color: rgba(255,255,255,0.8);">The advantages of our online medical practice</p>
         </div>
 
         <div class="row g-4">
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-shield-check text-primary"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">100% Discreet</h5>
-                    <p class="text-muted small">Plain packaging and confidential service</p>
+                    <p class="text-muted small mb-0">Plain packaging and confidential service</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-clock text-primary"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">24-48h Delivery</h5>
-                    <p class="text-muted small">Fast and free shipping to your door</p>
+                    <p class="text-muted small mb-0">Fast and free shipping to your door</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-award text-primary"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">Licensed Doctors</h5>
-                    <p class="text-muted small">Certified medical professionals</p>
+                    <p class="text-muted small mb-0">Certified medical professionals</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="text-center">
-                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
+                    <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-lock text-primary"></i>
                     </div>
                     <h5 class="fw-semibold mb-2">Secure & Private</h5>
-                    <p class="text-muted small">GDPR compliant data protection</p>
+                    <p class="text-muted small mb-0">GDPR compliant data protection</p>
                 </div>
             </div>
         </div>
@@ -412,7 +412,7 @@
 </section>
 
 <!-- Safety & Quality Section -->
-<section class="py-5 bg-white" id="safety">
+<section class="py-5" style="background-color: #f2efea !important;" id="safety">
     <div class="container py-4">
         <div class="row align-items-center g-5">
             <div class="col-lg-6 order-lg-2">
@@ -454,7 +454,7 @@
 </section>
 
 <!-- Trust Section -->
-<section class="py-5 bg-white" id="trust">
+<section class="py-5" style="background-color: #f2efea !important;" id="trust">
     <div class="container py-4">
         <!-- Trust Features -->
         <div class="row g-4 mb-5">
@@ -503,13 +503,13 @@
         </div>
 
         <!-- Testimonials -->
-        <div class="testimonials-section bg-gradient-orange rounded-3 p-4 p-lg-5">
+        <div class="testimonials-section bg-bloomwell-dark text-white rounded-3 p-4 p-lg-5">
             <div class="row align-items-center g-4">
                 <div class="col-lg-6">
                     <h2 class="display-6 fw-bold mb-4">What our patients say</h2>
                     
                     @forelse($reviews->take(2) as $review)
-                        <div class="card mb-3">
+                        <div class="card mb-3 bg-white text-dark border-0 shadow-bloomwell">
                             <div class="card-body">
                                 <div class="mb-2">
                                     @for($i = 1; $i <= 5; $i++)
@@ -525,7 +525,7 @@
                         </div>
                     @empty
                         <!-- Fallback testimonials -->
-                        <div class="card mb-3">
+                        <div class="card mb-3 bg-white text-dark border-0 shadow-bloomwell">
                             <div class="card-body">
                                 <div class="mb-2">
                                     <i class="bi bi-star-fill text-warning"></i>
@@ -571,17 +571,17 @@
 </section>
 
 <!-- FAQ Section -->
-<section class="py-5 bg-light" id="faq">
+<section class="py-5 bg-bloomwell-dark text-white" id="faq">
     <div class="container py-4">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold mb-3">Frequently Asked Questions</h2>
-            <p class="lead text-muted">Everything you need to know about our service</p>
+            <p class="lead" style="color: rgba(255,255,255,0.8);">Everything you need to know about our service</p>
         </div>
 
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <div class="accordion" id="faqAccordion">
-                    <div class="accordion-item">
+                <div class="accordion rounded-3 overflow-hidden" id="faqAccordion">
+                    <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
                                 How does the online consultation work?
@@ -594,7 +594,7 @@
                         </div>
                     </div>
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
                                 Are the doctors real and licensed?
@@ -607,7 +607,7 @@
                         </div>
                     </div>
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
                                 How long does delivery take?
@@ -620,7 +620,7 @@
                         </div>
                     </div>
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
                                 Is my information secure?
@@ -633,7 +633,7 @@
                         </div>
                     </div>
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
                                 What if the treatment is not suitable for me?
@@ -646,7 +646,7 @@
                         </div>
                     </div>
 
-                    <div class="accordion-item">
+                    <div class="accordion-item border-0">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
                                 Can I get a refund?
@@ -660,7 +660,7 @@
                     </div>
                 </div>
 
-                <div class="card mt-4 border-0 shadow-sm">
+                <div class="card mt-4 bg-white text-dark border-0 shadow-bloomwell">
                     <div class="card-body text-center p-4">
                         <h5 class="fw-semibold mb-2">Still have questions?</h5>
                         <p class="text-muted mb-3">Our customer support team is here to help you</p>
