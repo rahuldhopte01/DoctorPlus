@@ -5,9 +5,9 @@
                 <div>
                     <a href="{{ url('/') }}" class="">
                         @if($setting->company_white_logo && file_exists(public_path('images/upload/'.$setting->company_white_logo)))
-                        <img src="{{ $setting->companyWhite }}" width="150px" height="40px" alt="Logo" style="filter: brightness(0);">
+                        <img src="{{ $setting->companyWhite }}" width="150px" height="40px" alt="Logo" >
                         @else
-                        <img src="{{url('/images/upload_empty/logo_white.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" style="filter: brightness(0);" />
+                        <img src="{{url('/images/upload_empty/logo_white.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo"  />
                         @endif
                     </a>
                     <div class="flex pt-5">

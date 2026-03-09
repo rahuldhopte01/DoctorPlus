@@ -159,6 +159,12 @@
                         <span>{{__('Cannaleo Medicines')}}</span>
                     </a>
                 </li>
+                <li class="{{ $activePage == 'cannaleo_order_list' ? 'active' : '' }}">
+                    <a href="{{ url('cannaleo/prescription-logs') }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span>{{__('Cannaleo Order List')}}</span>
+                    </a>
+                </li>
             @endcan
 
             {{-- Hidden from super admin sidebar - expertise --}}
