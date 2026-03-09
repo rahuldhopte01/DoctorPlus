@@ -199,18 +199,9 @@
                     @php
                         $treatmentName = $category->treatment ? $category->treatment->name : 'General Medicine';
                         $iconData = $iconMap[$treatmentName] ?? ['icon' => 'bi-capsule', 'badge' => null];
-                        $cardImage = ($category->image && file_exists(public_path('images/upload/'.$category->image)))
-                            ? $category->fullImage
-                            : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop';
                     @endphp
                     <div class="treatment-area-card">
                         <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-decoration-none text-dark">
-                            <div class="treatment-card-image">
-                                <img src="{{ $cardImage }}" alt="{{ $category->name }}">
-                                @if($iconData['badge'] ?? null)
-                                    <span class="treatment-card-badge treatment-badge-primary">{{ $iconData['badge'] }}</span>
-                                @endif
-                            </div>
                             <div class="treatment-card-body">
                                 <h3 class="treatment-card-title">{{ $category->name }}</h3>
                                 <div class="treatment-card-tags">
@@ -227,10 +218,6 @@
                 @empty
                     <div class="treatment-area-card">
                         <a href="{{ route('categories') }}" class="text-decoration-none text-dark">
-                            <div class="treatment-card-image">
-                                <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop" alt="Treatments">
-                                <span class="treatment-card-badge treatment-badge-primary">Popular</span>
-                            </div>
                             <div class="treatment-card-body">
                                 <h3 class="treatment-card-title">Browse treatments</h3>
                                 <div class="treatment-card-tags">

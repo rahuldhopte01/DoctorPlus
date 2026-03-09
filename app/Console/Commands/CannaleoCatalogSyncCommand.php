@@ -31,7 +31,8 @@ class CannaleoCatalogSyncCommand extends Command
             $this->table(
                 ['Metric', 'Count'],
                 [
-                    ['Items fetched', $stats['items_fetched']],
+                    ['Pharmacies fetched (API)', $stats['pharmacies_fetched']],
+                    ['Catalog items fetched', $stats['items_fetched']],
                     ['Pharmacies created', $stats['pharmacies_created']],
                     ['Pharmacies updated', $stats['pharmacies_updated']],
                     ['Medicines created', $stats['medicines_created']],

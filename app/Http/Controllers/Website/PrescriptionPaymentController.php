@@ -411,67 +411,9 @@ class PrescriptionPaymentController extends Controller
      */
     protected function generatePrescriptionPdf(Prescription $prescription): void
     {
-        try {
-            $prescription->load(['doctor.user', 'doctor.hospital', 'user']);
-
-            $medicines = json_decode($prescription->medicines, true) ?? [];
-            $doctor = $prescription->doctor;
-            $doctorName = $doctor && $doctor->user && $doctor->user->name
-                ? $doctor->user->name
-                : ($doctor && $doctor->name ? $doctor->name : 'Doctor');
-            $patientName = $prescription->user ? $prescription->user->name : 'Patient';
-
-            $patientAddress = '';
-            $patientCity = '';
-            $patientDob = null;
-            if ($prescription->user) {
-                $firstAddress = UserAddress::where('user_id', $prescription->user_id)->first();
-                if ($firstAddress) {
-                    $patientAddress = $firstAddress->address ?? '';
-                }
-                if ($prescription->user->dob) {
-                    $patientDob = Carbon::parse($prescription->user->dob)->format('d.m.Y');
-                }
-            }
-
-            $doctorPhone = ($doctor && $doctor->user && $doctor->user->phone) ? $doctor->user->phone : '';
-            $doctorAddress = ($doctor && $doctor->hospital && $doctor->hospital->address) ? $doctor->hospital->address : '';
-            $doctorLanr = '';
-            $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
-
-            $pdf = \PDF::loadView('prescription_pdf', [
-                'prescription' => $prescription,
-                'medicines' => $medicines,
-                'doctor_name' => $doctorName,
-                'patient_name' => $patientName,
-                'patient_address' => $patientAddress,
-                'patient_city' => $patientCity,
-                'patient_country' => 'Deutschland',
-                'patient_dob' => $patientDob,
-                'doctor_phone' => $doctorPhone,
-                'doctor_address' => $doctorAddress,
-                'doctor_lanr' => $doctorLanr,
-                'doctor_title' => 'Arzt/Ärztin',
-                'receipt_nr' => $receiptNr,
-                'valid_from' => $prescription->valid_from ? $prescription->valid_from->format('d.m.Y') : now()->format('d.m.Y'),
-                'valid_until' => $prescription->valid_until ? $prescription->valid_until->format('d.m.Y') : null,
-            ])->setPaper([0, 0, 297.64, 419.53], 'portrait'); // A6: [left, top, width, height] in points (105×148mm)
-
-            $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
-            $path = public_path('prescription/upload/' . $fileName);
-            
-            // Ensure directory exists
-            if (!file_exists(public_path('prescription/upload'))) {
-                mkdir(public_path('prescription/upload'), 0755, true);
-            }
-            
-            $pdf->save($path);
-            
-            $prescription->pdf = $fileName;
-            $prescription->save();
-            
-        } catch (\Exception $e) {
-            Log::error('Failed to generate prescription PDF: ' . $e->getMessage());
+        $result = app(\App\Services\PrescriptionPdfService::class)->generate($prescription);
+        if ($result !== true) {
+            Log::error('Failed to generate prescription PDF: ' . (is_string($result) ? $result : 'unknown error'));
         }
     }
     

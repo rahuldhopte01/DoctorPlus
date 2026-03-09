@@ -18,6 +18,7 @@ class Prescription extends Model
         'doctor_id',
         'user_id',
         'pdf',
+        'is_cannaleo',
         'status',
         'valid_from',
         'valid_until',
@@ -31,11 +32,13 @@ class Prescription extends Model
     ];
 
     protected $casts = [
+        'questionnaire_submitted_at' => 'datetime',
         'valid_from' => 'datetime',
         'valid_until' => 'datetime',
         'payment_date' => 'datetime',
         'payment_status' => 'boolean',
         'payment_amount' => 'decimal:2',
+        'is_cannaleo' => 'boolean',
     ];
 
     /**
@@ -56,6 +59,14 @@ class Prescription extends Model
     public function appointment()
     {
         return $this->belongsTo('App\Models\Appointment');
+    }
+
+    /**
+     * Cannaleo prescription API call logs (one per API call).
+     */
+    public function cannaleoPrescriptionLogs()
+    {
+        return $this->hasMany(CannaleoPrescriptionLog::class);
     }
 
     /**

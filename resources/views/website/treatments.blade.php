@@ -165,19 +165,8 @@
                     <div class="treatment-areas-viewport" id="treatment-viewport-{{ $carouselId }}" data-carousel-id="{{ $carouselId }}">
                         <div class="treatment-areas-track" id="treatment-track-{{ $carouselId }}">
                             @foreach($categoryGroup as $category)
-                                @php
-                                    $cardImage = ($category->image && file_exists(public_path('images/upload/'.$category->image)))
-                                        ? $category->fullImage
-                                        : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop';
-                                @endphp
                                 <div class="treatment-area-card">
                                     <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-decoration-none text-dark">
-                                        <div class="treatment-card-image">
-                                            <img src="{{ $cardImage }}" alt="{{ $category->name }}">
-                                            @if($iconData['badge'] ?? null)
-                                                <span class="treatment-card-badge treatment-badge-primary">{{ $iconData['badge'] }}</span>
-                                            @endif
-                                        </div>
                                         <div class="treatment-card-body">
                                             <h3 class="treatment-card-title">{{ $category->name }}</h3>
                                             <div class="treatment-card-tags">
@@ -211,20 +200,9 @@
                     {{-- Grid: ≤3 items, same card style as landing for consistency --}}
                     <div class="row g-4">
                         @foreach($categoryGroup as $category)
-                            @php
-                                $cardImage = ($category->image && file_exists(public_path('images/upload/'.$category->image)))
-                                    ? $category->fullImage
-                                    : 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=500&h=400&fit=crop';
-                            @endphp
                             <div class="col-md-6 col-lg-4">
                                 <div class="treatment-area-card" style="min-width: auto; max-width: none; width: 100%;" onclick="window.location.href='{{ route('category.detail', ['id' => $category->id]) }}'">
                                     <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-decoration-none text-dark">
-                                        <div class="treatment-card-image">
-                                            <img src="{{ $cardImage }}" alt="{{ $category->name }}">
-                                            @if($iconData['badge'] ?? null)
-                                                <span class="treatment-card-badge treatment-badge-primary">{{ $iconData['badge'] }}</span>
-                                            @endif
-                                        </div>
                                         <div class="treatment-card-body">
                                             <h3 class="treatment-card-title">{{ $category->name }}</h3>
                                             <div class="treatment-card-tags">

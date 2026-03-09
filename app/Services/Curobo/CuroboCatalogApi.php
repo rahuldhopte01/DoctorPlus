@@ -18,6 +18,56 @@ class CuroboCatalogApi
     }
 
     /**
+     * Fetch pharmacies from GET {base_url}/api/v1/pharmacies/
+     * Uses same API key as catalog. Returns list of pharmacy objects.
+     * Response format: { "error": bool, "message": "string", "data": { "pharmacies": [...], "updated_at": "string" } }
+     *
+     * @return array<int, array<string, mixed>>
+     * @throws \RuntimeException on error response or non-2xx
+     */
+    public function getPharmacies(): array
+    {
+        $url = $this->baseUrl . '/api/v1/pharmacies/';
+
+        $verifySsl = config('cannaleo.curobo_ssl_verify', true);
+        $options = ['verify' => $verifySsl];
+
+        $response = Http::withHeaders([
+            'Accept' => 'application/json',
+            'API-KEY' => $this->apiKey ?? '',
+        ])->withOptions($options)->get($url);
+
+        if (! $response->successful()) {
+            Log::warning('Curobo pharmacies API error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+            throw new \RuntimeException(
+                'Curobo pharmacies API request failed: ' . $response->status() . ' ' . $response->body()
+            );
+        }
+
+        $data = $response->json();
+        if (! is_array($data)) {
+            throw new \RuntimeException('Curobo pharmacies API returned invalid JSON');
+        }
+
+        if (! empty($data['error'])) {
+            $message = $data['message'] ?? 'Unknown error';
+            throw new \RuntimeException('Curobo pharmacies API error: ' . $message);
+        }
+
+        $pharmacies = $data['data']['pharmacies'] ?? null;
+        if (! is_array($pharmacies)) {
+            throw new \RuntimeException(
+                'Curobo pharmacies API response format unexpected. Expected data.pharmacies array.'
+            );
+        }
+
+        return $pharmacies;
+    }
+
+    /**
      * Fetch catalog from GET {base_url}/api/v1/catalog/
      * Returns decoded array of catalog items (or from data/catalog key if wrapped).
      *
