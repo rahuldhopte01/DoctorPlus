@@ -542,13 +542,13 @@ h6,
 .accordion-item:hover,
 .accordion-item:hover .accordion-button,
 .accordion-item:hover .accordion-collapse {
-    background-color: #00d9c0 !important;
+    background-color: #cafaf0 !important;
     color: #000 !important;
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: #00d9c0 !important;
-    /* Bright cyan */
+    background-color: #a0f4e3 !important;
+    /* Bright cyan lighter */
     color: #000 !important;
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
@@ -557,7 +557,7 @@ h6,
 .accordion-collapse {
     border: none;
     border-radius: 0 0 20px 20px;
-    background-color: #fff;
+    background-color: #a0f4e3 !important;
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -566,14 +566,10 @@ h6,
     transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Color the body container when active */
-.accordion-item:has(.accordion-button:not(.collapsed)) .accordion-collapse {
-    background-color: #00d9c0 !important;
-}
-
-/* Fallback for browsers that do not support :has() */
-.accordion-button:not(.collapsed)+.accordion-collapse {
-    background-color: #00d9c0 !important;
+/* Color the body container when active or transitioning */
+.accordion-collapse.show,
+.accordion-collapse.collapsing {
+    background-color: #a0f4e3 !important;
 }
 
 .accordion-body {

@@ -342,7 +342,7 @@
                     </div>
                 </div>
                 <!-- Decorative background blur shape -->
-                <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-25" style="width: 120%; height: 120%; filter: blur(60px); z-index: 0;"></div>
+                <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-25"></div>
             </div>
             <div class="col-lg-6 order-1 order-lg-2 ps-lg-5">
                 <div class="mb-4">
