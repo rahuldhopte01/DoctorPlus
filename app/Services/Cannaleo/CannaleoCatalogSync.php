@@ -113,11 +113,55 @@ class CannaleoCatalogSync
             $name = $p['cannabis_pharmacy_name'] ?? $p['official_name'] ?? '';
             $domain = $p['domain'] ?? null;
 
+            // Contact
+            $email = $p['email'] ?? null;
+            $phoneNumber = $p['phone_number'] ?? null;
+
+            // Address
+            $street = $p['street'] ?? null;
+            $plz = $p['plz'] ?? null;
+            $city = $p['city'] ?? null;
+
+            // Shipping
+            $shipping = $p['shipping'] ?? null;
+            $shippingCostStandard = isset($p['shipping_cost_standard']) ? (float) $p['shipping_cost_standard'] : null;
+            $shippingCostReduced = $this->normalizeCostReduced($p['shipping_cost_reduced'] ?? null);
+
+            // Express
+            $express = $p['express'] ?? null;
+            $expressCostStandard = isset($p['express_cost_standard']) ? (float) $p['express_cost_standard'] : null;
+            $expressCostReduced = $this->normalizeCostReduced($p['express_cost_reduced'] ?? null);
+
+            // Local courier (API typo: local_coure_*)
+            $localCourier = $p['local_courier'] ?? null;
+            $localCourierCostStandard = isset($p['local_coure_cost_standard']) ? (float) $p['local_coure_cost_standard'] : null;
+            $localCourierCostReduced = $this->normalizeCostReduced($p['local_coure_cost_reduced'] ?? null);
+
+            // Pickup
+            $pickup = $p['pickup'] ?? null;
+            $pickupBranches = isset($p['pickup_branches']) && is_array($p['pickup_branches']) ? $p['pickup_branches'] : null;
+
             $pharmacy = CannaleoPharmacy::updateOrCreate(
                 ['external_id' => $externalId],
                 [
                     'name' => $name,
                     'domain' => $domain,
+                    'email' => $email,
+                    'phone_number' => $phoneNumber,
+                    'street' => $street,
+                    'plz' => $plz,
+                    'city' => $city,
+                    'shipping' => $shipping,
+                    'shipping_cost_standard' => $shippingCostStandard,
+                    'shipping_cost_reduced' => $shippingCostReduced,
+                    'express' => $express,
+                    'express_cost_standard' => $expressCostStandard,
+                    'express_cost_reduced' => $expressCostReduced,
+                    'local_courier' => $localCourier,
+                    'local_courier_cost_standard' => $localCourierCostStandard,
+                    'local_courier_cost_reduced' => $localCourierCostReduced,
+                    'pickup' => $pickup,
+                    'pickup_branches' => $pickupBranches,
                     'last_synced_at' => $now,
                 ]
             );
@@ -130,6 +174,21 @@ class CannaleoCatalogSync
         }
 
         return $result;
+    }
+
+    /**
+     * Normalize cost_reduced object from API for JSON storage.
+     * API shape: { "type": "TOTALCOSTS", "amount": 0, "price": 0, "rule": "string" }
+     *
+     * @param mixed $value
+     * @return array<string, mixed>|null
+     */
+    protected function normalizeCostReduced($value): ?array
+    {
+        if (! is_array($value)) {
+            return null;
+        }
+        return $value;
     }
 
     /**
