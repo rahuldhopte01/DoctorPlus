@@ -556,12 +556,12 @@ h6,
 .accordion-item:hover,
 .accordion-item:hover .accordion-button,
 .accordion-item:hover .accordion-collapse {
-    background-color: #cafaf0 !important;
+    background-color: rgb(74 58 255 / 45%) !important;
     color: #000 !important;
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: #a0f4e3 !important;
+    background-color: rgb(74 58 255 / 45%) !important;
     /* Bright cyan lighter */
     color: #000 !important;
     border-bottom-left-radius: 0 !important;
@@ -571,7 +571,7 @@ h6,
 .accordion-collapse {
     border: none;
     border-radius: 0 0 20px 20px;
-    background-color: #a0f4e3 !important;
+    background-color: rgb(74 58 255 / 45%) !important;
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -583,7 +583,7 @@ h6,
 /* Color the body container when active or transitioning */
 .accordion-collapse.show,
 .accordion-collapse.collapsing {
-    background-color: #a0f4e3 !important;
+    background-color: rgb(74 58 255 / 45%) !important;
 }
 
 .accordion-body {
