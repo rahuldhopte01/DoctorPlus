@@ -209,6 +209,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // Settings
         Route::get('/setting', [SettingController::class, 'setting']);
         Route::post('/update_payment_setting', [SettingController::class, 'update_payment_setting']);
+        Route::post('/test_stripe_connection', [SettingController::class, 'testStripeConnection']);
         Route::post('/update_verification_setting', [SettingController::class, 'update_verification_setting']);
         Route::post('/update_notification', [SettingController::class, 'update_notification']);
         Route::post('/update_licence_setting', [SettingController::class, 'update_licence_setting']);

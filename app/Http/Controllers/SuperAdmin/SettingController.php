@@ -11,6 +11,7 @@ use App\Models\Timezone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use LicenseBoxExternalAPI;
+use Stripe\StripeClient;
 use Symfony\Component\HttpFoundation\Response;
 
 class SettingController extends Controller
@@ -113,6 +114,33 @@ class SettingController extends Controller
         $id->update($data);
 
         return redirect()->back()->withStatus(__('Payment Setting updated successfully..!!'));
+    }
+
+    /**
+     * Test that the stored Stripe credentials (from Payment setting) are valid.
+     * Uses the same Setting::first() used by all payment flows.
+     */
+    public function testStripeConnection(Request $request)
+    {
+        abort_if(Gate::denies('superadmin_setting'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $setting = Setting::first();
+        $secretKey = $setting->stripe_secret_key ?? null;
+        if (empty($secretKey)) {
+            return response()->json(['success' => false, 'message' => __('Stripe secret key is not configured.')]);
+        }
+        try {
+            $stripe = new StripeClient($secretKey);
+            $stripe->balance->retrieve();
+            return response()->json([
+                'success' => true,
+                'message' => __('Stripe credentials are valid. This key is used for all Stripe payments in the system.'),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Stripe connection failed: ') . $e->getMessage(),
+            ]);
+        }
     }
 
     public function update_verification_setting(Request $request)
