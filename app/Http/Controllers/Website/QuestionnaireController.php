@@ -4,16 +4,13 @@ namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SuperAdmin\CustomController;
-use App\Mail\QuestionnaireSubmittedMail;
 use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireAnswer;
-use App\Models\Setting;
 use App\Services\QuestionnaireService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
@@ -977,25 +974,16 @@ class QuestionnaireController extends Controller
             $submissionData
         );
 
-        // Send questionnaire submitted email to patient
-        $setting = Setting::first();
-        if ($setting && $setting->using_mail == 1) {
-            try {
-                (new CustomController)->applyMailConfig($setting);
-                $user = Auth::user();
-                $submissionId = 'REF-' . $submission->id . '-' . $categoryId;
-                Mail::to($user->email)->send(new QuestionnaireSubmittedMail([
-                    'customer_name' => $user->name,
-                    'submission_id' => $submissionId,
-                    'submission_date' => now()->format('F j, Y H:i'),
-                    'questionnaire_category' => $category->name ?? $category->treatment->name ?? __('Questionnaire'),
-                    'review_timeframe' => __('24-48 hours'),
-                    'app_name' => $setting->business_name ?? config('mail.from.name', 'dr.fuxx'),
-                ]));
-            } catch (\Exception $e) {
-                \Log::info('Questionnaire submitted email failed: ' . $e->getMessage());
-            }
-        }
+        // Send questionnaire submitted email (same trigger logic as OTP)
+        $user = Auth::user();
+        $submissionId = 'REF-' . $submission->id . '-' . $categoryId;
+        (new CustomController)->sendQuestionnaireSubmittedMail($user->email, [
+            'customer_name' => $user->name,
+            'submission_id' => $submissionId,
+            'submission_date' => now()->format('F j, Y H:i'),
+            'questionnaire_category' => $category->name ?? ($category->treatment ? $category->treatment->name : __('Questionnaire')),
+            'review_timeframe' => __('24-48 hours'),
+        ], true);
 
         if ($isCannaleoOnly) {
             return response()->json([

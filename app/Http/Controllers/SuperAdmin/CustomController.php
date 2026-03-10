@@ -4,6 +4,10 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\OtpMail;
+use App\Mail\QuestionnaireApprovedMail;
+use App\Mail\QuestionnaireRejectedMail;
+use App\Mail\QuestionnaireSubmittedMail;
+use App\Mail\RegistrationMail;
 use App\Mail\SendMail;
 use App\Models\Appointment;
 use App\Models\Category;
@@ -364,6 +368,98 @@ class CustomController extends Controller
             }
 
             return $user;
+        }
+    }
+
+    /**
+     * Send registration confirmation email. Uses same trigger logic as OTP (using_mail == 1 || force).
+     */
+    public function sendRegistrationMail($user, $force = true)
+    {
+        $setting = Setting::first();
+        if (! $setting) {
+            return;
+        }
+        if ($setting->using_mail != 1 && ! $force) {
+            return;
+        }
+        try {
+            $this->applyMailConfig($setting);
+            Mail::to($user->email)->send(new RegistrationMail([
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'registration_date' => now()->format('F j, Y'),
+                'login_url' => url('/patient-login'),
+                'year' => date('Y'),
+                'privacy_url' => url('/privacy-policy'),
+                'contact_url' => url('/'),
+                'app_name' => $setting->business_name ?? config('mail.from.name', 'dr.fuxx'),
+            ]));
+        } catch (\Exception $e) {
+            info('Registration email failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send questionnaire submitted email. Uses same trigger logic as OTP.
+     */
+    public function sendQuestionnaireSubmittedMail($toEmail, array $data, $force = true)
+    {
+        $setting = Setting::first();
+        if (! $setting) {
+            return;
+        }
+        if ($setting->using_mail != 1 && ! $force) {
+            return;
+        }
+        try {
+            $this->applyMailConfig($setting);
+            $data['app_name'] = $data['app_name'] ?? $setting->business_name ?? config('mail.from.name', 'dr.fuxx');
+            Mail::to($toEmail)->send(new QuestionnaireSubmittedMail($data));
+        } catch (\Exception $e) {
+            info('Questionnaire submitted email failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send questionnaire approved email. Uses same trigger logic as OTP.
+     */
+    public function sendQuestionnaireApprovedMail($toEmail, array $data, $force = true)
+    {
+        $setting = Setting::first();
+        if (! $setting) {
+            return;
+        }
+        if ($setting->using_mail != 1 && ! $force) {
+            return;
+        }
+        try {
+            $this->applyMailConfig($setting);
+            $data['app_name'] = $data['app_name'] ?? $setting->business_name ?? config('mail.from.name', 'dr.fuxx');
+            Mail::to($toEmail)->send(new QuestionnaireApprovedMail($data));
+        } catch (\Exception $e) {
+            info('Questionnaire approved email failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Send questionnaire rejected email. Uses same trigger logic as OTP.
+     */
+    public function sendQuestionnaireRejectedMail($toEmail, array $data, $force = true)
+    {
+        $setting = Setting::first();
+        if (! $setting) {
+            return;
+        }
+        if ($setting->using_mail != 1 && ! $force) {
+            return;
+        }
+        try {
+            $this->applyMailConfig($setting);
+            $data['app_name'] = $data['app_name'] ?? $setting->business_name ?? config('mail.from.name', 'dr.fuxx');
+            Mail::to($toEmail)->send(new QuestionnaireRejectedMail($data));
+        } catch (\Exception $e) {
+            info('Questionnaire rejected email failed: ' . $e->getMessage());
         }
     }
 
