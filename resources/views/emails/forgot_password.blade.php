@@ -17,7 +17,7 @@
             <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
               <tr>
                 <td style="vertical-align:middle;">
-                  <img src="{{ asset('images/13.png') }}" alt="{{ $appName ?? 'dr.fuxx' }}" style="max-width:180px;height:auto;display:block;margin:0 auto;" />
+                  <img src="{{ asset('images/logo-white.png') }}" alt="{{ $appName ?? 'dr.fuxx' }}" style="max-width:180px;height:auto;display:block;margin:0 auto;" />
                 </td>
               </tr>
             </table>

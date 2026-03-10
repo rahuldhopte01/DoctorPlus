@@ -183,60 +183,78 @@
         </div>
         @endif
 
-        <!-- Status Update Form -->
+        <!-- Status Update Form (hidden when approved; when approved only "Set back to Pending" is shown) -->
         <div class="card mb-3">
             <div class="card-header">
                 <h4><i class="fas fa-edit mr-2"></i>{{ __('Update Status') }}</h4>
             </div>
             <div class="card-body">
                 @if($canEdit)
-                <form id="questionnaire-status-form" action="{{ route('doctor.questionnaire.update-status', [
-                    'userId' => $firstAnswer->user_id,
-                    'categoryId' => $firstAnswer->category_id,
-                    'questionnaireId' => $firstAnswer->questionnaire_id
-                ]) }}" method="POST">
-                    @csrf
-                    @if(isset($currentSubmittedAtKey))
-                    <input type="hidden" name="submitted_at" value="{{ $currentSubmittedAtKey }}">
+                    @if($firstAnswer->status === 'approved')
+                        <p class="text-muted mb-3">{{ __('This questionnaire is approved. To re-test the approval email, you can set it back to pending and approve again.') }}</p>
+                        <form action="{{ route('doctor.questionnaire.update-status', [
+                            'userId' => $firstAnswer->user_id,
+                            'categoryId' => $firstAnswer->category_id,
+                            'questionnaireId' => $firstAnswer->questionnaire_id
+                        ]) }}" method="POST" class="d-inline">
+                            @csrf
+                            @if(isset($currentSubmittedAtKey))
+                            <input type="hidden" name="submitted_at" value="{{ $currentSubmittedAtKey }}">
+                            @endif
+                            <input type="hidden" name="status" value="pending">
+                            <button type="submit" class="btn btn-outline-warning">
+                                <i class="fas fa-undo mr-2"></i>{{ __('Set back to Pending (for testing)') }}
+                            </button>
+                        </form>
+                    @else
+                        <form id="questionnaire-status-form" action="{{ route('doctor.questionnaire.update-status', [
+                            'userId' => $firstAnswer->user_id,
+                            'categoryId' => $firstAnswer->category_id,
+                            'questionnaireId' => $firstAnswer->questionnaire_id
+                        ]) }}" method="POST">
+                            @csrf
+                            @if(isset($currentSubmittedAtKey))
+                            <input type="hidden" name="submitted_at" value="{{ $currentSubmittedAtKey }}">
+                            @endif
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Status') }}</label>
+                                        <select name="status" class="form-control" required id="status-select">
+                                            <option value="pending" {{ $firstAnswer->status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                            <option value="under_review" {{ in_array($firstAnswer->status, ['under_review', 'IN_REVIEW']) ? 'selected' : '' }}>{{ __('Under Review') }}</option>
+                                            <option value="approved" {{ $firstAnswer->status === 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                                            <option value="rejected" {{ $firstAnswer->status === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="submit" class="btn btn-primary btn-block" id="status-update-btn">
+                                            <i class="fas fa-save mr-2"></i>{{ __('Update Status') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="doctor-notes-row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="doctor_notes">{{ __("Doctor's notes (optional, included in approval email to patient)") }}</label>
+                                        <textarea name="doctor_notes" id="doctor_notes" class="form-control" rows="2" maxlength="2000" placeholder="{{ __('e.g. Your answers indicate a suitable treatment plan.') }}">{{ old('doctor_notes') }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="rejection-reason-row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label for="rejection_reason">{{ __('Rejection reason (optional, included in rejection email to patient)') }}</label>
+                                        <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="2" maxlength="2000" placeholder="{{ __('e.g. Additional information required.') }}">{{ old('rejection_reason') }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     @endif
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>{{ __('Status') }}</label>
-                                <select name="status" class="form-control" required id="status-select">
-                                    <option value="pending" {{ $firstAnswer->status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
-                                    <option value="under_review" {{ in_array($firstAnswer->status, ['under_review', 'IN_REVIEW']) ? 'selected' : '' }}>{{ __('Under Review') }}</option>
-                                    <option value="approved" {{ $firstAnswer->status === 'approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
-                                    <option value="rejected" {{ $firstAnswer->status === 'rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <button type="submit" class="btn btn-primary btn-block" id="status-update-btn">
-                                    <i class="fas fa-save mr-2"></i>{{ __('Update Status') }}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" id="doctor-notes-row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="doctor_notes">{{ __("Doctor's notes (optional, included in approval email to patient)") }}</label>
-                                <textarea name="doctor_notes" id="doctor_notes" class="form-control" rows="2" maxlength="2000" placeholder="{{ __('e.g. Your answers indicate a suitable treatment plan.') }}">{{ old('doctor_notes') }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" id="rejection-reason-row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label for="rejection_reason">{{ __('Rejection reason (optional, included in rejection email to patient)') }}</label>
-                                <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="2" maxlength="2000" placeholder="{{ __('e.g. Additional information required.') }}">{{ old('rejection_reason') }}</textarea>
-                            </div>
-                        </div>
-                    </div>
-                </form>
                 @else
                 <p class="text-muted mb-0">{{ __('You can view this questionnaire but cannot change its status.') }}</p>
                 @endif
