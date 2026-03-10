@@ -350,6 +350,10 @@ h6,
     animation: float 6s ease-in-out infinite;
 }
 
+.bloomwell-floating-card .rounded-circle {
+    background-color: #ef8e15 !important;
+}
+
 .shadow-bloomwell {
     box-shadow: 0 10px 40px rgba(74, 58, 255, 0.45) !important;
 }
@@ -473,6 +477,7 @@ h6,
     width: 64px;
     height: 64px;
     font-size: 32px;
+    background-color: #ef8e15 !important;
 }
 
 .step-number {
@@ -484,6 +489,8 @@ h6,
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #ef8e15 !important;
+    border-color: #ef8e15 !important;
 }
 
 .step-connector::after {
@@ -493,7 +500,7 @@ h6,
     left: 60%;
     width: 100%;
     height: 2px;
-    background: linear-gradient(to right, rgba(74, 58, 255, 0.3), rgba(74, 58, 255, 0.2));
+    background: linear-gradient(to right, rgba(239, 142, 21, 0.3), rgba(239, 142, 21, 0.2)) !important;
 }
 
 /* Feature Icons */
@@ -501,6 +508,11 @@ h6,
     width: 64px;
     height: 64px;
     font-size: 32px;
+    background-color: #ef8e15 !important;
+}
+
+.feature-icon i {
+    color: #ffffff !important;
 }
 
 /* Testimonials */

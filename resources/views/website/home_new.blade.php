@@ -697,7 +697,7 @@
                     </div>
                 </div>
 
-                <div class="card mt-4 bg-white text-dark border-0 shadow-bloomwell">
+                <div class="card mt-4 bg-white text-dark border-0">
                     <div class="card-body text-center p-4">
                         <h5 class="fw-semibold mb-2">Still have questions?</h5>
                         <p class="text-muted mb-3">Our customer support team is here to help you</p>
