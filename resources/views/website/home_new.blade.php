@@ -257,7 +257,7 @@
             <p class="lead" style="color: rgba(255,255,255,0.8);">Your treatment in just 4 simple steps</p>
         </div>
 
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-5">
             <div class="col-md-6 col-lg-3">
                 <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 position-relative shadow-bloomwell">
                     <div class="step-connector d-none d-lg-block"></div>
@@ -407,7 +407,7 @@
             <p class="lead" style="color: rgba(255,255,255,0.8);">The advantages of our online medical practice</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 mb-4">
             <div class="col-md-6 col-lg-3">
                 <div class="card bg-white text-dark border-0 rounded-3 p-4 text-center h-100 shadow-bloomwell">
                     <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
