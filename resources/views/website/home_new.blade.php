@@ -315,7 +315,7 @@
         </div>
 
         <div class="text-center">
-            <a href="{{ route('categories') }}" class="btn btn-primary btn-lg">Start treatment now</a>
+            <a href="{{ route('categories') }}" class="btn btn-primary btn-lg btn-start-treatment">Start treatment now</a>
         </div>
     </div>
 </section>

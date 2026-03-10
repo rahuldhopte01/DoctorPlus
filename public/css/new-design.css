@@ -91,8 +91,9 @@ h6,
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
-    background-color: var(--cta-hover);
-    border-color: var(--cta-hover);
+    background-color: transparent !important;
+    border-color: var(--cta-color) !important;
+    color: var(--cta-color) !important;
 }
 
 .btn-outline-primary {
@@ -320,7 +321,7 @@ h6,
 .bloomwell-btn {
     background-color: var(--primary-color);
     color: white;
-    border: none;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     padding: 12px 24px;
     font-weight: 700;
@@ -328,9 +329,10 @@ h6,
 }
 
 .bloomwell-btn:hover {
-    background-color: var(--primary-hover);
+    background-color: transparent;
+    border-color: var(--primary-color);
     transform: translateY(-2px);
-    color: white;
+    color: var(--primary-color);
 }
 
 /* Floating feature cards */
@@ -913,7 +915,6 @@ a:hover {
 .btn-primary,
 .btn-secondary,
 .btn-outline-primary,
-.bloomwell-btn,
 .filter-btn,
 button.bg-primary,
 a.bg-primary,
@@ -933,7 +934,6 @@ input[type="submit"].bg-primary {
 .btn-primary:focus,
 .btn:active,
 .btn-primary:active,
-.bloomwell-btn:hover,
 .filter-btn:hover,
 .filter-btn.active,
 button.bg-primary:hover,
@@ -942,6 +942,25 @@ input[type="submit"].bg-primary:hover {
     background-color: #00bda6 !important;
     color: #ffffff !important;
     border-color: #00bda6 !important;
+}
+
+/* Specific buttons that are solid by default and transparent on hover */
+.bloomwell-btn,
+.btn.btn-start-treatment {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+.bloomwell-btn:hover,
+.btn.btn-start-treatment:hover,
+.btn.btn-start-treatment:focus,
+.btn.btn-start-treatment:active {
+    background-color: transparent !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
 }
 
 /* ===== Our Treatment Areas Carousel ===== */
