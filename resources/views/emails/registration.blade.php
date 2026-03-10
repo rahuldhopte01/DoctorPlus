@@ -17,7 +17,7 @@
             <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
               <tr>
                 <td style="vertical-align:middle;">
-                  <span style="font-family:'Georgia',serif;font-size:32px;font-weight:700;color:#ffffff;letter-spacing:-1px;">{{ $appName ?? 'dr.fuxx' }}</span>
+                  <img src="{{ asset('images/13.png') }}" alt="{{ $appName ?? 'dr.fuxx' }}" style="max-width:180px;height:auto;display:block;margin:0 auto;" />
                 </td>
               </tr>
             </table>

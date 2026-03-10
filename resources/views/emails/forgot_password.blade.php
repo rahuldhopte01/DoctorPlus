@@ -17,14 +17,7 @@
             <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
               <tr>
                 <td style="vertical-align:middle;">
-                  <span style="font-family:'Georgia',serif;font-size:32px;font-weight:700;color:#ffffff;letter-spacing:-1px;">{{ $appName ?? 'dr.fuxx' }}</span>
-                </td>
-                <td style="padding-left:10px;vertical-align:middle;">
-                  <svg width="48" height="40" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M60 10 C70 5, 95 2, 110 20 C118 30, 115 50, 100 60 C90 66, 75 68, 65 75 C58 80, 55 88, 52 95" stroke="#E87B1E" stroke-width="4" fill="none" stroke-linecap="round"/>
-                    <path d="M60 10 C55 5, 35 8, 25 25 C18 38, 22 55, 35 65 C45 73, 55 76, 52 95" stroke="#E87B1E" stroke-width="4" fill="none" stroke-linecap="round"/>
-                    <circle cx="52" cy="95" r="4" fill="#E87B1E"/>
-                  </svg>
+                  <img src="{{ asset('images/13.png') }}" alt="{{ $appName ?? 'dr.fuxx' }}" style="max-width:180px;height:auto;display:block;margin:0 auto;" />
                 </td>
               </tr>
             </table>
