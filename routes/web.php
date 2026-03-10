@@ -143,7 +143,11 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('/questionnaire/category/{categoryId}/section/{sectionIndex}', [WebQuestionnaireController::class, 'showSection'])->name('questionnaire.section');
         Route::post('/questionnaire/category/{categoryId}/save', [WebQuestionnaireController::class, 'saveAnswers'])->name('questionnaire.save');
         Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
+        Route::post('/questionnaire/category/{categoryId}/prepare-submit', [WebQuestionnaireController::class, 'prepareSubmit'])->name('questionnaire.prepare-submit');
         Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
+        Route::get('/questionnaire/category/{categoryId}/payment', [\App\Http\Controllers\Website\QuestionnairePaymentController::class, 'showPaymentPage'])->name('questionnaire.payment');
+        Route::post('/questionnaire/category/{categoryId}/create-checkout-session', [\App\Http\Controllers\Website\QuestionnairePaymentController::class, 'createCheckoutSession'])->name('questionnaire.create-checkout');
+        Route::get('/questionnaire/payment/success/{categoryId}', [\App\Http\Controllers\Website\QuestionnairePaymentController::class, 'paymentSuccess'])->name('questionnaire.payment.success');
         Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
         Route::get('/questionnaire/category/{categoryId}/check-status', [WebQuestionnaireController::class, 'checkSubmissionStatus'])->name('questionnaire.check-status');
         Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {

@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SuperAdmin\CustomController;
+use App\Mail\QuestionnaireApprovedMail;
+use App\Mail\QuestionnaireRejectedMail;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\QuestionnaireAnswer;
 use App\Models\Category;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\CannaleoMedicine;
 use App\Models\CannaleoPharmacy;
@@ -25,6 +29,7 @@ use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class QuestionnaireReviewController extends Controller
@@ -568,6 +573,8 @@ class QuestionnaireReviewController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,under_review,IN_REVIEW,approved,rejected,REVIEW_COMPLETED',
+            'doctor_notes' => 'nullable|string|max:2000',
+            'rejection_reason' => 'nullable|string|max:2000',
         ]);
         
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
@@ -658,6 +665,52 @@ class QuestionnaireReviewController extends Controller
             $message = __('Questionnaire approved. Create prescription to select medicines and generate prescription and orders.');
         }
 
+        // Send approval or rejection email to patient
+        $setting = Setting::first();
+        if ($setting && $setting->using_mail == 1) {
+            $patient = User::find($userId);
+            if ($patient && $patient->email) {
+                $doctorUser = User::find($doctor->user_id);
+                $doctorName = $doctorUser ? $doctorUser->name : $doctor->name ?? __('Doctor');
+                $submissionId = 'REF-' . $userId . '-' . $categoryId;
+                $reviewDate = now()->format('F j, Y');
+                $dashboardUrl = url('/');
+                $category = Category::find($categoryId);
+                $categorySlug = $category ? $category->id : $categoryId;
+                try {
+                    (new CustomController)->applyMailConfig($setting);
+                    $appName = $setting->business_name ?? config('mail.from.name', 'dr.fuxx');
+                    if ($isApproved) {
+                        Mail::to($patient->email)->send(new QuestionnaireApprovedMail([
+                            'customer_name' => $patient->name,
+                            'doctor_name' => $doctorName,
+                            'doctor_notes' => $request->input('doctor_notes', ''),
+                            'review_date' => $reviewDate,
+                            'submission_id' => $submissionId,
+                            'next_step_1' => __('Log in to your account to view your prescription and next steps.'),
+                            'next_step_2' => __('Complete any required payment if applicable.'),
+                            'next_step_3' => __('Collect your prescription from your chosen pharmacy or follow delivery instructions.'),
+                            'dashboard_url' => $dashboardUrl,
+                            'app_name' => $appName,
+                        ]));
+                    } else {
+                        Mail::to($patient->email)->send(new QuestionnaireRejectedMail([
+                            'customer_name' => $patient->name,
+                            'doctor_name' => $doctorName,
+                            'rejection_reason' => $request->input('rejection_reason', __('Please contact us for more details.')),
+                            'review_date' => $reviewDate,
+                            'submission_id' => $submissionId,
+                            'refund_policy_text' => __('If you have paid for this consultation, please contact our support team regarding refund eligibility.'),
+                            'resubmit_url' => url('/questionnaire/category/' . $categorySlug),
+                            'app_name' => $appName,
+                        ]));
+                    }
+                } catch (\Exception $e) {
+                    Log::info('Questionnaire approval/rejection email failed: ' . $e->getMessage());
+                }
+            }
+        }
+
         $url = route('doctor.questionnaire.show', [
             'userId' => $userId,
             'categoryId' => $categoryId,
@@ -728,7 +781,7 @@ class QuestionnaireReviewController extends Controller
             'user_id' => $userId,
             'doctor_id' => $doctor->id,
             'medicines' => json_encode($prescriptionMedicines),
-            'status' => 'approved_pending_payment',
+            'status' => 'active',
             'validity_days' => $validityDays,
             'valid_from' => $validFrom,
             'valid_until' => $validUntil,
@@ -1100,7 +1153,7 @@ class QuestionnaireReviewController extends Controller
                 'user_id' => $userId,
                 'doctor_id' => $doctor->id,
                 'medicines' => json_encode($prescriptionMedicines),
-                'status' => 'approved_pending_payment',
+                'status' => 'active',
                 'valid_from' => null,
                 'valid_until' => null,
                 'validity_days' => null,

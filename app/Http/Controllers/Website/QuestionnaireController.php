@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SuperAdmin\CustomController;
+use App\Mail\QuestionnaireSubmittedMail;
 use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireAnswer;
+use App\Models\Setting;
 use App\Services\QuestionnaireService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
@@ -506,6 +510,232 @@ class QuestionnaireController extends Controller
     }
 
     /**
+     * Prepare questionnaire for submission: validate, move files, store in session, return redirect to payment.
+     * After payment, completeSubmissionAfterPayment() is called to finish the submission.
+     */
+    public function prepareSubmit(Request $request, $categoryId)
+    {
+        $result = $this->validateAndPrepareSubmissionData($request, $categoryId);
+        if ($result !== true) {
+            return $result;
+        }
+
+        $pending = session()->get('questionnaire_pending_payment_' . $categoryId);
+        if (!$pending) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Session error. Please try again.'),
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/payment'),
+        ]);
+    }
+
+    /**
+     * Complete questionnaire submission after successful payment. Called from QuestionnairePaymentController.
+     * Returns the redirect URL for the next step.
+     */
+    public function completeSubmissionAfterPayment($categoryId): string
+    {
+        $pending = session()->get('questionnaire_pending_payment_' . $categoryId);
+        if (!$pending) {
+            return url('/questionnaire/category/' . $categoryId);
+        }
+
+        $category = Category::find($categoryId);
+        $questionnaire = $this->questionnaireService->getQuestionnaireForCategory($categoryId);
+        if (!$category || !$questionnaire) {
+            return url('/');
+        }
+
+        $answers = $pending['answers'];
+        $permanentFiles = $pending['permanent_files'] ?? [];
+        $submissionFlow = $pending['submission_flow'] ?? 'with_medicine';
+        $flagCheck = $pending['flag_check'] ?? ['flags' => []];
+
+        if (Schema::hasColumn('questionnaire_answers', 'user_id')) {
+            QuestionnaireAnswer::whereNull('appointment_id')
+                ->where('user_id', Auth::id())
+                ->where('category_id', $categoryId)
+                ->where('questionnaire_id', $questionnaire->id)
+                ->where('status', 'pending')
+                ->delete();
+        }
+
+        if (Schema::hasColumn('questionnaire_answers', 'user_id')) {
+            try {
+                $this->questionnaireService->saveAnswersImmediate(
+                    Auth::id(),
+                    $categoryId,
+                    $questionnaire,
+                    $answers,
+                    $permanentFiles,
+                    'pending'
+                );
+            } catch (\Exception $e) {
+                \Log::error('Error completing questionnaire after payment: ' . $e->getMessage());
+                return url('/questionnaire/category/' . $categoryId);
+            }
+        }
+
+        session()->put('questionnaire_submitted_' . $categoryId, [
+            'questionnaire_id' => $questionnaire->id,
+            'category_id' => $categoryId,
+            'treatment_id' => $category->treatment_id,
+            'answers' => $answers,
+            'files' => $permanentFiles,
+            'flags' => $flagCheck['flags'] ?? [],
+            'version' => $questionnaire->version,
+            'submitted_at' => now()->toDateTimeString(),
+            'user_id' => Auth::id(),
+        ]);
+
+        $isCannaleoOnly = (bool) $category->is_cannaleo_only;
+        $submissionData = [
+            'status' => 'pending',
+            'delivery_type' => $isCannaleoOnly ? 'cannaleo' : ($submissionFlow === 'prescription_only' ? 'prescription_only' : null),
+        ];
+        \App\Models\QuestionnaireSubmission::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'category_id' => $categoryId,
+                'questionnaire_id' => $questionnaire->id,
+            ],
+            $submissionData
+        );
+
+        if ($isCannaleoOnly) {
+            return url('/questionnaire/category/' . $categoryId . '/cannaleo-pharmacy-selection');
+        }
+        if ($submissionFlow === 'prescription_only') {
+            return url('/questionnaire/category/' . $categoryId . '/medicine-selection');
+        }
+        return url('/questionnaire/category/' . $categoryId . '/delivery-choice');
+    }
+
+    /**
+     * Validate and prepare submission data; store in session for payment. Returns true on success or a JSON response on failure.
+     */
+    protected function validateAndPrepareSubmissionData(Request $request, $categoryId)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => __('Please login to submit')], 401);
+        }
+
+        $category = Category::findOrFail($categoryId);
+        $questionnaire = $this->questionnaireService->getQuestionnaireForCategory($categoryId);
+        $canSubmit = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
+        if (!$canSubmit['can_submit']) {
+            return response()->json([
+                'success' => false,
+                'blocked' => true,
+                'message' => $canSubmit['message'],
+            ], 422);
+        }
+        if (!$questionnaire) {
+            return response()->json(['success' => false, 'message' => __('Questionnaire not found')], 404);
+        }
+
+        $answers = $request->input('answers', []);
+        $submissionFlow = $request->input('submission_flow', 'with_medicine');
+        $normalizedAnswers = [];
+        foreach ($answers as $questionId => $answer) {
+            $questionId = (int) $questionId;
+            if (is_string($answer)) {
+                $answer = trim($answer);
+                if ($answer === '') $answer = null;
+            } elseif (is_array($answer)) {
+                $answer = array_values(array_filter(array_map(function ($item) {
+                    return is_string($item) ? (trim($item) === '' ? null : trim($item)) : $item;
+                }, $answer)));
+                if (empty($answer)) $answer = null;
+            }
+            $normalizedAnswers[$questionId] = $answer;
+        }
+        $answers = $normalizedAnswers;
+        $files = $request->file('files', []);
+        $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
+        $uploadedFiles = $savedData['files'] ?? [];
+
+        if (!empty($files)) {
+            $uploadDir = 'questionnaire_uploads/temp/' . Auth::id() . '/' . $categoryId;
+            if (!is_dir(public_path($uploadDir))) {
+                mkdir(public_path($uploadDir), 0755, true);
+            }
+            foreach ($files as $questionId => $file) {
+                $questionId = (int) $questionId;
+                $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
+                $extension = strtolower($file->getClientOriginalExtension());
+                if (!in_array($extension, $allowedTypes)) {
+                    return response()->json(['success' => false, 'errors' => [$questionId => __('File type not allowed. Allowed types: PDF, JPG, PNG')]]);
+                }
+                if ($file->getSize() > 5242880) {
+                    return response()->json(['success' => false, 'errors' => [$questionId => __('File size exceeds 5MB limit')]]);
+                }
+                $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+                $file->move(public_path($uploadDir), $filename);
+                $uploadedFiles[$questionId] = $uploadDir . '/' . $filename;
+                $answers[$questionId] = $uploadDir . '/' . $filename;
+            }
+        }
+
+        $errors = $this->questionnaireService->validateAnswers($questionnaire, $answers);
+        if (!empty($errors)) {
+            $enrichedErrors = [];
+            $sections = $questionnaire->sections()->with('questions')->orderBy('order')->get();
+            foreach ($sections as $section) {
+                foreach ($section->questions as $q) {
+                    if (isset($errors[$q->id])) $enrichedErrors[$q->id] = $errors[$q->id];
+                }
+            }
+            return response()->json(['success' => false, 'errors' => $enrichedErrors]);
+        }
+
+        $flagCheck = $this->questionnaireService->checkForBlockingFlags($questionnaire, $answers);
+        if ($flagCheck['has_hard_block']) {
+            return response()->json([
+                'success' => false,
+                'blocked' => true,
+                'message' => __('Based on your answers, you are not eligible for this treatment. Please consult with a healthcare provider.'),
+                'flags' => $flagCheck['flags'],
+            ]);
+        }
+
+        $permanentFiles = [];
+        foreach ($uploadedFiles as $questionId => $filePath) {
+            $questionId = (int) $questionId;
+            if (strpos($filePath, 'temp/') === false) {
+                $permanentFiles[$questionId] = str_replace('questionnaire_uploads/', '', $filePath);
+            } else {
+                $tempPath = public_path('questionnaire_uploads/' . $filePath);
+                if (file_exists($tempPath)) {
+                    $userDir = 'questionnaire_uploads/user/' . Auth::id() . '/' . $categoryId;
+                    if (!is_dir(public_path($userDir))) {
+                        mkdir(public_path($userDir), 0755, true);
+                    }
+                    $filename = basename($filePath);
+                    $newPath = $userDir . '/' . $filename;
+                    rename($tempPath, public_path($newPath));
+                    $permanentFiles[$questionId] = str_replace('questionnaire_uploads/', '', $newPath);
+                }
+            }
+        }
+
+        session()->put('questionnaire_pending_payment_' . $categoryId, [
+            'answers' => $answers,
+            'permanent_files' => $permanentFiles,
+            'submission_flow' => $submissionFlow,
+            'flag_check' => $flagCheck,
+            'category_id' => $categoryId,
+            'questionnaire_id' => $questionnaire->id,
+        ]);
+        return true;
+    }
+
+    /**
      * Final submit questionnaire - Phase 6
      * Validates, checks flags, stores in session for later use
      */
@@ -746,6 +976,26 @@ class QuestionnaireController extends Controller
             ],
             $submissionData
         );
+
+        // Send questionnaire submitted email to patient
+        $setting = Setting::first();
+        if ($setting && $setting->using_mail == 1) {
+            try {
+                (new CustomController)->applyMailConfig($setting);
+                $user = Auth::user();
+                $submissionId = 'REF-' . $submission->id . '-' . $categoryId;
+                Mail::to($user->email)->send(new QuestionnaireSubmittedMail([
+                    'customer_name' => $user->name,
+                    'submission_id' => $submissionId,
+                    'submission_date' => now()->format('F j, Y H:i'),
+                    'questionnaire_category' => $category->name ?? $category->treatment->name ?? __('Questionnaire'),
+                    'review_timeframe' => __('24-48 hours'),
+                    'app_name' => $setting->business_name ?? config('mail.from.name', 'dr.fuxx'),
+                ]));
+            } catch (\Exception $e) {
+                \Log::info('Questionnaire submitted email failed: ' . $e->getMessage());
+            }
+        }
 
         if ($isCannaleoOnly) {
             return response()->json([

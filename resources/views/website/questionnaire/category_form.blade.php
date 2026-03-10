@@ -610,7 +610,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const formData = new FormData(form);
 
-        fetch('{{ route("questionnaire.submit", ["categoryId" => $category->id]) }}', {
+        fetch('{{ route("questionnaire.prepare-submit", ["categoryId" => $category->id]) }}', {
             method: 'POST',
             body: formData,
             headers: {
@@ -647,17 +647,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 // Clear localStorage
                 localStorage.removeItem('questionnaire_answers_' + categoryId);
-                
-                if (data.has_warnings && data.flags) {
-                    warningFlags.classList.remove('hidden');
-                    Object.values(data.flags).forEach(flag => {
-                        const li = document.createElement('li');
-                        li.textContent = flag.flag_message;
-                        warningList.appendChild(li);
-                    });
-                }
 
-                // Redirect to success page
+                // Redirect to payment page (after payment, questionnaire is submitted and user is redirected to next step)
                 if (data.redirect_url) {
                     window.location.href = data.redirect_url;
                 } else {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\SuperAdmin\CustomController;
+use App\Mail\RegistrationMail;
 use App\Mail\SendMail;
 use App\Models\Appointment;
 use App\Models\Banner;
@@ -115,6 +116,27 @@ class UserApiController extends Controller
         $data['image'] = 'defaultUser.png';
         $data['status'] = 1;
         $user = User::create($data);
+
+        // Send registration confirmation email
+        $setting = Setting::first();
+        if ($setting && $setting->using_mail == 1) {
+            try {
+                (new CustomController)->applyMailConfig($setting);
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new RegistrationMail([
+                    'customer_name' => $user->name,
+                    'customer_email' => $user->email,
+                    'registration_date' => now()->format('F j, Y'),
+                    'login_url' => url('/patient-login'),
+                    'year' => date('Y'),
+                    'privacy_url' => url('/privacy-policy'),
+                    'contact_url' => url('/'),
+                    'app_name' => $setting->business_name ?? config('mail.from.name', 'dr.fuxx'),
+                ]));
+            } catch (\Exception $e) {
+                \Log::info('Registration email failed (API): ' . $e->getMessage());
+            }
+        }
+
         if ($user->verify == 1) {
             if (Auth::attempt(['email' => $user['email'], 'password' => $request->password])) {
                 $user['token'] = $user->createToken('doctor')->accessToken;

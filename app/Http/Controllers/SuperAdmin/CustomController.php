@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OtpMail;
 use App\Mail\SendMail;
 use App\Models\Appointment;
 use App\Models\Category;
@@ -331,7 +332,16 @@ class CustomController extends Controller
             if ($isMailNotificationON == 1 || $force) {
                 try {
                     $this->applyMailConfig($setting);
-                    Mail::to($user->email)->send(new SendMail($mail1, $subject));
+                    $otpExpiryMinutes = (int) (config('auth.otp_expiry_minutes', 10) ?: 10);
+                    Mail::to($user->email)->send(new OtpMail([
+                        'customer_name' => $user->name,
+                        'otp_code' => (string) $otp,
+                        'otp_expiry' => $otpExpiryMinutes,
+                        'year' => date('Y'),
+                        'privacy_url' => url('/privacy-policy'),
+                        'contact_url' => url('/'),
+                        'app_name' => $setting->business_name ?? config('mail.from.name', 'dr.fuxx'),
+                    ]));
                 } catch (\Exception $e) {
                     info($e);
                 }
