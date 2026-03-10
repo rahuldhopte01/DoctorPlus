@@ -220,6 +220,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row" id="doctor-notes-row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="doctor_notes">{{ __("Doctor's notes (optional, included in approval email to patient)") }}</label>
+                                <textarea name="doctor_notes" id="doctor_notes" class="form-control" rows="2" maxlength="2000" placeholder="{{ __('e.g. Your answers indicate a suitable treatment plan.') }}">{{ old('doctor_notes') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="rejection-reason-row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="rejection_reason">{{ __('Rejection reason (optional, included in rejection email to patient)') }}</label>
+                                <textarea name="rejection_reason" id="rejection_reason" class="form-control" rows="2" maxlength="2000" placeholder="{{ __('e.g. Additional information required.') }}">{{ old('rejection_reason') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
                 </form>
                 @else
                 <p class="text-muted mb-0">{{ __('You can view this questionnaire but cannot change its status.') }}</p>

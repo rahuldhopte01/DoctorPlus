@@ -22,7 +22,30 @@
 
             <!-- Right Side -->
             <div class="flex items-center space-x-4">
-                
+                @php
+                    $website_languages = \App\Models\Language::where('status', 1)->get();
+                    $current_lang = \App\Models\Language::where('name', session('locale'))->first();
+                    $current_lang_image = $current_lang ? $current_lang->image : 'english.png';
+                @endphp
+                @if($website_languages->count() > 1)
+                <!-- Language Switcher -->
+                <div class="relative" id="lang-dropdown-wrapper">
+                    <button type="button" class="flex items-center gap-1.5 text-gray-600 hover:text-primary font-body text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-lg px-2 py-1.5" id="lang-menu-button" aria-expanded="false" aria-haspopup="true" onclick="document.getElementById('lang-dropdown').classList.toggle('hidden')">
+                        <img class="h-5 w-5 rounded object-cover" src="{{ asset('images/upload/'.$current_lang_image) }}" alt="{{ session('locale', 'en') }}">
+                        <span class="hidden sm:inline font-medium">{{ $current_lang ? $current_lang->name : __('English') }}</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                    </button>
+                    <div class="hidden absolute right-0 mt-2 w-44 rounded-lg shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50" role="menu" id="lang-dropdown">
+                        @foreach ($website_languages as $lang)
+                        <a href="{{ url('/select_language/'.$lang->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 font-body hover:bg-gray-100 no-underline hover:no-underline {{ session('locale') == $lang->name ? 'bg-gray-50 font-medium' : '' }}" role="menuitem">
+                            <img class="h-5 w-5 rounded object-cover flex-shrink-0" src="{{ asset('images/upload/'.$lang->image) }}" alt="{{ $lang->name }}">
+                            <span>{{ $lang->name }}</span>
+                        </a>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 @if (auth()->check())
                     <!-- User Dropdown -->
                     <div class="relative ml-3">
@@ -72,6 +95,19 @@
     <!-- Mobile Menu -->
     <div class="hidden md:hidden" id="mobile-menu">
         <div class="pt-2 pb-3 space-y-1 px-4">
+            @if($website_languages->count() > 1)
+            <div class="pl-3 pr-4 py-2 border-l-4 border-transparent">
+                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Language') }}</span>
+                <div class="mt-1 flex flex-wrap gap-2">
+                    @foreach ($website_languages as $lang)
+                    <a href="{{ url('/select_language/'.$lang->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium {{ session('locale') == $lang->name ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} no-underline hover:no-underline">
+                        <img class="h-4 w-4 rounded object-cover" src="{{ asset('images/upload/'.$lang->image) }}" alt="{{ $lang->name }}">
+                        {{ $lang->name }}
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
             <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Treatments') }}</a>
             <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('How it works') }}</a>
             <a href="{{ url('about-us') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('About us') }}</a>

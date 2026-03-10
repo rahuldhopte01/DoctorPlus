@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SuperAdmin\CustomController;
+use App\Mail\ForgotPasswordMail;
 use App\Mail\SendMail;
 use App\Models\Appointment;
 use App\Models\Banner;
@@ -103,6 +104,9 @@ class WebsiteController extends Controller
             'gender' => $data['gender'],
         ]);
         Auth::loginUsingId($user->id);
+
+        // Send registration confirmation email (same trigger logic as OTP: using_mail or force)
+        (new CustomController)->sendRegistrationMail($user, true);
 
         if ($user->verify) {
             return redirect('/');
@@ -506,12 +510,8 @@ class WebsiteController extends Controller
             abort(403, 'Unauthorized');
         }
         
-        // Check if payment is required and status allows download
-        if ($prescription->status === 'approved_pending_payment') {
-            return redirect(url('/user_profile'))->with('error', __('Payment required to download prescription.'));
-        }
-        
-        if (!in_array($prescription->status, ['active', 'approved']) || !$prescription->isValid()) {
+        // Allow download for active, approved, or legacy approved_pending_payment (no payment required)
+        if (!in_array($prescription->status, ['active', 'approved', 'approved_pending_payment']) || !$prescription->isValid()) {
             return redirect(url('/user_profile'))->with('error', __('Prescription is not available for download.'));
         }
 
@@ -1672,20 +1672,16 @@ class WebsiteController extends Controller
             $user->password = Hash::make($password);
             $user->save();
 
-            $template = NotificationTemplate::where('title', 'forgot password')->first();
-            $placeholders = [
-                '{{user_name}}' => $user->name,
-                '{{password}}' => $password,
-                '{{app_name}}' => $setting->business_name,
-            ];
-
-            $placeholder_keys = array_keys($placeholders);
-            $placeholder_values = array_values($placeholders);
-            $mail_content = str_ireplace($placeholder_keys, $placeholder_values, $template->mail_content);
-
             try {
                 (new CustomController)->applyMailConfig($setting);
-                Mail::to($user->email)->send(new SendMail($mail_content, $template->subject));
+                Mail::to($user->email)->send(new ForgotPasswordMail([
+                    'customer_name' => $user->name,
+                    'customer_email' => $user->email,
+                    'new_password' => $password,
+                    'change_date' => now()->format('F j, Y'),
+                    'change_time' => now()->format('g:i A'),
+                    'login_url' => url('/patient-login'),
+                ]));
             } catch (\Exception $e) {
                 info($e);
 

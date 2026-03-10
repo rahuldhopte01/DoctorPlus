@@ -49,6 +49,7 @@ class Setting extends Model
         'zoom_page_content',
         'stripe_webhook_secret',
         'prescription_fee',
+        'questionnaire_submission_fee',
     ];
 
     protected $appends = ['companyWhite', 'logo', 'favicon'];

@@ -109,12 +109,8 @@ class Prescription extends Model
      */
     public function canBeDownloaded(): bool
     {
-        // Must be active/approved AND not expired AND paid (if payment was required)
-        if ($this->status === 'approved_pending_payment') {
-            return false; // Not paid yet
-        }
-        
-        return in_array($this->status, ['active', 'approved']) && $this->isValid();
+        // Prescriptions can be downloaded without payment (payment is at questionnaire submission)
+        return in_array($this->status, ['active', 'approved', 'approved_pending_payment']) && $this->isValid();
     }
 
     /**
@@ -122,12 +118,7 @@ class Prescription extends Model
      */
     public function canBeViewed(): bool
     {
-        // Can view if paid or if status is active/approved
-        if ($this->status === 'approved_pending_payment') {
-            return false; // Cannot view until paid
-        }
-        
-        return in_array($this->status, ['active', 'approved']);
+        return in_array($this->status, ['active', 'approved', 'approved_pending_payment']);
     }
 
     /**

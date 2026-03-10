@@ -256,12 +256,7 @@
                                                                 @endif
                                                             </td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-left align-middle">
-                                                                @if($prescription->status === 'approved_pending_payment')
-                                                                    <a href="{{ url('prescription/pay/' . $prescription->id) }}" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white btn-violet focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A3AFF]">
-                                                                        <i class="fas fa-credit-card mr-1.5"></i>
-                                                                        {{ __('Pay') }} {{ $prescription->getFormattedPaymentAmount() }}
-                                                                    </a>
-                                                                @elseif(in_array($prescription->status, ['active', 'approved']) && $prescription->isValid())
+                                                                @if(in_array($prescription->status, ['active', 'approved', 'approved_pending_payment']) && $prescription->isValid())
                                                                     <a href="{{ url('downloadPDF/' . $prescription->id) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A3AFF]">
                                                                         <i class="fas fa-download mr-1.5"></i>
                                                                         {{ __('Download') }}

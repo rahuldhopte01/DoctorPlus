@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SuperAdmin\CustomController;
 use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\QuestionnaireAnswer;
@@ -568,6 +569,8 @@ class QuestionnaireReviewController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,under_review,IN_REVIEW,approved,rejected,REVIEW_COMPLETED',
+            'doctor_notes' => 'nullable|string|max:2000',
+            'rejection_reason' => 'nullable|string|max:2000',
         ]);
         
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();
@@ -658,6 +661,35 @@ class QuestionnaireReviewController extends Controller
             $message = __('Questionnaire approved. Create prescription to select medicines and generate prescription and orders.');
         }
 
+        // Send approval or rejection email to patient (same trigger logic as OTP)
+        $patient = User::find($userId);
+        if ($patient && $patient->email) {
+            $doctorUser = User::find($doctor->user_id);
+            $doctorName = $doctorUser ? $doctorUser->name : $doctor->name ?? __('Doctor');
+            $submissionId = 'REF-' . $userId . '-' . $categoryId;
+            $reviewDate = now()->format('F j, Y');
+            $category = Category::find($categoryId);
+            $categorySlug = $category ? $category->id : $categoryId;
+            $customController = new CustomController;
+            if ($isApproved) {
+                $customController->sendQuestionnaireApprovedMail($patient->email, [
+                    'customer_name' => $patient->name,
+                    'doctor_name' => $doctorName,
+                    'doctor_notes' => $request->input('doctor_notes', ''),
+                    'review_date' => $reviewDate,
+                    'submission_id' => $submissionId,
+                ], true);
+            } else {
+                $customController->sendQuestionnaireRejectedMail($patient->email, [
+                    'customer_name' => $patient->name,
+                    'doctor_name' => $doctorName,
+                    'rejection_reason' => $request->input('rejection_reason', __('Please contact us for more details.')),
+                    'review_date' => $reviewDate,
+                    'submission_id' => $submissionId,
+                ], true);
+            }
+        }
+
         $url = route('doctor.questionnaire.show', [
             'userId' => $userId,
             'categoryId' => $categoryId,
@@ -728,7 +760,7 @@ class QuestionnaireReviewController extends Controller
             'user_id' => $userId,
             'doctor_id' => $doctor->id,
             'medicines' => json_encode($prescriptionMedicines),
-            'status' => 'approved_pending_payment',
+            'status' => 'active',
             'validity_days' => $validityDays,
             'valid_from' => $validFrom,
             'valid_until' => $validUntil,
@@ -1100,7 +1132,7 @@ class QuestionnaireReviewController extends Controller
                 'user_id' => $userId,
                 'doctor_id' => $doctor->id,
                 'medicines' => json_encode($prescriptionMedicines),
-                'status' => 'approved_pending_payment',
+                'status' => 'active',
                 'valid_from' => null,
                 'valid_until' => null,
                 'validity_days' => null,

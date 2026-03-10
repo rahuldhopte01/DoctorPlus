@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ForgotPasswordMail;
 use App\Mail\SendMail;
 use App\Mail\TestMail;
 use App\Models\Language;
@@ -141,28 +142,20 @@ class AdminController extends Controller
         $user = User::where('email', $request->email)->first();
         $setting = Setting::first();
         if ($user) {
-            $notification_template = NotificationTemplate::where('title', 'forgot password')->first();
             $password = rand(100000, 999999);
             $user->password = Hash::make($password);
             $user->save();
 
-            $placeholders = [
-                '{{user_name}}' => $user->name,
-                '{{password}}' => $password,
-                '{{app_name}}' => $setting->business_name,
-            ];
-
-            $msg1 = $notification_template->msg_content;
-            $mail1 = $notification_template->mail_content;
-
-            $placeholder_keys = array_keys($placeholders);
-            $placeholder_values = array_values($placeholders);
-            $msg1 = str_ireplace($placeholder_keys, $placeholder_values, $msg1);
-            $mail1 = str_ireplace($placeholder_keys, $placeholder_values, $mail1);
-
             try {
                 (new CustomController)->applyMailConfig($setting);
-                Mail::to($user->email)->send(new SendMail($mail1, $notification_template->subject));
+                Mail::to($user->email)->send(new ForgotPasswordMail([
+                    'customer_name' => $user->name,
+                    'customer_email' => $user->email,
+                    'new_password' => $password,
+                    'change_date' => now()->format('F j, Y'),
+                    'change_time' => now()->format('g:i A'),
+                    'login_url' => url('/login'),
+                ]));
             } catch (\Exception $e) {
                 info($e);
             }
