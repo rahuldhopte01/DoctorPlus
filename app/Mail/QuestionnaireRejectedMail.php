@@ -10,7 +10,7 @@ class QuestionnaireRejectedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $viewData = [];
+    public $viewData = [];
 
     public function __construct(array $data)
     {
