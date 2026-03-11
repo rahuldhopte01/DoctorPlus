@@ -82,6 +82,28 @@ h6,
     font-family: var(--font-heading);
 }
 
+h1 span,
+h2 span,
+h3 span,
+h4 span,
+h5 span,
+h6 span,
+.h1 span,
+.h2 span,
+.h3 span,
+.h4 span,
+.h5 span,
+.h6 span,
+.display-1 span,
+.display-2 span,
+.display-3 span,
+.display-4 span,
+.display-5 span,
+.display-6 span,
+.font-heading span {
+    font-family: inherit;
+}
+
 /* Bootstrap Color Overrides */
 .btn-primary {
     background-color: var(--cta-color);

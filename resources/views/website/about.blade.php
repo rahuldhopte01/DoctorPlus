@@ -102,6 +102,9 @@
             font-family: 'Clash Display', sans-serif;
             color: #2b2b2b;
         }
+        h1 span, h2 span, h3 span, h4 span, h5 span, h6 span {
+            font-family: inherit;
+        }
         
         .badge.shadow-sm {
             font-size: 14px;

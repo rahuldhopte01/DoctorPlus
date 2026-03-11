@@ -78,6 +78,7 @@ $api = new LicenseBoxExternalAPI(); // Initialize a new LicenseBoxAPI object
         }
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, h4, h5, h6 { font-family: 'Clash Display', sans-serif; }
+        h1 span, h2 span, h3 span, h4 span, h5 span, h6 span { font-family: inherit; }
     </style>
 </head>
 
