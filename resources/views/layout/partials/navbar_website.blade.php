@@ -70,11 +70,11 @@
                         </ul>
                     </div>
                 @else
-                    <a href="{{ url('patient-login') }}" class="btn btn-link text-dark text-decoration-none px-0">
-                        <i class="bi bi-person"></i> {{ __('Sign in') }}
+                    <a href="{{ url('patient-login') }}" class="text-decoration-none d-flex align-items-center justify-content-center gap-1" style="color: #00bda6; border: 1px solid #00bda6; border-radius: 6px; background-color: transparent; font-weight: 500; font-size: 0.95rem; height: 38px; padding: 0 16px;">
+                        <i class="bi bi-person" style="font-size: 1.1rem; line-height: 1;"></i> {{ __('Sign in') }}
                     </a>
                 @endif
-                <a href="{{ route('categories') }}" class="btn btn-primary px-4">{{ __('Start treatment') }}</a>
+                <a href="{{ route('categories') }}" class="text-decoration-none d-flex align-items-center justify-content-center" style="color: #00bda6; border: 1px solid #00bda6; border-radius: 6px; background-color: transparent; font-weight: 500; font-size: 0.95rem; height: 38px; padding: 0 16px;">{{ __('Start treatment') }}</a>
             </div>
         </div>
     </div>
