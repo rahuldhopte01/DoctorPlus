@@ -672,7 +672,8 @@ class WebsiteController extends Controller
 
     public function signup()
     {
-        return view('website.signup');
+        $categories = Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
+        return view('website.signup', compact('categories'));
     }
 
     public function labs(Request $request)
@@ -838,7 +839,8 @@ class WebsiteController extends Controller
             }
         }
 
-        return view('website.login');
+        $categories = Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
+        return view('website.login', compact('categories'));
     }
 
     // BookAppointment
@@ -1496,8 +1498,9 @@ class WebsiteController extends Controller
     public function aboutUs()
     {
         $aboutUs = Setting::first()->about_us;
+        $categories = Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
 
-        return view('website.about', compact('aboutUs'));
+        return view('website.about', compact('aboutUs', 'categories'));
     }
 
     public function zoomDocPage()

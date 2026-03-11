@@ -1,120 +1,81 @@
-<nav class="border-b border-gray-100 sticky top-0 z-50" style="background-color: #f2efea;">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center h-20">
-            <!-- Logo -->
-            <div class="flex-shrink-0 flex items-center">
-                <a href="{{ url('/') }}">
-                    @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
-                        <img src="{{$setting->logo}}" class="h-8 w-auto" alt="Logo" />
-                    @else
-                        <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" class="h-8 w-auto" alt="Logo" />
-                    @endif
-                </a>
-            </div>
-
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex space-x-8 items-center ml-auto mr-8">
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Treatments') }}</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('How it works') }}</a>
-                <a href="{{ url('about-us') }}" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('About us') }}</a>
-                <a href="#" class="text-gray-600 hover:text-primary font-fira-sans font-medium text-sm transition-colors no-underline hover:no-underline">{{ __('Help') }}</a>
-            </div>
-
-            <!-- Right Side -->
-            <div class="flex items-center space-x-4">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top border-bottom" style="background-color: #f2efea !important;">
+    <div class="container">
+        <a class="navbar-brand" href="{{ url('/') }}">
+            @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
+                <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}" style="height: 32px;">
+            @else
+                <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}" style="height: 32px;">
+            @endif
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto me-3">
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{{ route('categories') }}">{{ __('Treatments') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{{ url('/#how-it-works') }}">{{ __('How it works') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{{ url('/about-us') }}">{{ __('About us') }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-3" href="{{ url('/#faq') }}">{{ __('Help') }}</a>
+                </li>
+            </ul>
+            
+            <div class="d-flex gap-3 align-items-center mt-3 mt-lg-0">
                 @php
                     $website_languages = \App\Models\Language::where('status', 1)->get();
                     $current_lang = \App\Models\Language::where('name', session('locale'))->first();
                     $current_lang_image = $current_lang ? $current_lang->image : 'english.png';
                 @endphp
                 @if($website_languages->count() > 1)
-                <!-- Language Switcher -->
-                <div class="relative" id="lang-dropdown-wrapper">
-                    <button type="button" class="flex items-center gap-1.5 text-gray-600 hover:text-primary font-body text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-lg px-2 py-1.5" id="lang-menu-button" aria-expanded="false" aria-haspopup="true" onclick="document.getElementById('lang-dropdown').classList.toggle('hidden')">
-                        <img class="h-5 w-5 rounded object-cover" src="{{ asset('images/upload/'.$current_lang_image) }}" alt="{{ session('locale', 'en') }}">
-                        <span class="hidden sm:inline font-medium">{{ $current_lang ? $current_lang->name : __('English') }}</span>
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                <div class="dropdown">
+                    <button class="btn btn-link text-dark text-decoration-none dropdown-toggle px-0 d-flex align-items-center gap-1" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="rounded object-fit-cover" style="width: 20px; height: 20px;" src="{{ asset('images/upload/'.$current_lang_image) }}" alt="{{ session('locale', 'en') }}">
+                        <span class="d-none d-sm-inline small fw-medium">{{ $current_lang ? $current_lang->name : __('English') }}</span>
                     </button>
-                    <div class="hidden absolute right-0 mt-2 w-44 rounded-lg shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-50" role="menu" id="lang-dropdown">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="langDropdown">
                         @foreach ($website_languages as $lang)
-                        <a href="{{ url('/select_language/'.$lang->id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 font-body hover:bg-gray-100 no-underline hover:no-underline {{ session('locale') == $lang->name ? 'bg-gray-50 font-medium' : '' }}" role="menuitem">
-                            <img class="h-5 w-5 rounded object-cover flex-shrink-0" src="{{ asset('images/upload/'.$lang->image) }}" alt="{{ $lang->name }}">
-                            <span>{{ $lang->name }}</span>
-                        </a>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2 {{ session('locale') == $lang->name ? 'bg-light fw-medium' : '' }}" href="{{ url('/select_language/'.$lang->id) }}">
+                                <img class="rounded object-fit-cover" style="width: 20px; height: 20px;" src="{{ asset('images/upload/'.$lang->image) }}" alt="{{ $lang->name }}">
+                                <span>{{ $lang->name }}</span>
+                            </a>
+                        </li>
                         @endforeach
-                    </div>
+                    </ul>
                 </div>
                 @endif
-
-                @if (auth()->check())
-                    <!-- User Dropdown -->
-                    <div class="relative ml-3">
-                        <div>
-                            <button type="button" class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary items-center gap-2" id="user-menu-button" aria-expanded="false" aria-haspopup="true" onclick="document.getElementById('user-dropdown').classList.toggle('hidden')">
-                                <span class="sr-only">Open user menu</span>
-                                <div class="flex flex-col text-right hidden sm:block mr-1">
-                                    <span class="text-sm font-medium text-gray-700 font-body">{{ auth()->user()->name }}</span>
-                                </div>
-                                <img class="h-8 w-8 rounded-full object-cover" src="{{ url('images/upload/'.auth()->user()->image) }}" alt="">
-                            </button>
-                        </div>
-                        <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-dropdown">
-                            <a href="{{ url('user_profile') }}" class="block px-4 py-2 text-sm text-gray-700 font-body hover:bg-gray-100 no-underline hover:no-underline" role="menuitem">{{ __('Dashboard') }}</a>
-                            <a href="javascript:void(0)" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="block px-4 py-2 text-sm text-gray-700 font-body hover:bg-gray-100 no-underline hover:no-underline" role="menuitem">{{ __('Sign out') }}</a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        </div>
+                
+                @if(auth()->check())
+                    <div class="dropdown">
+                        <a href="#" class="btn btn-link text-dark text-decoration-none dropdown-toggle px-0" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person"></i> <span class="d-none d-sm-inline">{{ auth()->user()->name }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ url('user_profile') }}">{{ __('Dashboard') }}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Sign out') }}</a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 @else
-                    <!-- Login Link -->
-                    <a href="{{ url('/patient-login') }}" class="text-gray-600 hover:text-primary font-body font-medium text-sm hidden sm:block no-underline hover:no-underline">{{ __('Log in') }}</a>
-                @endif
-
-                <!-- Start Treatment Button -->
-                <a href="{{ url('/') }}" class="bg-cta hover:bg-orange-600 text-white font-body font-semibold px-5 py-2.5 rounded-lg text-sm transition-colors shadow-sm no-underline hover:no-underline">
-                    {{ __('Start treatment') }}
-                </a>
-
-                <!-- Mobile menu button -->
-                <div class="-mr-2 flex md:hidden">
-                    <button type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" aria-controls="mobile-menu" aria-expanded="false" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile Menu -->
-    <div class="hidden md:hidden" id="mobile-menu">
-        <div class="pt-2 pb-3 space-y-1 px-4">
-            @if($website_languages->count() > 1)
-            <div class="pl-3 pr-4 py-2 border-l-4 border-transparent">
-                <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Language') }}</span>
-                <div class="mt-1 flex flex-wrap gap-2">
-                    @foreach ($website_languages as $lang)
-                    <a href="{{ url('/select_language/'.$lang->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium {{ session('locale') == $lang->name ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }} no-underline hover:no-underline">
-                        <img class="h-4 w-4 rounded object-cover" src="{{ asset('images/upload/'.$lang->image) }}" alt="{{ $lang->name }}">
-                        {{ $lang->name }}
+                    <a href="{{ url('patient-login') }}" class="btn btn-link text-dark text-decoration-none px-0">
+                        <i class="bi bi-person"></i> {{ __('Sign in') }}
                     </a>
-                    @endforeach
-                </div>
+                @endif
+                <a href="{{ route('categories') }}" class="btn btn-primary px-4">{{ __('Start treatment') }}</a>
             </div>
-            @endif
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Treatments') }}</a>
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('How it works') }}</a>
-            <a href="{{ url('about-us') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('About us') }}</a>
-            <a href="#" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-fira-sans no-underline hover:no-underline">{{ __('Help') }}</a>
-            @if (!auth()->check())
-                <a href="{{ url('/patient-login') }}" class="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-primary hover:text-primary font-body no-underline hover:no-underline">{{ __('Log in') }}</a>
-            @endif
         </div>
     </div>
 </nav>

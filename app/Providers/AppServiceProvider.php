@@ -64,5 +64,14 @@ class AppServiceProvider extends ServiceProvider
             // If database is not available or settings table doesn't exist, use env() fallback
             // This prevents errors during migrations or when database is not ready
         }
+
+        view()->composer('layout.partials.navbar_website', function ($view) {
+            try {
+                $categories = \App\Models\Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
+                $view->with('categories', $categories);
+            } catch (\Exception $e) {
+                $view->with('categories', collect()); // Fallback to empty collection
+            }
+        });
     }
 }

@@ -32,51 +32,7 @@
 <body>
     @include('layout.partials.skeleton_loader')
 <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light sticky-top border-bottom" style="background-color: #f2efea !important;">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url('/') }}">
-            @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
-                <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}">
-            @else
-                <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}">
-            @endif
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto me-3">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('categories') }}">Treatments</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#how-it-works">How it works</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/about-us') }}">About us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#faq">Help</a>
-                </li>
-            </ul>
-            
-            <div class="d-flex gap-2">
-                @if(auth()->check())
-                    <a href="{{ url('user_profile') }}" class="btn btn-link text-dark text-decoration-none">
-                        <i class="bi bi-person"></i> {{ auth()->user()->name }}
-                    </a>
-                @else
-                    <a href="{{ url('patient-login') }}" class="btn btn-link text-dark text-decoration-none">
-                        <i class="bi bi-person"></i> Sign in
-                    </a>
-                @endif
-                <a href="{{ route('categories') }}" class="btn btn-primary">Start treatment</a>
-            </div>
-        </div>
-    </div>
-</nav>
+@include('layout.partials.navbar_website')
 
 <!-- Hero Section -->
 <section class="hero-bloomwell text-start text-white">
