@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SuperAdmin\CustomController;
 use App\Models\Category;
 use App\Models\CannaleoMedicine;
 use App\Models\CannaleoPharmacy;
 use App\Models\QuestionnaireSubmission;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -217,10 +219,35 @@ class QuestionnaireCannaleoController extends Controller
             'status' => 'medicine_selected',
         ]);
 
+        // Send questionnaire submitted email with amount paid (after successful medicine selection)
+        $this->sendQuestionnaireSubmittedEmailWithAmount($user, $submission, $category);
+
         return response()->json([
             'success' => true,
             'message' => __('Medicines selected successfully. Doctor will review your selection.'),
             'redirect_url' => url('/questionnaire/category/' . $categoryId . '/success'),
         ]);
+    }
+
+    /**
+     * Send questionnaire submitted email to user with amount paid (after medicine selection).
+     */
+    protected function sendQuestionnaireSubmittedEmailWithAmount($user, $submission, $category): void
+    {
+        $submissionId = 'REF-' . $submission->id . '-' . $category->id;
+        $data = [
+            'customer_name' => $user->name,
+            'submission_id' => $submissionId,
+            'submission_date' => $submission->updated_at?->format('F j, Y H:i') ?? now()->format('F j, Y H:i'),
+            'questionnaire_category' => $category->name ?? ($category->treatment ? $category->treatment->name : __('Questionnaire')),
+            'review_timeframe' => __('24-48 hours'),
+        ];
+        $setting = Setting::first();
+        $fee = (float) ($setting->questionnaire_submission_fee ?? $setting->prescription_fee ?? 50.00);
+        $symbol = $setting->currency_symbol ?? '€';
+        $data['base_price'] = number_format($fee, 2) . ' ' . $symbol;
+        $data['total_amount_paid'] = number_format($fee, 2) . ' ' . $symbol;
+        $data['payment_date'] = now()->format('F j, Y H:i');
+        (new CustomController)->sendQuestionnaireSubmittedMail($user->email, $data, true);
     }
 }

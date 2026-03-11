@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Doctor;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireAnswer;
+use App\Models\Setting;
 use App\Services\QuestionnaireService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -595,7 +596,7 @@ class QuestionnaireController extends Controller
             'status' => 'pending',
             'delivery_type' => $isCannaleoOnly ? 'cannaleo' : ($submissionFlow === 'prescription_only' ? 'prescription_only' : null),
         ];
-        \App\Models\QuestionnaireSubmission::updateOrCreate(
+        $submission = \App\Models\QuestionnaireSubmission::updateOrCreate(
             [
                 'user_id' => Auth::id(),
                 'category_id' => $categoryId,
@@ -604,13 +605,40 @@ class QuestionnaireController extends Controller
             $submissionData
         );
 
+        // Prescription only: no medicine selection — send email immediately with amount paid and redirect to success
+        if ($submissionFlow === 'prescription_only') {
+            $this->sendQuestionnaireSubmittedEmailWithAmount(Auth::user(), $submission, $category, true);
+            return url('/questionnaire/category/' . $categoryId . '/success');
+        }
+
         if ($isCannaleoOnly) {
             return url('/questionnaire/category/' . $categoryId . '/cannaleo-pharmacy-selection');
         }
-        if ($submissionFlow === 'prescription_only') {
-            return url('/questionnaire/category/' . $categoryId . '/medicine-selection');
-        }
         return url('/questionnaire/category/' . $categoryId . '/delivery-choice');
+    }
+
+    /**
+     * Send questionnaire submitted email to user with optional amount paid (e.g. after payment or after medicine selection).
+     */
+    protected function sendQuestionnaireSubmittedEmailWithAmount($user, $submission, $category, bool $includeAmount): void
+    {
+        $submissionId = 'REF-' . $submission->id . '-' . $category->id;
+        $data = [
+            'customer_name' => $user->name,
+            'submission_id' => $submissionId,
+            'submission_date' => now()->format('F j, Y H:i'),
+            'questionnaire_category' => $category->name ?? ($category->treatment ? $category->treatment->name : __('Questionnaire')),
+            'review_timeframe' => __('24-48 hours'),
+        ];
+        if ($includeAmount) {
+            $setting = Setting::first();
+            $fee = (float) ($setting->questionnaire_submission_fee ?? $setting->prescription_fee ?? 50.00);
+            $symbol = $setting->currency_symbol ?? '€';
+            $data['base_price'] = number_format($fee, 2) . ' ' . $symbol;
+            $data['total_amount_paid'] = number_format($fee, 2) . ' ' . $symbol;
+            $data['payment_date'] = now()->format('F j, Y H:i');
+        }
+        (new CustomController)->sendQuestionnaireSubmittedMail($user->email, $data, true);
     }
 
     /**
@@ -974,16 +1002,11 @@ class QuestionnaireController extends Controller
             $submissionData
         );
 
-        // Send questionnaire submitted email (same trigger logic as OTP)
+        // Send questionnaire submitted email only when prescription_only (no medicine selection). With medicine/cannaleo we send after medicine selection.
         $user = Auth::user();
-        $submissionId = 'REF-' . $submission->id . '-' . $categoryId;
-        (new CustomController)->sendQuestionnaireSubmittedMail($user->email, [
-            'customer_name' => $user->name,
-            'submission_id' => $submissionId,
-            'submission_date' => now()->format('F j, Y H:i'),
-            'questionnaire_category' => $category->name ?? ($category->treatment ? $category->treatment->name : __('Questionnaire')),
-            'review_timeframe' => __('24-48 hours'),
-        ], true);
+        if ($submissionFlow === 'prescription_only') {
+            $this->sendQuestionnaireSubmittedEmailWithAmount($user, $submission, $category, false);
+        }
 
         if ($isCannaleoOnly) {
             return response()->json([
@@ -995,15 +1018,16 @@ class QuestionnaireController extends Controller
             ]);
         }
 
+        // Prescription only: redirect to success (no medicine selection). With medicine: redirect to delivery choice.
         return response()->json([
             'success' => true,
             'has_warnings' => !empty($flagCheck['flags']),
             'flags' => $flagCheck['flags'],
             'message' => $submissionFlow === 'prescription_only'
-                ? __('Questionnaire submitted successfully. Please select your medicines.')
+                ? __('Questionnaire submitted successfully.')
                 : __('Questionnaire submitted successfully. Please choose your delivery method.'),
             'redirect_url' => $submissionFlow === 'prescription_only'
-                ? url('/questionnaire/category/' . $categoryId . '/medicine-selection')
+                ? url('/questionnaire/category/' . $categoryId . '/success')
                 : url('/questionnaire/category/' . $categoryId . '/delivery-choice'),
         ]);
     }

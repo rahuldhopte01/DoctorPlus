@@ -380,6 +380,13 @@
                                     @error('stripe_secret_key')
                                     <div class="invalid-feedback"> {{ $message }}</div>
                                     @enderror
+                                    <small class="form-text text-muted">{{ __('These keys are used for: prescription payment, questionnaire payment, doctor subscription, and app bookings.') }}</small>
+                                    <div class="mt-2">
+                                        <button type="button" id="test-stripe-btn" class="btn btn-outline-primary btn-sm">
+                                            <i class="fa fa-plug"></i> {{ __('Test Stripe connection') }}
+                                        </button>
+                                        <span id="test-stripe-result" class="ml-2"></span>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">
@@ -1036,6 +1043,29 @@
                 $('#zoom_client_secret').removeAttr('required');
                 $('#zoom_redirect_url').removeAttr('required');
             }
+        });
+        $('#test-stripe-btn').on('click', function() {
+            var btn = $(this);
+            var result = $('#test-stripe-result');
+            btn.prop('disabled', true);
+            result.removeClass('text-success text-danger').html('<span class="text-muted">...</span>');
+            $.ajax({
+                url: '{{ url("test_stripe_connection") }}',
+                type: 'POST',
+                data: { _token: '{{ csrf_token() }}' },
+                success: function(res) {
+                    if (res.success) {
+                        result.removeClass('text-danger').addClass('text-success').html('<i class="fa fa-check-circle"></i> ' + res.message);
+                    } else {
+                        result.removeClass('text-success').addClass('text-danger').html('<i class="fa fa-times-circle"></i> ' + res.message);
+                    }
+                },
+                error: function(xhr) {
+                    var msg = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Request failed.';
+                    result.removeClass('text-success').addClass('text-danger').html('<i class="fa fa-times-circle"></i> ' + msg);
+                },
+                complete: function() { btn.prop('disabled', false); }
+            });
         });
     });
 </script>
