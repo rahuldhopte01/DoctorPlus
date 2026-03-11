@@ -36,7 +36,7 @@
                 @endphp
                 @if($website_languages->count() > 1)
                 <div class="dropdown">
-                    <button class="btn btn-link text-dark text-decoration-none dropdown-toggle px-0 d-flex align-items-center gap-1" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="text-dark text-decoration-none dropdown-toggle px-0 d-flex align-items-center gap-1 bg-transparent border-0" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <img class="rounded object-fit-cover" style="width: 20px; height: 20px;" src="{{ asset('images/upload/'.$current_lang_image) }}" alt="{{ session('locale', 'en') }}">
                         <span class="d-none d-sm-inline small fw-medium">{{ $current_lang ? $current_lang->name : __('English') }}</span>
                     </button>
