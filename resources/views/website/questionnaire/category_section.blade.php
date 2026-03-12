@@ -4,9 +4,11 @@
 
 @section('css')
 <style>
-    /* Force white text on selected radio buttons */
+    /* Force white text and primary background on selected radio buttons */
     input[type="radio"]:checked + label {
         color: #ffffff !important;
+        background-color: var(--primary-color, #4A3AFF) !important;
+        border-color: var(--primary-color, #4A3AFF) !important;
     }
     
     /* Custom Dropdown UI */
@@ -66,7 +68,7 @@
     </div>
 </div>
 
-<div class="w-full pb-16" style="background-color: #f2efea !important;">
+<div class="w-full py-12" style="background-color: #f2efea !important;">
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
     <!-- Questionnaire Card -->
     <div class="bg-white rounded-4 shadow-bloomwell border-0 overflow-hidden font-body">
@@ -302,7 +304,7 @@
                             <!-- Issue 3: File upload field (supports birth certificate and other files) -->
                             <div class="border-2 border-dashed border-gray-300 rounded-4 p-8 bg-[#f8f9fa] hover:bg-purple-light transition-all duration-300 text-center group cursor-pointer" onclick="document.getElementById('file{{ $question->id }}').click()">
                                 <div class="mb-4">
-                                    <div class="w-16 h-16 bg-white shadow-sm rounded-circle d-inline-flex align-items-center justify-content-center border border-gray-100 group-hover:border-primary group-hover:shadow-md transition-all">
+                                    <div class="bg-white shadow-sm rounded-circle d-inline-flex align-items-center justify-content-center border border-gray-100 group-hover:border-primary group-hover:shadow-md transition-all" style="width: 64px; height: 64px;">
                                         <i class="bi bi-cloud-upload text-3xl text-primary opacity-75 group-hover:opacity-100 transition-colors duration-200"></i>
                                     </div>
                                 </div>
