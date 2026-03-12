@@ -8,6 +8,41 @@
     input[type="radio"]:checked + label {
         color: #ffffff !important;
     }
+    
+    /* Custom Dropdown UI */
+    .custom-dropdown-container.open .custom-select-options {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateY(0) scale(1) !important;
+    }
+    .custom-dropdown-container.open .dropdown-icon {
+        transform: rotate(180deg);
+    }
+    .custom-dropdown-container.open .trigger-icon-bg {
+        border-color: var(--primary-color, #4A3AFF);
+        background-color: #f8f9fa;
+    }
+    .custom-select-trigger:focus {
+        border-color: var(--primary-color, #4A3AFF);
+        box-shadow: 0 0 0 4px rgba(74, 58, 255, 0.1);
+    }
+    .custom-select-options {
+        transform: translateY(-10px) scale(0.98);
+        transform-origin: top center;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-color, #4A3AFF) #f8f9fa;
+    }
+    .custom-select-options::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-select-options::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    .custom-select-options::-webkit-scrollbar-thumb {
+        background-color: var(--primary-color, #4A3AFF);
+        border-radius: 8px;
+    }
 </style>
 @endsection
 
@@ -157,18 +192,44 @@
                                     $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
                                     $savedValue = is_array($savedValue) ? null : $savedValue;
                                 @endphp
-                                <select name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-3 bg-[#f8f9fa] border border-gray-200 rounded-3 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 font-body question-input text-gray-800 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236b7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_1rem_center] bg-no-repeat"
-                                    data-question-id="{{ $question->id }}"
-                                    @if($question->required) required @endif>
-                                    <option value="">{{ __('Select an option') }}</option>
-                                    @foreach($question->options ?? [] as $option)
-                                        <option value="{{ $option }}" 
-                                            {{ $savedValue !== null && $savedValue == $option ? 'selected' : '' }}>
-                                            {{ $option }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <div class="custom-dropdown-container relative" data-question-id="{{ $question->id }}">
+                                    <!-- Hidden visually but focusable for HTML5 validation -->
+                                    <select name="answers[{{ $question->id }}]" 
+                                        class="question-input absolute w-0 h-0 opacity-0 pointer-events-none"
+                                        style="left: 50%; top: 50%;"
+                                        data-question-id="{{ $question->id }}"
+                                        @if($question->required) required @endif>
+                                        <option value="">{{ __('Select an option') }}</option>
+                                        @foreach($question->options ?? [] as $option)
+                                            <option value="{{ $option }}" 
+                                                {{ $savedValue !== null && $savedValue == $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    
+                                    <div class="custom-select-trigger w-full px-4 py-3 bg-[#f8f9fa] border border-gray-200 rounded-3 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 transition-all duration-300 font-body text-gray-800 flex justify-between items-center cursor-pointer hover:bg-white hover:border-primary shadow-sm group" tabindex="0">
+                                        <span class="selected-text truncate font-medium align-middle {{ $savedValue !== null && $savedValue !== '' ? 'text-gray-900' : 'text-gray-500' }}">
+                                            {{ $savedValue !== null && $savedValue !== '' ? $savedValue : __('Select an option') }}
+                                        </span>
+                                        <div class="w-8 h-8 rounded-circle bg-white flex items-center justify-center shadow-sm border border-gray-100 flex-shrink-0 transition-colors duration-300 trigger-icon-bg group-hover:border-primary/50">
+                                            <i class="fas fa-chevron-down text-primary text-sm transition-transform duration-300 dropdown-icon"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="custom-select-options absolute w-full mt-2 bg-white border border-gray-100 rounded-4 shadow-bloomwell opacity-0 pointer-events-none transition-all duration-300 font-body overflow-hidden p-2" style="z-index: 1000; top: 100%; left: 0; max-height: 280px; overflow-y: auto;">
+                                        <div class="option-item flex items-center justify-between px-4 py-2.5 mb-1 rounded-3 cursor-pointer transition-all duration-200 {{ $savedValue === null || $savedValue === '' ? 'bg-purple-light text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-primary' }}" data-value="">
+                                            <span>{{ __('Select an option') }}</span>
+                                            <i class="fas fa-check text-primary {{ $savedValue === null || $savedValue === '' ? 'opacity-100' : 'opacity-0' }} transition-opacity"></i>
+                                        </div>
+                                        @foreach($question->options ?? [] as $option)
+                                        <div class="option-item flex items-center justify-between px-4 py-2.5 mb-1 last:mb-0 rounded-3 cursor-pointer transition-all duration-200 {{ $savedValue !== null && $savedValue == $option ? 'bg-purple-light text-primary font-semibold' : 'text-gray-700 hover:bg-gray-50 hover:text-primary' }}" data-value="{{ $option }}">
+                                            <span>{{ $option }}</span>
+                                            <i class="fas fa-check text-primary {{ $savedValue !== null && $savedValue == $option ? 'opacity-100' : 'opacity-0' }} transition-opacity"></i>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                                 @break
 
                             @case('radio')
@@ -422,8 +483,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Handle radios
                             const radio = document.querySelector(`[name="answers[${questionId}"][value="${answers[questionId]}"]`);
                             if (radio) radio.checked = true;
-                        } else {
                             input.value = answers[questionId];
+                            if(input.tagName.toLowerCase() === 'select') {
+                                input.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
                         }
                     }
                 });
@@ -583,6 +646,97 @@ document.addEventListener('DOMContentLoaded', function() {
             autoSave();
         });
     });
+
+    // Custom Dropdown Logic
+    function initCustomDropdowns() {
+        document.querySelectorAll('.custom-dropdown-container').forEach(container => {
+            const trigger = container.querySelector('.custom-select-trigger');
+            const optionsDiv = container.querySelector('.custom-select-options');
+            const hiddenSelect = container.querySelector('select');
+            const selectedText = container.querySelector('.selected-text');
+            const optionItems = container.querySelectorAll('.option-item');
+
+            // Close when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!container.contains(e.target)) {
+                    container.classList.remove('open');
+                }
+            });
+
+            // Toggle dropdown
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Close all other dropdowns
+                document.querySelectorAll('.custom-dropdown-container.open').forEach(other => {
+                    if (other !== container) other.classList.remove('open');
+                });
+                container.classList.toggle('open');
+            });
+            
+            // Allow keyboard activation
+            trigger.addEventListener('keydown', function(e) {
+                if(e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    trigger.click();
+                }
+            });
+
+            // Handle hidden select value changes (e.g., from localStorage)
+            hiddenSelect.addEventListener('change', function(e) {
+                // If it's a programmatic change or our own dispatch, sync UI
+                const value = this.value;
+                const opt = Array.from(optionItems).find(o => o.getAttribute('data-value') === value);
+                
+                if (opt) {
+                    const text = opt.querySelector('span').textContent.trim();
+                    selectedText.textContent = text;
+                    if(value === '') {
+                        selectedText.classList.remove('text-gray-900');
+                        selectedText.classList.add('text-gray-500');
+                    } else {
+                        selectedText.classList.remove('text-gray-500');
+                        selectedText.classList.add('text-gray-900');
+                    }
+                    optionItems.forEach(o => {
+                        const optValue = o.getAttribute('data-value');
+                        const checkIcon = o.querySelector('.fa-check');
+                        if(optValue === value) {
+                            o.className = 'option-item flex items-center justify-between px-4 py-2.5 mb-1 last:mb-0 rounded-3 cursor-pointer transition-all duration-200 bg-purple-light text-primary font-semibold';
+                            if(checkIcon) {
+                                checkIcon.classList.remove('opacity-0');
+                                checkIcon.classList.add('opacity-100');
+                            }
+                        } else {
+                            o.className = 'option-item flex items-center justify-between px-4 py-2.5 mb-1 last:mb-0 rounded-3 cursor-pointer transition-all duration-200 text-gray-700 hover:bg-gray-50 hover:text-primary';
+                            if(checkIcon) {
+                                checkIcon.classList.remove('opacity-100');
+                                checkIcon.classList.add('opacity-0');
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Handle user selection
+            optionItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const value = this.getAttribute('data-value');
+                    
+                    if(hiddenSelect.value !== value) {
+                        hiddenSelect.value = value;
+                        hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    
+                    // Close dropdown
+                    container.classList.remove('open');
+                });
+            });
+        });
+    }
+
+    initCustomDropdowns();
 
     // Form submission (Final Submit - Phase 6)
     form.addEventListener('submit', function(e) {
