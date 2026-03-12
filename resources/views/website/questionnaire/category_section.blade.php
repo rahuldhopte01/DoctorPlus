@@ -68,7 +68,7 @@
     </div>
 </div>
 
-<div class="w-full py-12" style="background-color: #f2efea !important;">
+<div class="w-full pb-16" style="background-color: #f2efea !important;">
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
     <!-- Questionnaire Card -->
     <div class="bg-white rounded-4 shadow-bloomwell border-0 overflow-hidden font-body">
