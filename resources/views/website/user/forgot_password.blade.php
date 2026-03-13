@@ -1,45 +1,75 @@
 @extends('layout.mainlayout',['activePage' => 'login'])
 @section('title',__('Forgot Password'))
 @section('content')
-<div class="xl:w-3/4 mx-auto">
-        @if (session('status'))
-         @include('superAdmin.auth.status',[
-            'status' => session('status')])
-        @endif
-
-        @if(session('error'))
-            @include('superAdmin.auth.errors',[
-                'error' => session('error')])
-        @endif
-
-    <div class="flex justify-between items-center pt-20 pb-20 gap-10 lg:flex-row xxsm:flex-col xxsm:mx-5 xl:mx-0 2xl:mx-0">
-        <div class="bg-slate-100 justify-center items-center p-10 2xl:w-2/4 xxsm:w-full">
-            <h1 class="font-fira-sans leading-10 font-medium text-3xl mb-10">{{__('Talk to thousands of specialist doctors.')}}</h1>
-            <div>
-                <img src="{{asset('assets/image/login.png')}}" class="w-full h-3/5" alt="">
-            </div>
-        </div>
-        <div class="2xl:w-2/4 xxsm:w-full">
-            <h1 class="font-fira-sans leading-10 font-normal text-3xl">{{__('Welcome Back,')}}</h1>
-            <h1 class="font-fira-sans leading-10 font-medium text-3xl">{{__('Forgot Password For Patient Account')}}</h1>
-            <form action="{{ url('/user_forget_password') }}" method="post">
-                @csrf
-                <div class="pt-5">
-                    <label for="email" class="font-fira-sans text-black text-sm font-normal">{{__('Email')}}</label>
-                    <input name="email" class="@error('email') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter email')}}" required type="email">
-                    @error('email')
-                    <div class="invalid-feedback">
-                        {{ $message }}
+<div class="container py-5 mt-5">
+    <div class="row min-vh-75 align-items-center justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card border-0 shadow-bloomwell rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left side: Image -->
+                    <div class="col-md-6 d-none d-md-block bg-light position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Talk to thousands of specialist doctors.</h2>
+                            <img src="{{asset('assets/image/login.png')}}" class="img-fluid custom-login-image" alt="Forgot Password Graphic" style="max-height: 250px; object-fit: contain;">
+                        </div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
                     </div>
-                    @enderror
-                </div>
 
-                <div class="pt-10">
-                    <button type="submit" class="font-fira-sans text-white bg-primary w-full text-sm font-normal py-3">{{__('Send Email')}}</button>
-                    <h1 class="font-fira-sans font-medium text-sm leading-5 pt-4 text-center text-primary text-normal"><a href="{{url('/patient-login')}}">{{__('Remember Password?')}} </a></h1>
+                    <!-- Right side: Form -->
+                    <div class="col-md-6 p-4 p-lg-5">
+                        <div class="mb-5">
+                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Welcome Back,')}}</h2>
+                            <h3 class="fw-medium text-muted fs-5">{{__('Forgot Password For Patient Account')}}</h3>
+                        </div>
+
+                        @if (session('status'))
+                            @include('superAdmin.auth.status', ['status' => session('status')])
+                        @endif
+
+                        @if(session('error'))
+                            @include('superAdmin.auth.errors', ['error' => session('error')])
+                        @endif
+
+                        <form action="{{ url('/user_forget_password') }}" method="post">
+                            @csrf
+                            <div class="form-floating mb-4">
+                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Enter email')}}" required autofocus>
+                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                @error('email')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
+                                {{__('Send Email')}}
+                            </button>
+
+                            <div class="text-center mt-4">
+                                <a href="{{url('/patient-login')}}" class="text-decoration-none small text-muted hover-primary transition-all fw-semibold"><i class="bi bi-arrow-left me-1"></i> {{__('Remember Password? Login here')}}</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    .shadow-bloomwell {
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    }
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.25);
+    }
+</style>
 @endsection
