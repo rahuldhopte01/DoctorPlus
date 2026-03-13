@@ -91,23 +91,36 @@ class CuroboPrescriptionPayloadBuilder
             $totalGross += $price * $qty;
         }
 
-        $shipping = $submission->delivery_type === 'pickup' ? 'pickup' : 'delivery';
+        // Cannaleo: use customer's selected delivery option; otherwise fallback to pickup vs delivery
+        $shipping = 'delivery';
+        if (! empty($submission->cannaleo_delivery_option)) {
+            $shipping = $submission->cannaleo_delivery_option;
+        } elseif ($submission->delivery_type === 'pickup') {
+            $shipping = 'pickup';
+        }
+
         $pickupBranchId = 0;
         if ($shipping === 'pickup' && $pharmacy->external_id !== null && $pharmacy->external_id !== '') {
             $pickupBranchId = is_numeric($pharmacy->external_id) ? (int) $pharmacy->external_id : 0;
+        }
+
+        $doctorPayload = [
+            'name' => $doctorName,
+            'phone' => $doctorPhone,
+            'email' => $doctorEmail,
+            'cityOfSignature' => $cityOfSignature,
+            'dateOfSignature' => $dateOfSignature,
+        ];
+        $staticSignature = config('cannaleo.static_doctor_signature', '');
+        if ($staticSignature !== '') {
+            $doctorPayload['signature'] = $staticSignature;
         }
 
         $payload = [
             'prescriptionURL' => $prescriptionUrl,
             'internalOrderId' => 'RX-' . $prescription->id,
             'internalPharmacyId' => (string) $pharmacy->external_id,
-            'doctor' => [
-                'name' => $doctorName,
-                'phone' => $doctorPhone,
-                'email' => $doctorEmail,
-                'cityOfSignature' => $cityOfSignature,
-                'dateOfSignature' => $dateOfSignature,
-            ],
+            'doctor' => $doctorPayload,
             'customer' => $customerPayload,
             'products' => $apiProducts,
             'prepaid' => 0,

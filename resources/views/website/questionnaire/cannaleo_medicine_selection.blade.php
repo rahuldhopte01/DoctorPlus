@@ -70,7 +70,7 @@
         </div>
 
         <div class="form-actions">
-            <a href="{{ route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $category->id]) }}" class="btn-back">{{ __('Back') }}</a>
+            <a href="{{ route('questionnaire.cannaleo-delivery-selection', ['categoryId' => $category->id]) }}" class="btn-back">{{ __('Back') }}</a>
             <button type="submit" id="medicineSubmitBtn" class="btn-continue">{{ __('Continue') }}</button>
         </div>
         @else
@@ -79,7 +79,7 @@
             <p class="info-text info-text--muted">{{ __('Please go back and choose another pharmacy or contact support.') }}</p>
         </div>
         <div class="form-actions">
-            <a href="{{ route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $category->id]) }}" class="btn-back">{{ __('Back') }}</a>
+            <a href="{{ route('questionnaire.cannaleo-delivery-selection', ['categoryId' => $category->id]) }}" class="btn-back">{{ __('Back') }}</a>
         </div>
         @endif
     </form>
