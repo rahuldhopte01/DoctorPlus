@@ -1,112 +1,104 @@
-@extends('layout.mainlayout_admin',['activePage' => 'login'])
+@extends('layout.mainlayout',['activePage' => 'login'])
 
 @section('title',__('Pharmacy login'))
 
 @section('content')
-<section class="section">
-  <div class="d-flex flex-wrap align-items-stretch min-vh-100">
-    <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white d-flex align-items-center justify-content-center">
-      <div class="p-4 p-lg-5 w-100" style="max-width: 500px;">
-        @php
-        $app_logo = App\Models\Setting::first();
-        @endphp
-        
-        <div class="text-center mb-5">
-            @if(isset($app_logo->logo))
-            <img src="{{ $app_logo->logo }}" alt="logo" width="180" class="mb-4">
-            @else
-            <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" alt="logo" width="180" class="mb-4" />
-            @endif
-            <h4 class="text-dark font-weight-bold mb-2">{{__('Pharmacy Portal')}}</h4>
-            <p class="text-muted">{{__('Sign in to manage prescriptions and inventory.')}}</p>
-        </div>
+<div class="container py-5 mt-5">
+    <div class="row min-vh-75 align-items-center justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card border-0 shadow-bloomwell rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left side: Image -->
+                    <div class="col-md-6 d-none d-md-block bg-light position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Manage your pharmacy online.</h2>
+                            <img src="{{asset('assets/image/login.png')}}" class="img-fluid custom-login-image" alt="Pharmacy Login Graphic" style="max-height: 250px; object-fit: contain;">
+                        </div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
+                    </div>
 
-        @if ($errors->any())
-        @foreach ($errors->all() as $item)
-        <div class="alert alert-danger alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $item }}
-        </div>
-        @endforeach
-        @endif
-        
-        @if (session('status'))
-        <div class="alert alert-info alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert">
-            <i class="bi bi-info-circle-fill me-2"></i> {{ session('status') }}
-        </div>
-        @endif
-        
-        <form action="{{ url('verify_pharmacy') }}" method="post" class="needs-validation" novalidate="">
-          @csrf
-          <div class="form-group mb-4">
-            <label for="email" class="text-muted font-weight-600">{{ __('Email') }}</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-light border-right-0"><i class="fas fa-envelope text-muted"></i></span>
-                </div>
-                <input id="email" type="email" class="form-control border-left-0 bg-light @error('email') is-invalid @enderror" name="email" tabindex="1" required autofocus style="border-radius: 0 0.5rem 0.5rem 0;">
-            </div>
-            @error('email')
-            <div class="invalid-feedback">
-              {{ $message }}
-            </div>
-            @enderror
-          </div>
+                    <!-- Right side: Form -->
+                    <div class="col-md-6 p-4 p-lg-5">
+                        <div class="mb-5">
+                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Pharmacy Portal')}}</h2>
+                            <h3 class="fw-medium text-muted fs-5">{{__('Sign in to manage prescriptions.')}}</h3>
+                        </div>
 
-          <div class="form-group mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <label for="password" class="control-label text-muted font-weight-600 mb-0">{{ __('Password') }}</label>
-              <a href="{{url('pharmacy_forgot_password')}}" class="text-small text-primary font-weight-600">
-                  {{__('Forgot Password?')}}
-              </a>
-            </div>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-light border-right-0"><i class="fas fa-lock text-muted"></i></span>
-                </div>
-                <input id="password" type="password" class="form-control border-left-0 bg-light @error('password') is-invalid @enderror" name="password" tabindex="2" required style="border-radius: 0 0.5rem 0.5rem 0;">
-            </div>
-            @error('password')
-            <div class="invalid-feedback">
-              {{ $message }}
-            </div>
-            @enderror
-          </div>
+                        @if ($errors->any())
+                            @foreach ($errors->all() as $item)
+                                <div class="alert alert-danger rounded-3 p-2 mb-4 d-flex align-items-center small" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div>{{ $item }}</div>
+                                </div>
+                            @endforeach
+                        @endif
+                        
+                        @if (session('status'))
+                        <div class="alert alert-info rounded-3 p-2 mb-4 d-flex align-items-center small" role="alert">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            <div>{{ session('status') }}</div>
+                        </div>
+                        @endif
 
-          <div class="form-group mt-5">
-            <button type="submit" class="btn btn-primary btn-lg w-100 btn-icon icon-right shadow-sm" tabindex="4" style="border-radius: 8px;">
-              {{ __('Login')}} <i class="fas fa-sign-in-alt ml-2"></i>
-            </button>
-          </div>
+                        <form action="{{ url('verify_pharmacy') }}" method="post" class="needs-validation" novalidate="">
+                            @csrf
+                            
+                            <div class="form-floating mb-3">
+                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Enter email')}}" value="{{ old('email') }}" required autofocus>
+                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                @error('email')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
 
-          <div class="text-center mt-4 pt-3 border-top">
-            <span class="text-muted">{{__("Don't have an account?")}}</span> <a href="{{ url('pharmacy_signUp') }}" class="font-weight-bold text-primary">{{ __('Create new one')}}</a>
-          </div>
-          
-          <div class="text-center mt-4">
-              <a href="{{ url('patient-login') }}" class="text-muted small"><i class="fas fa-arrow-left mr-1"></i> Back to Patient Login</a>
-          </div>
-        </form>
-      </div>
-    </div>
-    
-    <div class="col-lg-8 col-12 order-lg-2 order-1 d-none d-lg-block p-0 position-relative">
-        <div class="h-100 w-100" style="background-image: url('{{ url('assets_admin/img/login.png') }}'); background-size: cover; background-position: center;">
-            <div class="position-absolute w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 166, 81, 0.8) 0%, rgba(0, 90, 40, 0.9) 100%);"></div>
-            <div class="position-absolute bottom-0 text-white p-5 w-100">
-                <div class="mb-5 pb-3 px-4">
-                    <h1 class="font-weight-bold mb-3" style="font-size: 3rem;">{{ __('Pharmacy Partner') }}</h1>
-                    <p class="lead" style="max-width: 500px; opacity: 0.9;">Process digital prescriptions, manage orders and deliver medications quickly and securely.</p>
+                            <div class="form-floating mb-4">
+                                <input type="password" name="password" id="password" class="form-control rounded-3 border-light shadow-sm @error('password') is-invalid @enderror" placeholder="{{__('Enter password')}}" required>
+                                <label for="password" class="text-muted"><i class="bi bi-lock me-2"></i>{{__('Password')}}</label>
+                                @error('password')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <a href="{{url('pharmacy_forgot_password')}}" class="text-decoration-none small text-muted hover-primary transition-all">{{__('Forgot Password?')}}</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
+                                {{__('Login')}} <i class="fas fa-sign-in-alt ms-2"></i>
+                            </button>
+
+                            <div class="text-center mt-4 border-top pt-4">
+                                <p class="text-muted small mb-3">{{__('Don’t have an account?')}} <a href="{{url('pharmacy_signUp')}}" class="text-primary text-decoration-none fw-semibold ms-1">{{__('Sign Up here')}}</a></p>
+                                
+                                <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+                                   <a href="{{url('/patient-login')}}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="bi bi-person me-1"></i> {{__('Patient Login')}}</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-  </div>
-</section>
+</div>
 
 <style>
-    .input-group-text { border-radius: 0.5rem 0 0 0.5rem; }
-    .form-control:focus { box-shadow: none; border-color: #e4e6fc; background-color: #fff !important; }
-    .input-group:focus-within .input-group-text, .input-group:focus-within .form-control { background-color: #fff !important; border-color: var(--primary) !important; }
-    .input-group:focus-within .input-group-text i { color: var(--primary) !important; }
+    .shadow-bloomwell {
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    }
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.25);
+    }
 </style>
 @endsection
