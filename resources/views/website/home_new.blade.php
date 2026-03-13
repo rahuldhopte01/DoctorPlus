@@ -6,7 +6,7 @@
     @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $setting->business_name }} - Online Medical Consultation</title>
+    <title>{{ $setting->business_name }} - {{ __('landing.meta.online_medical_consultation') }}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -50,16 +50,16 @@
                         <i class="bi bi-star-fill mx-1"></i>
                         <i class="bi bi-star-fill mx-1"></i>
                     </div>
-                    <span class="fw-bold small ms-1">Hervorragend {{ number_format($reviews->count() * 12500) }}+</span>
+                    <span class="fw-bold small ms-1">{{ __('landing.hero.excellent') }} {{ number_format($reviews->count() * 12500) }}+</span>
                 </div>
 
                 <!-- Main Heading -->
                 <h1 class="display-5 fw-bold mb-4" style="line-height: 1.25;">
-                    Behandlung & Rezepte <span class="text-primary text-nowrap">bequem online</span> erhalten
+                    {{ __('landing.hero.title_prefix') }} <span class="text-primary text-nowrap">{{ __('landing.hero.title_highlight') }}</span> {{ __('landing.hero.title_suffix') }}
                 </h1>
                 
                 <p class="lead mb-4" style="color: rgba(255,255,255,0.8);">
-                    Ihr legaler & sicherer Weg zur telemedizinischen Behandlung von zu Hause.
+                    {{ __('landing.hero.subtitle') }}
                 </p>
 
                 <!-- Search Bar -->
@@ -68,8 +68,8 @@
                         <span class="input-group-text border-0">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input type="text" name="search" class="form-control border-0" placeholder="Was suchen Sie? (z.B. Haarausfall)" value="{{ request('search') }}">
-                        <button type="submit" class="bloomwell-btn ms-0 rounded-0 rounded-end">Suchen</button>
+                        <input type="text" name="search" class="form-control border-0" placeholder="{{ __('landing.hero.search_placeholder') }}" value="{{ request('search') }}">
+                        <button type="submit" class="bloomwell-btn ms-0 rounded-0 rounded-end">{{ __('landing.common.search') }}</button>
                     </div>
                 </form>
                 
@@ -77,11 +77,11 @@
                 <div class="d-flex flex-wrap gap-3">
                     <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                         <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
-                        <span class="small fw-medium">EU-registered doctors</span>
+                        <span class="small fw-medium">{{ __('landing.hero.eu_registered_doctors') }}</span>
                     </div>
                     <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
                         <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
-                        <span class="small fw-medium">Free shipping</span>
+                        <span class="small fw-medium">{{ __('landing.hero.free_shipping') }}</span>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,7 @@
             <div class="col-lg-6 col-xl-6 position-relative d-flex justify-content-center justify-content-lg-end align-items-center" style="z-index: 2;">
                 <div class="hero-image-container ms-auto me-auto me-lg-0 mt-4 mt-lg-0 w-100">
                     <!-- Central Subject (Using a transparent cutout style image) -->
-                    <img src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=600&auto=format&fit=crop&bg=transparent" alt="Telemedicine Patient" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 20%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);">
+                    <img src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=600&auto=format&fit=crop&bg=transparent" alt="{{ __('landing.hero.image_alt') }}" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 20%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);">
                     
                     <!-- Floating Feature Cards -->
                     <div class="bloomwell-floating-card card-1 d-none d-md-flex text-dark">
@@ -98,8 +98,8 @@
                             <i class="bi bi-check-lg"></i>
                         </div>
                         <div>
-                            <div class="fw-bold fs-6">Bestellung online</div>
-                            <div class="small text-muted">in weniger als 5 Min*</div>
+                            <div class="fw-bold fs-6">{{ __('landing.hero.card_order_title') }}</div>
+                            <div class="small text-muted">{{ __('landing.hero.card_order_subtitle') }}</div>
                         </div>
                     </div>
 
@@ -108,8 +108,8 @@
                             <i class="bi bi-box-seam"></i>
                         </div>
                         <div>
-                            <div class="fw-bold fs-6">Kostenloser Versand</div>
-                            <div class="small text-muted">Diskret verpackt</div>
+                            <div class="fw-bold fs-6">{{ __('landing.hero.card_shipping_title') }}</div>
+                            <div class="small text-muted">{{ __('landing.hero.card_shipping_subtitle') }}</div>
                         </div>
                     </div>
 
@@ -118,8 +118,8 @@
                             <i class="bi bi-shield-check"></i>
                         </div>
                         <div>
-                            <div class="fw-bold fs-6">EU zugelassen</div>
-                            <div class="small text-muted">Zertifizierte Ärzte</div>
+                            <div class="fw-bold fs-6">{{ __('landing.hero.card_eu_title') }}</div>
+                            <div class="small text-muted">{{ __('landing.hero.card_eu_subtitle') }}</div>
                         </div>
                     </div>
                 </div>
@@ -134,9 +134,9 @@
 <!-- Our Treatment Areas – Carousel Section -->
     <div class="container py-4">
         <div class="treatment-areas-header mb-4">
-            <span class="treatment-areas-label">Treatment Areas</span>
-            <h2 class="display-5 fw-bold mb-2">Our Treatment Areas</h2>
-            <p class="lead text-muted mb-0">Advanced medical treatments tailored for you – all supervised by certified doctors</p>
+            <span class="treatment-areas-label">{{ __('landing.treatments.label') }}</span>
+            <h2 class="display-5 fw-bold mb-2">{{ __('landing.treatments.title') }}</h2>
+            <p class="lead text-muted mb-0">{{ __('landing.treatments.subtitle') }}</p>
         </div>
 
         <div class="treatment-areas-viewport" id="treatment-viewport">
@@ -164,11 +164,11 @@
                                 <div class="treatment-card-tags">
                                     <span class="treatment-tag treatment-tag-type">{{ $treatmentName }}</span>
                                     @if($category->price && $category->price > 0)
-                                        <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0) }} €</span>
+                                        <span class="treatment-tag treatment-tag-info">{{ __('landing.common.from') }} {{ number_format($category->price, 0) }} €</span>
                                     @endif
                                 </div>
-                                <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professional medical consultation and treatment' }}</p>
-                                <span class="treatment-card-cta">Learn more <i class="bi bi-arrow-right"></i></span>
+                                <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : __('landing.treatments.default_description') }}</p>
+                                <span class="treatment-card-cta">{{ __('landing.common.learn_more') }} <i class="bi bi-arrow-right"></i></span>
                             </div>
                         </a>
                     </div>
@@ -176,12 +176,12 @@
                     <div class="treatment-area-card">
                         <a href="{{ route('categories') }}" class="text-decoration-none text-dark">
                             <div class="treatment-card-body">
-                                <h3 class="treatment-card-title">Browse treatments</h3>
+                                <h3 class="treatment-card-title">{{ __('landing.treatments.browse_treatments') }}</h3>
                                 <div class="treatment-card-tags">
                                     <span class="treatment-tag treatment-tag-type">General Medicine</span>
                                 </div>
-                                <p class="treatment-card-sub">Professional medical consultation and treatment</p>
-                                <span class="treatment-card-cta">Learn more <i class="bi bi-arrow-right"></i></span>
+                                <p class="treatment-card-sub">{{ __('landing.treatments.default_description') }}</p>
+                                <span class="treatment-card-cta">{{ __('landing.common.learn_more') }} <i class="bi bi-arrow-right"></i></span>
                             </div>
                         </a>
                     </div>
@@ -190,14 +190,14 @@
         </div>
 
         <div class="treatment-areas-controls">
-            <a href="{{ route('categories') }}" class="btn btn-primary treatment-btn-discover" id="treatment-btn-discover">View all treatments</a>
+            <a href="{{ route('categories') }}" class="btn btn-primary treatment-btn-discover" id="treatment-btn-discover">{{ __('landing.treatments.view_all') }}</a>
             <div class="treatment-controls-right">
                 <div class="treatment-dots" id="treatment-dots"></div>
                 <div class="treatment-arrow-group">
-                    <button type="button" class="treatment-arrow-btn" id="treatment-prev-btn" aria-label="Previous">
+                    <button type="button" class="treatment-arrow-btn" id="treatment-prev-btn" aria-label="{{ __('landing.common.previous') }}">
                         <i class="bi bi-chevron-left"></i>
                     </button>
-                    <button type="button" class="treatment-arrow-btn" id="treatment-next-btn" aria-label="Next">
+                    <button type="button" class="treatment-arrow-btn" id="treatment-next-btn" aria-label="{{ __('landing.common.next') }}">
                         <i class="bi bi-chevron-right"></i>
                     </button>
                 </div>
@@ -210,8 +210,8 @@
 <section class="py-5 bg-bloomwell-dark text-white" id="how-it-works">
     <div class="container py-4">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">How It Works</h2>
-            <p class="lead" style="color: rgba(255,255,255,0.8);">Your treatment in just 4 simple steps</p>
+            <h2 class="display-5 fw-bold mb-3">{{ __('landing.how_it_works.title') }}</h2>
+            <p class="lead" style="color: rgba(255,255,255,0.8);">{{ __('landing.how_it_works.subtitle') }}</p>
         </div>
 
         <div class="row g-4 mb-5">
@@ -224,8 +224,8 @@
                         </div>
                         <span class="step-number position-absolute bg-white text-primary border border-primary rounded-circle">01</span>
                     </div>
-                    <h5 class="fw-semibold mb-2">Complete questionnaire</h5>
-                    <p class="text-muted small">Answer a short medical questionnaire about your health</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.how_it_works.step1_title') }}</h5>
+                    <p class="text-muted small">{{ __('landing.how_it_works.step1_text') }}</p>
                 </div>
             </div>
 
@@ -238,8 +238,8 @@
                         </div>
                         <span class="step-number position-absolute bg-white text-primary border border-primary rounded-circle">02</span>
                     </div>
-                    <h5 class="fw-semibold mb-2">Medical consultation</h5>
-                    <p class="text-muted small">Our certified doctors review your information and create a prescription</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.how_it_works.step2_title') }}</h5>
+                    <p class="text-muted small">{{ __('landing.how_it_works.step2_text') }}</p>
                 </div>
             </div>
 
@@ -252,8 +252,8 @@
                         </div>
                         <span class="step-number position-absolute bg-white text-primary border border-primary rounded-circle">03</span>
                     </div>
-                    <h5 class="fw-semibold mb-2">Shipping</h5>
-                    <p class="text-muted small">Your medication is delivered discreetly and free of charge</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.how_it_works.step3_title') }}</h5>
+                    <p class="text-muted small">{{ __('landing.how_it_works.step3_text') }}</p>
                 </div>
             </div>
 
@@ -265,14 +265,14 @@
                         </div>
                         <span class="step-number position-absolute bg-white text-primary border border-primary rounded-circle">04</span>
                     </div>
-                    <h5 class="fw-semibold mb-2">Done!</h5>
-                    <p class="text-muted small">Receive your treatment at home – usually within 24-48 hours</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.how_it_works.step4_title') }}</h5>
+                    <p class="text-muted small">{{ __('landing.how_it_works.step4_text') }}</p>
                 </div>
             </div>
         </div>
 
         <div class="text-center">
-            <a href="{{ route('categories') }}" class="btn btn-primary btn-lg btn-start-treatment">Start treatment now</a>
+            <a href="{{ route('categories') }}" class="btn btn-primary btn-lg btn-start-treatment">{{ __('landing.how_it_works.cta') }}</a>
         </div>
     </div>
 </section>
@@ -284,7 +284,7 @@
             <div class="col-lg-6 order-2 order-lg-1 position-relative">
                 <div class="position-relative z-index-1">
                     <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&h=600&fit=crop" 
-                         alt="Medical team" 
+                         alt="{{ __('landing.about.image_alt') }}" 
                          class="img-fluid rounded-4 shadow-lg w-100" style="object-fit: cover; border: 8px solid rgba(255,255,255,0.5);">
                     
                     <!-- Floating Stat Card 1 -->
@@ -293,8 +293,8 @@
                             <i class="bi bi-shield-check fs-4"></i>
                         </div>
                         <div>
-                            <div class="fw-bold fs-5 text-dark">Certified</div>
-                            <div class="small text-muted mb-0">EU Doctors</div>
+                            <div class="fw-bold fs-5 text-dark">{{ __('landing.about.certified') }}</div>
+                            <div class="small text-muted mb-0">{{ __('landing.about.eu_doctors') }}</div>
                         </div>
                     </div>
                 </div>
@@ -304,11 +304,11 @@
             <div class="col-lg-6 order-1 order-lg-2 ps-lg-5">
                 <div class="mb-4">
                     <span class="badge bg-white text-primary rounded-pill px-3 py-2 border shadow-sm fw-semibold mb-3">
-                        <i class="bi bi-stars me-1 text-warning"></i> About Us
+                        <i class="bi bi-stars me-1 text-warning"></i> {{ __('landing.about.badge') }}
                     </span>
-                    <h2 class="display-4 fw-bold mb-3 text-dark" style="line-height: 1.1;">Welcome to <span class="text-primary">{{ $setting->business_name }}</span></h2>
+                    <h2 class="display-4 fw-bold mb-3 text-dark" style="line-height: 1.1;">{{ __('landing.about.welcome_to') }} <span class="text-primary">{{ $setting->business_name }}</span></h2>
                     <p class="lead text-muted mb-4" style="line-height: 1.8;">
-                        Your trusted, discreet, and reliable partner for telemedical health queries. We blend technology with professional medical care to provide accessible treatments.
+                        {{ __('landing.about.description') }}
                     </p>
                 </div>
                 
@@ -318,8 +318,8 @@
                             <i class="bi bi-laptop fs-5"></i>
                         </div>
                         <div>
-                            <h5 class="fw-semibold mb-1 text-dark">Comfortable & Private</h5>
-                            <p class="text-muted small mb-0">Consultations matching your schedule from the comfort and privacy of your home.</p>
+                            <h5 class="fw-semibold mb-1 text-dark">{{ __('landing.about.feature1_title') }}</h5>
+                            <p class="text-muted small mb-0">{{ __('landing.about.feature1_text') }}</p>
                         </div>
                     </div>
                     
@@ -328,15 +328,15 @@
                             <i class="bi bi-file-earmark-medical fs-5"></i>
                         </div>
                         <div>
-                            <h5 class="fw-semibold mb-1 text-dark">Compliant & Secure</h5>
-                            <p class="text-muted small mb-0">Strict adherence to medical regulations and total GDPR data protection.</p>
+                            <h5 class="fw-semibold mb-1 text-dark">{{ __('landing.about.feature2_title') }}</h5>
+                            <p class="text-muted small mb-0">{{ __('landing.about.feature2_text') }}</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="d-flex align-items-center gap-4 flex-wrap">
                     <a href="{{ url('/about-us') }}" class="btn btn-primary btn-lg rounded-pill px-4 shadow-sm align-items-center d-inline-flex gap-2">
-                        Discover Our Story
+                        {{ __('landing.about.story_cta') }}
                         <i class="bi bi-arrow-right"></i>
                     </a>
                     
@@ -348,7 +348,7 @@
                             <i class="bi bi-star-fill text-warning"></i>
                             <i class="bi bi-star-fill text-warning"></i>
                         </div>
-                        <span class="fw-bold small text-dark">{{ number_format($reviews->count() * 12500) }}+ Patients</span>
+                        <span class="fw-bold small text-dark">{{ number_format($reviews->count() * 12500) }}+ {{ __('landing.about.patients') }}</span>
                     </div>
                 </div>
             </div>
@@ -360,8 +360,8 @@
 <section class="py-5 bg-bloomwell-dark text-white" id="why-choose-us">
     <div class="container py-4">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3">Why Choose Us</h2>
-            <p class="lead" style="color: rgba(255,255,255,0.8);">The advantages of our online medical practice</p>
+            <h2 class="display-5 fw-bold mb-3">{{ __('landing.why_choose_us.title') }}</h2>
+            <p class="lead" style="color: rgba(255,255,255,0.8);">{{ __('landing.why_choose_us.subtitle') }}</p>
         </div>
 
         <div class="row g-4 mb-4">
@@ -370,8 +370,8 @@
                     <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-shield-check text-primary"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">100% Discreet</h5>
-                    <p class="text-muted small mb-0">Plain packaging and confidential service</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.why_choose_us.item1_title') }}</h5>
+                    <p class="text-muted small mb-0">{{ __('landing.why_choose_us.item1_text') }}</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -379,8 +379,8 @@
                     <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-clock text-primary"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">24-48h Delivery</h5>
-                    <p class="text-muted small mb-0">Fast and free shipping to your door</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.why_choose_us.item2_title') }}</h5>
+                    <p class="text-muted small mb-0">{{ __('landing.why_choose_us.item2_text') }}</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -388,8 +388,8 @@
                     <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-award text-primary"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">Licensed Doctors</h5>
-                    <p class="text-muted small mb-0">Certified medical professionals</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.why_choose_us.item3_title') }}</h5>
+                    <p class="text-muted small mb-0">{{ __('landing.why_choose_us.item3_text') }}</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -397,8 +397,8 @@
                     <div class="feature-icon bg-orange-light rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-lock text-primary"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">Secure & Private</h5>
-                    <p class="text-muted small mb-0">GDPR compliant data protection</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.why_choose_us.item4_title') }}</h5>
+                    <p class="text-muted small mb-0">{{ __('landing.why_choose_us.item4_text') }}</p>
                 </div>
             </div>
         </div>
@@ -410,37 +410,36 @@
     <div class="container py-4">
         <div class="row align-items-center g-5">
             <div class="col-lg-6 order-lg-2">
-                <h2 class="display-5 fw-bold mb-4">Safety & Quality</h2>
+                <h2 class="display-5 fw-bold mb-4">{{ __('landing.safety.title') }}</h2>
                 <p class="lead text-muted mb-4">
-                    Your health and safety are our top priorities. We maintain the highest 
-                    standards of medical care and data protection.
+                    {{ __('landing.safety.subtitle') }}
                 </p>
                 <ul class="list-unstyled">
                     <li class="mb-3">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        All medications sourced from licensed pharmacies
+                        {{ __('landing.safety.point1') }}
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        Thorough medical review by qualified doctors
+                        {{ __('landing.safety.point2') }}
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        Secure encrypted data transmission
+                        {{ __('landing.safety.point3') }}
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        Certified processes and quality assurance
+                        {{ __('landing.safety.point4') }}
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-check-circle-fill text-success me-2"></i>
-                        Full GDPR compliance for data protection
+                        {{ __('landing.safety.point5') }}
                     </li>
                 </ul>
             </div>
             <div class="col-lg-6 order-lg-1">
                 <img src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=600&h=400&fit=crop" 
-                     alt="Medical safety" 
+                     alt="{{ __('landing.safety.image_alt') }}" 
                      class="img-fluid rounded-3 shadow">
             </div>
         </div>
@@ -457,8 +456,8 @@
                     <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-award text-primary fs-4"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">Certified doctors</h5>
-                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">All our doctors are registered and licensed</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.trust.item1_title') }}</h5>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">{{ __('landing.trust.item1_text') }}</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -466,8 +465,8 @@
                     <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-lock text-primary fs-4"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">Privacy guaranteed</h5>
-                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">Your data is encrypted and protected according to GDPR</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.trust.item2_title') }}</h5>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">{{ __('landing.trust.item2_text') }}</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -475,8 +474,8 @@
                     <div class="feature-icon bg-white rounded-circle d-inline-flex align-items-center justify-content-center mx-auto mb-3">
                         <i class="bi bi-clock text-primary fs-4"></i>
                     </div>
-                    <h5 class="fw-semibold mb-2">Fast delivery</h5>
-                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">Shipping within 24-48 hours after medical approval</p>
+                    <h5 class="fw-semibold mb-2">{{ __('landing.trust.item3_title') }}</h5>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">{{ __('landing.trust.item3_text') }}</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
@@ -486,12 +485,12 @@
                     </div>
                     <h5 class="fw-semibold mb-2">
                         @if($reviews->count() > 0)
-                            {{ number_format($reviews->avg('rate'), 1) }}/5 rating
+                            {{ number_format($reviews->avg('rate'), 1) }}/5 {{ __('landing.trust.rating') }}
                         @else
-                        4.8/5 rating
+                        4.8/5 {{ __('landing.trust.rating') }}
                         @endif
                     </h5>
-                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">Over {{ number_format($reviews->count() * 12500) }} satisfied patients trust us</p>
+                    <p class="small mb-0" style="color: rgba(255,255,255,0.8);">{{ __('landing.trust.over_prefix') }} {{ number_format($reviews->count() * 12500) }} {{ __('landing.trust.over_suffix') }}</p>
                 </div>
             </div>
         </div>
@@ -500,7 +499,7 @@
         <div class="testimonials-section bg-bloomwell-dark text-white rounded-3 p-4 p-lg-5">
             <div class="row align-items-center g-4">
                 <div class="col-lg-6">
-                    <h2 class="display-6 fw-bold mb-4">What our patients say</h2>
+                    <h2 class="display-6 fw-bold mb-4">{{ __('landing.testimonials.title') }}</h2>
                     
                     @forelse($reviews->take(2) as $review)
                         <div class="card mb-3 bg-white text-dark border-0 shadow-bloomwell">
@@ -513,8 +512,8 @@
                                 <p class="card-text text-muted mb-2">
                                     "{{ Str::limit($review->review, 150) }}"
                                 </p>
-                                <p class="fw-semibold mb-0">{{ $review->user ? $review->user->name : 'Anonymous' }}</p>
-                                <p class="small text-muted">Verified patient</p>
+                                <p class="fw-semibold mb-0">{{ $review->user ? $review->user->name : __('landing.testimonials.anonymous') }}</p>
+                                <p class="small text-muted">{{ __('landing.testimonials.verified_patient') }}</p>
                             </div>
                         </div>
                     @empty
@@ -529,10 +528,10 @@
                                     <i class="bi bi-star-fill text-warning"></i>
                                 </div>
                                 <p class="card-text text-muted mb-2">
-                                    "Very professional service. The medical consultation was thorough and the medication arrived quickly. Highly recommended!"
+                                    "{{ __('landing.testimonials.fallback_quote') }}"
                                 </p>
                                 <p class="fw-semibold mb-0">Michael K.</p>
-                                <p class="small text-muted">Verified patient</p>
+                                <p class="small text-muted">{{ __('landing.testimonials.verified_patient') }}</p>
                             </div>
                         </div>
                     @endforelse
@@ -540,7 +539,7 @@
 
                 <div class="col-lg-6">
                     <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&h=400&fit=crop" 
-                         alt="Healthcare professionals" 
+                         alt="{{ __('landing.testimonials.image_alt') }}" 
                          class="img-fluid rounded-3 shadow">
                 </div>
             </div>
@@ -548,16 +547,16 @@
 
         <!-- Certifications -->
         <div class="mt-5 pt-4 border-top">
-            <p class="text-center text-muted small mb-3">Certified and verified by:</p>
+            <p class="text-center text-muted small mb-3">{{ __('landing.certifications.title') }}</p>
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <div class="bg-light rounded px-4 py-2">
-                    <span class="fw-medium">Certified</span>
+                    <span class="fw-medium">{{ __('landing.certifications.certified') }}</span>
                 </div>
                 <div class="bg-light rounded px-4 py-2">
-                    <span class="fw-medium">Licensed</span>
+                    <span class="fw-medium">{{ __('landing.certifications.licensed') }}</span>
                 </div>
                 <div class="bg-light rounded px-4 py-2">
-                    <span class="fw-medium">GDPR Compliant</span>
+                    <span class="fw-medium">{{ __('landing.certifications.gdpr') }}</span>
                 </div>
             </div>
         </div>
@@ -568,8 +567,8 @@
 <section class="py-5" style="background-color: #f2efea !important;" id="faq">
     <div class="container py-4">
         <div class="text-center mb-5">
-            <h2 class="display-5 fw-bold mb-3 text-dark">Frequently Asked Questions</h2>
-            <p class="lead text-muted">Everything you need to know about our service</p>
+            <h2 class="display-5 fw-bold mb-3 text-dark">{{ __('landing.faq.title') }}</h2>
+            <p class="lead text-muted">{{ __('landing.faq.subtitle') }}</p>
         </div>
 
         <div class="row justify-content-center">
@@ -578,12 +577,12 @@
                     <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                How does the online consultation work?
+                                {{ __('landing.faq.q1') }}
                             </button>
                         </h2>
                         <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted">
-                                Simply complete our secure medical questionnaire. Our licensed doctors will review your information and, if appropriate, issue a prescription. The entire process typically takes 24-48 hours.
+                                {{ __('landing.faq.a1') }}
                             </div>
                         </div>
                     </div>
@@ -591,12 +590,12 @@
                     <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                                Are the doctors real and licensed?
+                                {{ __('landing.faq.q2') }}
                             </button>
                         </h2>
                         <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted">
-                                Yes, all our doctors are fully licensed and registered with medical authorities. They have years of experience and are qualified to prescribe medication.
+                                {{ __('landing.faq.a2') }}
                             </div>
                         </div>
                     </div>
@@ -604,12 +603,12 @@
                     <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                                How long does delivery take?
+                                {{ __('landing.faq.q3') }}
                             </button>
                         </h2>
                         <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted">
-                                Once your prescription is approved, medications are typically delivered within 24-48 hours. We offer free express shipping with discreet packaging.
+                                {{ __('landing.faq.a3') }}
                             </div>
                         </div>
                     </div>
@@ -617,12 +616,12 @@
                     <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                                Is my information secure?
+                                {{ __('landing.faq.q4') }}
                             </button>
                         </h2>
                         <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted">
-                                Absolutely. We use bank-level encryption and are fully GDPR-compliant. Your medical information is confidential and never shared with third parties.
+                                {{ __('landing.faq.a4') }}
                             </div>
                         </div>
                     </div>
@@ -630,12 +629,12 @@
                     <div class="accordion-item border-0 border-bottom">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                                What if the treatment is not suitable for me?
+                                {{ __('landing.faq.q5') }}
                             </button>
                         </h2>
                         <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted">
-                                Our doctors carefully review each case. If a treatment is not medically appropriate, they will not issue a prescription and will recommend alternative options or suggest consulting your GP.
+                                {{ __('landing.faq.a5') }}
                             </div>
                         </div>
                     </div>
@@ -643,12 +642,12 @@
                     <div class="accordion-item border-0">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
-                                Can I get a refund?
+                                {{ __('landing.faq.q6') }}
                             </button>
                         </h2>
                         <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body text-muted">
-                                Due to the nature of prescription medications, we cannot accept returns. However, if there is an issue with your order, please contact our customer service team who will be happy to help.
+                                {{ __('landing.faq.a6') }}
                             </div>
                         </div>
                     </div>
@@ -656,9 +655,9 @@
 
                 <div class="card mt-4 bg-white text-dark border-0">
                     <div class="card-body text-center p-4">
-                        <h5 class="fw-semibold mb-2">Still have questions?</h5>
-                        <p class="text-muted mb-3">Our customer support team is here to help you</p>
-                        <a href="{{ url('/contact') }}" class="btn btn-primary">Contact support</a>
+                        <h5 class="fw-semibold mb-2">{{ __('landing.faq.still_have_questions') }}</h5>
+                        <p class="text-muted mb-3">{{ __('landing.faq.support_text') }}</p>
+                        <a href="{{ url('/contact') }}" class="btn btn-primary">{{ __('landing.faq.contact_support') }}</a>
                     </div>
                 </div>
             </div>
@@ -677,7 +676,7 @@
                 @else
                     <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}" class="footer-logo mb-3">
                 @endif
-                <p class="small mb-3">Your trusted online medical practice for discreet and secure medical consultation.</p>
+                <p class="small mb-3">{{ __('landing.footer.company_text') }}</p>
                 <div class="d-flex gap-3">
                     @if($setting->facebook_link)
                         <a href="{{ $setting->facebook_link }}" class="text-light" target="_blank"><i class="bi bi-facebook"></i></a>
@@ -696,9 +695,9 @@
 
             <!-- Treatments -->
             <div class="col-md-6 col-lg-3">
-                <h5 class="text-white mb-3">Treatments</h5>
+                <h5 class="text-white mb-3">{{ __('landing.footer.treatments') }}</h5>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ route('categories') }}" class="text-light text-decoration-none">All treatments</a></li>
+                    <li class="mb-2"><a href="{{ route('categories') }}" class="text-light text-decoration-none">{{ __('landing.footer.all_treatments') }}</a></li>
                     @foreach($categories->take(5) as $category)
                         <li class="mb-2"><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-light text-decoration-none">{{ $category->name }}</a></li>
                     @endforeach
@@ -707,23 +706,23 @@
 
             <!-- Company -->
             <div class="col-md-6 col-lg-3">
-                <h5 class="text-white mb-3">Company</h5>
+                <h5 class="text-white mb-3">{{ __('landing.footer.company') }}</h5>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ url('/about-us') }}" class="text-light text-decoration-none">About us</a></li>
-                    <li class="mb-2"><a href="#how-it-works" class="text-light text-decoration-none">How it works</a></li>
-                    <li class="mb-2"><a href="{{ url('show-doctors') }}" class="text-light text-decoration-none">Our doctors</a></li>
-                    <li class="mb-2"><a href="{{ url('our_blogs') }}" class="text-light text-decoration-none">Blog</a></li>
+                    <li class="mb-2"><a href="{{ url('/about-us') }}" class="text-light text-decoration-none">{{ __('landing.footer.about_us') }}</a></li>
+                    <li class="mb-2"><a href="#how-it-works" class="text-light text-decoration-none">{{ __('landing.footer.how_it_works') }}</a></li>
+                    <li class="mb-2"><a href="{{ url('show-doctors') }}" class="text-light text-decoration-none">{{ __('landing.footer.our_doctors') }}</a></li>
+                    <li class="mb-2"><a href="{{ url('our_blogs') }}" class="text-light text-decoration-none">{{ __('landing.footer.blog') }}</a></li>
                 </ul>
             </div>
 
             <!-- Support -->
             <div class="col-md-6 col-lg-3">
-                <h5 class="text-white mb-3">Support</h5>
+                <h5 class="text-white mb-3">{{ __('landing.footer.support') }}</h5>
                 <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Help center</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Contact</a></li>
-                    <li class="mb-2"><a href="#faq" class="text-light text-decoration-none">FAQ</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Shipping & delivery</a></li>
+                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">{{ __('landing.footer.help_center') }}</a></li>
+                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">{{ __('landing.footer.contact') }}</a></li>
+                    <li class="mb-2"><a href="#faq" class="text-light text-decoration-none">{{ __('landing.footer.faq') }}</a></li>
+                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">{{ __('landing.footer.shipping_delivery') }}</a></li>
                 </ul>
             </div>
         </div>
@@ -731,12 +730,12 @@
         <div class="border-top border-secondary pt-4">
             <div class="row align-items-center">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small mb-0">© {{ date('Y') }} {{ $setting->business_name }} All rights reserved.</p>
+                    <p class="small mb-0">© {{ date('Y') }} {{ $setting->business_name }} {{ __('landing.footer.all_rights_reserved') }}</p>
                 </div>
                 <div class="col-md-6">
                     <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 small">
-                        <a href="{{ url('/privacy-policy') }}" class="text-light text-decoration-none">Privacy</a>
-                        <a href="#" class="text-light text-decoration-none">Terms</a>
+                        <a href="{{ url('/privacy-policy') }}" class="text-light text-decoration-none">{{ __('landing.footer.privacy') }}</a>
+                        <a href="#" class="text-light text-decoration-none">{{ __('landing.footer.terms') }}</a>
                     </div>
                 </div>
             </div>
@@ -802,7 +801,7 @@
             var btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'treatment-dot' + (i === 0 ? ' active' : '');
-            btn.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+            btn.setAttribute('aria-label', @json(__('landing.treatments.go_to_slide')) + ' ' + (i + 1));
             (function(idx) { btn.addEventListener('click', function() { goTo(idx); }); })(i);
             dotsWrap.appendChild(btn);
         }

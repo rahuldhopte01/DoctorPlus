@@ -2,273 +2,329 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privatrezept</title>
     <style>
-        /* Compact prescription slip – fits A6 (105×148mm) */
+        @page { margin: 10px; }
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            font-size: 9px;
+            font-family: DejaVu Sans, Arial, sans-serif;
+            font-size: 10px;
+            color: #000;
         }
-        .prescription-container {
-            width: 380px;
-            min-height: 530px;
-            background-color: #a4ceef;
+
+        .page {
             position: relative;
-            box-sizing: border-box;
-            border: 1px solid #5a87a8;
+            width: 700px;
+            height: 430px;
+            background: #9fc7e5;
+            border: 2px solid #3f7fb7;
+            margin: 0 auto 10px auto;
+            page-break-after: always;
+            overflow: hidden;
         }
+        .page.last { page-break-after: auto; }
+
         .box {
-            border: 1px solid #336699;
-            background-color: white;
-            position: absolute;
+            border: 2px solid #4b86bd;
+            background: #fff;
             box-sizing: border-box;
         }
         .label {
-            font-size: 6px;
-            color: #336699;
-            position: absolute;
-        }
-        .top-left-date {
-            position: absolute;
-            top: 5px;
-            left: 8px;
-            font-size: 8px;
-            font-family: monospace;
-            color: #000;
-        }
-        .patient-box {
-            top: 21px;
-            left: 10px;
-            width: 180px;
-            height: 57px;
-        }
-        .patient-box .privat-title {
+            color: #2f6fa5;
             font-size: 10px;
-            font-weight: bold;
-            margin: 2px 0 0 5px;
         }
-        .patient-box .patient-label {
-            font-size: 6px;
-            color: #336699;
-            margin: 1px 0 0 5px;
-        }
-        .patient-box .patient-info {
-            font-size: 8px;
-            margin: 4px 0 0 5px;
-            line-height: 1.15;
-        }
-        .patient-box .geb-am {
+
+        .date-top {
             position: absolute;
-            top: 28px;
-            right: 5px;
+            top: 8px;
+            left: 10px;
+            font-size: 16px;
+        }
+
+        .patient {
+            position: absolute;
+            top: 38px;
+            left: 10px;
+            width: 390px;
+            height: 152px;
+            padding: 8px 10px;
+        }
+        .patient .title {
+            font-size: 39px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .patient .meta { margin-top: 2px; }
+        .patient .name {
+            font-size: 15px;
+            line-height: 1.15;
+            margin-top: 4px;
+            width: 250px;
+        }
+        .birth {
+            position: absolute;
+            right: 10px;
+            top: 72px;
             text-align: right;
         }
-        .patient-box .geb-am .label { position: static; font-size: 6px; }
-        .patient-box .geb-am .date { font-size: 8px; font-weight: bold; }
-        .ins-box {
-            top: 78px;
-            left: 10px;
-            width: 180px;
-            height: 19px;
-            display: flex;
+        .birth .val {
+            font-size: 31px;
+            line-height: 1;
         }
-        .ins-box > div {
-            border-right: 1px solid #336699;
-            flex: 1;
-            position: relative;
-        }
-        .ins-box > div:last-child { border-right: none; }
-        .ins-box .label { top: 1px; left: 3px; font-size: 6px; }
-        .doc-box {
-            top: 97px;
-            left: 10px;
-            width: 180px;
-            height: 19px;
-            display: flex;
-        }
-        .doc-box > div {
-            border-right: 1px solid #336699;
-            flex: 1;
-            position: relative;
-        }
-        .doc-box > div:last-child { border-right: none; }
-        .doc-box .label { top: 1px; left: 3px; font-size: 6px; }
-        .doc-box .val { position: absolute; bottom: 2px; left: 3px; font-size: 8px; }
-        .doc-box .right-val { position: absolute; bottom: 2px; right: 5px; font-size: 8px; font-weight: bold; }
-        .unfall-box {
-            top: 83px;
-            left: 5px;
-            font-size: 5px;
-            border: 1px solid #336699;
-            background: white;
-            padding: 1px;
+
+        .unfall {
             position: absolute;
-        }
-        .top-right-group {
-            position: absolute;
-            top: 14px;
-            right: 10px;
-            width: 166px;
-        }
-        .bezugsdatum {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 71px;
-            height: 17px;
-        }
-        .apotheken-nummer {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 85px;
-            height: 17px;
-        }
-        .bezugsdatum .label, .apotheken-nummer .label { top: -8px; left: 3px; font-size: 5px; }
-        .gesamt-brutto {
-            position: absolute;
-            top: 21px;
-            right: 0;
-            width: 104px;
-            height: 19px;
-            display: flex;
-        }
-        .gesamt-brutto .label { top: -8px; left: 0; font-size: 5px; }
-        .gv-cell { flex: 1; border-right: 1px dashed #336699; height: 100%; position: relative; }
-        .gv-cell:last-child { border-right: none; }
-        .gv-cell:nth-child(4) { border-right: 1px solid #336699; }
-        .gv-cell::after {
-            content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
-            border-left: 2px solid transparent; border-right: 2px solid transparent; border-bottom: 2px solid #336699;
-        }
-        .arzn-grid {
-            position: absolute;
-            top: 47px;
-            left: 0;
-            width: 166px;
-            height: 57px;
-            background: rgba(255,255,255,0.7);
-            border: 1px solid #336699;
-            display: grid;
-            grid-template-columns: 95px 24px 47px;
-            grid-template-rows: 10px 16px 16px 16px;
-        }
-        .arzn-grid > div {
-            border-right: 1px solid #336699;
-            border-bottom: 1px solid #336699;
-            position: relative;
-        }
-        .arzn-grid > div:nth-child(3n) { border-right: none; }
-        .arzn-grid > div:nth-last-child(-n+3) { border-bottom: none; }
-        .arzn-header { font-size: 5px; color: #336699; padding: 1px 2px; }
-        .arzn-item { display: flex; }
-        .arzn-item .t-cell { flex: 1; border-right: 1px dashed #336699; position: relative; }
-        .arzn-item .t-cell:last-child { border-right: none; }
-        .arzn-item .t-cell::after {
-            content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
-            border-left: 2px solid transparent; border-right: 2px solid transparent; border-bottom: 2px solid #336699;
-        }
-        .rp-area {
-            position: absolute;
-            top: 123px;
-            left: 10px;
-            width: 360px;
-            min-height: 118px;
-        }
-        .rp-title {
-            font-size: 10px;
-            font-weight: bold;
-            color: #336699;
-            margin-bottom: 4px;
-        }
-        .rp-title span { font-size: 5px; font-weight: normal; }
-        .med-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 6px;
-            font-size: 7px;
-            font-family: Arial, sans-serif;
-        }
-        .aut-idem {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #336699;
-            background: white;
-            margin-right: 5px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 4px;
-            color: #336699;
-            padding: 0 0;
-            box-sizing: border-box;
-            border-radius: 1px;
-            flex-shrink: 0;
-        }
-        .med-text { flex: 1; }
-        .med-text div:first-child { margin-bottom: 1px; }
-        .doctor-info {
-            position: absolute;
-            bottom: 18px;
-            right: 10px;
+            top: 155px;
+            left: 2px;
+            width: 24px;
+            height: 42px;
+            border: 2px solid #4b86bd;
+            background: #fff;
+            color: #2f6fa5;
             text-align: center;
-            font-size: 6px;
-            width: 118px;
+            font-size: 8px;
+            line-height: 1.05;
+            padding-top: 8px;
         }
-        .doctor-name { font-size: 8px; margin-bottom: 1px; }
-        .doctor-title { margin-bottom: 6px; }
-        .doctor-address { font-size: 5px; line-height: 1.25; }
-        .signature-line {
+
+        .ins,
+        .doc {
             position: absolute;
-            bottom: 4px;
-            right: 10px;
-            font-size: 5px;
-            color: #336699;
-            width: 118px;
-            text-align: center;
-        }
-        .footer-info {
-            position: absolute;
-            bottom: 4px;
             left: 10px;
-            font-size: 6px;
-            display: flex;
-            gap: 70px;
-            align-items: center;
+            width: 390px;
+            border: 2px solid #4b86bd;
+            border-top: 0;
+            background: #f5f5f5;
+            border-collapse: collapse;
         }
-        .pkv { font-size: 10px; letter-spacing: 1px; }
-        .squiggle {
+        .ins { top: 190px; }
+        .doc { top: 228px; }
+        .ins td,
+        .doc td {
+            border-right: 2px solid #4b86bd;
+            height: 36px;
+            padding: 4px 10px;
+            vertical-align: top;
+            position: relative;
+        }
+        .ins td:last-child,
+        .doc td:last-child { border-right: 0; }
+        .tick {
             position: absolute;
-            top: 50%;
+            bottom: 0;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 38px;
-            height: 28px;
-            opacity: 0.5;
-            pointer-events: none;
+            width: 1px;
+            height: 18px;
+            background: #4b86bd;
         }
-        .squiggle svg { width: 100%; height: 100%; }
+        .doc-date {
+            position: absolute;
+            right: 10px;
+            bottom: 4px;
+            font-size: 32px;
+            line-height: 1;
+        }
+        .doc-number {
+            position: absolute;
+            left: 10px;
+            bottom: 4px;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .right {
+            position: absolute;
+            top: 38px;
+            left: 412px;
+            width: 278px;
+        }
+        .smallbox {
+            display: inline-block;
+            vertical-align: top;
+            height: 40px;
+            padding: 3px 8px;
+            border: 2px solid #4b86bd;
+            background: #fff;
+            box-sizing: border-box;
+        }
+        .bez { width: 104px; }
+        .apo { width: 164px; margin-left: 6px; }
+
+        .gross {
+            margin-top: 8px;
+            margin-left: 104px;
+            width: 174px;
+            height: 37px;
+            border: 2px solid #4b86bd;
+            background: #fff;
+            border-collapse: collapse;
+        }
+        .gross td {
+            border-right: 1px dashed #4b86bd;
+            width: 12.5%;
+        }
+        .gross td:last-child { border-right: 0; }
+
+        .grid {
+            margin-top: 8px;
+            width: 278px;
+            border: 2px solid #4b86bd;
+            border-collapse: collapse;
+            background: #fff;
+        }
+        .grid th,
+        .grid td {
+            border-right: 2px solid #4b86bd;
+            border-bottom: 2px solid #4b86bd;
+            padding: 4px 8px;
+            color: #2f6fa5;
+            font-size: 10px;
+            text-align: left;
+            vertical-align: top;
+            height: 38px;
+        }
+        .grid th { height: 28px; font-weight: normal; }
+        .grid tr:last-child td { border-bottom: 0; }
+        .grid th:last-child,
+        .grid td:last-child { border-right: 0; }
+        .dash {
+            margin-top: 16px;
+            border-top: 1px dashed #4b86bd;
+            height: 0;
+        }
+
+        .rx {
+            position: absolute;
+            top: 268px;
+            left: 10px;
+            width: 470px;
+        }
+        .rx-title {
+            color: #2f6fa5;
+            font-size: 32px;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+        .rx-title span {
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .med {
+            margin-bottom: 10px;
+            font-size: 11px;
+            line-height: 1.25;
+        }
+        .aut {
+            display: inline-block;
+            width: 24px;
+            height: 28px;
+            border: 2px solid #4b86bd;
+            background: #fff;
+            text-align: center;
+            color: #2f6fa5;
+            font-size: 9px;
+            line-height: 1.05;
+            padding-top: 4px;
+            vertical-align: top;
+        }
+        .med-text {
+            display: inline-block;
+            width: 436px;
+            margin-left: 6px;
+            vertical-align: top;
+        }
+
+        .doctor {
+            position: absolute;
+            right: 20px;
+            bottom: 42px;
+            width: 210px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+        .doctor .name {
+            font-size: 42px;
+            line-height: 1;
+        }
+        .doctor .sign {
+            font-family: DejaVu Sans, Arial, sans-serif;
+            font-size: 66px;
+            line-height: 0.8;
+            margin-top: -2px;
+            margin-bottom: -8px;
+        }
+        .doctor-ring {
+            position: absolute;
+            left: 50%;
+            top: 56%;
+            width: 66px;
+            height: 66px;
+            margin-left: -33px;
+            margin-top: -33px;
+            border: 1px solid rgba(51, 78, 130, 0.45);
+            border-radius: 50%;
+        }
+
+        .footer {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            font-size: 10px;
+        }
+        .pkv {
+            float: left;
+            font-size: 45px;
+            line-height: 0.9;
+        }
+        .valid {
+            float: left;
+            margin-left: 24px;
+            margin-top: 18px;
+            font-size: 28px;
+        }
+        .receipt {
+            float: left;
+            margin-left: 28px;
+            margin-top: 18px;
+            font-size: 28px;
+        }
+        .footer-sign {
+            float: right;
+            margin-top: 24px;
+            color: #2f6fa5;
+            font-size: 10px;
+        }
+        .clearfix:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
     </style>
 </head>
 <body>
-
 @php
-    $items = $medicines ?? [];
+    $items = collect($medicines ?? []);
+    $chunks = $items->chunk(3);
+    if ($chunks->isEmpty()) {
+        $chunks = collect([collect()]);
+    }
+
     $createdDate = isset($prescription) && $prescription->created_at
         ? $prescription->created_at->format('d.m.Y')
         : now()->format('d.m.Y');
     $validUntil = isset($prescription) && $prescription->valid_until
         ? $prescription->valid_until->format('d.m.Y')
         : (isset($valid_until) ? \Carbon\Carbon::parse($valid_until)->format('d.m.Y') : '');
+
     $patientName = $patient_name ?? (isset($prescription->user) && $prescription->user ? $prescription->user->name : 'Patient');
     $patientAddress = $patient_address ?? '';
     $patientCity = $patient_city ?? '';
     $patientCountry = $patient_country ?? 'Deutschland';
     $patientDob = $patient_dob ?? (isset($prescription->user) && $prescription->user && $prescription->user->dob ? \Carbon\Carbon::parse($prescription->user->dob)->format('d.m.Y') : '');
+
     $doctorName = $doctor_name ?? (isset($prescription->doctor) && $prescription->doctor && $prescription->doctor->user ? $prescription->doctor->user->name : (isset($prescription->doctor) && $prescription->doctor ? $prescription->doctor->name : 'Doctor'));
     $doctorTitle = $doctor_title ?? 'Arzt/Ärztin';
     $doctorAddress = $doctor_address ?? '';
@@ -277,73 +333,79 @@
     $receiptNr = $receipt_nr ?? ('RP' . str_pad($prescription->id ?? 0, 12, '0', STR_PAD_LEFT));
 @endphp
 
-<div class="prescription-container">
-    <div class="top-left-date">{{ $createdDate }}</div>
+@foreach($chunks as $chunkIndex => $chunk)
+<div class="page {{ $loop->last ? 'last' : '' }}">
+    <div class="date-top">{{ $createdDate }}</div>
 
-    <div class="box patient-box">
-        <div class="privat-title">Privat</div>
-        <div class="patient-label">Name, Vorname des Versicherten</div>
-        <div class="patient-info">
-            <strong>{{ $patientName }}</strong><br>
-            @if($patientAddress){{ $patientAddress }}<br>
-            @endif
-            @if($patientCity){{ $patientCity }}<br>
-            @endif
-            @if($patientCountry){{ $patientCountry }}
-            @endif
+    <div class="box patient">
+        <div class="title">Privat</div>
+        <div class="meta label">Name, Vorname des Versicherten</div>
+        <div class="name">
+            {{ $patientName }}<br>
+            @if($patientAddress){{ $patientAddress }}<br>@endif
+            @if($patientCity){{ $patientCity }}<br>@endif
+            @if($patientCountry){{ $patientCountry }}@endif
         </div>
         @if($patientDob)
-        <div class="geb-am">
+        <div class="birth">
             <div class="label">geb. am</div>
-            <div class="date">{{ $patientDob }}</div>
+            <div class="val">{{ $patientDob }}</div>
         </div>
         @endif
     </div>
 
-    <div class="unfall-box">Unfall</div>
+    <div class="unfall">Unfal<br>l</div>
 
-    <div class="box ins-box">
-        <div><div class="label">Versicherungsnummer</div></div>
-        <div><div class="label">Personennummer</div></div>
+    <table class="ins">
+        <tr>
+            <td><span class="label">Versicherungsnummer</span><span class="tick"></span></td>
+            <td><span class="label">Personennummer</span><span class="tick"></span></td>
+        </tr>
+    </table>
+
+    <table class="doc">
+        <tr>
+            <td>
+                <span class="label">Arzt-Nr.</span>
+                <span class="tick"></span>
+                @if($doctorLanr)
+                    <div class="doc-number">{{ $doctorLanr }}</div>
+                @endif
+            </td>
+            <td>
+                <span class="label">Datum</span>
+                <span class="tick"></span>
+                <div class="doc-date">{{ $createdDate }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="right">
+        <div class="smallbox bez"><span class="label">Bezugsdatum</span></div>
+        <div class="smallbox apo"><span class="label">Apotheken-Nummer / IK</span></div>
+
+        <table class="gross">
+            <tr>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+        </table>
+
+        <table class="grid">
+            <tr>
+                <th>Arzneimittel-/Hilfsmittel-/Heilmittel-Nr.</th>
+                <th>Faktor</th>
+                <th>Taxe</th>
+            </tr>
+            <tr><td><div class="dash"></div></td><td><div class="dash"></div></td><td><div class="dash"></div></td></tr>
+            <tr><td><div class="dash"></div></td><td><div class="dash"></div></td><td><div class="dash"></div></td></tr>
+            <tr><td><div class="dash"></div></td><td><div class="dash"></div></td><td><div class="dash"></div></td></tr>
+        </table>
     </div>
 
-    <div class="box doc-box">
-        <div><div class="label">Arzt-Nr.</div>{!! $doctorLanr ? '<div class="val">'.e($doctorLanr).'</div>' : '' !!}</div>
-        <div>
-            <div class="label">Datum</div>
-            <div class="right-val">{{ $createdDate }}</div>
-        </div>
-    </div>
+    <div class="rx">
+        <div class="rx-title">Rp.<span>(Bitte Leerräume durchstreichen)</span></div>
 
-    <div class="top-right-group">
-        <div class="box bezugsdatum">
-            <div class="label">Bezugsdatum</div>
-        </div>
-        <div class="box apotheken-nummer">
-            <div class="label">Apotheken-Nummer / IK</div>
-        </div>
-        <div class="box gesamt-brutto">
-            <div class="label">Gesamt-Brutto</div>
-            <div class="gv-cell"></div><div class="gv-cell"></div><div class="gv-cell"></div><div class="gv-cell"></div>
-            <div class="gv-cell"></div><div class="gv-cell"></div><div class="gv-cell"></div>
-        </div>
-        <div class="arzn-grid">
-            <div class="arzn-header">Arzneimittel-/Hilfsmittel-/Heilmittel-Nr.</div>
-            <div class="arzn-header">Faktor</div>
-            <div class="arzn-header">Taxe</div>
-            @for ($i = 0; $i < 3; $i++)
-            <div class="arzn-item">
-                <div class="t-cell"></div><div class="t-cell"></div><div class="t-cell"></div><div class="t-cell"></div><div class="t-cell"></div><div class="t-cell"></div><div class="t-cell"></div>
-            </div>
-            <div></div><div></div>
-            @endfor
-        </div>
-    </div>
-
-    <div class="rp-area">
-        <div class="rp-title">Rp. <span>(Bitte Leerräume durchstreichen)</span></div>
-
-        @forelse ($items as $item)
+        @forelse($chunk as $item)
             @php
                 $medicine = data_get($item, 'medicine', '-');
                 $strength = data_get($item, 'strength', '');
@@ -359,51 +421,43 @@
                     ? (($morning ? '1' : '0') . ' / ' . ($afternoon ? '1' : '0') . ' / ' . ($night ? '1' : '0'))
                     : '';
                 $dosageLine = $ed && $tdFreq
-                    ? 'Dosierung: ED: ' . $ed . ', TD: Bis zu ' . $tdFreq
-                    : ($frequency ? 'Dosierung: ' . $frequency . ($days ? ' | Tage: ' . $days : '') : 'Dosierung: ' . ($days ? 'Tage: ' . $days : '-'));
+                    ? ('Dosierung: ED: ' . $ed . ', TD: Bis zu ' . $tdFreq)
+                    : ($frequency
+                        ? ('Dosierung: ' . $frequency . ($days ? ' | Tage: ' . $days : ''))
+                        : ('Dosierung: ' . ($days ? 'Tage: ' . $days : '-')));
             @endphp
-            <div class="med-item">
-                <div class="aut-idem"><span>aut</span><span>idem</span></div>
-                <div class="med-text">
-                    <div>{{ $medicine }}{{ $strength ? ' (' . $strength . ')' : '' }}{{ $qty ? ', ' . $qty : '' }}</div>
-                    <div>{{ $dosageLine }}</div>
-                </div>
+            <div class="med">
+                <span class="aut">aut<br>idem</span>
+                <span class="med-text">
+                    {{ $medicine }}{{ $strength ? ' (' . $strength . ')' : '' }}{{ $qty ? ', ' . $qty : '' }}<br>
+                    {{ $dosageLine }}, verdampfen und inhalieren
+                </span>
             </div>
         @empty
-            <div class="med-item">
-                <div class="aut-idem"><span>aut</span><span>idem</span></div>
-                <div class="med-text"><div>Keine Medikamente hinterlegt.</div></div>
+            <div class="med">
+                <span class="aut">aut<br>idem</span>
+                <span class="med-text">Keine Medikamente hinterlegt.</span>
             </div>
         @endforelse
-
-        <div class="doctor-info">
-            <div class="doctor-name">{{ $doctorName }}</div>
-            <div class="doctor-title">{{ $doctorTitle }}</div>
-            <div class="doctor-address">
-                @if($doctorAddress){!! nl2br(e($doctorAddress)) !!}<br>
-                @endif
-                @if($doctorPhone)Telefon: {{ $doctorPhone }}<br>
-                @endif
-                @if($doctorLanr)LANR: {{ $doctorLanr }}
-                @endif
-            </div>
-            <div class="squiggle">
-                <svg viewBox="0 0 100 50">
-                    <path d="M10,40 Q20,10 30,30 T50,20 T70,40 T90,20" fill="transparent" stroke="#336699" stroke-width="2"/>
-                </svg>
-            </div>
-        </div>
-        <div class="signature-line">Arztstempel/Unterschrift des Arztes</div>
     </div>
 
-    <div class="footer-info">
-        <div class="pkv">PKV H</div>
-        @if($validUntil)
-        <div>Gültig bis {{ $validUntil }}</div>
-        @endif
-        <div>RezeptNr: {{ $receiptNr }}</div>
+    <div class="doctor">
+        <div class="name">{{ $doctorName }}</div>
+        <div>{{ $doctorTitle }}</div>
+        <div class="sign">R</div>
+        <div class="doctor-ring"></div>
+        @if($doctorAddress)<div>{!! nl2br(e($doctorAddress)) !!}</div>@endif
+        @if($doctorPhone)<div>Telefon: {{ $doctorPhone }}</div>@endif
+        @if($doctorLanr)<div>LANR: {{ $doctorLanr }}</div>@endif
+    </div>
+
+    <div class="footer clearfix">
+        <div class="pkv">PKVH</div>
+        @if($validUntil)<div class="valid">Gültig bis {{ $validUntil }}</div>@endif
+        <div class="receipt">RezeptNr: {{ $receiptNr }}</div>
+        <div class="footer-sign">Arztstempel/Unterschrift des Arztes</div>
     </div>
 </div>
-
+@endforeach
 </body>
 </html>
