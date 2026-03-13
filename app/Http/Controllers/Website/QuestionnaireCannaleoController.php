@@ -98,11 +98,152 @@ class QuestionnaireCannaleoController extends Controller
 
         $submission->update([
             'selected_cannaleo_pharmacy_id' => $request->cannaleo_pharmacy_id,
+            'cannaleo_delivery_option' => null, // reset so user chooses again for this pharmacy
         ]);
 
         return response()->json([
             'success' => true,
             'message' => __('Pharmacy selected successfully'),
+            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/cannaleo-delivery-selection'),
+        ]);
+    }
+
+    /**
+     * Show Cannaleo delivery option selection for the selected pharmacy.
+     */
+    public function showDeliverySelection($categoryId)
+    {
+        if (!Auth::check()) {
+            return redirect('/patient-login')->with('info', __('Please login to continue'));
+        }
+
+        $category = Category::findOrFail($categoryId);
+        $user = Auth::user();
+
+        $submission = QuestionnaireSubmission::where('user_id', $user->id)
+            ->where('category_id', $categoryId)
+            ->firstOrFail();
+
+        if ($submission->delivery_type !== 'cannaleo' || !$submission->hasSelectedCannaleoPharmacy()) {
+            return redirect()->route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $categoryId])
+                ->with('error', __('Please select a Cannaleo pharmacy first.'));
+        }
+
+        $pharmacy = CannaleoPharmacy::find($submission->selected_cannaleo_pharmacy_id);
+        if (!$pharmacy) {
+            return redirect()->route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $categoryId])
+                ->with('error', __('Selected pharmacy not found.'));
+        }
+
+        $deliveryOptions = $this->buildDeliveryOptionsForPharmacy($pharmacy);
+        $selectedOption = $submission->cannaleo_delivery_option;
+        $isCannaleoOnly = $category->is_cannaleo_only ?? false;
+
+        return view('website.questionnaire.cannaleo_delivery_selection', compact(
+            'category',
+            'submission',
+            'pharmacy',
+            'deliveryOptions',
+            'selectedOption',
+            'isCannaleoOnly'
+        ));
+    }
+
+    /**
+     * Build list of available delivery options for a pharmacy (with labels and costs).
+     *
+     * @return array<int, array{key: string, label: string, description: string, cost: float|null}>
+     */
+    protected function buildDeliveryOptionsForPharmacy(CannaleoPharmacy $pharmacy): array
+    {
+        $options = [];
+
+        if ($pharmacy->shipping !== null && $pharmacy->shipping !== '') {
+            $cost = $pharmacy->shipping_cost_standard;
+            $options[] = [
+                'key' => 'shipping',
+                'label' => $pharmacy->shipping,
+                'description' => __('Standard shipping'),
+                'cost' => $cost !== null ? (float) $cost : null,
+            ];
+        }
+        if ($pharmacy->express !== null && $pharmacy->express !== '') {
+            $cost = $pharmacy->express_cost_standard;
+            $options[] = [
+                'key' => 'express',
+                'label' => $pharmacy->express,
+                'description' => __('Express delivery'),
+                'cost' => $cost !== null ? (float) $cost : null,
+            ];
+        }
+        if ($pharmacy->local_courier !== null && $pharmacy->local_courier !== '') {
+            $cost = $pharmacy->local_courier_cost_standard;
+            $options[] = [
+                'key' => 'local_courier',
+                'label' => $pharmacy->local_courier,
+                'description' => __('Local courier'),
+                'cost' => $cost !== null ? (float) $cost : null,
+            ];
+        }
+        if ($pharmacy->pickup !== null && $pharmacy->pickup !== '') {
+            $options[] = [
+                'key' => 'pickup',
+                'label' => $pharmacy->pickup,
+                'description' => __('Pick up at pharmacy'),
+                'cost' => null,
+            ];
+        }
+
+        // If no options from API, offer at least shipping and pickup as fallback
+        if (empty($options)) {
+            $options = [
+                ['key' => 'shipping', 'label' => __('Shipping'), 'description' => __('Standard delivery'), 'cost' => null],
+                ['key' => 'pickup', 'label' => __('Pickup'), 'description' => __('Collect at pharmacy'), 'cost' => null],
+            ];
+        }
+
+        return $options;
+    }
+
+    /**
+     * Save Cannaleo delivery option selection.
+     */
+    public function saveDeliverySelection(Request $request, $categoryId)
+    {
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Please login to continue'),
+            ], 401);
+        }
+
+        $request->validate([
+            'cannaleo_delivery_option' => 'required|string|in:shipping,express,local_courier,pickup',
+        ]);
+
+        $category = Category::findOrFail($categoryId);
+        $user = Auth::user();
+        $submission = QuestionnaireSubmission::where('user_id', $user->id)
+            ->where('category_id', $categoryId)
+            ->firstOrFail();
+
+        if ($submission->delivery_type !== 'cannaleo' || !$submission->hasSelectedCannaleoPharmacy()) {
+            return response()->json(['success' => false, 'message' => __('Invalid flow.')], 422);
+        }
+
+        $pharmacy = CannaleoPharmacy::find($submission->selected_cannaleo_pharmacy_id);
+        $allowedKeys = $pharmacy ? array_column($this->buildDeliveryOptionsForPharmacy($pharmacy), 'key') : ['shipping', 'express', 'local_courier', 'pickup'];
+        if (!in_array($request->cannaleo_delivery_option, $allowedKeys, true)) {
+            return response()->json(['success' => false, 'message' => __('Selected delivery option is not available for this pharmacy.')], 422);
+        }
+
+        $submission->update([
+            'cannaleo_delivery_option' => $request->cannaleo_delivery_option,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('Delivery option selected successfully'),
             'redirect_url' => url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection'),
         ]);
     }
@@ -126,6 +267,11 @@ class QuestionnaireCannaleoController extends Controller
         if ($submission->delivery_type !== 'cannaleo' || !$submission->hasSelectedCannaleoPharmacy()) {
             return redirect()->route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $categoryId])
                 ->with('error', __('Please select a Cannaleo pharmacy first.'));
+        }
+
+        if (empty($submission->cannaleo_delivery_option)) {
+            return redirect()->route('questionnaire.cannaleo-delivery-selection', ['categoryId' => $categoryId])
+                ->with('error', __('Please select a delivery option first.'));
         }
 
         // Cannaleo-only category: show all medicines from selected pharmacy; otherwise only those assigned to this category

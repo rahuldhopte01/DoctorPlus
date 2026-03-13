@@ -167,6 +167,8 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // Cannaleo partner flow: pharmacy then medicine
         Route::get('/questionnaire/category/{categoryId}/cannaleo-pharmacy-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'showPharmacySelection'])->name('questionnaire.cannaleo-pharmacy-selection');
         Route::post('/questionnaire/category/{categoryId}/cannaleo-pharmacy-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'savePharmacySelection'])->name('questionnaire.save-cannaleo-pharmacy');
+        Route::get('/questionnaire/category/{categoryId}/cannaleo-delivery-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'showDeliverySelection'])->name('questionnaire.cannaleo-delivery-selection');
+        Route::post('/questionnaire/category/{categoryId}/cannaleo-delivery-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'saveDeliverySelection'])->name('questionnaire.save-cannaleo-delivery');
         Route::get('/questionnaire/category/{categoryId}/cannaleo-medicine-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'showMedicineSelection'])->name('questionnaire.cannaleo-medicine-selection');
         Route::post('/questionnaire/category/{categoryId}/cannaleo-medicine-selection', [\App\Http\Controllers\Website\QuestionnaireCannaleoController::class, 'saveMedicineSelection'])->name('questionnaire.save-cannaleo-medicine');
 

@@ -316,6 +316,9 @@
                         @endforeach
                     </ul>
                     <p class="text-muted small mb-0 mt-1">{{ __('Fulfilment via Cannaleo partner; prescription approval applies.') }}</p>
+                    @if(isset($submission) && $submission->cannaleo_delivery_option)
+                    <p class="text-muted small mb-0 mt-1">{{ __('Customer delivery option') }}: <strong>{{ ucfirst(str_replace('_', ' ', $submission->cannaleo_delivery_option)) }}</strong></p>
+                    @endif
                 </div>
                 @endif
 

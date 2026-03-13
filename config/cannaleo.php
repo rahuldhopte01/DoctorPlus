@@ -24,4 +24,10 @@ return [
     'prescription_api_path' => env('CUROBO_PRESCRIPTION_API_PATH', '/api/v1/prescription/'),
     'prescription_callback_url' => env('CUROBO_PRESCRIPTION_CALLBACK_URL', ''),
     'default_signature_city' => env('CUROBO_DEFAULT_SIGNATURE_CITY', ''),
+
+    /*
+    | Static doctor signature (base64 image or URL) sent to Curobo until real doctor signature is implemented.
+    | Optional. Example: data:image/png;base64,... or https://example.com/signature.png
+    */
+    'static_doctor_signature' => env('CUROBO_STATIC_DOCTOR_SIGNATURE', ''),
 ];
