@@ -4,108 +4,121 @@
     <meta charset="UTF-8">
     <title>Privatrezept</title>
     <style>
-        @page { margin: 10px; }
+        @page {
+            size: 105mm 148mm;
+            margin: 3mm;
+        }
         body {
             margin: 0;
             font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 10px;
+            font-size: 7pt;
             color: #000;
         }
 
         .page {
             position: relative;
-            width: 700px;
-            height: 430px;
+            width: 99mm;
+            height: 142mm;
             background: #9fc7e5;
-            border: 2px solid #3f7fb7;
-            margin: 0 auto 10px auto;
+            border: 1pt solid #3f7fb7;
+            margin: 0 auto;
             page-break-after: always;
             overflow: hidden;
+            box-sizing: border-box;
         }
         .page.last { page-break-after: auto; }
 
         .box {
-            border: 2px solid #4b86bd;
+            border: 1pt solid #4b86bd;
             background: #fff;
             box-sizing: border-box;
         }
         .label {
             color: #2f6fa5;
-            font-size: 10px;
+            font-size: 5.5pt;
         }
 
+        /* Date top-left */
         .date-top {
             position: absolute;
-            top: 8px;
-            left: 10px;
-            font-size: 16px;
+            top: 2mm;
+            left: 2mm;
+            font-size: 7pt;
         }
 
+        /* Patient info box — left column, top section */
         .patient {
             position: absolute;
-            top: 38px;
-            left: 10px;
-            width: 390px;
-            height: 152px;
-            padding: 8px 10px;
+            top: 7mm;
+            left: 2mm;
+            width: 56mm;
+            height: 51mm;
+            padding: 2mm 2mm;
+            box-sizing: border-box;
         }
         .patient .title {
-            font-size: 39px;
+            font-size: 16pt;
             font-weight: 700;
             line-height: 1;
         }
-        .patient .meta { margin-top: 2px; }
+        .patient .meta {
+            margin-top: 0.5mm;
+        }
         .patient .name {
-            font-size: 15px;
-            line-height: 1.15;
-            margin-top: 4px;
-            width: 250px;
+            font-size: 7pt;
+            line-height: 1.2;
+            margin-top: 1mm;
+            width: 34mm;
         }
         .birth {
             position: absolute;
-            right: 10px;
-            top: 72px;
+            right: 2mm;
+            top: 20mm;
             text-align: right;
         }
         .birth .val {
-            font-size: 31px;
+            font-size: 9pt;
             line-height: 1;
         }
 
+        /* Unfall (accident) side tab */
         .unfall {
             position: absolute;
-            top: 155px;
-            left: 2px;
-            width: 24px;
-            height: 42px;
-            border: 2px solid #4b86bd;
+            top: 46mm;
+            left: 0;
+            width: 3.5mm;
+            height: 14mm;
+            border: 1pt solid #4b86bd;
             background: #fff;
             color: #2f6fa5;
             text-align: center;
-            font-size: 8px;
-            line-height: 1.05;
-            padding-top: 8px;
+            font-size: 4.5pt;
+            line-height: 1.1;
+            padding-top: 2mm;
+            box-sizing: border-box;
         }
 
+        /* Insurance and doctor info rows — left column, below patient */
         .ins,
         .doc {
             position: absolute;
-            left: 10px;
-            width: 390px;
-            border: 2px solid #4b86bd;
+            left: 2mm;
+            width: 56mm;
+            border: 1pt solid #4b86bd;
             border-top: 0;
             background: #f5f5f5;
             border-collapse: collapse;
         }
-        .ins { top: 190px; }
-        .doc { top: 228px; }
+        .ins { top: 58mm; }
+        .doc { top: 70mm; }
         .ins td,
         .doc td {
-            border-right: 2px solid #4b86bd;
-            height: 36px;
-            padding: 4px 10px;
+            border-right: 1pt solid #4b86bd;
+            height: 10mm;
+            padding: 1mm 2mm;
             vertical-align: top;
             position: relative;
+            font-size: 5.5pt;
         }
         .ins td:last-child,
         .doc td:last-child { border-right: 0; }
@@ -113,189 +126,197 @@
             position: absolute;
             bottom: 0;
             left: 50%;
-            width: 1px;
-            height: 18px;
+            width: 0.5pt;
+            height: 4mm;
             background: #4b86bd;
         }
         .doc-date {
             position: absolute;
-            right: 10px;
-            bottom: 4px;
-            font-size: 32px;
+            right: 2mm;
+            bottom: 1mm;
+            font-size: 8pt;
             line-height: 1;
         }
         .doc-number {
             position: absolute;
-            left: 10px;
-            bottom: 4px;
-            font-size: 16px;
+            left: 2mm;
+            bottom: 1mm;
+            font-size: 6pt;
             line-height: 1;
         }
 
+        /* Right pharmacy/billing column */
         .right {
             position: absolute;
-            top: 38px;
-            left: 412px;
-            width: 278px;
+            top: 7mm;
+            left: 60mm;
+            width: 39mm;
         }
         .smallbox {
             display: inline-block;
             vertical-align: top;
-            height: 40px;
-            padding: 3px 8px;
-            border: 2px solid #4b86bd;
+            height: 11mm;
+            padding: 1.5mm;
+            border: 1pt solid #4b86bd;
             background: #fff;
             box-sizing: border-box;
+            font-size: 5pt;
         }
-        .bez { width: 104px; }
-        .apo { width: 164px; margin-left: 6px; }
+        .bez { width: 15mm; }
+        .apo { width: 23mm; margin-left: 1mm; }
 
+        /* Zuzahlungsbeleg grid (8-box copayment receipt) */
         .gross {
-            margin-top: 8px;
-            margin-left: 104px;
-            width: 174px;
-            height: 37px;
-            border: 2px solid #4b86bd;
+            margin-top: 2mm;
+            margin-left: 16mm;
+            width: 23mm;
+            height: 10mm;
+            border: 1pt solid #4b86bd;
             background: #fff;
             border-collapse: collapse;
         }
         .gross td {
-            border-right: 1px dashed #4b86bd;
+            border-right: 0.5pt dashed #4b86bd;
             width: 12.5%;
         }
         .gross td:last-child { border-right: 0; }
 
+        /* Pharmacy billing grid */
         .grid {
-            margin-top: 8px;
-            width: 278px;
-            border: 2px solid #4b86bd;
+            margin-top: 2mm;
+            width: 39mm;
+            border: 1pt solid #4b86bd;
             border-collapse: collapse;
             background: #fff;
         }
         .grid th,
         .grid td {
-            border-right: 2px solid #4b86bd;
-            border-bottom: 2px solid #4b86bd;
-            padding: 4px 8px;
+            border-right: 1pt solid #4b86bd;
+            border-bottom: 1pt solid #4b86bd;
+            padding: 1mm;
             color: #2f6fa5;
-            font-size: 10px;
+            font-size: 4.5pt;
             text-align: left;
             vertical-align: top;
-            height: 38px;
+            height: 8mm;
         }
-        .grid th { height: 28px; font-weight: normal; }
+        .grid th { height: 7mm; font-weight: normal; }
         .grid tr:last-child td { border-bottom: 0; }
         .grid th:last-child,
         .grid td:last-child { border-right: 0; }
         .dash {
-            margin-top: 16px;
-            border-top: 1px dashed #4b86bd;
+            margin-top: 3mm;
+            border-top: 0.5pt dashed #4b86bd;
             height: 0;
         }
 
+        /* Prescription (Rp.) / medicines section */
         .rx {
             position: absolute;
-            top: 268px;
-            left: 10px;
-            width: 470px;
+            top: 82mm;
+            left: 2mm;
+            width: 64mm;
         }
         .rx-title {
             color: #2f6fa5;
-            font-size: 32px;
+            font-size: 11pt;
             line-height: 1;
-            margin-bottom: 6px;
+            margin-bottom: 2mm;
         }
         .rx-title span {
-            font-size: 14px;
+            font-size: 5pt;
             font-weight: normal;
         }
 
         .med {
-            margin-bottom: 10px;
-            font-size: 11px;
-            line-height: 1.25;
+            margin-bottom: 2mm;
+            font-size: 6pt;
+            line-height: 1.3;
         }
         .aut {
             display: inline-block;
-            width: 24px;
-            height: 28px;
-            border: 2px solid #4b86bd;
+            width: 5.5mm;
+            height: 8mm;
+            border: 1pt solid #4b86bd;
             background: #fff;
             text-align: center;
             color: #2f6fa5;
-            font-size: 9px;
-            line-height: 1.05;
-            padding-top: 4px;
+            font-size: 4pt;
+            line-height: 1.1;
+            padding-top: 1mm;
             vertical-align: top;
+            box-sizing: border-box;
         }
         .med-text {
             display: inline-block;
-            width: 436px;
-            margin-left: 6px;
+            width: 57mm;
+            margin-left: 1.5mm;
             vertical-align: top;
         }
 
+        /* Doctor stamp / signature */
         .doctor {
             position: absolute;
-            right: 20px;
-            bottom: 42px;
-            width: 210px;
+            right: 3mm;
+            bottom: 14mm;
+            width: 30mm;
             text-align: center;
-            font-size: 12px;
+            font-size: 6pt;
             line-height: 1.2;
         }
         .doctor .name {
-            font-size: 42px;
+            font-size: 9pt;
             line-height: 1;
         }
         .doctor .sign {
             font-family: DejaVu Sans, Arial, sans-serif;
-            font-size: 66px;
+            font-size: 18pt;
             line-height: 0.8;
-            margin-top: -2px;
-            margin-bottom: -8px;
+            margin-top: -1mm;
+            margin-bottom: -2mm;
         }
         .doctor-ring {
             position: absolute;
             left: 50%;
             top: 56%;
-            width: 66px;
-            height: 66px;
-            margin-left: -33px;
-            margin-top: -33px;
-            border: 1px solid rgba(51, 78, 130, 0.45);
+            width: 14mm;
+            height: 14mm;
+            margin-left: -7mm;
+            margin-top: -7mm;
+            border: 0.5pt solid rgba(51, 78, 130, 0.45);
             border-radius: 50%;
         }
 
+        /* Footer */
         .footer {
             position: absolute;
-            left: 10px;
-            right: 10px;
-            bottom: 10px;
-            font-size: 10px;
+            left: 2mm;
+            right: 2mm;
+            bottom: 2mm;
+            font-size: 6pt;
         }
         .pkv {
             float: left;
-            font-size: 45px;
+            font-size: 14pt;
             line-height: 0.9;
         }
         .valid {
             float: left;
-            margin-left: 24px;
-            margin-top: 18px;
-            font-size: 28px;
+            margin-left: 3mm;
+            margin-top: 3mm;
+            font-size: 6.5pt;
         }
         .receipt {
             float: left;
-            margin-left: 28px;
-            margin-top: 18px;
-            font-size: 28px;
+            margin-left: 3mm;
+            margin-top: 3mm;
+            font-size: 6.5pt;
         }
         .footer-sign {
             float: right;
-            margin-top: 24px;
+            margin-top: 4mm;
             color: #2f6fa5;
-            font-size: 10px;
+            font-size: 5pt;
         }
         .clearfix:after {
             content: "";
@@ -354,7 +375,7 @@
         @endif
     </div>
 
-    <div class="unfall">Unfal<br>l</div>
+    <div class="unfall">Unfall</div>
 
     <table class="ins">
         <tr>
@@ -382,7 +403,7 @@
 
     <div class="right">
         <div class="smallbox bez"><span class="label">Bezugsdatum</span></div>
-        <div class="smallbox apo"><span class="label">Apotheken-Nummer / IK</span></div>
+        <div class="smallbox apo"><span class="label">Apotheken-Nr. / IK</span></div>
 
         <table class="gross">
             <tr>
@@ -392,7 +413,7 @@
 
         <table class="grid">
             <tr>
-                <th>Arzneimittel-/Hilfsmittel-/Heilmittel-Nr.</th>
+                <th>AM-/HM-/HeilM-Nr.</th>
                 <th>Faktor</th>
                 <th>Taxe</th>
             </tr>
@@ -403,7 +424,7 @@
     </div>
 
     <div class="rx">
-        <div class="rx-title">Rp.<span>(Bitte Leerräume durchstreichen)</span></div>
+        <div class="rx-title">Rp.<span> (Bitte Leerräume durchstreichen)</span></div>
 
         @forelse($chunk as $item)
             @php
@@ -447,7 +468,7 @@
         <div class="sign">R</div>
         <div class="doctor-ring"></div>
         @if($doctorAddress)<div>{!! nl2br(e($doctorAddress)) !!}</div>@endif
-        @if($doctorPhone)<div>Telefon: {{ $doctorPhone }}</div>@endif
+        @if($doctorPhone)<div>Tel: {{ $doctorPhone }}</div>@endif
         @if($doctorLanr)<div>LANR: {{ $doctorLanr }}</div>@endif
     </div>
 
@@ -455,7 +476,7 @@
         <div class="pkv">PKVH</div>
         @if($validUntil)<div class="valid">Gültig bis {{ $validUntil }}</div>@endif
         <div class="receipt">RezeptNr: {{ $receiptNr }}</div>
-        <div class="footer-sign">Arztstempel/Unterschrift des Arztes</div>
+        <div class="footer-sign">Arztstempel/Unterschrift</div>
     </div>
 </div>
 @endforeach

@@ -14,6 +14,11 @@ use Illuminate\Support\Collection;
 class CuroboPrescriptionPayloadBuilder
 {
     /**
+     * Temporary dummy signature used for Cannaleo API testing.
+     */
+    protected const TEST_DUMMY_DOCTOR_SIGNATURE = 'DUMMY_DOCTOR_SIGNATURE_FOR_TESTING';
+
+    /**
      * Build the exact JSON body expected by the Curobo prescription API.
      *
      * @param  array<CannaleoMedicine>|Collection<int, CannaleoMedicine>  $products
@@ -111,10 +116,10 @@ class CuroboPrescriptionPayloadBuilder
             'cityOfSignature' => $cityOfSignature,
             'dateOfSignature' => $dateOfSignature,
         ];
-        $staticSignature = config('cannaleo.static_doctor_signature', '');
-        if ($staticSignature !== '') {
-            $doctorPayload['signature'] = $staticSignature;
-        }
+        $staticSignature = (string) config('cannaleo.static_doctor_signature', '');
+        $doctorPayload['signature'] = $staticSignature !== ''
+            ? $staticSignature
+            : self::TEST_DUMMY_DOCTOR_SIGNATURE;
 
         $payload = [
             'prescriptionURL' => $prescriptionUrl,

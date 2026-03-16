@@ -93,7 +93,7 @@ class PrescriptionPdfService
                     'valid_from' => $validFrom,
                     'valid_until' => $validUntil,
                 ]);
-                $pdf->setPaper([0, 0, 297.64, 419.53], 'portrait');
+                $pdf->setPaper('A6', 'portrait');
             } else {
                 $medicineName = $this->buildTempMedicineJson($medicines);
                 $pdf = \PDF::loadView('temp', ['medicineName' => $medicineName]);
