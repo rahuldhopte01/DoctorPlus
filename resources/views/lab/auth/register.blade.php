@@ -1,178 +1,214 @@
-@extends('layout.mainlayout_admin',['activePage' => 'login'])
+@extends('layout.mainlayout',['activePage' => 'login'])
 
 @section('title', __('Pathologist signup'))
 
 @section('content')
-    <section class="section">
-        <div class="d-flex flex-wrap align-items-stretch">
-            <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white">
-                <div class="p-4 m-3">
-                    @php
-                        $setting = App\Models\Setting::first();
-                    @endphp
-                    @if(isset($setting->logo))
-                    <img src="{{ $setting->logo }}" alt="logo" width="180" class="mb-5 mt-2">
-                    @else
-                    <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo" />
-                    @endif
-                    <form method="POST" action="{{ url('verify_sign_up') }}" enctype="multipart/form-data">
-                        @csrf
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12">
-                                <label for="lab_image" class="col-form-label"> {{ __('Laboratory image') }}</label>
-                                <div class="avatar-upload avatar-box avatar-box-left">
-                                    <div class="avatar-edit">
-                                        <input type='file' id="image" name="image" accept=".png, .jpg, .jpeg" />
-                                        <label for="image"></label>
+<div class="container py-5 mt-5">
+    <div class="row min-vh-75 align-items-center justify-content-center">
+        <div class="col-xl-10">
+            <div class="card border-0 shadow-bloomwell rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left side: Image -->
+                    <div class="col-md-5 d-none d-lg-block bg-light position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Partner with DoctorPlus.</h2>
+                            <img src="{{asset('assets/image/doctor-nurses.png')}}" class="img-fluid custom-login-image mt-4" alt="Pathologist Signup Graphic">
+                        </div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
+                    </div>
+
+                    <!-- Right side: Form -->
+                    <div class="col-md-12 col-lg-7 p-4 p-lg-5" style="max-height: 85vh; overflow-y: auto;">
+                        <div class="mb-4">
+                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Pathologist Portal')}}</h2>
+                            <h3 class="fw-medium text-muted fs-5">{{__('Create your pathologist account.')}}</h3>
+                        </div>
+
+                        @if ($errors->any())
+                            @foreach ($errors->all() as $item)
+                                <div class="alert alert-danger rounded-3 p-2 mb-4 d-flex align-items-center small" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div>{{ $item }}</div>
+                                </div>
+                            @endforeach
+                        @endif
+
+                        <form method="POST" action="{{ url('verify_sign_up') }}" enctype="multipart/form-data" class="needs-validation" novalidate="">
+                            @csrf
+                            
+                            <div class="form-group mb-4 text-center">
+                                <label for="image" class="text-muted small fw-semibold mb-2 d-block">{{ __('Laboratory Image') }}</label>
+                                <div class="avatar-upload avatar-box mx-auto position-relative" style="width: 100px; height: 100px;">
+                                    <div class="avatar-edit position-absolute" style="right: -5px; z-index: 1; top: 5px;">
+                                        <input type='file' id="image" name="image" accept=".png, .jpg, .jpeg" class="d-none" />
+                                        <label for="image" class="btn btn-sm btn-primary rounded-circle shadow-sm" style="width: 32px; height: 32px; padding: 5px;">
+                                            <i class="fas fa-camera"></i>
+                                        </label>
                                     </div>
-                                    <div class="avatar-preview">
-                                        <div id="imagePreview">
-                                        </div>
+                                    <div class="avatar-preview rounded-circle border border-primary shadow-sm overflow-hidden w-100 h-100 bg-light p-1">
+                                        <div id="imagePreview" class="w-100 h-100 rounded-circle" style="background-size: cover; background-position: center; background-color: #f8f9fa;"></div>
                                     </div>
                                 </div>
                                 @error('image')
-                                    <div class="custom_error">
-                                        {{ $message }}
-                                    </div>
+                                    <div class="invalid-feedback d-block mt-2">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="col-form-label">{{ __('Laboratory Name') }}</label>
-                                    <input type="text" required value="{{ old('lab_name') }}" name="lab_name"
-                                        class="form-control @error('lab_name') is-invalid @enderror">
-                                    @error('lab_name')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="col-form-label">{{ __('Pathologist name') }}</label>
-                                    <input type="text" value="{{ old('user_name') }}" name="user_name"
-                                        class="form-control @error('user_name') is-invalid @enderror">
-                                    @error('user_name')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-lg-6 form-group">
-                                <label for="phone_number" class="col-form-label"> {{ __('Phone number') }}</label>
-                                <div class="d-flex @error('phone') is-invalid @enderror">
-                                    <select name="phone_code" class="phone_code_select2">
-                                        @foreach ($countries as $country)
-                                            <option value="+{{ $country->phonecode }}"
-                                                {{ old('phone_code') == $country->phonecode ? 'selected' : '' }}>
-                                                +{{ $country->phonecode }}</option>
-                                        @endforeach
-                                    </select>
-                                    <input type="number" min="1" name="phone" class="form-control"
-                                        value="{{ old('phone') }}">
-                                </div>
-                                @error('phone')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-lg-6 form-group">
-                                <label for="email" class="col-form-label"> {{ __('Email') }}</label>
-                                <input type="email" value="{{ old('email') }}" name="email"
-                                    class="form-control @error('email') is-invalid @enderror">
-                                @error('email')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="row mt-4">
-                            <div class="col-lg-6 form-group">
-                                <label class="col-form-label">{{ __('Start Time') }}</label>
-                                <input class="form-control timepicker @error('start_time') is-invalid @enderror"
-                                    name="start_time" value="{{ old('start_time') }}" type="time">
-                                @error('start_time')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                            <div class="col-lg-6 form-group">
-                                <label class="col-form-label">{{ __('End Time') }}</label>
-                                <input class="form-control timepicker @error('end_time') is-invalid @enderror"
-                                    name="end_time" value="{{ old('end_time') }}" type="time">
-                                @error('end_time')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="col-form-label">{{ __('Password') }}</label>
-                            <input class="form-control @error('password') is-invalid @enderror" name="password" type="password">
-                            @error('password')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" value="{{ old('lab_name') }}" name="lab_name" id="lab_name" class="form-control rounded-3 border-light shadow-sm @error('lab_name') is-invalid @enderror" placeholder="{{__('Laboratory Name')}}" required>
+                                        <label for="lab_name" class="text-muted"><i class="bi bi-building me-2"></i>{{__('Laboratory Name')}}</label>
+                                        @error('lab_name')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
-                            @enderror
-                        </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" value="{{ old('user_name') }}" name="user_name" id="user_name" class="form-control rounded-3 border-light shadow-sm @error('user_name') is-invalid @enderror" placeholder="{{__('Pathologist Name')}}" required>
+                                        <label for="user_name" class="text-muted"><i class="bi bi-person-badge me-2"></i>{{__('Pathologist Name')}}</label>
+                                        @error('user_name')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="row mt-4">
-                            <div class="pac-card col-md-12 mb-3" id="pac-card">
-                                <label
-                                    for="pac-input col-form-label">{{ __('Location based on latitude/longitude') }}</label>
-                                <div id="pac-container">
-                                    <input id="pac-input" type="text" name="address"
-                                        class="form-control @error('address') is-invalid @enderror" />
-                                    @error('address')
-                                        <div class="invalid-feedback">
-                                            {{ $message }}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3 text-start">
+                                        <div class="input-group shadow-sm rounded-3 overflow-hidden border border-light phone-input-group" style="height: 58px;">
+                                            <div class="bg-light d-flex align-items-center px-2 border-end" style="width: 80px;">
+                                                <select name="phone_code" class="form-select border-0 bg-transparent p-0 ps-1 small" style="box-shadow: none; font-size: 0.85rem;">
+                                                    @foreach ($countries as $country)
+                                                    <option value="+{{ $country->phonecode }}" {{ old('phone_code') == $country->phonecode ? 'selected' : '' }}>+{{ $country->phonecode }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-floating flex-grow-1">
+                                                <input type="number" min="1" name="phone" id="phone" class="form-control border-0 h-100 @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="{{__('Phone Number')}}" style="box-shadow: none;" required>
+                                                <label for="phone" class="text-muted small"><i class="bi bi-telephone me-2"></i>{{__('Phone Number')}}</label>
+                                            </div>
                                         </div>
-                                    @enderror
-                                    <input type="hidden" name="lat" value="{{$setting->lat}}" id="lat">
-                                    <input type="hidden" name="lng" value="{{$setting->lang}}" id="lng">
+                                        @error('phone')
+                                        <div class="invalid-feedback d-block small">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input type="email" value="{{ old('email') }}" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Email')}}" required>
+                                        <label for="email" class="text-muted small"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                        @error('email')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12">
-                                <div id="map" class="mapClass"></div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control rounded-3 border-light shadow-sm timepicker @error('start_time') is-invalid @enderror" id="start_time" name="start_time" value="{{ old('start_time') }}" type="time" placeholder="{{__('Start Time')}}" required>
+                                        <label for="start_time" class="text-muted"><i class="bi bi-clock me-2"></i>{{__('Start Time')}}</label>
+                                        @error('start_time')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating mb-3">
+                                        <input class="form-control rounded-3 border-light shadow-sm timepicker @error('end_time') is-invalid @enderror" id="end_time" name="end_time" value="{{ old('end_time') }}" type="time" placeholder="{{__('End Time')}}" required>
+                                        <label for="end_time" class="text-muted"><i class="bi bi-clock me-2"></i>{{__('End Time')}}</label>
+                                        @error('end_time')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group text-right mt-3">
-                            <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right" tabindex="4">
-                                {{ __('Register') }}
+
+                            <div class="form-floating mb-4">
+                                <input type="password" value="{{ old('password') }}" name="password" id="password" class="form-control rounded-3 border-light shadow-sm @error('password') is-invalid @enderror" placeholder="{{__('Password')}}" required>
+                                <label for="password" class="text-muted"><i class="bi bi-lock me-2"></i>{{__('Password')}}</label>
+                                @error('password')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                @php
+                                $setting = App\Models\Setting::first();
+                                @endphp
+                                <label class="text-muted small fw-semibold mb-2">{{ __('Location Based On Latitude/Longitude') }}</label>
+                                <div class="card border border-light shadow-sm rounded-4 overflow-hidden">
+                                    <div class="card-body p-0">
+                                        <div class="pac-card border-bottom" id="pac-card">
+                                            <div class="p-2" id="pac-container">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-white border-0"><i class="bi bi-geo-alt-fill text-primary"></i></span>
+                                                    <input id="pac-input" type="text" name="address" class="form-control border-0 shadow-none ps-0 @error('address') is-invalid @enderror" placeholder="{{__('Search Location')}}" />
+                                                </div>
+                                                @error('address')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                                <input type="hidden" name="lat" value="{{$setting->lat}}" id="lat">
+                                                <input type="hidden" name="lng" value="{{$setting->lang}}" id="lng">
+                                            </div>
+                                        </div>
+                                        <div id="map" class="mapClass" style="height: 180px; width: 100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
+                                {{ __('Register Pathologist') }}
                             </button>
-                        </div>
-                    </form>
-                    <div class="mt-5 text-center">{{__("Already have an account?") }}
-                        <a href="{{ url('pathologist_login') }}">{{__('login') }}</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-8 col-12 order-lg-2 order-1 min-vh-100 background-walk-y position-relative overlay-gradient-bottom"
-                data-background="{{ url('assets/img/login.png') }}">
-                <div class="absolute-bottom-left index-2">
-                    <div class="text-light p-5 pb-2">
-                        <div class="mb-5 pb-3">
-                            <h1 class="mb-2 display-4 font-weight-bold">{{__('Welcome') }}</h1>
-                        </div>
+
+                            <div class="mt-4 text-center border-top pt-4">
+                                <p class="text-muted small mb-0">{{__("Already have an account?")}} 
+                                    <a href="{{ url('pathologist_login') }}" class="text-primary text-decoration-none fw-semibold ms-1">{{ __('Login')}}</a>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</div>
+
+<style>
+    .shadow-bloomwell {
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    }
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.25);
+    }
+</style>
 @endsection
 
 @section('js')
     <script src="https://maps.googleapis.com/maps/api/js?key={{App\Models\Setting::first()->map_key}}&callback=initAutocomplete&libraries=places&v=weekly" async></script>
     <script src="{{ url('assets_admin/js/hospital_map.js') }}"></script>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreview').hide();
+                    $('#imagePreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#image").change(function() {
+            readURL(this);
+        });
+    </script>
 @endsection

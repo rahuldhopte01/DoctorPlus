@@ -1,74 +1,97 @@
-@extends('layout.mainlayout_admin',['activePage' => 'login'])
+@extends('layout.mainlayout',['activePage' => 'login'])
 
 @section('title',__('Pathologist login'))
 
 @section('content')
-<section class="section">
-    <div class="d-flex flex-wrap align-items-stretch">
-      <div class="col-lg-4 col-md-6 col-12 order-lg-1 min-vh-100 order-2 bg-white">
-        <div class="p-4 m-3">
-          @php
-            $setting = App\Models\Setting::first();
-          @endphp
-          @if(isset($setting->logo))
-          <img src="{{ $setting->logo }}" alt="logo" width="180" class="mb-5 mt-2">
-          @else
-          <img src="{{url('/images/upload_empty/fuxxlogo.png')}}" alt="logo" width="180" class="mb-5 mt-2" />
-          @endif
-            @if ($errors->any())
-                @foreach ($errors->all() as $item)
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ $item }}
+<div class="container py-5 mt-5">
+    <div class="row min-vh-75 align-items-center justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <div class="card border-0 shadow-bloomwell rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left side: Image -->
+                    <div class="col-md-6 d-none d-md-block bg-light position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Manage laboratory tests securely.</h2>
+                            <img src="{{asset('assets/image/login.png')}}" class="img-fluid custom-login-image" alt="Laboratory Login Graphic" style="max-height: 250px; object-fit: contain;">
+                        </div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
                     </div>
-                @endforeach
-            @endif
-          <form method="POST" action="{{ url('verify_pathologist') }}">
-            @csrf
-            <div class="form-group">
-              <label for="email">{{ __('Email') }}</label>
-              <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" tabindex="1" required autofocus value="{{ old('email') }}">
-                @error('email')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
 
-            <div class="form-group">
-              <div class="d-block">
-                <label for="password" class="control-label">{{ __('Password') }}</label>
-              </div>
-              <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" tabindex="2" required>
-              @error('password')
-                    <div class="invalid-feedback">
-                        {{ $message }}
-                    </div>
-                @enderror
-            </div>
+                    <!-- Right side: Form -->
+                    <div class="col-md-6 p-4 p-lg-5">
+                        <div class="mb-5">
+                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Laboratory Portal')}}</h2>
+                            <h3 class="fw-medium text-muted fs-5">{{__('Sign in to manage test requests.')}}</h3>
+                        </div>
 
-            <div class="form-group text-right">
-              <a href="{{url('admin_forgot_password')}}" class="float-left mt-3">
-                {{__('Forgot Password?')}}
-              </a>
-              <button type="submit" class="btn btn-primary btn-lg btn-icon icon-right" tabindex="4">
-                {{ __('Login')}}
-              </button>
-            </div>
-          </form>
-            <div class="mt-5 text-center">
-                {{__("Don't have an account?")}} <a href="{{ url('pathologist_sign_up') }}">{{ __('Create new one')}}</a>
+                        @if ($errors->any())
+                            @foreach ($errors->all() as $item)
+                                <div class="alert alert-danger rounded-3 p-2 mb-4 d-flex align-items-center small" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <div>{{ $item }}</div>
+                                </div>
+                            @endforeach
+                        @endif
+
+                        <form method="POST" action="{{ url('verify_pathologist') }}" class="needs-validation" novalidate="">
+                            @csrf
+                            
+                            <div class="form-floating mb-3">
+                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Enter email')}}" value="{{ old('email') }}" required autofocus>
+                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                @error('email')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            <div class="form-floating mb-4">
+                                <input type="password" name="password" id="password" class="form-control rounded-3 border-light shadow-sm @error('password') is-invalid @enderror" placeholder="{{__('Enter password')}}" required>
+                                <label for="password" class="text-muted"><i class="bi bi-lock me-2"></i>{{__('Password')}}</label>
+                                @error('password')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <a href="{{url('admin_forgot_password')}}" class="text-decoration-none small text-muted hover-primary transition-all">{{__('Forgot Password?')}}</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
+                                {{__('Login')}} <i class="fas fa-sign-in-alt ms-2"></i>
+                            </button>
+
+                            <div class="text-center mt-4 border-top pt-4">
+                                <p class="text-muted small mb-3">{{__('Don’t have an account?')}} <a href="{{url('pathologist_sign_up')}}" class="text-primary text-decoration-none fw-semibold ms-1">{{__('Sign Up here')}}</a></p>
+                                
+                                <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+                                   <a href="{{url('/patient-login')}}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="bi bi-person me-1"></i> {{__('Patient Login')}}</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-      </div>
-      <div class="col-lg-8 col-12 order-lg-2 order-1 min-vh-100 background-walk-y position-relative overlay-gradient-bottom" data-background="{{ url('assets/img/login.png') }}">
-        <div class="absolute-bottom-left index-2">
-          <div class="text-light p-5 pb-2">
-            <div class="mb-5 pb-3">
-              <h1 class="mb-2 display-4 font-weight-bold">{{ __('Welcome') }}</h1>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </section>
+</div>
+
+<style>
+    .shadow-bloomwell {
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    }
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
+    }
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.25);
+    }
+</style>
 @endsection

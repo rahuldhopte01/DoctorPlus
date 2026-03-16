@@ -3,230 +3,273 @@
 @section('css')
 <link rel="stylesheet" href="{{ url('assets/css/intlTelInput.css') }}" />
 <style>
-    .signupDiv.active {
-        border-color: var(--site_color);
+    .shadow-bloomwell {
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
     }
-
-    .signupDiv.active div {
-        border: var(--site_color);
+    .hover-primary:hover {
+        color: var(--primary-color) !important;
     }
-
-    .signupDiv.active label {
-        color: black
+    .transition-all {
+        transition: all 0.3s ease;
     }
-
-    .nav-tabs .nav-item .nav-link.active {
-        border: 1px solid var(--site_color) !important;
-        color: black !important;
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.25);
     }
-
+    .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.25);
+    }
+    
+    .nav-pills .nav-link {
+        color: #6c757d;
+        border-radius: 50rem;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+    .nav-pills .nav-link:hover:not(.active) {
+        background-color: rgba(0, 166, 81, 0.1);
+        color: var(--primary-color);
+    }
+    
     .iti {
         display: block !important;
+        width: 100%;
     }
-
-    .hide {
-        display: none;
-    }
-
-    /* .contentDisplay .active
-    {
-        display: block;
-    } */
     .iti__tel-input {
         padding-left: 95px !important;
+    }
+    .form-floating > .iti {
+        height: calc(3.5rem + 2px);
+    }
+    .form-floating > .iti > input {
+        height: 100%;
+        border-radius: 0.5rem;
+    }
+    .hide { display: none; }
+    
+    /* Custom Styling for the switch */
+    .role-switcher {
+        background: #f8f9fa;
+        border-radius: 50rem;
+        padding: 0.25rem;
+        display: inline-flex;
     }
 </style>
 @endsection
 
 @section('content')
 
-<div class="xl:w-3/4 mx-auto">
-    <div class="flex justify-between pt-20 pb-20 gap-10 lg:flex-row xxsm:flex-col xxsm:mx-5 xl:mx-0 2xl:mx-0">
-        <div class="bg-slate-100 2xl:w-2/4 xxsm:w-full">
-            <h1 class="font-fira-sans leading-10 font-medium text-3xl px-5 p-5 ml-5">{{__('Find the best doctor and medicine for you.')}}</h1>
-            <div class="">
-                <img src="{{asset('assets/image/doctor-nurses.png')}}" class="mt-20" alt="">
-            </div>
-        </div>
+<div class="container py-5 mt-5">
+    <div class="row min-vh-75 align-items-center justify-content-center">
+        <div class="col-xl-11">
+            <div class="card border-0 shadow-bloomwell rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left side: Image -->
+                    <div class="col-md-5 d-none d-lg-block bg-light position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Find the best doctor and medicine for you.</h2>
+                            <img src="{{asset('assets/image/doctor-nurses.png')}}" class="img-fluid custom-login-image mt-4" alt="Signup Graphic">
+                        </div>
+                        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
+                    </div>
 
-        <div class="2xl:w-2/4 xxsm:w-full">
-            <h1 class="font-fira-sans leading-10 font-normal text-3xl">{{__('Welcome,')}}</h1>
-            <h1 class="font-fira-sans leading-10 font-medium text-3xl">{{__('Create New Account!')}}</h1>
-            <div class="pt-5 flex">
-                @if (old('from'))
-                @if (old('from') == 'doctor')
-                @php
-                $active = 'doctor';
-                @endphp
-                @else
-                @php
-                $active = 'patient';
-                @endphp
-                @endif
-                @else
-                @php
-                $active = 'patient';
-                @endphp
-                @endif
-                <div data-attr="doctor" class="signupDiv w-1/3 cursor-pointer py-1 ml-2 border border-[#D8D8D8] {{ $active == 'doctor' ? 'active' : '' }}">
-                    <input {{ $active == 'doctor' ? 'checked' : '' }} id="bordered-radio-1" type="radio" value="doctor" name="signup_title" class="border-[#D8D8D8] cursor-pointer signup_title ml-2 text-blue-600">
-                    <label for="bordered-radio-1" class="text-sm font-medium text-[#666666]">{{ __('Doctor') }}</label>
-                </div>
-                <div data-attr="patient" class="signupDiv w-1/3 cursor-pointer py-1 ml-2 border border-[#D8D8D8] {{ $active == 'patient' ? 'active' : '' }}">
-                    <input {{ $active == 'patient' ? 'checked' : '' }} id="bordered-radio-2" type="radio" value="patient" name="signup_title" class="border-[#D8D8D8] cursor-pointer signup_title ml-2 text-blue-600">
-                    <label for="bordered-radio-2" class="text-sm font-medium text-[#666666]">{{ __('Patient') }}</label>
-                </div>
-            </div>
-            <div class="tab-content contentDisplay" id="tabs-tabContent">
-                <div class="{{ $active == 'doctor' ?  'active' : 'hide' }} doctorDiv">
-                    <form action="{{ url('doctorRegister') }}" method="post">
-                        @csrf
-                        <input type="hidden" name="from" value="doctor">
-                        <div class="pt-3">
-                            <label class="font-fira-sans text-black text-sm font-normal">{{__('Doctor Name')}}</label>
-                            <input type="text" name="doc_name" value="{{ old('doc_name') }}" class="@error('doc_name') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter doctor name')}}">
-                            @error('doc_name')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
+                    <!-- Right side: Form -->
+                    <div class="col-md-12 col-lg-7 p-4 p-lg-5">
+                        <div class="text-center mb-4">
+                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Welcome,')}}</h2>
+                            <h3 class="fw-medium text-muted fs-5">{{__('Create New Account!')}}</h3>
                         </div>
-                        <div class="pt-3">
-                            <label for="email" class="font-fira-sans text-black text-sm font-normal">{{__('Email')}}</label>
-                            <input type="email" name="doc_email" value="{{ old('doc_email') }}" class="@error('doc_email') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter email')}}">
-                            @error('doc_email')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
+
+                        @php
+                            $active = old('from') ? (old('from') == 'doctor' ? 'doctor' : 'patient') : 'patient';
+                        @endphp
+
+                        <div class="d-flex justify-content-center mb-5">
+                            <ul class="nav nav-pills role-switcher gap-2" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $active == 'doctor' ? 'active' : '' }} signupDiv" data-attr="doctor" id="pills-doctor-tab" type="button" role="tab">
+                                        <i class="bi bi-stethoscope me-1"></i> {{ __('Register as Doctor') }}
+                                        <input type="radio" value="doctor" name="signup_title" class="d-none signup_title" {{ $active == 'doctor' ? 'checked' : '' }}>
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link {{ $active == 'patient' ? 'active' : '' }} signupDiv" data-attr="patient" id="pills-patient-tab" type="button" role="tab">
+                                        <i class="bi bi-person me-1"></i> {{ __('Register as Patient') }}
+                                        <input type="radio" value="patient" name="signup_title" class="d-none signup_title" {{ $active == 'patient' ? 'checked' : '' }}>
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
-                        <div class="pt-3">
-                            <label for="phone" class="font-fira-sans text-black text-sm font-normal">{{__('Phone Number')}}</label>
-                            <input type="number" name="doc_phone" value="{{ old('doc_phone') }}" class="@error('doc_phone') is-invalid @enderror w-full text-sm font-fira-sans text-gray block z-20 border border-white-light doc_phone py-2.5" placeholder="{{__('Enter Phone Number')}}">
-                            <input type="hidden" name="phone_code" value={{ "+".env('DEFAULT_DIALING_CODE') }}>
-                            @error('doc_phone')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <label for="password" class="font-fira-sans text-black text-sm font-normal">{{__('Create Password')}}</label>
-                            <input type="password" name="doc_password" class="@error('doc_password') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter password')}}">
-                            @error('doc_password')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <label for="doc_dob" class="font-fira-sans text-black text-sm font-normal">{{__('Birth Date')}}</label>
-                            <div class="relative mb-3" data-te-datepicker-init data-te-format="yyyy-mm-dd">
-                                <input name="doc_dob" value="{{ old('doc_dob') }}" placeholder="yyyy-mm-dd" class="@error('doc_dob') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20" data-te-datepicker-toggle-ref data-te-datepicker-toggle-button-ref />
-                            </div>
-                            @error('doc_dob')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <div class="flex items-center mb-5">
-                                <label for="email" class="font-fira-sans text-black text-sm font-normal">{{__('Gender')}}</label>
-                                <div class="ml-10 flex gap-10">
-                                    <div class="form-check form-check-inline">
-                                        <input checked class="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="doc_gender" id="doc_gender_male" value="male">
-                                        <label class="form-check-label inline-block text-gray-800  cursor-pointer" for="gender_male">{{ __('Male') }}</label>
+
+                        <div class="tab-content" id="pills-tabContent">
+                            <!-- DOCTOR SIGNUP -->
+                            <div class="doctorDiv {{ $active == 'doctor' ? 'active' : 'hide' }}">
+                                <form action="{{ url('doctorRegister') }}" method="post">
+                                    @csrf
+                                    <input type="hidden" name="from" value="doctor">
+                                    
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" name="doc_name" id="doc_name" value="{{ old('doc_name') }}" class="form-control rounded-3 border-light shadow-sm @error('doc_name') is-invalid @enderror" placeholder="{{__('Enter doctor name')}}">
+                                                <label for="doc_name" class="text-muted"><i class="bi bi-person me-2"></i>{{__('Doctor Name')}}</label>
+                                                @error('doc_name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="email" name="doc_email" id="doc_email" value="{{ old('doc_email') }}" class="form-control rounded-3 border-light shadow-sm @error('doc_email') is-invalid @enderror" placeholder="{{__('Enter email')}}">
+                                                <label for="doc_email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                                @error('doc_email')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="doc_gender" id="doc_gender_female" value="female">
-                                        <label class="form-check-label inline-block text-gray-800  cursor-pointer" for="gender_female">{{ __('Female') }}</label>
+
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="doc_phone" class="form-label text-muted small fw-semibold">{{__('Phone Number')}}</label>
+                                                <input type="number" name="doc_phone" id="doc_phone" value="{{ old('doc_phone') }}" class="form-control rounded-3 border-light shadow-sm doc_phone @error('doc_phone') is-invalid @enderror" placeholder="{{__('Enter Phone Number')}}">
+                                                <input type="hidden" name="phone_code" value="{{ "+".env('DEFAULT_DIALING_CODE') }}">
+                                                @error('doc_phone')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="doc_dob" class="form-label text-muted small fw-semibold">{{__('Birth Date')}}</label>
+                                                <input type="date" name="doc_dob" id="doc_dob" value="{{ old('doc_dob') }}" class="form-control rounded-3 border-light shadow-sm py-2 @error('doc_dob') is-invalid @enderror">
+                                                @error('doc_dob')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pt-3">
-                            <button type="submit" class="font-fira-sans text-white bg-primary w-full text-sm font-normal py-3">{{__('Submit')}}</button>
-                            <h1 class="font-fira-sans font-medium text-sm leading-5 pt-4 text-center">{{__('Already have an account?')}}
-                                <a href="{{url('patient-login')}}" class="text-primary text-normal">{{__('Login')}}</a>
-                            </h1>
-                        </div>
-                    </form>
-                </div>
-                <div class="{{ $active == 'patient' ?  'active' : 'hide' }} patientDiv">
-                    <form action="{{ url('signUp') }}" method="post">
-                        <input type="hidden" name="from" value="patient">
-                        @csrf
-                        <div class="pt-3">
-                            <label class="font-fira-sans text-black text-sm font-normal">{{__('Patient Name')}}</label>
-                            <input type="text" name="name" value="{{ old('name') }}" class="@error('name') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter patient name')}}">
-                            @error('name')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <label for="email" class="font-fira-sans text-black text-sm font-normal">{{__('Email')}}</label>
-                            <input type="text" name="email" value="{{ old('email') }}" class="@error('email') is-invalid @enderror  w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter email')}}">
-                            @error('email')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <label for="phone" class="font-fira-sans text-black text-sm font-normal">{{__('Phone Number')}}</label>
-                            <input type="number" name="phone" value="{{ old('phone') }}" class="@error('phone') is-invalid @enderror w-full text-sm font-fira-sans text-gray block z-20 border border-white-light phone py-2.5" placeholder="{{__('Enter Phone Number')}}">
-                            <input type="hidden" name="phone_code" value="+880">
-                            @error('phone')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <label for="password" class="font-fira-sans text-black text-sm font-normal">{{__('Create Password')}}</label>
-                            <input type="password" name="password" class="@error('password') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20 border border-white-light" placeholder="{{__('Enter password')}}">
-                            @error('password')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <label for="dob" class="font-fira-sans text-black text-sm font-normal">{{__('Birth Date')}}</label>
-                            <div class="relative mb-3" data-te-datepicker-init data-te-format="yyyy-mm-dd">
-                                <input name="dob" value="{{ old('dob') }}" placeholder="yyyy-mm-dd" class="@error('dob') is-invalid @enderror w-full text-sm font-fira-sans text-gray block p-2 z-20" data-te-datepicker-toggle-ref data-te-datepicker-toggle-button-ref />
-                            </div>
-                            @error('dob')
-                            <div class="invalid-feedback">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="pt-3">
-                            <div class="flex items-center mb-5">
-                                <label for="email" class="font-fira-sans text-black text-sm font-normal">{{__('Gender')}}</label>
-                                <div class="ml-10 flex gap-10">
-                                    <div class="form-check form-check-inline">
-                                        <input checked class="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="gender" id="gender_male" value="male">
-                                        <label class="form-check-label inline-block text-gray-800  cursor-pointer" for="gender_male">{{ __('Male') }}</label>
+
+                                    <div class="form-floating mb-4">
+                                        <input type="password" name="doc_password" id="doc_password" class="form-control rounded-3 border-light shadow-sm @error('doc_password') is-invalid @enderror" placeholder="{{__('Enter password')}}">
+                                        <label for="doc_password" class="text-muted"><i class="bi bi-lock me-2"></i>{{__('Create Password')}}</label>
+                                        @error('doc_password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input form-check-input appearance-none rounded-full h-4 w-4 border border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name="gender" id="gender_female" value="female">
-                                        <label class="form-check-label inline-block text-gray-800  cursor-pointer" for="gender_female">{{ __('Female') }}</label>
+
+                                    <div class="mb-4">
+                                        <label class="form-label d-block text-muted small fw-semibold">{{__('Gender')}}</label>
+                                        <div class="d-flex gap-3 w-100" role="group">
+                                            <input type="radio" class="btn-check" name="doc_gender" id="doc_gender_male" value="male" checked>
+                                            <label class="btn btn-outline-primary w-50 shadow-sm rounded-3 py-2" for="doc_gender_male">{{ __('Male') }}</label>
+
+                                            <input type="radio" class="btn-check" name="doc_gender" id="doc_gender_female" value="female">
+                                            <label class="btn btn-outline-primary w-50 shadow-sm rounded-3 py-2" for="doc_gender_female">{{ __('Female') }}</label>
+                                        </div>
                                     </div>
-                                </div>
+
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
+                                        {{__('Submit Registration')}}
+                                    </button>
+
+                                    <div class="text-center pt-3 border-top mt-4">
+                                        <p class="text-muted mb-0 small">{{__('Already have an account?')}} 
+                                            <a href="{{url('patient-login')}}" class="text-primary text-decoration-none fw-semibold tracking-wide ms-1">{{__('Login')}}</a>
+                                        </p>
+                                    </div>
+                                </form>
                             </div>
+
+                            <!-- PATIENT SIGNUP -->
+                            <div class="patientDiv {{ $active == 'patient' ? 'active' : 'hide' }}">
+                                <form action="{{ url('signUp') }}" method="post">
+                                    <input type="hidden" name="from" value="patient">
+                                    @csrf
+                                    
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" name="name" id="name" value="{{ old('name') }}" class="form-control rounded-3 border-light shadow-sm @error('name') is-invalid @enderror" placeholder="{{__('Enter patient name')}}">
+                                                <label for="name" class="text-muted"><i class="bi bi-person me-2"></i>{{__('Patient Name')}}</label>
+                                                @error('name')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="email" name="email" id="patient_email" value="{{ old('email') }}" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Enter email')}}">
+                                                <label for="patient_email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                                @error('email')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="phone" class="form-label text-muted small fw-semibold">{{__('Phone Number')}}</label>
+                                                <input type="number" name="phone" id="phone" value="{{ old('phone') }}" class="form-control rounded-3 border-light shadow-sm phone @error('phone') is-invalid @enderror" placeholder="{{__('Enter Phone Number')}}">
+                                                <input type="hidden" name="phone_code" value="+880">
+                                                @error('phone')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="dob" class="form-label text-muted small fw-semibold">{{__('Birth Date')}}</label>
+                                                <input type="date" name="dob" id="dob" value="{{ old('dob') }}" class="form-control rounded-3 border-light shadow-sm py-2 @error('dob') is-invalid @enderror">
+                                                @error('dob')
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-floating mb-4">
+                                        <input type="password" name="password" id="password" class="form-control rounded-3 border-light shadow-sm @error('password') is-invalid @enderror" placeholder="{{__('Enter password')}}">
+                                        <label for="password" class="text-muted"><i class="bi bi-lock me-2"></i>{{__('Create Password')}}</label>
+                                        @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label d-block text-muted small fw-semibold">{{__('Gender')}}</label>
+                                        <div class="d-flex gap-3 w-100" role="group">
+                                            <input type="radio" class="btn-check" name="gender" id="gender_male" value="male" checked>
+                                            <label class="btn btn-outline-primary w-50 shadow-sm rounded-3 py-2" for="gender_male">{{ __('Male') }}</label>
+
+                                            <input type="radio" class="btn-check" name="gender" id="gender_female" value="female">
+                                            <label class="btn btn-outline-primary w-50 shadow-sm rounded-3 py-2" for="gender_female">{{ __('Female') }}</label>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
+                                        {{__('Submit Registration')}}
+                                    </button>
+
+                                    <div class="text-center pt-3 border-top mt-4">
+                                        <p class="text-muted mb-0 small">{{__('Already have an account?')}} 
+                                            <a href="{{url('patient-login')}}" class="text-primary text-decoration-none fw-semibold tracking-wide ms-1">{{__('Login')}}</a>
+                                        </p>
+                                    </div>
+                                </form>
+                            </div>
+
                         </div>
-                        <div class="pt-3">
-                            <button type="submit" class="font-fira-sans text-white bg-primary w-full text-sm font-normal py-3">{{__('Submit')}}</button>
-                            <h1 class="font-fira-sans font-medium text-sm leading-5 pt-4 text-center">{{__('Already have an account?')}}
-                                <a href="{{url('patient-login')}}" class="text-primary text-normal">{{__('Login')}}</a>
-                            </h1>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -241,8 +284,8 @@
         $('.signupDiv').click(function() {
             $('.signupDiv').removeClass('active');
             $(this).addClass('active');
-            $(this).children('input[type=radio]').prop('checked', true);
-            var radioVal = $(this).children('input[type=radio]').val();
+            $(this).find('input[type=radio]').prop('checked', true);
+            var radioVal = $(this).find('input[type=radio]').val();
             $('.invalid-feedback').text('');
             if (radioVal == 'doctor') {
                 $('.doctorDiv').show();
@@ -254,6 +297,17 @@
             }
         });
     });
+    
+    // Check initial state correctly
+    var initialRadioVal = $('input[name=signup_title]:checked').val();
+    if (initialRadioVal == 'doctor') {
+        $('.doctorDiv').show();
+        $('.patientDiv').hide();
+    } else {
+        $('.doctorDiv').hide();
+        $('.patientDiv').show();
+    }
+
     const phoneInputField = document.querySelector(".phone");
     const phoneInput = window.intlTelInput(phoneInputField, {
         preferredCountries: ["us", "co", "in", "de"],
