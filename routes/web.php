@@ -421,6 +421,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/status', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'updateStatus'])->name('doctor.questionnaire.update-status');
         Route::get('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/prescription/create', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'createPrescription'])->name('doctor.questionnaire.create-prescription');
         Route::post('/doctor/questionnaire/{userId}/{categoryId}/{questionnaireId}/prescription/store', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'storePrescription'])->name('doctor.questionnaire.store-prescription');
+        Route::post('/doctor/questionnaires/bulk-approve', [App\Http\Controllers\Doctor\QuestionnaireReviewController::class, 'bulkApprove'])->name('doctor.questionnaire.bulk-approve');
 
         // Zoom Metting
         Route::get('create_zoom_meeting/{appointment_id}', [App\Http\Controllers\Doctor\ZoomOAuthController::class, 'setupZoomMeeting']);

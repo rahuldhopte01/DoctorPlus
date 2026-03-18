@@ -40,7 +40,8 @@ class Localization
             if ($language) {
                 // dd($language);
                 // Log::error($language);
-                $direction = \App\Models\Language::where('name', $language)->first()->direction;
+                $languageRecord = \App\Models\Language::where('name', $language)->first();
+                $direction = $languageRecord ? $languageRecord->direction : 'ltr';
                 App::setLocale($language);
                 session()->put('locale', $language);
                 session()->put('direction', $direction);

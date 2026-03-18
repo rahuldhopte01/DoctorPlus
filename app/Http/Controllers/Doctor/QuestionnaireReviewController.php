@@ -1347,6 +1347,365 @@ class QuestionnaireReviewController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Bulk approve selected questionnaires and auto-generate prescriptions.
+     * Each submission key is encoded as "userId|categoryId|questionnaireId|submittedAt".
+     */
+    public function bulkApprove(Request $request)
+    {
+        $request->validate([
+            'submissions'   => 'required|array|min:1',
+            'submissions.*' => 'required|string',
+        ]);
+
+        $doctor = Doctor::where('user_id', auth()->user()->id)->first();
+
+        if (!$doctor || !$doctor->hospital_id) {
+            abort(403, 'Unauthorized access');
+        }
+
+        $successCount = 0;
+        $skipped      = [];
+        $errors       = [];
+
+        foreach ($request->submissions as $key) {
+            $parts = explode('|', $key, 4);
+            if (count($parts) < 3) {
+                continue;
+            }
+
+            [$userId, $categoryId, $questionnaireId] = $parts;
+            $submittedAt = $parts[3] ?? null;
+
+            try {
+                $this->processBulkApprovalAndPrescription(
+                    (int) $userId,
+                    (int) $categoryId,
+                    (int) $questionnaireId,
+                    $submittedAt,
+                    $doctor
+                );
+                $successCount++;
+            } catch (\RuntimeException $e) {
+                // Known, skippable issues (already approved, locked by another doctor, etc.)
+                $skipped[] = $e->getMessage();
+            } catch (\Throwable $e) {
+                Log::error('Bulk approve failed for submission key ' . $key, ['error' => $e->getMessage()]);
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        $message = __(':count questionnaire(s) approved and prescription(s) generated.', ['count' => $successCount]);
+        if (!empty($skipped)) {
+            $message .= ' ' . count($skipped) . ' ' . __('skipped') . ' (' . implode('; ', $skipped) . ').';
+        }
+        if (!empty($errors)) {
+            $message .= ' ' . count($errors) . ' ' . __('failed due to errors.');
+        }
+
+        return redirect()->route('doctor.questionnaire.index')
+            ->with($errors ? 'warning' : 'success', $message);
+    }
+
+    /**
+     * Approve a single questionnaire submission and auto-create the prescription
+     * using the medicines the patient already selected in their submission.
+     *
+     * @throws \RuntimeException for known/skippable issues
+     * @throws \Throwable        for unexpected failures
+     */
+    protected function processBulkApprovalAndPrescription(
+        int $userId,
+        int $categoryId,
+        int $questionnaireId,
+        ?string $submittedAt,
+        Doctor $doctor
+    ): void {
+        // ------------------------------------------------------------------
+        // 1. Load the first answer record to inspect status / permissions
+        // ------------------------------------------------------------------
+        $firstAnswer = $this->findFirstAnswer($userId, $categoryId, $questionnaireId, $submittedAt, $doctor);
+
+        if (!$firstAnswer) {
+            throw new \RuntimeException("Submission not found (u:{$userId} c:{$categoryId} q:{$questionnaireId})");
+        }
+
+        if ($firstAnswer->status === 'approved') {
+            throw new \RuntimeException("Already approved (u:{$userId})");
+        }
+
+        // If locked by a different doctor, skip (sub-doctors cannot override)
+        if (
+            $doctor->isSubDoctor()
+            && $firstAnswer->reviewing_doctor_id
+            && $firstAnswer->reviewing_doctor_id !== $doctor->id
+        ) {
+            throw new \RuntimeException("Locked by another doctor (u:{$userId})");
+        }
+
+        $hospitalId = $firstAnswer->hospital_id ?? $doctor->hospital_id;
+
+        // ------------------------------------------------------------------
+        // 2. Approve status and assign reviewing doctor
+        // ------------------------------------------------------------------
+        DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $submittedAt, $doctor, $hospitalId) {
+            $this->buildAnswerBaseQuery($userId, $categoryId, $questionnaireId, $submittedAt, $hospitalId)
+                ->update([
+                    'status'              => 'approved',
+                    'hospital_id'         => $hospitalId,
+                    'reviewing_doctor_id' => $doctor->id,
+                ]);
+        });
+
+        // ------------------------------------------------------------------
+        // 3. Load the questionnaire submission (patient's medicine choices)
+        // ------------------------------------------------------------------
+        $submission = QuestionnaireSubmission::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->where('questionnaire_id', $questionnaireId)
+            ->first();
+
+        if (!$submission || !$submission->hasSelectedMedicines()) {
+            // No medicines selected – prescription cannot be auto-generated, but approval stands
+        } else {
+            // ------------------------------------------------------------------
+            // 4. Create prescription (Cannaleo or standard)
+            // ------------------------------------------------------------------
+            if ($submission->delivery_type === 'cannaleo') {
+                $this->bulkCreateCannaleoPrescription($submission, $doctor, $firstAnswer);
+            } else {
+                $this->createPrescriptionAndOrders($userId, $categoryId, $questionnaireId, $doctor);
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // 5. Send approval email to patient
+        // ------------------------------------------------------------------
+        $patient = User::find($userId);
+        if ($patient && $patient->email) {
+            $doctorUser  = User::find($doctor->user_id);
+            $doctorName  = $doctorUser ? $doctorUser->name : ($doctor->name ?? __('Doctor'));
+            $submissionId = 'REF-' . $userId . '-' . $categoryId;
+
+            (new CustomController)->sendQuestionnaireApprovedMail($patient->email, [
+                'customer_name' => $patient->name,
+                'doctor_name'   => $doctorName,
+                'doctor_notes'  => '',
+                'review_date'   => now()->format('F j, Y'),
+                'submission_id' => $submissionId,
+            ], true);
+        }
+    }
+
+    /**
+     * Build the QuestionnaireAnswer query scoped to the given submission batch.
+     */
+    protected function buildAnswerBaseQuery(
+        int $userId,
+        int $categoryId,
+        int $questionnaireId,
+        ?string $submittedAt,
+        int $hospitalId
+    ) {
+        $query = QuestionnaireAnswer::where('user_id', $userId)
+            ->where('category_id', $categoryId)
+            ->where('questionnaire_id', $questionnaireId)
+            ->whereNull('appointment_id')
+            ->where(function ($q) use ($hospitalId) {
+                $q->where('hospital_id', $hospitalId)->orWhereNull('hospital_id');
+            });
+
+        if ($submittedAt) {
+            $dt = \Carbon\Carbon::parse($submittedAt);
+            $query->where(function ($q) use ($dt) {
+                $q->where(function ($q2) use ($dt) {
+                    $q2->where('submitted_at', '>=', $dt->copy()->startOfSecond())
+                       ->where('submitted_at', '<=', $dt->copy()->endOfSecond());
+                })->orWhere(function ($q2) use ($dt) {
+                    $q2->whereNull('submitted_at')
+                       ->where('created_at', '>=', $dt->copy()->startOfSecond())
+                       ->where('created_at', '<=', $dt->copy()->endOfSecond());
+                });
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Find the first QuestionnaireAnswer for permission/status checks.
+     */
+    protected function findFirstAnswer(
+        int $userId,
+        int $categoryId,
+        int $questionnaireId,
+        ?string $submittedAt,
+        Doctor $doctor
+    ): ?QuestionnaireAnswer {
+        // Use a temporary hospitalId of 0 to allow the orWhereNull fallback
+        return $this->buildAnswerBaseQuery(
+            $userId, $categoryId, $questionnaireId, $submittedAt, $doctor->hospital_id
+        )->first();
+    }
+
+    /**
+     * Create a Cannaleo prescription for a bulk-approved submission,
+     * using the medicines the patient already selected.
+     */
+    protected function bulkCreateCannaleoPrescription(
+        QuestionnaireSubmission $submission,
+        Doctor $doctor,
+        QuestionnaireAnswer $firstAnswer
+    ): void {
+        $cannaleoMedicineIds = collect($submission->selected_medicines ?? [])
+            ->pluck('cannaleo_medicine_id')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (empty($cannaleoMedicineIds)) {
+            return; // Nothing to prescribe
+        }
+
+        $prescriptionMedicines = [];
+        foreach ($cannaleoMedicineIds as $id) {
+            $med = CannaleoMedicine::find($id);
+            if (!$med) {
+                continue;
+            }
+            $strength = ($med->thc !== null || $med->cbd !== null)
+                ? 'THC ' . ($med->thc ?? 0) . '% / CBD ' . ($med->cbd ?? 0) . '%'
+                : '';
+            $prescriptionMedicines[] = ['medicine' => $med->name, 'strength' => $strength];
+        }
+
+        if (empty($prescriptionMedicines)) {
+            return;
+        }
+
+        $setting         = \App\Models\Setting::first();
+        $prescriptionFee = $setting->prescription_fee ?? 50.00;
+        $submittedAt     = $firstAnswer->submitted_at ?? $firstAnswer->created_at;
+
+        $prescription = null;
+        DB::transaction(function () use ($submission, $doctor, $prescriptionMedicines, $submittedAt, $prescriptionFee, &$prescription) {
+            $prescription = Prescription::create([
+                'appointment_id'           => null,
+                'questionnaire_submitted_at' => $submittedAt,
+                'user_id'                  => $submission->user_id,
+                'doctor_id'                => $doctor->id,
+                'medicines'                => json_encode($prescriptionMedicines),
+                'status'                   => 'active',
+                'valid_from'               => null,
+                'valid_until'              => null,
+                'validity_days'            => null,
+                'payment_amount'           => $prescriptionFee,
+                'payment_status'           => 0,
+                'is_cannaleo'              => true,
+            ]);
+        });
+
+        if (!$prescription) {
+            return;
+        }
+
+        // Generate PDF
+        $pdfResult = app(PrescriptionPdfService::class)->generate($prescription);
+        if ($pdfResult !== true) {
+            Log::warning('Bulk Cannaleo prescription PDF failed', ['prescription_id' => $prescription->id]);
+            CannaleoPrescriptionLog::create([
+                'prescription_id'            => $prescription->id,
+                'questionnaire_submission_id' => $submission->id,
+                'called_at'                  => now(),
+                'request_payload'            => null,
+                'response_status'            => null,
+                'response_body'              => null,
+                'external_order_id'          => null,
+                'products_snapshot'          => [],
+                'total_medicine_cost'        => null,
+                'prescription_fee'           => $prescription->payment_amount,
+                'error_message'              => 'PDF generation failed',
+            ]);
+            return;
+        }
+
+        // Call Curobo API
+        $prescription->refresh();
+        $customer = User::find($prescription->user_id);
+        if (!$customer) {
+            CannaleoPrescriptionLog::create([
+                'prescription_id'            => $prescription->id,
+                'questionnaire_submission_id' => $submission->id,
+                'called_at'                  => now(),
+                'request_payload'            => null,
+                'response_status'            => null,
+                'response_body'              => null,
+                'external_order_id'          => null,
+                'products_snapshot'          => [],
+                'total_medicine_cost'        => null,
+                'prescription_fee'           => $prescription->payment_amount,
+                'error_message'              => 'Customer not found',
+            ]);
+            return;
+        }
+
+        $prescription->load(['doctor.user', 'doctor.hospital']);
+        $pharmacy        = $submission->selectedCannaleoPharmacy;
+        $prescriptionUrl = rtrim(config('app.url'), '/') . '/prescription/upload/' . $prescription->pdf;
+        $products        = CannaleoMedicine::whereIn('id', $cannaleoMedicineIds)->get();
+        $payload         = CuroboPrescriptionPayloadBuilder::build(
+            $prescription, $submission, $customer, $prescription->doctor, $products, $prescriptionUrl, $pharmacy
+        );
+
+        $productsSnapshot   = [];
+        $totalMedicineCost  = 0;
+        foreach ($products as $med) {
+            $price               = (float) $med->price;
+            $productsSnapshot[]  = [
+                'cannaleo_medicine_id' => $med->id,
+                'name'                 => $med->name,
+                'price'                => $price,
+                'quantity'             => 1,
+                'category'             => $med->category ?? 'flower',
+            ];
+            $totalMedicineCost  += $price;
+        }
+
+        try {
+            $api      = new CuroboPrescriptionApi();
+            $response = $api->submitPrescription($payload);
+            CannaleoPrescriptionLog::create([
+                'prescription_id'            => $prescription->id,
+                'questionnaire_submission_id' => $submission->id,
+                'called_at'                  => now(),
+                'request_payload'            => $payload,
+                'response_status'            => 200,
+                'response_body'              => is_array($response) ? json_encode($response) : (string) $response,
+                'external_order_id'          => $response['order_id'] ?? $response['id'] ?? null,
+                'products_snapshot'          => $productsSnapshot,
+                'total_medicine_cost'        => $totalMedicineCost,
+                'prescription_fee'           => (float) $prescription->payment_amount,
+                'error_message'              => null,
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('Bulk Curobo API failed', ['prescription_id' => $prescription->id, 'error' => $e->getMessage()]);
+            CannaleoPrescriptionLog::create([
+                'prescription_id'            => $prescription->id,
+                'questionnaire_submission_id' => $submission->id,
+                'called_at'                  => now(),
+                'request_payload'            => $payload,
+                'response_status'            => null,
+                'response_body'              => $e->getMessage(),
+                'external_order_id'          => null,
+                'products_snapshot'          => $productsSnapshot,
+                'total_medicine_cost'        => $totalMedicineCost,
+                'prescription_fee'           => (float) $prescription->payment_amount,
+                'error_message'              => $e->getMessage(),
+            ]);
+            // Do not rethrow – prescription is saved; admin will follow up
+        }
+    }
 }
 
 
