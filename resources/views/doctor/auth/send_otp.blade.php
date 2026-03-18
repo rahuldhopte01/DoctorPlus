@@ -40,10 +40,10 @@
                             <input type="hidden" name="user_id" value="{{ $user->id }}">
                             
                             <div class="digit-group mb-5 justify-content-center justify-content-lg-start" data-group-name="digits" data-autosubmit="false" autocomplete="off">
-                                <input type="text" required id="digit-1" name="digit_1" data-next="digit-2" class="form-control" />
-                                <input type="text" required id="digit-2" name="digit_2" data-next="digit-3" data-previous="digit-1" class="form-control" />
-                                <input type="text" required id="digit-3" name="digit_3" data-next="digit-4" data-previous="digit-2" class="form-control" />
-                                <input type="text" required id="digit-4" name="digit_4" data-next="digit-5" data-previous="digit-3" class="form-control" />
+                                <div class="otp-digit-wrapper"><input type="tel" required id="digit-1" name="digit_1" data-next="digit-2" class="form-control otp-input" autocomplete="new-password" maxlength="1" data-lpignore="true" data-1p-ignore /></div>
+                                <div class="otp-digit-wrapper"><input type="tel" required id="digit-2" name="digit_2" data-next="digit-3" data-previous="digit-1" class="form-control otp-input" autocomplete="new-password" maxlength="1" data-lpignore="true" data-1p-ignore /></div>
+                                <div class="otp-digit-wrapper"><input type="tel" required id="digit-3" name="digit_3" data-next="digit-4" data-previous="digit-2" class="form-control otp-input" autocomplete="new-password" maxlength="1" data-lpignore="true" data-1p-ignore /></div>
+                                <div class="otp-digit-wrapper"><input type="tel" required id="digit-4" name="digit_4" data-next="digit-5" data-previous="digit-3" class="form-control otp-input" autocomplete="new-password" maxlength="1" data-lpignore="true" data-1p-ignore /></div>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
@@ -71,14 +71,22 @@
         box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
     }
     .digit-group {
-        display: flex;
+        display: grid !important;
+        grid-template-columns: repeat(4, 55px) !important;
         gap: 12px;
+        justify-content: center;
     }
-    .digit-group input {
+    .otp-digit-wrapper {
         width: 55px;
         height: 65px;
+        overflow: hidden !important;
+        position: relative;
+    }
+    .digit-group input.otp-input {
+        width: 100% !important;
+        height: 100% !important;
         background-color: #f8f9fa;
-        line-height: 65px;
+        line-height: normal;
         text-align: center;
         font-size: 24px;
         font-weight: 600;
@@ -87,8 +95,24 @@
         transition: all 0.2s ease-in-out;
         outline: none;
         color: var(--primary-color);
+        padding: 0 !important;
+        margin: 0;
+        box-shadow: none !important;
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+        appearance: none;
     }
-    .digit-group input:focus {
+    .digit-group input.otp-input::-webkit-outer-spin-button,
+    .digit-group input.otp-input::-webkit-inner-spin-button,
+    .digit-group input.otp-input::-webkit-calendar-picker-indicator {
+        -webkit-appearance: none;
+        display: none !important;
+        margin: 0;
+    }
+    .digit-group input.otp-input:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 30px #f8f9fa inset !important;
+    }
+    .digit-group input.otp-input:focus {
         background-color: #fff;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.25rem rgba(0, 166, 81, 0.15);
