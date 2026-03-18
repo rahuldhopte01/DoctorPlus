@@ -43,6 +43,8 @@
                                 <th>{{ __('Price') }}</th>
                                 <th>{{ __('THC / CBD') }}</th>
                                 <th>{{ __('Assigned to categories') }}</th>
+                                <th>{{ __('Image') }}</th>
+                                <th>{{ __('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,10 +65,20 @@
                                         <span class="text-muted">—</span>
                                     @endif
                                 </td>
+                                <td>
+                                    @if ($medicine->image)
+                                        <img src="{{ asset('images/upload/'.$medicine->image) }}" alt="{{ $medicine->name }}" style="max-height:40px;max-width:60px;object-fit:cover;" class="img-thumbnail">
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('cannaleo.medicines.edit', $medicine->id) }}" class="btn btn-sm btn-primary">{{ __('Edit') }}</a>
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted">{{ __('No Cannaleo medicines yet. Run the catalog sync and assign in Category edit.') }}</td>
+                                <td colspan="9" class="text-center text-muted">{{ __('No Cannaleo medicines yet. Run the catalog sync and assign in Category edit.') }}</td>
                             </tr>
                             @endforelse
                         </tbody>

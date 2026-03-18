@@ -31,6 +31,8 @@ class CannaleoMedicine extends Model
         'terpenes',
         'raw_data',
         'last_synced_at',
+        'image',
+        'description',
     ];
 
     protected $casts = [
