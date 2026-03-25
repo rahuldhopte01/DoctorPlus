@@ -129,8 +129,9 @@
                     </div>
 
                     @foreach($section->questions as $question)
-                    <div class="question-wrapper mb-8 ml-[3.25rem]" data-question-id="{{ $question->id }}" 
-                         @if($question->conditional_logic) data-conditional='@json($question->conditional_logic)' @endif>
+                    @php $savedSubAnswers = $savedAnswers['sub_answers'][$question->id] ?? []; @endphp
+                    <div class="question-wrapper mb-8 ml-[3.25rem]" data-question-id="{{ $question->id }}"
+                         data-behaviors='@json($question->option_behaviors ?? [])'>
                         <label class="block font-body font-semibold text-gray-800 mb-3 text-[1.05rem]">
                             {{ $question->question_text }}
                             @if($question->required)
@@ -318,6 +319,20 @@
                         @endswitch
 
                         <div class="text-red-500 text-sm mt-1 font-fira-sans" id="error_{{ $question->id }}"></div>
+
+                        {{-- Sub-questions container: all possible sub-questions pre-rendered as hidden --}}
+                        <div class="sub-questions-container mt-2" data-question-id="{{ $question->id }}">
+                            @foreach($question->option_behaviors['behaviors'] ?? [] as $behavior)
+                                @if(!empty($behavior['sub_question']))
+                                    @include('website.questionnaire.partials.sub_question_render', [
+                                        'subQuestion'    => $behavior['sub_question'],
+                                        'parentPath'     => (string) $question->id,
+                                        'depth'          => 1,
+                                        'savedSubAnswers'=> $savedSubAnswers,
+                                    ])
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
                     @endforeach
                 </div>
@@ -529,7 +544,8 @@ document.addEventListener('DOMContentLoaded', function() {
         clearTimeout(saveTimeout);
         saveTimeout = setTimeout(function() {
             const formData = new FormData(form);
-            
+            appendSubAnswersToFormData(formData);
+
             saveIndicator.classList.remove('hidden');
             saveIndicatorText.textContent = '{{ __("Saving...") }}';
             
@@ -584,70 +600,172 @@ document.addEventListener('DOMContentLoaded', function() {
         progressText.textContent = progress + '%';
     }
 
-    // Handle conditional logic
-    function handleConditionalLogic() {
-        document.querySelectorAll('[data-conditional]').forEach(wrapper => {
-            try {
-                const conditional = JSON.parse(wrapper.dataset.conditional);
-                if (conditional && conditional.show_if) {
-                    const targetQuestion = document.querySelector(`[data-question-id="${conditional.show_if.question_id}"]`);
-                    if (targetQuestion) {
-                        const inputs = targetQuestion.querySelectorAll('.question-input');
-                        let currentValue = '';
-                        
-                        inputs.forEach(input => {
-                            if (input.type === 'radio' && input.checked) {
-                                currentValue = input.value;
-                            } else if (input.type !== 'radio' && input.type !== 'checkbox') {
-                                currentValue = input.value;
-                            }
-                        });
-
-                        const shouldShow = evaluateCondition(currentValue, conditional.show_if);
-                        wrapper.classList.toggle('hidden', !shouldShow);
-                    }
-                }
-            } catch (e) {
-                console.error('Conditional logic error:', e);
-            }
-        });
-    }
-
+    // ── Behavior Engine ───────────────────────────────────────────────────────
     function evaluateCondition(value, condition) {
         const operator = condition.operator || 'equals';
-        const targetValue = condition.value;
-
+        const target   = condition.value;
         switch (operator) {
-            case 'equals': return value == targetValue;
-            case 'not_equals': return value != targetValue;
-            case 'contains': return value.toLowerCase().includes(targetValue.toLowerCase());
-            case 'greater_than': return parseFloat(value) > parseFloat(targetValue);
-            case 'less_than': return parseFloat(value) < parseFloat(targetValue);
-            default: return true;
+            case 'equals':       return value == target;
+            case 'not_equals':   return value != target;
+            case 'contains':     return String(value).toLowerCase().includes(String(target).toLowerCase());
+            case 'greater_than': return parseFloat(value) > parseFloat(target);
+            case 'less_than':    return parseFloat(value) < parseFloat(target);
+            default:             return false;
         }
     }
 
-    // Listen for input changes
-    document.querySelectorAll('.question-input').forEach(input => {
-        input.addEventListener('change', function() {
-            saveToLocalStorage();
-            updateProgress();
-            handleConditionalLogic();
-            autoSave();
-            
-            // Clear error
-            const errorDiv = document.getElementById('error_' + this.dataset.questionId);
-            if (errorDiv) {
-                errorDiv.textContent = '';
-                this.classList.remove('border-red-500');
+    function getQuestionValue(wrapper) {
+        const inputs = wrapper.querySelectorAll(':scope > .question-input, :scope > div > .question-input, :scope > .custom-dropdown-container > select');
+        let value = '';
+        inputs.forEach(inp => {
+            if (inp.type === 'radio' && inp.checked)       value = inp.value;
+            else if (inp.type === 'checkbox' && inp.checked) value = inp.value; // last checked wins for single-val check
+            else if (inp.type !== 'radio' && inp.type !== 'checkbox' && inp.type !== 'file') value = inp.value;
+        });
+        return value;
+    }
+
+    function getSubQuestionValue(sqWrapper) {
+        let value = '';
+        const inputs = sqWrapper.querySelectorAll(':scope > input.sub-question-input, :scope > select.sub-question-input, :scope > textarea.sub-question-input');
+        inputs.forEach(inp => {
+            if (inp.type === 'radio' && inp.checked) value = inp.value;
+            else if (inp.type !== 'radio' && inp.type !== 'checkbox') value = inp.value;
+        });
+        return value;
+    }
+
+    // Active soft-flag messages (rebuilt on every behavior pass)
+    let activeSoftFlags = new Set();
+
+    function applyBehaviors(questionValue, behaviors, subQContainer) {
+        if (!subQContainer) return;
+
+        // Hide all direct sub-question wrappers first, disable their inputs
+        subQContainer.querySelectorAll(':scope > .sub-question-wrapper').forEach(sq => {
+            sq.classList.add('hidden');
+            sq.querySelectorAll('input, select, textarea').forEach(i => i.disabled = true);
+        });
+
+        if (!behaviors || !behaviors.length) return;
+
+        const matchingBehavior = behaviors.find(b => evaluateCondition(questionValue, b.condition || {}));
+        if (!matchingBehavior) return;
+
+        // Collect soft flags
+        (matchingBehavior.flags || []).forEach(f => {
+            if (f.flag_type === 'soft') activeSoftFlags.add(f.flag_message);
+        });
+
+        // Show sub-question if exists
+        if (matchingBehavior.sub_question) {
+            const tempId = matchingBehavior.sub_question.temp_id;
+            const sqWrapper = subQContainer.querySelector(`:scope > .sub-question-wrapper[data-temp-id="${tempId}"]`);
+            if (sqWrapper) {
+                sqWrapper.classList.remove('hidden');
+                sqWrapper.querySelectorAll('input, select, textarea').forEach(i => i.disabled = false);
+
+                // Recurse into sub-question's own behaviors
+                const subVal      = getSubQuestionValue(sqWrapper);
+                const subBehaviors = matchingBehavior.sub_question.behaviors || [];
+                const nestedContainer = sqWrapper.querySelector('.nested-sub-questions-container');
+                applyBehaviors(subVal, subBehaviors, nestedContainer);
+            }
+        }
+    }
+
+    function handleBehaviors() {
+        activeSoftFlags = new Set();
+
+        document.querySelectorAll('.question-wrapper').forEach(wrapper => {
+            try {
+                const raw = wrapper.dataset.behaviors;
+                if (!raw || raw === '[]' || raw === 'null') return;
+                const behaviors = JSON.parse(raw);
+                if (!behaviors || !behaviors.behaviors) return;
+
+                const questionValue  = getQuestionValue(wrapper);
+                const subQContainer  = wrapper.querySelector('.sub-questions-container');
+                applyBehaviors(questionValue, behaviors.behaviors, subQContainer);
+            } catch(e) {
+                console.error('Behavior engine error:', e);
             }
         });
-        input.addEventListener('input', function() {
-            updateProgress();
-            saveToLocalStorage();
-            autoSave();
+
+        // Render soft flag warnings
+        warningList.innerHTML = '';
+        if (activeSoftFlags.size > 0) {
+            activeSoftFlags.forEach(msg => {
+                const li = document.createElement('li');
+                li.textContent = msg;
+                warningList.appendChild(li);
+            });
+            warningFlags.classList.remove('hidden');
+        } else {
+            warningFlags.classList.add('hidden');
+        }
+
+        updateProgress();
+    }
+
+    // ── Collect sub-answers as JSON ───────────────────────────────────────────
+    function collectSubAnswersForQuestion(questionWrapper) {
+        const subContainer = questionWrapper.querySelector('.sub-questions-container');
+        if (!subContainer) return null;
+        return collectSubAnswersFromContainer(subContainer);
+    }
+
+    function collectSubAnswersFromContainer(container) {
+        const results = [];
+        container.querySelectorAll(':scope > .sub-question-wrapper:not(.hidden)').forEach(sqWrapper => {
+            const tempId    = sqWrapper.dataset.tempId;
+            let value       = '';
+            const inputs    = sqWrapper.querySelectorAll(':scope > input.sub-question-input:not(:disabled), :scope > select.sub-question-input:not(:disabled), :scope > textarea.sub-question-input:not(:disabled)');
+            inputs.forEach(inp => {
+                if (inp.type === 'radio' && inp.checked)  value = inp.value;
+                else if (inp.type === 'checkbox' && inp.checked) value = inp.value;
+                else if (inp.type !== 'radio' && inp.type !== 'checkbox') value = inp.value;
+            });
+            const nestedContainer = sqWrapper.querySelector('.nested-sub-questions-container');
+            const subAnswers = nestedContainer ? collectSubAnswersFromContainer(nestedContainer) : [];
+            results.push({ temp_id: tempId, value, sub_answers: subAnswers });
         });
-    });
+        return results;
+    }
+
+    function appendSubAnswersToFormData(formData) {
+        document.querySelectorAll('.question-wrapper').forEach(wrapper => {
+            const qId = wrapper.dataset.questionId;
+            const subAnswers = collectSubAnswersForQuestion(wrapper);
+            if (subAnswers && subAnswers.length > 0) {
+                formData.append('sub_answers_json[' + qId + ']', JSON.stringify(subAnswers));
+            }
+        });
+    }
+
+    // ── Input listeners ───────────────────────────────────────────────────────
+    function attachInputListeners(root) {
+        root.querySelectorAll('.question-input, .sub-question-input').forEach(input => {
+            input.addEventListener('change', function() {
+                saveToLocalStorage();
+                handleBehaviors();
+                autoSave();
+                const qId = this.dataset.questionId;
+                if (qId) {
+                    const errorDiv = document.getElementById('error_' + qId);
+                    if (errorDiv) errorDiv.textContent = '';
+                    this.classList.remove('border-red-500');
+                }
+            });
+            input.addEventListener('input', function() {
+                handleBehaviors();
+                saveToLocalStorage();
+                autoSave();
+            });
+        });
+    }
+
+    attachInputListeners(document);
 
     // Custom Dropdown Logic
     function initCustomDropdowns() {
@@ -767,6 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const formData = new FormData(form);
+        appendSubAnswersToFormData(formData);
 
         fetch('{{ route("questionnaire.prepare-submit", ["categoryId" => $category->id]) }}', {
             method: 'POST',
@@ -829,8 +948,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial setup
     loadFromLocalStorage();
+    handleBehaviors();
     updateProgress();
-    handleConditionalLogic();
 });
 </script>
 @endsection

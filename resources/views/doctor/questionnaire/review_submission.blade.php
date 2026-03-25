@@ -782,6 +782,12 @@
                                                             @endif
                                                         </td>
                                                     </tr>
+                                                    @if(!empty($answer['sub_answers']))
+                                                        @include('doctor.questionnaire.partials.sub_answer_display', [
+                                                            'subAnswers' => $answer['sub_answers'],
+                                                            'depth'      => 1,
+                                                        ])
+                                                    @endif
                                                     @endforeach
                                                 </tbody>
                                             </table>

@@ -297,9 +297,18 @@ class QuestionnaireController extends Controller
         // Get existing saved answers and merge
         $existingAnswers = session()->get('questionnaire_answers_' . $categoryId, []);
         $mergedAnswers = array_merge($existingAnswers['answers'] ?? [], $answers);
-        
+
+        // Decode and merge sub-answers
+        $incomingSubAnswers = [];
+        foreach ($request->input('sub_answers_json', []) as $qId => $json) {
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                $incomingSubAnswers[(int) $qId] = $decoded;
+            }
+        }
+        $mergedSubAnswers = array_merge($existingAnswers['sub_answers'] ?? [], $incomingSubAnswers);
+
         // Validate answers (only validate provided answers, not all questions)
-        $tempQuestionnaire = clone $questionnaire;
         $errors = [];
         foreach ($answers as $questionId => $answer) {
             $question = $questionnaire->questions->firstWhere('id', $questionId);
@@ -307,7 +316,7 @@ class QuestionnaireController extends Controller
                 $errors[$questionId] = __('This question is required');
             }
         }
-        
+
         if (!empty($errors)) {
             return response()->json([
                 'success' => false,
@@ -321,6 +330,7 @@ class QuestionnaireController extends Controller
             'category_id' => $categoryId,
             'answers' => $mergedAnswers,
             'files' => array_merge($existingAnswers['files'] ?? [], $uploadedFiles),
+            'sub_answers' => $mergedSubAnswers,
             'user_id' => Auth::id(),
             'updated_at' => now()->toDateTimeString(),
         ]);
@@ -459,16 +469,27 @@ class QuestionnaireController extends Controller
         // Merge with existing answers - preserve all existing answers and update with new ones
         $existingAnswers = session()->get('questionnaire_answers_' . $categoryId, []);
         $existingAnswersArray = $existingAnswers['answers'] ?? [];
-        
+
         // Merge answers - new answers override existing ones for the same question IDs
         $mergedAnswers = array_merge($existingAnswersArray, $normalizedAnswers);
-        
+
+        // Decode and merge sub-answers
+        $incomingSubAnswers = [];
+        foreach ($request->input('sub_answers_json', []) as $qId => $json) {
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                $incomingSubAnswers[(int) $qId] = $decoded;
+            }
+        }
+        $mergedSubAnswers = array_merge($existingAnswers['sub_answers'] ?? [], $incomingSubAnswers);
+
         // Store in session
         session()->put('questionnaire_answers_' . $categoryId, [
             'questionnaire_id' => $questionnaire->id,
             'category_id' => $categoryId,
             'answers' => $mergedAnswers,
             'files' => array_merge($existingAnswers['files'] ?? [], $uploadedFiles),
+            'sub_answers' => $mergedSubAnswers,
             'user_id' => Auth::id(),
             'updated_at' => now()->toDateTimeString(),
         ]);
@@ -550,6 +571,7 @@ class QuestionnaireController extends Controller
         }
 
         $answers = $pending['answers'];
+        $subAnswers = $pending['sub_answers'] ?? [];
         $permanentFiles = $pending['permanent_files'] ?? [];
         $submissionFlow = $pending['submission_flow'] ?? 'with_medicine';
         $flagCheck = $pending['flag_check'] ?? ['flags' => []];
@@ -571,7 +593,8 @@ class QuestionnaireController extends Controller
                     $questionnaire,
                     $answers,
                     $permanentFiles,
-                    'pending'
+                    'pending',
+                    $subAnswers
                 );
             } catch (\Exception $e) {
                 \Log::error('Error completing questionnaire after payment: ' . $e->getMessage());
@@ -685,6 +708,15 @@ class QuestionnaireController extends Controller
         $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
         $uploadedFiles = $savedData['files'] ?? [];
 
+        // Decode sub-answers from request
+        $subAnswers = [];
+        foreach ($request->input('sub_answers_json', []) as $qId => $json) {
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                $subAnswers[(int) $qId] = $decoded;
+            }
+        }
+
         if (!empty($files)) {
             $uploadDir = 'questionnaire_uploads/temp/' . Auth::id() . '/' . $categoryId;
             if (!is_dir(public_path($uploadDir))) {
@@ -707,7 +739,8 @@ class QuestionnaireController extends Controller
             }
         }
 
-        $errors = $this->questionnaireService->validateAnswers($questionnaire, $answers);
+        $visibleIds = array_keys($answers);
+        $errors = $this->questionnaireService->validateAnswers($questionnaire, $answers, $subAnswers, $visibleIds);
         if (!empty($errors)) {
             $enrichedErrors = [];
             $sections = $questionnaire->sections()->with('questions')->orderBy('order')->get();
@@ -719,7 +752,7 @@ class QuestionnaireController extends Controller
             return response()->json(['success' => false, 'errors' => $enrichedErrors]);
         }
 
-        $flagCheck = $this->questionnaireService->checkForBlockingFlags($questionnaire, $answers);
+        $flagCheck = $this->questionnaireService->checkForBlockingFlags($questionnaire, $answers, $subAnswers);
         if ($flagCheck['has_hard_block']) {
             return response()->json([
                 'success' => false,
@@ -751,6 +784,7 @@ class QuestionnaireController extends Controller
 
         session()->put('questionnaire_pending_payment_' . $categoryId, [
             'answers' => $answers,
+            'sub_answers' => $subAnswers,
             'permanent_files' => $permanentFiles,
             'submission_flow' => $submissionFlow,
             'flag_check' => $flagCheck,
@@ -831,7 +865,16 @@ class QuestionnaireController extends Controller
         }
         $answers = $normalizedAnswers;
         $files = $request->file('files', []);
-        
+
+        // Decode sub-answers from request
+        $subAnswers = [];
+        foreach ($request->input('sub_answers_json', []) as $qId => $json) {
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                $subAnswers[(int) $qId] = $decoded;
+            }
+        }
+
         // Get any existing files from session (in case files were uploaded earlier)
         $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
         $uploadedFiles = $savedData['files'] ?? [];
@@ -873,12 +916,13 @@ class QuestionnaireController extends Controller
         }
 
         // Validate all answers
-        $errors = $this->questionnaireService->validateAnswers($questionnaire, $answers);
+        $visibleIds = array_keys($answers);
+        $errors = $this->questionnaireService->validateAnswers($questionnaire, $answers, $subAnswers, $visibleIds);
         if (!empty($errors)) {
             // Enrich errors with section and question information
             $enrichedErrors = [];
             $errorDetails = [];
-            
+
             $sections = $questionnaire->sections()->with('questions')->orderBy('order')->get();
             foreach ($sections as $sectionIndex => $section) {
                 foreach ($section->questions as $question) {
@@ -893,7 +937,7 @@ class QuestionnaireController extends Controller
                     }
                 }
             }
-            
+
             return response()->json([
                 'success' => false,
                 'errors' => $enrichedErrors,
@@ -902,7 +946,7 @@ class QuestionnaireController extends Controller
         }
 
         // Check for blocking flags
-        $flagCheck = $this->questionnaireService->checkForBlockingFlags($questionnaire, $answers);
+        $flagCheck = $this->questionnaireService->checkForBlockingFlags($questionnaire, $answers, $subAnswers);
 
         if ($flagCheck['has_hard_block']) {
             return response()->json([
@@ -959,7 +1003,8 @@ class QuestionnaireController extends Controller
                     $questionnaire,
                     $answers,
                     $permanentFiles,
-                    'pending'
+                    'pending',
+                    $subAnswers
                 );
             } catch (\Exception $e) {
                 \Log::error('Error saving questionnaire answers: ' . $e->getMessage() . "\n" . $e->getTraceAsString());

@@ -20,6 +20,7 @@ class QuestionnaireQuestion extends Model
         'validation_rules',
         'conditional_logic',
         'flagging_rules',
+        'option_behaviors',
         'doctor_notes',
         'order',
     ];
@@ -29,12 +30,10 @@ class QuestionnaireQuestion extends Model
         'validation_rules' => 'array',
         'conditional_logic' => 'array',
         'flagging_rules' => 'array',
+        'option_behaviors' => 'array',
         'required' => 'boolean',
     ];
 
-    /**
-     * Field type options.
-     */
     public const FIELD_TYPES = [
         'text' => 'Text Input',
         'textarea' => 'Text Area',
@@ -45,17 +44,11 @@ class QuestionnaireQuestion extends Model
         'file' => 'File Upload',
     ];
 
-    /**
-     * Get the section that owns the question.
-     */
     public function section()
     {
         return $this->belongsTo(QuestionnaireSection::class, 'section_id');
     }
 
-    /**
-     * Get the questionnaire through section.
-     */
     public function questionnaire()
     {
         return $this->hasOneThrough(
@@ -68,25 +61,16 @@ class QuestionnaireQuestion extends Model
         );
     }
 
-    /**
-     * Get the answers for this question.
-     */
     public function answers()
     {
         return $this->hasMany(QuestionnaireAnswer::class, 'question_id');
     }
 
-    /**
-     * Check if this question requires options (dropdown, radio, checkbox).
-     */
     public function requiresOptions(): bool
     {
         return in_array($this->field_type, ['dropdown', 'radio', 'checkbox']);
     }
 
-    /**
-     * Get options as array.
-     */
     public function getOptionsArray(): array
     {
         if (is_array($this->options)) {
@@ -96,50 +80,78 @@ class QuestionnaireQuestion extends Model
     }
 
     /**
-     * Evaluate if an answer triggers a flag.
+     * Find the behavior entry that matches a given answer value.
+     * Returns ['condition'=>..., 'flags'=>[...], 'sub_question'=>...] or null.
+     */
+    public function getMatchingBehavior($answerValue): ?array
+    {
+        $behaviors = $this->option_behaviors['behaviors'] ?? [];
+        foreach ($behaviors as $behavior) {
+            if ($this->evaluateCondition($answerValue, $behavior['condition'] ?? [])) {
+                return $behavior;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Return all flags triggered by the given answer value.
+     * Each element: ['flag_type' => 'soft'|'hard', 'flag_message' => string]
+     */
+    public function evaluateBehaviorsForValue($answerValue): array
+    {
+        $behavior = $this->getMatchingBehavior($answerValue);
+        return $behavior['flags'] ?? [];
+    }
+
+    /**
+     * Evaluate a single condition array against an answer value.
+     */
+    public static function evaluateCondition($answerValue, array $condition): bool
+    {
+        $operator = $condition['operator'] ?? 'equals';
+        $value    = $condition['value'] ?? null;
+
+        switch ($operator) {
+            case 'equals':       return ($answerValue == $value);
+            case 'not_equals':   return ($answerValue != $value);
+            case 'contains':     return (stripos((string) $answerValue, (string) $value) !== false);
+            case 'greater_than': return (is_numeric($answerValue) && $answerValue > $value);
+            case 'less_than':    return (is_numeric($answerValue) && $answerValue < $value);
+            case 'in':           return in_array($answerValue, (array) $value);
+            default:             return false;
+        }
+    }
+
+    /**
+     * Legacy flag evaluation — kept for backward compatibility with existing flagging_rules data.
+     * New questions use option_behaviors; this still works for old records.
      */
     public function evaluateFlag($answerValue): ?array
     {
+        // Use new system if available
+        if (!empty($this->option_behaviors['behaviors'])) {
+            $flags = $this->evaluateBehaviorsForValue($answerValue);
+            if (!empty($flags)) {
+                return ['flag_type' => $flags[0]['flag_type'], 'flag_message' => $flags[0]['flag_message']];
+            }
+            return null;
+        }
+
+        // Fall back to legacy flagging_rules
         if (empty($this->flagging_rules)) {
             return null;
         }
 
-        $rules = $this->flagging_rules;
-        $flagType = $rules['flag_type'] ?? 'soft';
+        $rules      = $this->flagging_rules;
+        $flagType   = $rules['flag_type'] ?? 'soft';
         $conditions = $rules['conditions'] ?? [];
 
         foreach ($conditions as $condition) {
-            $operator = $condition['operator'] ?? 'equals';
-            $value = $condition['value'] ?? null;
-            $flagMessage = $condition['flag_message'] ?? 'Answer flagged for review';
-
-            $triggered = false;
-
-            switch ($operator) {
-                case 'equals':
-                    $triggered = ($answerValue == $value);
-                    break;
-                case 'not_equals':
-                    $triggered = ($answerValue != $value);
-                    break;
-                case 'contains':
-                    $triggered = (stripos($answerValue, $value) !== false);
-                    break;
-                case 'greater_than':
-                    $triggered = (is_numeric($answerValue) && $answerValue > $value);
-                    break;
-                case 'less_than':
-                    $triggered = (is_numeric($answerValue) && $answerValue < $value);
-                    break;
-                case 'in':
-                    $triggered = in_array($answerValue, (array) $value);
-                    break;
-            }
-
-            if ($triggered) {
+            if (self::evaluateCondition($answerValue, $condition)) {
                 return [
-                    'flag_type' => $flagType,
-                    'flag_message' => $flagMessage,
+                    'flag_type'    => $flagType,
+                    'flag_message' => $condition['flag_message'] ?? 'Answer flagged for review',
                 ];
             }
         }
@@ -147,6 +159,3 @@ class QuestionnaireQuestion extends Model
         return null;
     }
 }
-
-
-

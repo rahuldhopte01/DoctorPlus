@@ -140,8 +140,9 @@
 
                 <!-- Section Questions -->
                 @foreach($currentSection->questions as $question)
-                <div class="question-wrapper mb-8 ml-[3.25rem]" data-question-id="{{ $question->id }}" 
-                     @if($question->conditional_logic) data-conditional='@json($question->conditional_logic)' @endif>
+                @php $savedSubAnswers = $savedAnswers['sub_answers'][$question->id] ?? []; @endphp
+                <div class="question-wrapper mb-8 ml-[3.25rem]" data-question-id="{{ $question->id }}"
+                     data-behaviors='@json($question->option_behaviors ?? [])'>
                     <label class="block font-body font-semibold text-gray-800 mb-3 text-[1.05rem]">
                         {{ $question->question_text }}
                         @if($question->required)
@@ -336,6 +337,19 @@
                     @endswitch
 
                     <div class="text-red-500 text-sm mt-1 font-fira-sans" id="error_{{ $question->id }}"></div>
+
+                    <div class="sub-questions-container mt-2" data-question-id="{{ $question->id }}">
+                        @foreach($question->option_behaviors['behaviors'] ?? [] as $behavior)
+                            @if(!empty($behavior['sub_question']))
+                                @include('website.questionnaire.partials.sub_question_render', [
+                                    'subQuestion'    => $behavior['sub_question'],
+                                    'parentPath'     => (string) $question->id,
+                                    'depth'          => 1,
+                                    'savedSubAnswers'=> $savedSubAnswers,
+                                ])
+                            @endif
+                        @endforeach
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -492,6 +506,99 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initCustomDropdowns();
 
+    // ── Behavior Engine (same logic as category_form) ─────────────────────────
+    function evaluateCondition(value, condition) {
+        const op  = condition.operator || 'equals';
+        const tgt = condition.value;
+        switch (op) {
+            case 'equals':       return value == tgt;
+            case 'not_equals':   return value != tgt;
+            case 'contains':     return String(value).toLowerCase().includes(String(tgt).toLowerCase());
+            case 'greater_than': return parseFloat(value) > parseFloat(tgt);
+            case 'less_than':    return parseFloat(value) < parseFloat(tgt);
+            default:             return false;
+        }
+    }
+
+    function getQuestionValue(wrapper) {
+        let value = '';
+        wrapper.querySelectorAll(':scope > .question-input, :scope > div > .question-input, :scope > .custom-dropdown-container > select').forEach(inp => {
+            if (inp.type === 'radio' && inp.checked)       value = inp.value;
+            else if (inp.type !== 'radio' && inp.type !== 'checkbox' && inp.type !== 'file') value = inp.value;
+        });
+        return value;
+    }
+
+    function getSubQuestionValue(sqWrapper) {
+        let value = '';
+        sqWrapper.querySelectorAll(':scope > input.sub-question-input, :scope > select.sub-question-input, :scope > textarea.sub-question-input').forEach(inp => {
+            if (inp.type === 'radio' && inp.checked) value = inp.value;
+            else if (inp.type !== 'radio' && inp.type !== 'checkbox') value = inp.value;
+        });
+        return value;
+    }
+
+    function applyBehaviors(questionValue, behaviors, subQContainer) {
+        if (!subQContainer || !behaviors || !behaviors.length) return;
+        subQContainer.querySelectorAll(':scope > .sub-question-wrapper').forEach(sq => {
+            sq.classList.add('hidden');
+            sq.querySelectorAll('input, select, textarea').forEach(i => i.disabled = true);
+        });
+        const match = behaviors.find(b => evaluateCondition(questionValue, b.condition || {}));
+        if (!match) return;
+        if (match.sub_question) {
+            const sq = subQContainer.querySelector(`:scope > .sub-question-wrapper[data-temp-id="${match.sub_question.temp_id}"]`);
+            if (sq) {
+                sq.classList.remove('hidden');
+                sq.querySelectorAll('input, select, textarea').forEach(i => i.disabled = false);
+                const subVal = getSubQuestionValue(sq);
+                const nested = sq.querySelector('.nested-sub-questions-container');
+                applyBehaviors(subVal, match.sub_question.behaviors || [], nested);
+            }
+        }
+    }
+
+    function handleBehaviors() {
+        document.querySelectorAll('.question-wrapper').forEach(wrapper => {
+            try {
+                const raw = wrapper.dataset.behaviors;
+                if (!raw || raw === '[]' || raw === 'null') return;
+                const behaviors = JSON.parse(raw);
+                if (!behaviors || !behaviors.behaviors) return;
+                applyBehaviors(getQuestionValue(wrapper), behaviors.behaviors, wrapper.querySelector('.sub-questions-container'));
+            } catch(e) {}
+        });
+    }
+
+    function collectSubAnswersFromContainer(container) {
+        if (!container) return [];
+        const results = [];
+        container.querySelectorAll(':scope > .sub-question-wrapper:not(.hidden)').forEach(sq => {
+            let value = '';
+            sq.querySelectorAll(':scope > input.sub-question-input:not(:disabled), :scope > select.sub-question-input:not(:disabled), :scope > textarea.sub-question-input:not(:disabled)').forEach(inp => {
+                if (inp.type === 'radio' && inp.checked) value = inp.value;
+                else if (inp.type !== 'radio' && inp.type !== 'checkbox') value = inp.value;
+            });
+            results.push({ temp_id: sq.dataset.tempId, value, sub_answers: collectSubAnswersFromContainer(sq.querySelector('.nested-sub-questions-container')) });
+        });
+        return results;
+    }
+
+    function appendSubAnswersToFormData(fd) {
+        document.querySelectorAll('.question-wrapper').forEach(wrapper => {
+            const qId = wrapper.dataset.questionId;
+            const subs = collectSubAnswersFromContainer(wrapper.querySelector('.sub-questions-container'));
+            if (subs && subs.length) fd.append('sub_answers_json[' + qId + ']', JSON.stringify(subs));
+        });
+    }
+
+    document.querySelectorAll('.question-input, .sub-question-input').forEach(input => {
+        input.addEventListener('change', function() { handleBehaviors(); });
+        input.addEventListener('input',  function() { handleBehaviors(); });
+    });
+
+    handleBehaviors();
+
     // Section completion validationus errors
         errorsList.innerHTML = '';
         document.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
@@ -601,6 +708,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function saveAndNavigate(action) {
         const formData = new FormData(form);
         formData.append('action', action);
+        appendSubAnswersToFormData(formData);
 
         // Disable buttons and show loading state
         const activeButton = action === 'next' ? nextBtn : prevBtn;
@@ -668,6 +776,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // First save current section
         const formData = new FormData(form);
         formData.append('action', 'submit');
+        appendSubAnswersToFormData(formData);
 
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Submitting...") }}';

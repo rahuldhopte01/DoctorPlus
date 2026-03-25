@@ -14,9 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class QuestionnaireController extends Controller
 {
-    /**
-     * Display a listing of all questionnaires.
-     */
     public function index()
     {
         abort_if(Gate::denies('questionnaire_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -29,9 +26,6 @@ class QuestionnaireController extends Controller
         return view('superAdmin.questionnaire.index', compact('questionnaires'));
     }
 
-    /**
-     * Show the form for creating a new questionnaire.
-     */
     public function create(Request $request)
     {
         abort_if(Gate::denies('questionnaire_add'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -52,57 +46,53 @@ class QuestionnaireController extends Controller
         return view('superAdmin.questionnaire.create', compact('categories', 'selectedCategory', 'fieldTypes'));
     }
 
-    /**
-     * Store a newly created questionnaire.
-     */
     public function store(Request $request)
     {
         abort_if(Gate::denies('questionnaire_add'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $request->validate([
-            'category_id' => 'required|exists:category,id|unique:questionnaires,category_id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'sections' => 'required|array|min:1',
-            'sections.*.name' => 'required|string|max:255',
-            'sections.*.questions' => 'required|array|min:1',
-            'sections.*.questions.*.question_text' => 'required|string',
-            'sections.*.questions.*.field_type' => 'required|in:text,textarea,number,dropdown,radio,checkbox,file',
+            'category_id'                                    => 'required|exists:category,id|unique:questionnaires,category_id',
+            'name'                                           => 'required|string|max:255',
+            'description'                                    => 'nullable|string',
+            'sections'                                       => 'required|array|min:1',
+            'sections.*.name'                                => 'required|string|max:255',
+            'sections.*.questions'                           => 'required|array|min:1',
+            'sections.*.questions.*.question_text'           => 'required|string',
+            'sections.*.questions.*.field_type'              => 'required|in:text,textarea,number,dropdown,radio,checkbox,file',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Create questionnaire
             $questionnaire = Questionnaire::create([
                 'category_id' => $request->category_id,
-                'name' => $request->name,
+                'name'        => $request->name,
                 'description' => $request->description,
-                'status' => $request->has('status') ? 1 : 0,
-                'version' => 1,
+                'status'      => $request->has('status') ? 1 : 0,
+                'version'     => 1,
             ]);
 
-            // Create sections and questions
             foreach ($request->sections as $sectionIndex => $sectionData) {
                 $section = QuestionnaireSection::create([
                     'questionnaire_id' => $questionnaire->id,
-                    'name' => $sectionData['name'],
-                    'description' => $sectionData['description'] ?? null,
-                    'order' => $sectionIndex,
+                    'name'             => $sectionData['name'],
+                    'description'      => $sectionData['description'] ?? null,
+                    'order'            => $sectionIndex,
                 ]);
 
                 foreach ($sectionData['questions'] as $questionIndex => $questionData) {
                     QuestionnaireQuestion::create([
-                        'section_id' => $section->id,
-                        'question_text' => $questionData['question_text'],
-                        'field_type' => $questionData['field_type'],
-                        'options' => $this->parseOptions($questionData['options'] ?? null),
-                        'required' => isset($questionData['required']) ? 1 : 0,
+                        'section_id'       => $section->id,
+                        'question_text'    => $questionData['question_text'],
+                        'field_type'       => $questionData['field_type'],
+                        'options'          => $this->parseOptions($questionData['options'] ?? null),
+                        'required'         => isset($questionData['required']) ? 1 : 0,
                         'validation_rules' => $this->parseValidationRules($questionData),
-                        'conditional_logic' => $this->parseConditionalLogic($questionData['conditional_logic'] ?? null),
-                        'flagging_rules' => $this->parseFlaggingRules($questionData),
-                        'doctor_notes' => $questionData['doctor_notes'] ?? null,
-                        'order' => $questionIndex,
+                        'conditional_logic'=> null,
+                        'flagging_rules'   => null,
+                        'option_behaviors' => $this->parseOptionBehaviors($questionData['option_behaviors_json'] ?? null),
+                        'doctor_notes'     => $questionData['doctor_notes'] ?? null,
+                        'order'            => $questionIndex,
                     ]);
                 }
             }
@@ -116,9 +106,6 @@ class QuestionnaireController extends Controller
         }
     }
 
-    /**
-     * Display the specified questionnaire.
-     */
     public function show($id)
     {
         abort_if(Gate::denies('questionnaire_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -129,9 +116,6 @@ class QuestionnaireController extends Controller
         return view('superAdmin.questionnaire.show', compact('questionnaire'));
     }
 
-    /**
-     * Show the form for editing the specified questionnaire.
-     */
     public function edit($id)
     {
         abort_if(Gate::denies('questionnaire_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -145,9 +129,6 @@ class QuestionnaireController extends Controller
         return view('superAdmin.questionnaire.edit', compact('questionnaire', 'categories', 'fieldTypes'));
     }
 
-    /**
-     * Update the specified questionnaire.
-     */
     public function update(Request $request, $id)
     {
         abort_if(Gate::denies('questionnaire_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -155,50 +136,48 @@ class QuestionnaireController extends Controller
         $questionnaire = Questionnaire::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'sections' => 'required|array|min:1',
-            'sections.*.name' => 'required|string|max:255',
-            'sections.*.questions' => 'required|array|min:1',
-            'sections.*.questions.*.question_text' => 'required|string',
-            'sections.*.questions.*.field_type' => 'required|in:text,textarea,number,dropdown,radio,checkbox,file',
+            'name'                                           => 'required|string|max:255',
+            'description'                                    => 'nullable|string',
+            'sections'                                       => 'required|array|min:1',
+            'sections.*.name'                                => 'required|string|max:255',
+            'sections.*.questions'                           => 'required|array|min:1',
+            'sections.*.questions.*.question_text'           => 'required|string',
+            'sections.*.questions.*.field_type'              => 'required|in:text,textarea,number,dropdown,radio,checkbox,file',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // Update questionnaire and increment version
             $questionnaire->update([
-                'name' => $request->name,
+                'name'        => $request->name,
                 'description' => $request->description,
-                'status' => $request->has('status') ? 1 : 0,
-                'version' => $questionnaire->version + 1,
+                'status'      => $request->has('status') ? 1 : 0,
+                'version'     => $questionnaire->version + 1,
             ]);
 
-            // Delete existing sections and questions (cascade)
             $questionnaire->sections()->delete();
 
-            // Recreate sections and questions
             foreach ($request->sections as $sectionIndex => $sectionData) {
                 $section = QuestionnaireSection::create([
                     'questionnaire_id' => $questionnaire->id,
-                    'name' => $sectionData['name'],
-                    'description' => $sectionData['description'] ?? null,
-                    'order' => $sectionIndex,
+                    'name'             => $sectionData['name'],
+                    'description'      => $sectionData['description'] ?? null,
+                    'order'            => $sectionIndex,
                 ]);
 
                 foreach ($sectionData['questions'] as $questionIndex => $questionData) {
                     QuestionnaireQuestion::create([
-                        'section_id' => $section->id,
-                        'question_text' => $questionData['question_text'],
-                        'field_type' => $questionData['field_type'],
-                        'options' => $this->parseOptions($questionData['options'] ?? null),
-                        'required' => isset($questionData['required']) ? 1 : 0,
+                        'section_id'       => $section->id,
+                        'question_text'    => $questionData['question_text'],
+                        'field_type'       => $questionData['field_type'],
+                        'options'          => $this->parseOptions($questionData['options'] ?? null),
+                        'required'         => isset($questionData['required']) ? 1 : 0,
                         'validation_rules' => $this->parseValidationRules($questionData),
-                        'conditional_logic' => $this->parseConditionalLogic($questionData['conditional_logic'] ?? null),
-                        'flagging_rules' => $this->parseFlaggingRules($questionData),
-                        'doctor_notes' => $questionData['doctor_notes'] ?? null,
-                        'order' => $questionIndex,
+                        'conditional_logic'=> null,
+                        'flagging_rules'   => null,
+                        'option_behaviors' => $this->parseOptionBehaviors($questionData['option_behaviors_json'] ?? null),
+                        'doctor_notes'     => $questionData['doctor_notes'] ?? null,
+                        'order'            => $questionIndex,
                     ]);
                 }
             }
@@ -212,21 +191,14 @@ class QuestionnaireController extends Controller
         }
     }
 
-    /**
-     * Remove the specified questionnaire.
-     */
     public function destroy($id)
     {
         abort_if(Gate::denies('questionnaire_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $questionnaire = Questionnaire::findOrFail($id);
 
-        // Check if questionnaire has any appointments
         if ($questionnaire->appointments()->exists()) {
-            return response([
-                'success' => false,
-                'msg' => 'Cannot delete questionnaire that has been used in appointments!'
-            ]);
+            return response(['success' => false, 'msg' => 'Cannot delete questionnaire that has been used in appointments!']);
         }
 
         $questionnaire->delete();
@@ -234,9 +206,6 @@ class QuestionnaireController extends Controller
         return response(['success' => true]);
     }
 
-    /**
-     * Toggle questionnaire status.
-     */
     public function changeStatus(Request $request)
     {
         $questionnaire = Questionnaire::findOrFail($request->id);
@@ -245,9 +214,6 @@ class QuestionnaireController extends Controller
         return response(['success' => true]);
     }
 
-    /**
-     * Get questionnaire for a category (API).
-     */
     public function getForCategory($categoryId)
     {
         $questionnaire = Questionnaire::where('category_id', $categoryId)
@@ -266,9 +232,10 @@ class QuestionnaireController extends Controller
         return response()->json(['success' => true, 'data' => $questionnaire]);
     }
 
-    /**
-     * Parse options string to array.
-     */
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
     private function parseOptions($options)
     {
         if (empty($options)) {
@@ -276,78 +243,109 @@ class QuestionnaireController extends Controller
         }
 
         if (is_array($options)) {
-            return array_filter($options);
+            return array_values(array_filter($options));
         }
 
-        // If string, split by newline or comma
         $parsed = preg_split('/[\n,]+/', $options);
-        return array_filter(array_map('trim', $parsed));
+        return array_values(array_filter(array_map('trim', $parsed)));
     }
 
-    /**
-     * Parse validation rules from request data.
-     */
     private function parseValidationRules($questionData)
     {
         $rules = [];
 
-        if (!empty($questionData['min_length'])) {
-            $rules['min'] = (int) $questionData['min_length'];
-        }
-        if (!empty($questionData['max_length'])) {
-            $rules['max'] = (int) $questionData['max_length'];
-        }
-        if (!empty($questionData['regex_pattern'])) {
-            $rules['regex'] = $questionData['regex_pattern'];
-        }
-        if (!empty($questionData['file_types'])) {
-            $rules['file_types'] = $this->parseOptions($questionData['file_types']);
-        }
-        if (!empty($questionData['file_max_size'])) {
-            $rules['file_max_size'] = (int) $questionData['file_max_size'];
-        }
+        if (!empty($questionData['min_length']))   $rules['min']           = (int) $questionData['min_length'];
+        if (!empty($questionData['max_length']))   $rules['max']           = (int) $questionData['max_length'];
+        if (!empty($questionData['regex_pattern'])) $rules['regex']        = $questionData['regex_pattern'];
+        if (!empty($questionData['file_types']))   $rules['file_types']    = $this->parseOptions($questionData['file_types']);
+        if (!empty($questionData['file_max_size'])) $rules['file_max_size'] = (int) $questionData['file_max_size'];
 
         return empty($rules) ? null : $rules;
     }
 
     /**
-     * Parse conditional logic from request data.
+     * Parse and sanitize the option_behaviors JSON submitted by the builder.
+     * The builder serialises the entire behaviors tree as a JSON string into
+     * a hidden input. We decode, validate and clean it here.
      */
-    private function parseConditionalLogic($conditionalLogic)
+    private function parseOptionBehaviors(?string $json): ?array
     {
-        if (empty($conditionalLogic)) {
+        if (empty($json)) {
             return null;
         }
 
-        if (is_string($conditionalLogic)) {
-            $decoded = json_decode($conditionalLogic, true);
-            return $decoded ?: null;
+        $decoded = json_decode($json, true);
+        if (!is_array($decoded) || empty($decoded['behaviors'])) {
+            return null;
         }
 
-        return $conditionalLogic;
+        $cleanedBehaviors = $this->sanitizeBehaviors($decoded['behaviors'], 1);
+
+        return empty($cleanedBehaviors) ? null : ['behaviors' => $cleanedBehaviors];
     }
 
     /**
-     * Parse flagging rules from request data.
+     * Recursively sanitize a behaviors array (max 3 levels deep).
      */
-    private function parseFlaggingRules($questionData)
+    private function sanitizeBehaviors(array $behaviors, int $depth): array
     {
-        if (empty($questionData['flag_type']) || empty($questionData['flag_value'])) {
-            return null;
+        if ($depth > 3) {
+            return [];
         }
 
-        return [
-            'flag_type' => $questionData['flag_type'],
-            'conditions' => [
-                [
-                    'operator' => $questionData['flag_operator'] ?? 'equals',
-                    'value' => $questionData['flag_value'],
-                    'flag_message' => $questionData['flag_message'] ?? 'Answer flagged for review',
-                ]
-            ]
-        ];
+        $validOperators = ['equals', 'not_equals', 'contains', 'greater_than', 'less_than', 'in'];
+        $validTypes     = array_keys(QuestionnaireQuestion::FIELD_TYPES);
+        $result         = [];
+
+        foreach ($behaviors as $behavior) {
+            if (!is_array($behavior)) {
+                continue;
+            }
+
+            $condition = $behavior['condition'] ?? [];
+            $operator  = in_array($condition['operator'] ?? '', $validOperators) ? $condition['operator'] : 'equals';
+            $value     = $condition['value'] ?? '';
+
+            // Sanitize flags
+            $flags = [];
+            foreach ($behavior['flags'] ?? [] as $flag) {
+                if (!is_array($flag)) continue;
+                $flagType = in_array($flag['flag_type'] ?? '', ['soft', 'hard']) ? $flag['flag_type'] : 'soft';
+                $flags[]  = [
+                    'flag_type'    => $flagType,
+                    'flag_message' => trim($flag['flag_message'] ?? 'Answer flagged for review'),
+                ];
+            }
+
+            // Sanitize sub_question
+            $subQuestion = null;
+            if (!empty($behavior['sub_question']) && is_array($behavior['sub_question']) && $depth < 3) {
+                $sq = $behavior['sub_question'];
+                $sqType = in_array($sq['field_type'] ?? '', $validTypes) ? $sq['field_type'] : 'text';
+
+                $sqOptions = null;
+                if (in_array($sqType, ['dropdown', 'radio', 'checkbox']) && !empty($sq['options'])) {
+                    $sqOptions = array_values(array_filter(array_map('trim', (array) $sq['options'])));
+                }
+
+                $subQuestion = [
+                    'temp_id'    => preg_replace('/[^a-zA-Z0-9_-]/', '', $sq['temp_id'] ?? ('sq_' . uniqid())),
+                    'label'      => trim($sq['label'] ?? ''),
+                    'field_type' => $sqType,
+                    'options'    => $sqOptions,
+                    'required'   => (bool) ($sq['required'] ?? false),
+                    'placeholder'=> trim($sq['placeholder'] ?? ''),
+                    'behaviors'  => $this->sanitizeBehaviors($sq['behaviors'] ?? [], $depth + 1),
+                ];
+            }
+
+            $result[] = [
+                'condition'    => ['operator' => $operator, 'value' => $value],
+                'flags'        => $flags,
+                'sub_question' => $subQuestion,
+            ];
+        }
+
+        return $result;
     }
 }
-
-
-

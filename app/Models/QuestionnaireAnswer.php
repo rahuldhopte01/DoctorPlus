@@ -22,6 +22,7 @@ class QuestionnaireAnswer extends Model
         'file_path',
         'is_flagged',
         'flag_reason',
+        'sub_answers',
         'status',
         'submitted_at',
         'reviewing_doctor_id',
@@ -31,6 +32,7 @@ class QuestionnaireAnswer extends Model
     protected $casts = [
         'is_flagged' => 'boolean',
         'submitted_at' => 'datetime',
+        'sub_answers' => 'array',
     ];
 
     protected $appends = ['display_value', 'full_file_url'];
