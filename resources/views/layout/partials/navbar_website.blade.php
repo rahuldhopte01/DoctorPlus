@@ -31,18 +31,23 @@
             @endif
         </a>
 
-        <!-- Search Bar -->
-        @if($setting->website_header_search)
-        <div class="header-search">
-            <form action="{{ route('categories') }}" method="GET">
-                <i class="bi bi-search"></i>
-                <input type="text" name="search" placeholder="{{ __('Suche...') }}">
-            </form>
-        </div>
-        @endif
-
         <!-- Actions -->
         <div class="header-actions">
+            <!-- Search Bar (Expandable) -->
+            @if($setting->website_header_search)
+            <div class="header-search" id="headerSearch">
+                <button class="search-toggle" id="searchToggle" aria-label="Toggle Search">
+                    <i class="bi bi-search"></i>
+                </button>
+                <form action="{{ route('categories') }}" method="GET" class="search-form">
+                    <input type="text" name="search" placeholder="Suche..." value="{{ request('search') }}">
+                    <button type="submit" class="search-submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+            @endif
+
             @if($setting->website_header_btn_text)
             <a href="{{ $setting->website_header_btn_url ?: route('categories') }}" 
                class="header-btn d-none d-md-block" 
@@ -58,7 +63,7 @@
             @endif
 
             @if($setting->website_header_hamburger)
-            <div class="header-icon" id="sidebar-toggle">
+            <div class="header-icon" id="hamburgerMenu">
                 <i class="bi bi-list"></i>
             </div>
             @endif
@@ -67,8 +72,8 @@
 </header>
 
 <!-- Sidebar Overlay Menu -->
-<div class="sidebar-overlay" id="sidebar-menu">
-    <div class="sidebar-close" id="sidebar-close">
+<div class="sidebar-overlay" id="sidebarOverlay">
+    <div class="sidebar-close" id="sidebarClose">
         <i class="bi bi-x"></i>
     </div>
     <ul class="sidebar-menu">
@@ -86,23 +91,43 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('sidebar-toggle');
-        const close = document.getElementById('sidebar-close');
-        const menu = document.getElementById('sidebar-menu');
+document.addEventListener('DOMContentLoaded', function() {
+    const hamburger = document.getElementById('hamburgerMenu');
+    const sidebar = document.getElementById('sidebarOverlay');
+    const sidebarClose = document.getElementById('sidebarClose');
+    const searchToggle = document.getElementById('searchToggle');
+    const headerSearch = document.getElementById('headerSearch');
 
-        if (toggle && menu) {
-            toggle.addEventListener('click', () => {
-                menu.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            });
-        }
+    if (hamburger && sidebar) {
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
 
-        if (close && menu) {
-            close.addEventListener('click', () => {
-                menu.classList.remove('active');
-                document.body.style.overflow = '';
-            });
-        }
-    });
+    if (sidebarClose && sidebar) {
+        sidebarClose.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+
+    // Toggle search bar expansion
+    if (searchToggle && headerSearch) {
+        searchToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            headerSearch.classList.toggle('active');
+            if (headerSearch.classList.contains('active')) {
+                headerSearch.querySelector('input').focus();
+            }
+        });
+
+        // Close search if clicking outside
+        document.addEventListener('click', function(e) {
+            if (!headerSearch.contains(e.target) && !searchToggle.contains(e.target)) {
+                headerSearch.classList.remove('active');
+            }
+        });
+    }
+});
 </script>

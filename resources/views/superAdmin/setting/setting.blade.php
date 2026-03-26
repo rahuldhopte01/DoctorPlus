@@ -782,88 +782,202 @@
                                         <button type="button" id="add-menu" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Menu Item')}}</button>
                                     </div>
 
-                                    <!-- Home Page Settings -->
-                                    <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                     <!-- Home Page Settings -->
+                                     <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        @php
+                                            $home = json_decode($setting->website_home_settings, true) ?: [];
+                                            $hero = $home['hero'] ?? [];
+                                            $how = $home['how_it_works'] ?? [];
+                                            $about = $home['about'] ?? [];
+                                        @endphp
+
+                                        <h5 class="mb-4">{{__('Hero Section')}}</h5>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label for="app_id" class="col-form-label"> {{__('Website Banner Image')}}</label>
+                                                <label class="col-form-label"> {{__('Hero Image')}}</label>
                                                 <div class="avatar-upload avatar-box">
                                                     <div class="avatar-edit">
-                                                        <input type='file' id="image4" name="banner_image" accept=".png, .jpg, .jpeg" />
-                                                        <label for="image4"></label>
+                                                        <input type='file' id="hero_image" name="hero_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="hero_image"></label>
                                                     </div>
                                                     <div class="avatar-preview">
-                                                        <div id="imagePreview4" style="background-image: url({{ 'images/upload/'.$setting->banner_image }});"></div>
+                                                        <div id="heroImagePreview" style="background-image: url({{ !empty($hero['image']) ? url('images/upload/'.$hero['image']) : url('/images/upload_empty/hero.png') }});"></div>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-md-9">
                                                 <div class="form-group">
-                                                    <label class="col-form-label">{{__('Banner URL')}}</label>
-                                                    <input type="text" name="banner_url" required class="form-control" value="{{ $setting->banner_url }}">
+                                                    <label>{{__('Hero Title')}}</label>
+                                                    <textarea name="hero_title" class="form-control" rows="2">{{ $hero['title'] ?? '' }}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Highlighted Text (Blue)')}}</label>
+                                                    <input type="text" name="hero_highlight" value="{{ $hero['highlight'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Hero Subtitle')}}</label>
+                                                    <textarea name="hero_subtitle" class="form-control" rows="2">{{ $hero['subtitle'] ?? '' }}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Search Placeholder')}}</label>
+                                                    <input type="text" name="hero_search_placeholder" value="{{ $hero['search_placeholder'] ?? '' }}" class="form-control">
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="row mt-4">
-                                            <div class="form-group col-md-6">
-                                                <label class="col-form-label">{{__('Landing Page Pop-up')}}</label>
-                                                <input type="file" name="landing_popup_image" class="form-control">
+                                        <label class="mt-3">{{__('Hero Checkmarks')}}</label>
+                                        <div id="hero-checkmarks-container">
+                                            @foreach($hero['checkmarks'] ?? [] as $checkmark)
+                                            <div class="row mb-2 checkmark-item">
+                                                <div class="col-md-10">
+                                                    <input type="text" name="hero_checkmarks[]" value="{{ $checkmark }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-checkmark"><i class="fas fa-trash"></i></button>
+                                                </div>
                                             </div>
-                                            <div class="form-group col-md-6">
-                                                <label class="col-form-label">{{__('Show Popup after X Seconds')}}</label>
-                                                <input type="number" name="popup_timer_seconds" class="form-control" value="{{ $setting->popup_timer_seconds }}">
-                                            </div>
+                                            @endforeach
                                         </div>
+                                        <button type="button" id="add-checkmark" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Checkmark')}}</button>
 
+                                        <hr>
+                                        <h5 class="my-4">{{__('How it Works Section')}}</h5>
                                         <div class="form-group">
-                                            <label class="col-form-label">{{__('PopUp Redirection URL')}}</label>
-                                            <input type="url" name="popup_target_url" class="form-control" value="{{ $setting->popup_target_url }}">
+                                            <label>{{__('Section Title')}}</label>
+                                            <input type="text" name="how_it_works_title" value="{{ $how['title'] ?? '' }}" class="form-control">
                                         </div>
+                                        <div id="steps-container">
+                                            @foreach($how['steps'] ?? [] as $index => $step)
+                                            <div class="card mb-3 step-item">
+                                                <div class="card-body">
+                                                    <div class="row align-items-end">
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Step Icon')}}</label>
+                                                            <input type="file" name="step_icon[]" class="form-control mb-1">
+                                                            <input type="hidden" name="step_icon_current[]" value="{{ $step['icon'] ?? '' }}">
+                                                            @if(!empty($step['icon']))
+                                                                <img src="{{ url('images/upload/'.$step['icon']) }}" style="height: 30px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="step_title[]" value="{{ $step['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label>{{__('Description')}}</label>
+                                                            <input type="text" name="step_text[]" value="{{ $step['text'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-step"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-step" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Step')}}</button>
 
+                                        <hr>
+                                        <h5 class="my-4">{{__('About Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="col-form-label"> {{__('About Image')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="about_image" name="about_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="about_image"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="aboutImagePreview" style="background-image: url({{ !empty($about['image']) ? url('images/upload/'.$about['image']) : url('/images/upload_empty/about.png') }});"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="form-group">
+                                                    <label>{{__('Badge Text')}}</label>
+                                                    <input type="text" name="about_badge" value="{{ $about['badge'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('About Title')}}</label>
+                                                    <textarea name="about_title" class="form-control" rows="2">{{ $about['title'] ?? '' }}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Description')}}</label>
+                                                    <textarea name="about_description" class="form-control" rows="4">{{ $about['description'] ?? '' }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label class="mt-3">{{__('Feature List')}}</label>
+                                        <div id="about-features-container">
+                                            @foreach($about['features'] ?? [] as $feature)
+                                            <div class="row mb-2 feature-item">
+                                                <div class="col-md-10">
+                                                    <input type="text" name="about_features[]" value="{{ $feature }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-feature"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-feature" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Feature')}}</button>
+                                     </div>
+
+                                     <!-- Footer Settings -->
+                                     <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
+                                        @php
+                                            $footer = json_decode($setting->website_footer_settings, true) ?: [];
+                                        @endphp
                                         <div class="form-group">
-                                            <label class="col-form-label">{{__('Popup Switch')}}</label>
-                                            <label class="cursor-pointer">
-                                                <input type="checkbox" name="landing_popup_switch" class="custom-switch-input" value="1" {{ $setting->landing_popup_switch == 1 ? 'checked' : '' }}>
-                                                <span class="custom-switch-indicator"></span>
-                                            </label>
+                                            <label>{{__('Copyright Text')}}</label>
+                                            <input type="text" name="footer_copy" value="{{ $footer['copy'] ?? '' }}" class="form-control">
                                         </div>
 
-                                        <div class="row mt-4">
-                                            <div class="col-md-6 form-group">
-                                                <label class="col-form-label">{{__('Play Store URL')}}</label>
-                                                <input type="url" name="playstore" class="form-control" value="{{ $setting->playstore }}">
-                                            </div>
-                                            <div class="col-md-6 form-group">
-                                                <label class="col-form-label">{{__('App Store URL')}}</label>
-                                                <input type="url" name="appstore" class="form-control" value="{{ $setting->appstore }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Footer Settings -->
-                                    <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
+                                        <h5 class="my-4">{{__('Social Links')}}</h5>
                                         <div class="row">
                                             <div class="col-md-6 form-group">
-                                                <label class="col-form-label">{{__('Facebook url')}}</label>
+                                                <label class="col-form-label">{{__('Facebook URL')}}</label>
                                                 <input type="url" name="facebook_url" class="form-control" value="{{ $setting->facebook_url }}">
                                             </div>
                                             <div class="col-md-6 form-group">
-                                                <label class="col-form-label">{{__('Twitter url')}}</label>
+                                                <label class="col-form-label">{{__('Twitter URL')}}</label>
                                                 <input type="url" name="twitter_url" class="form-control" value="{{ $setting->twitter_url }}">
                                             </div>
-                                        </div>
-                                        <div class="row mt-3">
                                             <div class="col-md-6 form-group">
-                                                <label class="col-form-label">{{__('Instagram url')}}</label>
+                                                <label class="col-form-label">{{__('Instagram URL')}}</label>
                                                 <input type="url" name="instagram_url" class="form-control" value="{{ $setting->instagram_url }}">
                                             </div>
                                             <div class="col-md-6 form-group">
-                                                <label class="col-form-label">{{__('Linkdin url')}}</label>
+                                                <label class="col-form-label">{{__('Linkedin URL')}}</label>
                                                 <input type="url" name="linkdin_url" class="form-control" value="{{ $setting->linkdin_url }}">
                                             </div>
                                         </div>
-                                    </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Footer Columns (Links)')}}</h5>
+                                        <div id="footer-cols-container">
+                                            @foreach($footer['columns'] ?? [] as $col)
+                                            <div class="card mb-3 footer-col-item">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label>{{__('Column Title')}}</label>
+                                                            <input type="text" name="footer_col_title[]" value="{{ $col['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>{{__('Links (Format: Label|URL per line)')}}</label>
+                                                            <textarea name="footer_col_links[]" class="form-control" rows="3">@foreach($col['links'] ?? [] as $link){{ $link['label'] }}|{{ $link['url'] }}&#10;@endforeach</textarea>
+                                                        </div>
+                                                        <div class="col-md-2 align-self-end">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-footer-col"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-footer-col" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Footer Column')}}</button>
+                                     </div>
                                 </div>
 
                                 <div class="text-center mt-5">
@@ -1225,6 +1339,55 @@
                         </div>`;
             $('#menu-container').append(html);
         });
+
+        // Add Checkmark
+        $(document).on('click', '#add-checkmark', function() {
+            var html = '<div class="row mb-2 checkmark-item"><div class="col-md-10"><input type="text" name="hero_checkmarks[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-checkmark"><i class="fas fa-trash"></i></button></div></div>';
+            $('#hero-checkmarks-container').append(html);
+        });
+        $(document).on('click', '.remove-checkmark', function() {
+            $(this).closest('.checkmark-item').remove();
+        });
+
+        // Add Step
+        $(document).on('click', '#add-step', function() {
+            var html = '<div class="card mb-3 step-item"><div class="card-body"><div class="row align-items-end"><div class="col-md-3"><label>{{__("Step Icon")}}</label><input type="file" name="step_icon[]" class="form-control"><input type="hidden" name="step_icon_current[]" value=""></div><div class="col-md-3"><label>{{__("Title")}}</label><input type="text" name="step_title[]" class="form-control"></div><div class="col-md-4"><label>{{__("Description")}}</label><input type="text" name="step_text[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-step"><i class="fas fa-trash"></i></button></div></div></div></div>';
+            $('#steps-container').append(html);
+        });
+        $(document).on('click', '.remove-step', function() {
+            $(this).closest('.step-item').remove();
+        });
+
+        // Add Feature
+        $(document).on('click', '#add-feature', function() {
+            var html = '<div class="row mb-2 feature-item"><div class="col-md-10"><input type="text" name="about_features[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-feature"><i class="fas fa-trash"></i></button></div></div>';
+            $('#about-features-container').append(html);
+        });
+        $(document).on('click', '.remove-feature', function() {
+            $(this).closest('.feature-item').remove();
+        });
+
+        // Add Footer Column
+        $(document).on('click', '#add-footer-col', function() {
+            var html = '<div class="card mb-3 footer-col-item"><div class="card-body"><div class="row"><div class="col-md-4"><label>{{__("Column Title")}}</label><input type="text" name="footer_col_title[]" class="form-control"></div><div class="col-md-6"><label>{{__("Links (Format: Label|URL per line)")}}</label><textarea name="footer_col_links[]" class="form-control" rows="3"></textarea></div><div class="col-md-2 align-self-end"><button type="button" class="btn btn-danger btn-sm remove-footer-col"><i class="fas fa-trash"></i></button></div></div></div></div>';
+            $('#footer-cols-container').append(html);
+        });
+        $(document).on('click', '.remove-footer-col', function() {
+            $(this).closest('.footer-col-item').remove();
+        });
+
+        // Image Previews
+        function readURL(input, previewId) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#' + previewId).css('background-image', 'url(' + e.target.result + ')');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#hero_image").change(function() { readURL(this, 'heroImagePreview'); });
+        $("#about_image").change(function() { readURL(this, 'aboutImagePreview'); });
         $(document).on('click', '.remove-menu', function() {
             $(this).closest('.menu-item').remove();
         });

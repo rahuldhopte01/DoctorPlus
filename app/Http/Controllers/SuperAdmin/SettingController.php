@@ -239,6 +239,97 @@ class SettingController extends Controller
             $data['website_header_sidebar_menu'] = json_encode($menu);
         }
 
+        // Handle Home Page Settings (Hero, How it Works, About)
+        $home_settings = json_decode($setting->website_home_settings ?? '{}', true);
+        
+        // Hero Section
+        if ($request->has('hero_title')) {
+            $home_settings['hero'] = [
+                'title' => $request->hero_title,
+                'highlight' => $request->hero_highlight,
+                'subtitle' => $request->hero_subtitle,
+                'search_placeholder' => $request->hero_search_placeholder,
+                'checkmarks' => $request->hero_checkmarks ?: [],
+                'image' => $home_settings['hero']['image'] ?? null
+            ];
+            
+            if ($request->hasFile('hero_image')) {
+                if (!empty($home_settings['hero']['image'])) (new CustomController)->deleteFile($home_settings['hero']['image']);
+                $home_settings['hero']['image'] = (new CustomController)->imageUpload($request->hero_image);
+            }
+        }
+
+        // How it Works
+        if ($request->has('how_it_works_title')) {
+            $steps = [];
+            foreach ($request->step_title ?? [] as $index => $title) {
+                $icon = $request->step_icon_current[$index] ?? null;
+                if ($request->hasFile("step_icon.$index")) {
+                    if ($icon) (new CustomController)->deleteFile($icon);
+                    $icon = (new CustomController)->imageUpload($request->file("step_icon.$index"));
+                }
+                $steps[] = [
+                    'title' => $title,
+                    'text' => $request->step_text[$index] ?? '',
+                    'icon' => $icon
+                ];
+            }
+            $home_settings['how_it_works'] = [
+                'title' => $request->how_it_works_title,
+                'steps' => $steps
+            ];
+        }
+
+        // About Section
+        if ($request->has('about_title')) {
+            $home_settings['about'] = [
+                'badge' => $request->about_badge,
+                'title' => $request->about_title,
+                'description' => $request->about_description,
+                'features' => $request->about_features ?: [],
+                'image' => $home_settings['about']['image'] ?? null
+            ];
+            
+            if ($request->hasFile('about_image')) {
+                if (!empty($home_settings['about']['image'])) (new CustomController)->deleteFile($home_settings['about']['image']);
+                $home_settings['about']['image'] = (new CustomController)->imageUpload($request->about_image);
+            }
+        }
+        
+        $data['website_home_settings'] = json_encode($home_settings);
+
+        // Handle Footer Settings
+        if ($request->has('footer_copy')) {
+            $columns = [];
+            foreach ($request->footer_col_title ?? [] as $index => $title) {
+                $links = [];
+                // Expecting links as a newline separated string or another repeater. 
+                // Let's use a simple newline for now or a sub-JSON if needed.
+                $col_links_raw = $request->footer_col_links[$index] ?? '';
+                $lines = explode("\n", str_replace("\r", "", $col_links_raw));
+                foreach($lines as $line) {
+                    if (strpos($line, '|') !== false) {
+                        list($l, $u) = explode('|', $line);
+                        $links[] = ['label' => trim($l), 'url' => trim($u)];
+                    }
+                }
+                $columns[] = [
+                    'title' => $title,
+                    'links' => $links
+                ];
+            }
+            $footer_settings = [
+                'copy' => $request->footer_copy,
+                'columns' => $columns,
+                'facebook' => $request->facebook_url,
+                'twitter' => $request->twitter_url,
+                'instagram' => $request->instagram_url,
+                'linkedin' => $request->linkdin_url
+            ];
+            $data['website_footer_settings'] = json_encode($footer_settings);
+        }
+
+        // abort(403, json_encode($data)); // DEBUG
         $setting->landing_popup_switch = $request->has('landing_popup_switch') ? 1 : 0;
         $setting->website_header_search = $request->has('website_header_search') ? 1 : 0;
         $setting->website_header_user = $request->has('website_header_user') ? 1 : 0;
