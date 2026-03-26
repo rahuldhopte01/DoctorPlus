@@ -36,96 +36,293 @@
 @include('layout.partials.navbar_website')
 
 <!-- Hero Section -->
-<section class="hero-bloomwell text-start text-white">
-    <div class="container position-relative z-index-2 w-100 h-100 d-flex align-items-center">
-        <div class="row align-items-center justify-content-between w-100">
+@php
+    $homeSettings = json_decode($setting->website_home_settings, true) ?: [];
+    $hero = $homeSettings['hero'] ?? [];
+@endphp
+
+<style>
+    /* Hero Background & Blend */
+    .hero-fuxx {
+        background: linear-gradient(135deg, #f3ecff 0%, #ffffff 100%) !important;
+    }
+    .hero-bg-wrapper {
+        opacity: 0.6;
+        mix-blend-mode: multiply;
+    }
+    
+    /* Premium Button Interactive Styles */
+    .btn-hero-premium {
+        background-color: #8a48ff !important;
+        border-color: #8a48ff !important;
+        color: #ffffff !important;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+        box-shadow: 0 6px 20px rgba(138, 72, 255, 0.3) !important;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-hero-premium:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 15px 30px rgba(138, 72, 255, 0.4) !important;
+        background-color: #7a35fa !important;
+        border-color: #7a35fa !important;
+    }
+
+    /* Quick Link Cards Interactive Styles */
+    .quick-link-card .card {
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+    }
+    
+    .quick-link-card:hover .card {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Trust Icons */
+    .trust-icon-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 6px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        background: #fff;
+    }
+</style>
+
+<section class="hero-fuxx position-relative overflow-hidden" style="min-height: 80vh; padding-top: 50px; padding-bottom: 80px;">
+    
+    <!-- Background Image -->
+    @if(!empty($hero['image']))
+        <div class="hero-bg-wrapper position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; width: 100%; max-width: 800px;">
+            <img src="{{ url('images/upload/'.$hero['image']) }}" alt="Background" class="img-fluid w-100" style="mask-image: linear-gradient(to top, transparent 0%, black 50%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 50%);">
+        </div>
+    @endif
+
+    <div class="container position-relative" style="z-index: 2;">
+        
+        <!-- Top Quick Link Cards -->
+        @if(!empty($hero['quick_links']) && count($hero['quick_links']) > 0)
+        <style>
+            .hero-quick-links-container {
+                max-width: 1100px;
+                margin: 0 auto;
+            }
+            .quick-link-card {
+                flex: 1 1 300px;
+                max-width: 350px;
+                perspective: 1000px;
+            }
+            .quick-link-card .card {
+                border-radius: 20px !important;
+                background-color: #ffffff;
+                border: none !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
+                min-height: 140px;
+                padding: 24px;
+                overflow: hidden;
+                position: relative;
+                transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .quick-link-card:hover .card {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
+            }
             
-            <!-- Left Column: Text & Search -->
-            <div class="col-lg-6 col-xl-5 mb-5 mb-lg-0">
-                <!-- Trustpilot / Rating Badge -->
-                <div class="mb-4 d-inline-flex align-items-center gap-2 px-3 py-2 bg-dark rounded-pill" style="border: 1px solid rgba(255,255,255,0.1);">
-                    <div class="d-flex text-success">
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                    </div>
-                    <span class="fw-bold small ms-1">{{ __('landing.hero.excellent') }} {{ number_format($reviews->count() * 12500) }}+</span>
-                </div>
+            /* Dark Tint Overlay */
+            .quick-link-card .card-overlay {
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background-color: rgba(60, 60, 60, 0.85); /* Dark grey filter */
+                opacity: 0;
+                transition: opacity 0.4s ease;
+                z-index: 3;
+            }
+            .quick-link-card:hover .card-overlay {
+                opacity: 1;
+            }
+            
+            /* Typography Wrapper - needs high z-index to stay above overlay */
+            .quick-link-card .qlink-title-wrapper {
+                position: relative;
+                z-index: 10;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
 
-                <!-- Main Heading -->
-                <h1 class="display-5 fw-bold mb-4" style="line-height: 1.25;">
-                    {{ __('landing.hero.title_prefix') }} <span class="text-primary text-nowrap">{{ __('landing.hero.title_highlight') }}</span> {{ __('landing.hero.title_suffix') }}
-                </h1>
-                
-                <p class="lead mb-4" style="color: rgba(255,255,255,0.8);">
-                    {{ __('landing.hero.subtitle') }}
-                </p>
+            /* Title */
+            .quick-link-card .qlink-title {
+                font-size: 1.15rem;
+                font-weight: 800;
+                color: #111;
+                margin-bottom: 4px;
+                letter-spacing: -0.3px;
+                transition: color 0.4s ease;
+            }
+            .quick-link-card:hover .qlink-title {
+                color: #ffffff !important;
+            }
 
-                <!-- Search Bar -->
-                <form action="{{ route('categories') }}" method="GET" class="mb-5 bloomwell-search w-100">
-                    <div class="input-group input-group-lg shadow-lg rounded-3 overflow-hidden">
-                        <span class="input-group-text border-0">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control border-0" placeholder="{{ __('landing.hero.search_placeholder') }}" value="{{ request('search') }}">
-                        <button type="submit" class="bloomwell-btn ms-0 rounded-0 rounded-end">{{ __('landing.common.search') }}</button>
-                    </div>
-                </form>
-                
-                <!-- Trust Indicators -->
-                <div class="d-flex flex-wrap gap-3">
-                    <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
-                        <span class="small fw-medium">{{ __('landing.hero.eu_registered_doctors') }}</span>
-                    </div>
-                    <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
-                        <span class="small fw-medium">{{ __('landing.hero.free_shipping') }}</span>
-                    </div>
-                </div>
-            </div>
+            /* Subtitle Reveal */
+            .quick-link-card .qlink-subtitle {
+                font-size: 0.85rem;
+                color: #ffffff;
+                font-weight: 500;
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(10px);
+                transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+                margin: 0;
+            }
+            .quick-link-card:hover .qlink-subtitle {
+                opacity: 0.9;
+                max-height: 100px;
+                transform: translateY(0);
+                margin-top: 6px;
+            }
 
-            <!-- Right Column: Image & Floating Cards -->
-            <div class="col-lg-6 col-xl-6 position-relative d-flex justify-content-center justify-content-lg-end align-items-center" style="z-index: 2;">
-                <div class="hero-image-container ms-auto me-auto me-lg-0 mt-4 mt-lg-0 w-100">
-                    <!-- Central Subject (Using a transparent cutout style image) -->
-                    <img src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=600&auto=format&fit=crop&bg=transparent" alt="{{ __('landing.hero.image_alt') }}" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 20%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);">
+            /* Image setup */
+            .quick-link-card .qlink-img {
+                position: absolute;
+                bottom: 15px;
+                left: 50%;
+                transform: translateX(-50%) scale(1);
+                height: 55px; /* Fixed height for clean proportion scaling */
+                width: auto;
+                object-fit: contain;
+                transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+                z-index: 2; /* Below the overlay */
+            }
+            
+            /* Hover Image Expansion */
+            .quick-link-card:hover .qlink-img {
+                transform: translateX(-50%) scale(8); /* Massive scale to fill background */
+                opacity: 0.3; /* Fade into the background under the overlay */
+            }
+
+            /* Badge */
+            .qlink-badge {
+                background-color: #f79d00;
+                color: #fff;
+                border-radius: 4px;
+                font-size: 0.65rem;
+                padding: 3px 6px;
+                font-weight: 700;
+                vertical-align: middle;
+            }
+        </style>
+        <div class="hero-quick-links-container d-flex flex-wrap justify-content-center gap-4 mb-5 px-3">
+            @foreach($hero['quick_links'] as $qlink)
+            <a href="{{ $qlink['url'] ?? '#' }}" class="quick-link-card text-decoration-none">
+                <div class="card position-relative">
+                    <div class="card-overlay"></div>
+                    <div class="qlink-title-wrapper">
+                        <div class="d-flex align-items-center gap-2">
+                            <h5 class="qlink-title mb-0">{{ $qlink['title'] ?? '' }}</h5>
+                            @if(!empty($qlink['badge']))
+                                <span class="qlink-badge">{{ $qlink['badge'] }}</span>
+                            @endif
+                        </div>
+                        @if(!empty($qlink['subtitle']))
+                            <p class="qlink-subtitle">{{ $qlink['subtitle'] }}</p>
+                        @endif
+                    </div>
                     
-                    <!-- Floating Feature Cards -->
-                    <div class="bloomwell-floating-card card-1 d-none d-md-flex text-dark">
-                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-check-lg"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold fs-6">{{ __('landing.hero.card_order_title') }}</div>
-                            <div class="small text-muted">{{ __('landing.hero.card_order_subtitle') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="bloomwell-floating-card card-2 d-none d-md-flex text-dark">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-box-seam"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold fs-6">{{ __('landing.hero.card_shipping_title') }}</div>
-                            <div class="small text-muted">{{ __('landing.hero.card_shipping_subtitle') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="bloomwell-floating-card card-3 d-none d-md-flex text-dark">
-                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold fs-6">{{ __('landing.hero.card_eu_title') }}</div>
-                            <div class="small text-muted">{{ __('landing.hero.card_eu_subtitle') }}</div>
-                        </div>
-                    </div>
+                    @if(!empty($qlink['image']))
+                        <img src="{{ url('images/upload/'.$qlink['image']) }}" class="qlink-img" alt="">
+                    @elseif(!empty($qlink['icon_class']))
+                        <i class="{{ $qlink['icon_class'] }} qlink-img" style="font-size: 2.5rem; color: #7b42f6; bottom: 5px;"></i>
+                    @endif
                 </div>
+            </a>
+            @endforeach
+        </div>
+        @endif
+
+        <!-- Main Content -->
+        <div class="hero-main-content text-center mx-auto" style="max-width: 800px; margin-top: 60px;">
+            @if(!empty($hero['badge']))
+                <div class="text-uppercase fw-bold mb-3" style="color: #8a48ff; letter-spacing: 1.5px; font-size: 0.85rem;">
+                    {{ $hero['badge'] }}
+                </div>
+            @endif
+
+            <h1 class="display-4 fw-bold mb-4" style="color: #1a1a1a; letter-spacing: -1px;">
+                {{ $hero['title'] ?? 'Ganz einfach mit dr.fuxx' }}
+            </h1>
+
+            <p class="lead mb-5 mx-auto" style="color: #4a4a4a; max-width: 650px; font-size: 1.15rem; line-height: 1.7;">
+                {{ $hero['description'] ?? 'Original deutsche Medikamente, Online-Rezepte und medizinische Produkte – Lieferung in 24-48 Stunden oder per Express in 2 Stunden / Selbstabholung möglich.' }}
+            </p>
+
+            @if(!empty($hero['btn_text']))
+                <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
+                    {{ $hero['btn_text'] }}
+                </a>
+            @endif
+
+            <!-- Trust Items -->
+            @if(!empty($hero['trust_items']) && count($hero['trust_items']) > 0)
+            <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
+                @foreach($hero['trust_items'] as $trust)
+                    <div class="d-flex align-items-center text-dark" style="font-size: 0.95rem;">
+                        @if(strpos($trust['icon_class'], 'bi-') !== false || strpos($trust['icon_class'], 'fa-') !== false)
+                            <i class="{{ $trust['icon_class'] }} fs-5 me-2" style="color: #7b42f6;"></i>
+                        @elseif(!empty($trust['icon_class']))
+                            <span class="trust-icon-badge me-2">{{ $trust['icon_class'] }}</span>
+                        @endif
+                        <span class="fw-medium text-secondary">{{ $trust['text'] }}</span>
+                    </div>
+                @endforeach
             </div>
-            
+            @endif
+
+            <!-- Ratings -->
+            <div class="rating-section mb-3 d-flex flex-wrap align-items-center justify-content-center gap-2 mt-4">
+                <div class="stars text-warning d-flex fs-5">
+                    @php 
+                        $stars = floatval($hero['rating_stars'] ?? 5);
+                        $fullStars = floor($stars);
+                        $halfStar = $stars - $fullStars >= 0.5;
+                        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                    @endphp
+                    @for($i=0; $i<$fullStars; $i++) <i class="bi bi-star-fill mx-1"></i> @endfor
+                    @if($halfStar) <i class="bi bi-star-half mx-1"></i> @endif
+                    @for($i=0; $i<$emptyStars; $i++) <i class="bi bi-star mx-1"></i> @endfor
+                </div>
+                <div class="fw-bold fs-6">{{ $hero['rating_score'] ?? '4,79' }}</div>
+                <div class="text-muted small">{{ $hero['rating_text'] ?? 'Hervorragend aus 13.764 Bewertungen' }}</div>
+            </div>
+
+            <!-- Live Viewers -->
+            @if(!empty($hero['live_viewers']))
+            <div class="live-viewers d-flex align-items-center justify-content-center text-muted small mt-3">
+                <div class="spinner-grow spinner-grow-sm me-2" role="status" style="width: 8px; height: 8px; background-color: #7b42f6;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="fw-bold text-dark me-1" id="live-viewer-count">{{ rand(100, 250) }}</span> {{ $hero['live_viewers'] }}
+            </div>
+            <script>
+                // Make the viewer count dynamic
+                document.addEventListener("DOMContentLoaded", function() {
+                    let countElement = document.getElementById('live-viewer-count');
+                    if (countElement) {
+                        setInterval(() => {
+                            let current = parseInt(countElement.innerText);
+                            let change = Math.floor(Math.random() * 5) - 2; // -2 to +2
+                            let newCount = current + change;
+                            if(newCount < 50) newCount = 50; 
+                            countElement.innerText = newCount;
+                        }, 5000);
+                    }
+                });
+            </script>
+            @endif
         </div>
     </div>
 </section>

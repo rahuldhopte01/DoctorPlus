@@ -239,17 +239,65 @@ class SettingController extends Controller
             $data['website_header_sidebar_menu'] = json_encode($menu);
         }
 
+        // Handle Promo Bar (JSON)
+        if ($request->has('promo_text_italic') || $request->has('promo_status')) {
+            $promoInfo = [
+                'status' => $request->has('promo_status') ? 1 : 0,
+                'text_italic' => $request->promo_text_italic,
+                'text_bold' => $request->promo_text_bold,
+                'end_date' => $request->promo_end_date,
+            ];
+            $data['website_header_promo_bar'] = json_encode($promoInfo);
+        }
+
         // Handle Home Page Settings (Hero, How it Works, About)
         $home_settings = json_decode($setting->website_home_settings ?? '{}', true);
         
         // Hero Section
         if ($request->has('hero_title')) {
+            // Process Trust Items
+            $trustItems = [];
+            foreach ($request->hero_trust_text ?? [] as $index => $text) {
+                if (!empty($text)) {
+                    $trustItems[] = [
+                        'text' => $text,
+                        'icon_class' => $request->hero_trust_icon_class[$index] ?? '',
+                    ];
+                }
+            }
+
+            // Process Quick Links
+            $quickLinks = [];
+            foreach ($request->hero_quick_link_title ?? [] as $index => $title) {
+                if (!empty($title)) {
+                    $image = $request->hero_quick_link_image_current[$index] ?? null;
+                    if ($request->hasFile("hero_quick_link_image.$index")) {
+                        if ($image) (new CustomController)->deleteFile($image);
+                        $image = (new CustomController)->imageUpload($request->file("hero_quick_link_image.$index"));
+                    }
+                    $quickLinks[] = [
+                        'title' => $title,
+                        'subtitle' => $request->hero_quick_link_subtitle[$index] ?? '',
+                        'badge' => $request->hero_quick_link_badge[$index] ?? '',
+                        'url' => $request->hero_quick_link_url[$index] ?? '#',
+                        'icon_class' => $request->hero_quick_link_icon_class[$index] ?? '',
+                        'image' => $image,
+                    ];
+                }
+            }
+
             $home_settings['hero'] = [
+                'badge' => $request->hero_badge,
                 'title' => $request->hero_title,
-                'highlight' => $request->hero_highlight,
-                'subtitle' => $request->hero_subtitle,
-                'search_placeholder' => $request->hero_search_placeholder,
-                'checkmarks' => $request->hero_checkmarks ?: [],
+                'description' => $request->hero_description,
+                'btn_text' => $request->hero_btn_text,
+                'btn_url' => $request->hero_btn_url,
+                'rating_stars' => $request->hero_rating_stars,
+                'rating_score' => $request->hero_rating_score,
+                'rating_text' => $request->hero_rating_text,
+                'live_viewers' => $request->hero_live_viewers,
+                'trust_items' => $trustItems,
+                'quick_links' => $quickLinks,
                 'image' => $home_settings['hero']['image'] ?? null
             ];
             

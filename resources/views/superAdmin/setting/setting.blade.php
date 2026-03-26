@@ -635,6 +635,39 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <!-- Header Settings -->
                                     <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
+                                    <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
+                                        <h5 class="mb-4">{{__('Promo Bar Settings')}}</h5>
+                                        @php
+                                            $promo = json_decode($setting->website_header_promo_bar, true) ?: [];
+                                        @endphp
+                                        <div class="row align-items-center mb-3">
+                                            <div class="col-md-2">
+                                                <label>{{__('Enable Promo Bar')}}</label>
+                                                <div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" name="promo_status" {{ ($promo['status'] ?? 0) == 1 ? 'checked' : '' }}>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label>{{__('Promo Text (Italic)')}}</label>
+                                                <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im März Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im März Ihre Gesundheit:">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label>{{__('Promo Text (Bold)')}}</label>
+                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode M4RZ sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode M4RZ sparen Sie 10 €">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-5">
+                                            <div class="col-md-4">
+                                                <label>{{__('Countdown End Date')}}</label>
+                                                <input type="datetime-local" name="promo_end_date" value="{{ $promo['end_date'] ?? '' }}" class="form-control">
+                                                <small class="text-muted">{{__('Leave empty to hide countdown timer.')}}</small>
+                                            </div>
+                                        </div>
+
+                                        <hr>
                                         <h5 class="mb-4">{{__('Top Marquee Settings')}}</h5>
                                         <div id="marquee-container">
                                             @php
@@ -807,38 +840,117 @@
                                             </div>
                                             <div class="col-md-9">
                                                 <div class="form-group">
-                                                    <label>{{__('Hero Title')}}</label>
+                                                    <label>{{__('Hero Top Badge')}}</label>
+                                                    <input type="text" name="hero_badge" value="{{ $hero['badge'] ?? '' }}" class="form-control" placeholder="e.g. MED. CANNABIS">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Hero Main Title')}}</label>
                                                     <textarea name="hero_title" class="form-control" rows="2">{{ $hero['title'] ?? '' }}</textarea>
                                                 </div>
                                                 <div class="form-group">
-                                                    <label>{{__('Highlighted Text (Blue)')}}</label>
-                                                    <input type="text" name="hero_highlight" value="{{ $hero['highlight'] ?? '' }}" class="form-control">
+                                                    <label>{{__('Hero Description')}}</label>
+                                                    <textarea name="hero_description" class="form-control" rows="3">{{ $hero['description'] ?? '' }}</textarea>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>{{__('Hero Subtitle')}}</label>
-                                                    <textarea name="hero_subtitle" class="form-control" rows="2">{{ $hero['subtitle'] ?? '' }}</textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>{{__('Search Placeholder')}}</label>
-                                                    <input type="text" name="hero_search_placeholder" value="{{ $hero['search_placeholder'] ?? '' }}" class="form-control">
+                                                <div class="row">
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button Text')}}</label>
+                                                        <input type="text" name="hero_btn_text" value="{{ $hero['btn_text'] ?? '' }}" class="form-control" placeholder="e.g. Jetzt Rezept anfragen">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button URL')}}</label>
+                                                        <input type="text" name="hero_btn_url" value="{{ $hero['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <label class="mt-3">{{__('Hero Checkmarks')}}</label>
-                                        <div id="hero-checkmarks-container">
-                                            @foreach($hero['checkmarks'] ?? [] as $checkmark)
-                                            <div class="row mb-2 checkmark-item">
-                                                <div class="col-md-10">
-                                                    <input type="text" name="hero_checkmarks[]" value="{{ $checkmark }}" class="form-control">
+                                        <hr>
+                                        <h6 class="mt-3">{{__('Hero Ratings & Live Counter')}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Stars Amount (1-5)')}}</label>
+                                                <input type="number" step="0.1" name="hero_rating_stars" value="{{ $hero['rating_stars'] ?? '5' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Score Text')}}</label>
+                                                <input type="text" name="hero_rating_score" value="{{ $hero['rating_score'] ?? '4,79' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Rating Description')}}</label>
+                                                <input type="text" name="hero_rating_text" value="{{ $hero['rating_text'] ?? 'Hervorragend aus 13.764 Bewertungen' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Live Viewers Text')}}</label>
+                                                <input type="text" name="hero_live_viewers" value="{{ $hero['live_viewers'] ?? 'Personen schauen sich gerade Behandlungen an' }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <label class="mt-3">{{__('Hero Trust Items')}}</label>
+                                        <div id="hero-trust-container">
+                                            @foreach($hero['trust_items'] ?? [] as $trust)
+                                            <div class="row mb-2 trust-item align-items-end">
+                                                <div class="col-md-4">
+                                                    <label>{{__('Icon Class or Badge (e.g. bi-shield-check or DE)')}}</label>
+                                                    <input type="text" name="hero_trust_icon_class[]" value="{{ $trust['icon_class'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label>{{__('Text')}}</label>
+                                                    <input type="text" name="hero_trust_text[]" value="{{ $trust['text'] ?? '' }}" class="form-control">
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <button type="button" class="btn btn-danger btn-sm remove-checkmark"><i class="fas fa-trash"></i></button>
+                                                    <button type="button" class="btn btn-danger btn-sm remove-trust"><i class="fas fa-trash"></i></button>
                                                 </div>
                                             </div>
                                             @endforeach
                                         </div>
-                                        <button type="button" id="add-checkmark" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Checkmark')}}</button>
+                                        <button type="button" id="add-trust" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Trust Item')}}</button>
+
+                                        <hr>
+                                        <label class="mt-3">{{__('Hero Quick Links (Cards)')}}</label>
+                                        <div id="hero-quick-link-container">
+                                            @foreach($hero['quick_links'] ?? [] as $index => $qlink)
+                                            <div class="card mb-3 quick-link-item">
+                                                <div class="card-body">
+                                                    <div class="row align-items-end">
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Background Image')}}</label>
+                                                            <input type="file" name="hero_quick_link_image[{{ $index }}]" class="form-control mb-1">
+                                                            <input type="hidden" name="hero_quick_link_image_current[{{ $index }}]" value="{{ $qlink['image'] ?? '' }}">
+                                                            @if(!empty($qlink['image']))
+                                                                <img src="{{ url('images/upload/'.$qlink['image']) }}" style="height: 30px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="hero_quick_link_title[{{ $index }}]" value="{{ $qlink['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <label>{{__('Subtitle')}}</label>
+                                                            <input type="text" name="hero_quick_link_subtitle[{{ $index }}]" value="{{ $qlink['subtitle'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <label>{{__('Badge (e.g. NEU)')}}</label>
+                                                            <input type="text" name="hero_quick_link_badge[{{ $index }}]" value="{{ $qlink['badge'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-quick-link"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                        <div class="col-md-4 mt-2">
+                                                            <label>{{__('URL')}}</label>
+                                                            <input type="text" name="hero_quick_link_url[{{ $index }}]" value="{{ $qlink['url'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 mt-2">
+                                                            <label>{{__('Small Icon Class')}}</label>
+                                                            <input type="text" name="hero_quick_link_icon_class[{{ $index }}]" value="{{ $qlink['icon_class'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-quick-link" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Quick Link Card')}}</button>
+
 
                                         <hr>
                                         <h5 class="my-4">{{__('How it Works Section')}}</h5>
@@ -1340,13 +1452,23 @@
             $('#menu-container').append(html);
         });
 
-        // Add Checkmark
-        $(document).on('click', '#add-checkmark', function() {
-            var html = '<div class="row mb-2 checkmark-item"><div class="col-md-10"><input type="text" name="hero_checkmarks[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-checkmark"><i class="fas fa-trash"></i></button></div></div>';
-            $('#hero-checkmarks-container').append(html);
+        // Add Trust Item
+        $(document).on('click', '#add-trust', function() {
+            var html = '<div class="row mb-2 trust-item align-items-end"><div class="col-md-4"><label>{{__("Icon Class or Badge (e.g. bi-shield-check or DE)")}}</label><input type="text" name="hero_trust_icon_class[]" class="form-control"></div><div class="col-md-6"><label>{{__("Text")}}</label><input type="text" name="hero_trust_text[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-trust"><i class="fas fa-trash"></i></button></div></div>';
+            $('#hero-trust-container').append(html);
         });
-        $(document).on('click', '.remove-checkmark', function() {
-            $(this).closest('.checkmark-item').remove();
+        $(document).on('click', '.remove-trust', function() {
+            $(this).closest('.trust-item').remove();
+        });
+
+        // Add Quick Link Card
+        $(document).on('click', '#add-quick-link', function() {
+            var idx = $('.quick-link-item').length;
+            var html = '<div class="card mb-3 quick-link-item"><div class="card-body"><div class="row align-items-end"><div class="col-md-3"><label>{{__("Background Image")}}</label><input type="file" name="hero_quick_link_image['+idx+']" class="form-control mb-1"><input type="hidden" name="hero_quick_link_image_current['+idx+']" value=""></div><div class="col-md-3"><label>{{__("Title")}}</label><input type="text" name="hero_quick_link_title['+idx+']" class="form-control"></div><div class="col-md-2"><label>{{__("Subtitle")}}</label><input type="text" name="hero_quick_link_subtitle['+idx+']" class="form-control"></div><div class="col-md-2"><label>{{__("Badge (e.g. NEU)")}}</label><input type="text" name="hero_quick_link_badge['+idx+']" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-quick-link"><i class="fas fa-trash"></i></button></div><div class="col-md-4 mt-2"><label>{{__("URL")}}</label><input type="text" name="hero_quick_link_url['+idx+']" class="form-control"></div><div class="col-md-4 mt-2"><label>{{__("Small Icon Class")}}</label><input type="text" name="hero_quick_link_icon_class['+idx+']" class="form-control"></div></div></div></div>';
+            $('#hero-quick-link-container').append(html);
+        });
+        $(document).on('click', '.remove-quick-link', function() {
+            $(this).closest('.quick-link-item').remove();
         });
 
         // Add Step

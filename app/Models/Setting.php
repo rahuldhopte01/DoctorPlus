@@ -51,6 +51,7 @@ class Setting extends Model
         'prescription_fee',
         'questionnaire_submission_fee',
         'website_header_top_marquee',
+        'website_header_promo_bar',
         'website_header_logo',
         'website_header_search',
         'website_header_user',
