@@ -619,119 +619,255 @@
                             <form action="{{url('update_content')}}" method="POST" enctype="multipart/form-data" class="myform">
                                 @csrf
 
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <label for="app_id" class="col-form-label"> {{__('Website Banner Image')}}</label>
-                                        <div class="avatar-upload avatar-box avatar-box-left">
-                                            <div class="avatar-edit">
-                                                <input type='file' id="image4" name="banner_image" accept=".png, .jpg, .jpeg" />
-                                                <label for="image4"></label>
+                                <!-- Sub-tabs for Website Setting -->
+                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="pills-header-tab" data-toggle="pill" href="#pills-header" role="tab" aria-controls="pills-header" aria-selected="true">{{__('Header')}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="false">{{__('Home Page')}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-footer-tab" data-toggle="pill" href="#pills-footer" role="tab" aria-controls="pills-footer" aria-selected="false">{{__('Footer')}}</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content" id="pills-tabContent">
+                                    <!-- Header Settings -->
+                                    <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
+                                        <h5 class="mb-4">{{__('Top Marquee Settings')}}</h5>
+                                        <div id="marquee-container">
+                                            @php
+                                                $marquees = json_decode($setting->website_header_top_marquee, true) ?: [];
+                                            @endphp
+                                            @if(count($marquees) > 0)
+                                                @foreach($marquees as $index => $marquee)
+                                                    <div class="row marquee-item mb-3 align-items-end">
+                                                        <div class="col-md-5">
+                                                            <label>{{__('Text')}}</label>
+                                                            <input type="text" name="marquee_text[]" value="{{ $marquee['text'] }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <label>{{__('Icon')}}</label>
+                                                            <input type="file" name="marquee_icon[]" class="form-control mb-1">
+                                                            <input type="hidden" name="marquee_icon_current[]" value="{{ $marquee['icon'] }}">
+                                                            @if($marquee['icon'])
+                                                                <img src="{{ url('images/upload/'.$marquee['icon']) }}" style="height: 20px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row marquee-item mb-3 align-items-end">
+                                                    <div class="col-md-5">
+                                                        <label>{{__('Text')}}</label>
+                                                        <input type="text" name="marquee_text[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <label>{{__('Icon')}}</label>
+                                                        <input type="file" name="marquee_icon[]" class="form-control">
+                                                        <input type="hidden" name="marquee_icon_current[]" value="">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-marquee" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Marquee Item')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Main Header Settings')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="col-form-label"> {{__('Website Header Logo')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="website_header_logo" name="website_header_logo" accept=".png, .jpg, .jpeg" />
+                                                        <label for="website_header_logo"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="websiteHeaderLogoPreview" style="background-image: url({{ $setting->website_header_logo ? url('images/upload/'.$setting->website_header_logo) : url('/images/upload_empty/fuxxlogo.png') }});"></div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="avatar-preview">
-                                                <div id="imagePreview4" style="background-image: url({{ 'images/upload/'.$setting->banner_image }});"></div>
+                                            <div class="col-md-8">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label d-block">{{__('Search Icon')}}</label>
+                                                        <label class="cursor-pointer">
+                                                            <input type="checkbox" name="website_header_search" class="custom-switch-input" value="1" {{ $setting->website_header_search == 1 ? 'checked' : '' }}>
+                                                            <span class="custom-switch-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label d-block">{{__('User Icon')}}</label>
+                                                        <label class="cursor-pointer">
+                                                            <input type="checkbox" name="website_header_user" class="custom-switch-input" value="1" {{ $setting->website_header_user == 1 ? 'checked' : '' }}>
+                                                            <span class="custom-switch-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label d-block">{{__('Hamburger Menu')}}</label>
+                                                        <label class="cursor-pointer">
+                                                            <input type="checkbox" name="website_header_hamburger" class="custom-switch-input" value="1" {{ $setting->website_header_hamburger == 1 ? 'checked' : '' }}>
+                                                            <span class="custom-switch-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button Text')}}</label>
+                                                        <input type="text" name="website_header_btn_text" value="{{ $setting->website_header_btn_text }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button URL')}}</label>
+                                                        <input type="text" name="website_header_btn_url" value="{{ $setting->website_header_btn_url }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button BG Color')}}</label>
+                                                        <input type="color" name="website_header_btn_bg_color" value="{{ $setting->website_header_btn_bg_color ?: '#7b42f6' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button Text Color')}}</label>
+                                                        <input type="color" name="website_header_btn_text_color" value="{{ $setting->website_header_btn_text_color ?: '#ffffff' }}" class="form-control">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        @error('banner_image')
-                                        <div class="custom_error">
-                                            {{ $message }}
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Sidebar Menu Items')}}</h5>
+                                        <div id="menu-container">
+                                            @php
+                                                $menus = json_decode($setting->website_header_sidebar_menu, true) ?: [];
+                                            @endphp
+                                            @if(count($menus) > 0)
+                                                @foreach($menus as $index => $item)
+                                                    <div class="row menu-item mb-3 align-items-end">
+                                                        <div class="col-md-5">
+                                                            <label>{{__('Label')}}</label>
+                                                            <input type="text" name="menu_label[]" value="{{ $item['label'] }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <label>{{__('URL')}}</label>
+                                                            <input type="text" name="menu_url[]" value="{{ $item['url'] }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row menu-item mb-3 align-items-end">
+                                                    <div class="col-md-5">
+                                                        <label>{{__('Label')}}</label>
+                                                        <input type="text" name="menu_label[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="menu_url[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
-                                        @enderror
+                                        <button type="button" id="add-menu" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Menu Item')}}</button>
                                     </div>
-                                    <div class="col-md-9">
+
+                                    <!-- Home Page Settings -->
+                                    <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label for="app_id" class="col-form-label"> {{__('Website Banner Image')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="image4" name="banner_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="image4"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="imagePreview4" style="background-image: url({{ 'images/upload/'.$setting->banner_image }});"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">{{__('Banner URL')}}</label>
+                                                    <input type="text" name="banner_url" required class="form-control" value="{{ $setting->banner_url }}">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-4">
+                                            <div class="form-group col-md-6">
+                                                <label class="col-form-label">{{__('Landing Page Pop-up')}}</label>
+                                                <input type="file" name="landing_popup_image" class="form-control">
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="col-form-label">{{__('Show Popup after X Seconds')}}</label>
+                                                <input type="number" name="popup_timer_seconds" class="form-control" value="{{ $setting->popup_timer_seconds }}">
+                                            </div>
+                                        </div>
+
                                         <div class="form-group">
-                                            <label class="col-form-label">{{__('Banner URL')}}</label>
-                                            <input type="text" name="banner_url" required class="form-control @error('banner_url') is-invalid @enderror" value="{{ $setting->banner_url }}">
-                                            @error('banner_url')
-                                            <div class="invalid-feedback"> {{ $message }}</div>
-                                            @enderror
+                                            <label class="col-form-label">{{__('PopUp Redirection URL')}}</label>
+                                            <input type="url" name="popup_target_url" class="form-control" value="{{ $setting->popup_target_url }}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="col-form-label">{{__('Popup Switch')}}</label>
+                                            <label class="cursor-pointer">
+                                                <input type="checkbox" name="landing_popup_switch" class="custom-switch-input" value="1" {{ $setting->landing_popup_switch == 1 ? 'checked' : '' }}>
+                                                <span class="custom-switch-indicator"></span>
+                                            </label>
+                                        </div>
+
+                                        <div class="row mt-4">
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Play Store URL')}}</label>
+                                                <input type="url" name="playstore" class="form-control" value="{{ $setting->playstore }}">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('App Store URL')}}</label>
+                                                <input type="url" name="appstore" class="form-control" value="{{ $setting->appstore }}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Footer Settings -->
+                                    <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Facebook url')}}</label>
+                                                <input type="url" name="facebook_url" class="form-control" value="{{ $setting->facebook_url }}">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Twitter url')}}</label>
+                                                <input type="url" name="twitter_url" class="form-control" value="{{ $setting->twitter_url }}">
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Instagram url')}}</label>
+                                                <input type="url" name="instagram_url" class="form-control" value="{{ $setting->instagram_url }}">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Linkdin url')}}</label>
+                                                <input type="url" name="linkdin_url" class="form-control" value="{{ $setting->linkdin_url }}">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="form-group col-md-6">
-                                        <label class="col-form-label">{{__('Landing Page Pop-up')}}</label>
-                                        <input type="file" name="landing_popup_image" id="popup_image" class="form-control @error('landing_popup_image') is-invalid @enderror landing_popup_image" value="{{ $setting->landing_popup_image }}">
-                                        @error('landing_popup_image')
-                                        <div class="invalid-feedback"> {{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group col-md-6">
-                                        <label class="col-form-label">{{__('Show Popup after X Seconds')}}</label>
-                                        <input type="number" name="popup_timer_seconds" id="popup_timer_seconds" class="form-control @error('popup_timer_seconds') is-invalid @enderror popup_timer_seconds" value="{{ $setting->popup_timer_seconds }}">
-                                        @error('popup_timer_seconds')
-                                        <div class="invalid-feedback"> {{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('PopUp Redirection URL')}}</label>
-                                    <input type="url" name="popup_target_url" class="form-control @error('popup_target_url') is-invalid @enderror" value="{{ $setting->popup_target_url }}">
-                                    @error('popup_target_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Popup Switch')}}</label>
-                                    <label class="cursor-pointer">
-                                        <input type="checkbox" name="landing_popup_switch" class="custom-switch-input" value="1" {{ $setting->landing_popup_switch == 1 ? 'checked' : '' }}>
-                                        <span class="custom-switch-indicator"></span>
-                                    </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Play Store URL')}}</label>
-                                    <input type="url" name="playstore" required class="form-control @error('playstore') is-invalid @enderror" value="{{ $setting->playstore }}">
-                                    @error('playstore')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('App Store URL')}}</label>
-                                    <input type="url" name="appstore" required class="form-control @error('appstore') is-invalid @enderror" value="{{ $setting->appstore }}">
-                                    @error('appstore')
-                                    <div class="invalid-feedback"> {{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Facebook url')}}</label>
-                                    <input type="url" name="facebook_url" required class="form-control @error('facebook_url') is-invalid @enderror" value="{{ $setting->facebook_url }}">
-                                    @error('facebook_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Twitter url')}}</label>
-                                    <input type="url" name="twitter_url" required class="form-control @error('twitter_url') is-invalid @enderror" value="{{ $setting->twitter_url }}">
-                                    @error('twitter_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Instagram url')}}</label>
-                                    <input type="url" name="instagram_url" required class="form-control @error('instagram_url') is-invalid @enderror" value="{{ $setting->instagram_url }}">
-                                    @error('instagram_url')
-                                    <div class="invalid-feedback"> {{ $message }} </div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Linkdin url')}}</label>
-                                    <input type="url" name="linkdin_url" required class="form-control @error('linkdin_url') is-invalid @enderror" value="{{ $setting->linkdin_url }}">
-                                    @error('linkdin_url')
-                                    <div class="invalid-feedback"> {{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary mt-5">{{__('save')}}</button>
+                                <div class="text-center mt-5">
+                                    <button type="submit" class="btn btn-primary">{{__('Save All Website Settings')}}</button>
                                 </div>
                             </form>
                         </div>
@@ -1032,6 +1168,65 @@
         }
         $("#image4").change(function() {
             readURL4(this);
+        });
+
+        // Header Logo Preview
+        function readHeaderLogo(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#websiteHeaderLogoPreview').css('background-image', 'url(' + e.target.result + ')');
+                    $('#websiteHeaderLogoPreview').hide();
+                    $('#websiteHeaderLogoPreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#website_header_logo").change(function() {
+            readHeaderLogo(this);
+        });
+
+        // Marquee Repeater
+        $('#add-marquee').click(function() {
+            var html = `<div class="row marquee-item mb-3 align-items-end">
+                            <div class="col-md-5">
+                                <label>{{__('Text')}}</label>
+                                <input type="text" name="marquee_text[]" class="form-control">
+                            </div>
+                            <div class="col-md-5">
+                                <label>{{__('Icon')}}</label>
+                                <input type="file" name="marquee_icon[]" class="form-control">
+                                <input type="hidden" name="marquee_icon_current[]" value="">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+            $('#marquee-container').append(html);
+        });
+        $(document).on('click', '.remove-marquee', function() {
+            $(this).closest('.marquee-item').remove();
+        });
+
+        // Menu Repeater
+        $('#add-menu').click(function() {
+            var html = `<div class="row menu-item mb-3 align-items-end">
+                            <div class="col-md-5">
+                                <label>{{__('Label')}}</label>
+                                <input type="text" name="menu_label[]" class="form-control">
+                            </div>
+                            <div class="col-md-5">
+                                <label>{{__('URL')}}</label>
+                                <input type="text" name="menu_url[]" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>`;
+            $('#menu-container').append(html);
+        });
+        $(document).on('click', '.remove-menu', function() {
+            $(this).closest('.menu-item').remove();
         });
         $('#zoom_switch').change(function() {
             if($(this).is(':checked')) {

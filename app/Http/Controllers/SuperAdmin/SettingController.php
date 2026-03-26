@@ -187,11 +187,10 @@ class SettingController extends Controller
     public function update_content(Request $request)
     {
         abort_if(Gate::denies('superadmin_setting'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $request->validate([
-            'popup_target_url' => 'bail|required',
-        ]);
+        
         $data = $request->all();
         $setting = Setting::first();
+        
         if ($request->hasFile('banner_image')) {
             (new CustomController)->deleteFile($setting->banner_image);
             $data['banner_image'] = (new CustomController)->imageUpload($request->banner_image);
@@ -200,7 +199,51 @@ class SettingController extends Controller
             (new CustomController)->deleteFile($setting->landing_popup_image);
             $data['landing_popup_image'] = (new CustomController)->imageUpload($request->landing_popup_image);
         }
+
+        // Header Logo
+        if ($request->hasFile('website_header_logo')) {
+            (new CustomController)->deleteFile($setting->website_header_logo);
+            $data['website_header_logo'] = (new CustomController)->imageUpload($request->website_header_logo);
+        }
+
+        // Handle Top Marquee (JSON)
+        if ($request->has('marquee_text')) {
+            $marquees = [];
+            foreach ($request->marquee_text as $index => $text) {
+                if (!empty($text)) {
+                    $icon = $request->marquee_icon_current[$index] ?? null;
+                    if ($request->hasFile("marquee_icon.$index")) {
+                        if ($icon) (new CustomController)->deleteFile($icon);
+                        $icon = (new CustomController)->imageUpload($request->file("marquee_icon.$index"));
+                    }
+                    $marquees[] = [
+                        'text' => $text,
+                        'icon' => $icon
+                    ];
+                }
+            }
+            $data['website_header_top_marquee'] = json_encode($marquees);
+        }
+
+        // Handle Sidebar Menu (JSON)
+        if ($request->has('menu_label')) {
+            $menu = [];
+            foreach ($request->menu_label as $index => $label) {
+                if (!empty($label)) {
+                    $menu[] = [
+                        'label' => $label,
+                        'url' => $request->menu_url[$index] ?? '#'
+                    ];
+                }
+            }
+            $data['website_header_sidebar_menu'] = json_encode($menu);
+        }
+
         $setting->landing_popup_switch = $request->has('landing_popup_switch') ? 1 : 0;
+        $setting->website_header_search = $request->has('website_header_search') ? 1 : 0;
+        $setting->website_header_user = $request->has('website_header_user') ? 1 : 0;
+        $setting->website_header_hamburger = $request->has('website_header_hamburger') ? 1 : 0;
+
         $setting->update($data);
 
         return redirect()->back()->withStatus(__('Website Setting updated successfully.!'));
