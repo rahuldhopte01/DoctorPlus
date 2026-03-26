@@ -56,15 +56,13 @@
         background-color: #8a48ff !important;
         border-color: #8a48ff !important;
         color: #ffffff !important;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
-        box-shadow: 0 6px 20px rgba(138, 72, 255, 0.3) !important;
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
         position: relative;
         overflow: hidden;
     }
     
     .btn-hero-premium:hover {
         transform: translateY(-4px) !important;
-        box-shadow: 0 15px 30px rgba(138, 72, 255, 0.4) !important;
         background-color: #7a35fa !important;
         border-color: #7a35fa !important;
     }
@@ -323,16 +321,17 @@
                 {{ $hero['description'] ?? 'Original deutsche Medikamente, Online-Rezepte und medizinische Produkte – Lieferung in 24-48 Stunden oder per Express in 2 Stunden / Selbstabholung möglich.' }}
             </p>
 
-            <style>
-                .btn-cta-pulse {
-                    animation: ctaPulse 2.5s ease-in-out infinite;
-                }
-                @keyframes ctaPulse {
-                    0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.4); }      
-                    50% { box-shadow: 0 0 0 12px rgba(124,58,237,0); }
-                }
-            </style>
             @if(!empty($hero['btn_text']))
+                <style>
+                    .btn-cta-pulse {
+                        animation: ctaPulse 2.5s ease-in-out infinite;
+                        position: relative;
+                    }
+                    @keyframes ctaPulse {
+                        0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); }
+                        50%       { box-shadow: 0 0 0 12px rgba(124, 58, 237, 0); }
+                    }
+                </style>
                 <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium btn-cta-pulse rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
                     {{ $hero['btn_text'] }}
                 </a>
