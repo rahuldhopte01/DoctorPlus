@@ -848,6 +848,10 @@
                                                     <textarea name="hero_title" class="form-control" rows="2">{{ $hero['title'] ?? '' }}</textarea>
                                                 </div>
                                                 <div class="form-group">
+                                                    <label>{{__('Hero Typing Keywords (Comma separated)')}}</label>
+                                                    <input type="text" name="hero_typing_keywords" value="{{ $hero['typing_keywords'] ?? 'MED. CANNABIS, EREKTIONSSTÖRUNGEN, TESTOSTERON, HAARAUSFALL, ÜBERGEWICHT' }}" class="form-control" placeholder="e.g. MED. CANNABIS, TESTOSTERON">
+                                                </div>
+                                                <div class="form-group">
                                                     <label>{{__('Hero Description')}}</label>
                                                     <textarea name="hero_description" class="form-control" rows="3">{{ $hero['description'] ?? '' }}</textarea>
                                                 </div>

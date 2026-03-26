@@ -289,6 +289,7 @@ class SettingController extends Controller
             $home_settings['hero'] = [
                 'badge' => $request->hero_badge,
                 'title' => $request->hero_title,
+                'typing_keywords' => $request->hero_typing_keywords,
                 'description' => $request->hero_description,
                 'btn_text' => $request->hero_btn_text,
                 'btn_url' => $request->hero_btn_url,

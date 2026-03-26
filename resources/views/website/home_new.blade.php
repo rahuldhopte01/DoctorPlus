@@ -163,9 +163,10 @@
                 margin-bottom: 4px;
                 letter-spacing: -0.3px;
                 transition: color 0.4s ease;
+                text-transform: uppercase;
             }
             .quick-link-card:hover .qlink-title {
-                color: #ffffff !important;
+                color: #8a48ff !important;
             }
 
             /* Subtitle Reveal */
@@ -246,22 +247,93 @@
 
         <!-- Main Content -->
         <div class="hero-main-content text-center mx-auto" style="max-width: 800px; margin-top: 60px;">
-            @if(!empty($hero['badge']))
-                <div class="text-uppercase fw-bold mb-3" style="color: #8a48ff; letter-spacing: 1.5px; font-size: 0.85rem;">
-                    {{ $hero['badge'] }}
-                </div>
-            @endif
+            <style>
+                .hero-ticker-badge {
+                    display: inline-block;
+                    position: relative;
+                }
+                .hero-ticker-badge::after {
+                    content: '|';
+                    color: #7b42f6;
+                    animation: blink 1s step-end infinite;
+                }
+                @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0; }
+                }
+            </style>
+
+            <div class="text-uppercase fw-bold mb-3 d-inline-block px-3 py-1" style="color: #8a48ff; background-color: #f4effe; border-radius: 20px; letter-spacing: 1.5px; font-size: 0.85rem;">
+                <span class="hero-ticker-badge" id="heroTicker"></span>
+            </div>
 
             <h1 class="display-4 fw-bold mb-4" style="color: #1a1a1a; letter-spacing: -1px;">
                 {{ $hero['title'] ?? 'Ganz einfach mit dr.fuxx' }}
             </h1>
 
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    @php
+                        $typingKeywordsStr = $hero['typing_keywords'] ?? 'MED. CANNABIS, EREKTIONSSTÖRUNGEN, TESTOSTERON, HAARAUSFALL, ÜBERGEWICHT';
+                        $typingKeywordsArray = array_map('trim', explode(',', $typingKeywordsStr));
+                        $typingKeywordsArray = array_filter($typingKeywordsArray);
+                        if(empty($typingKeywordsArray)) {
+                            $typingKeywordsArray = ['MED. CANNABIS'];
+                        }
+                    @endphp
+                    const keywords = {!! json_encode(array_values($typingKeywordsArray)) !!};
+                    const tickerEl = document.getElementById('heroTicker');
+                    let keywordIndex = 0;
+                    let charIndex = 0;
+                    let isDeleting = false;
+                    let typingSpeed = 100;
+
+                    function typeEffect() {
+                        const currentKeyword = keywords[keywordIndex];
+                        
+                        if (isDeleting) {
+                            tickerEl.textContent = currentKeyword.substring(0, charIndex - 1);
+                            charIndex--;
+                            typingSpeed = 50; // Faster when deleting
+                        } else {
+                            tickerEl.textContent = currentKeyword.substring(0, charIndex + 1);
+                            charIndex++;
+                            typingSpeed = 120; // Normal typing speed
+                        }
+
+                        if (!isDeleting && charIndex === currentKeyword.length) {
+                            typingSpeed = 2000; // Pause at the end of word
+                            isDeleting = true;
+                        } else if (isDeleting && charIndex === 0) {
+                            isDeleting = false;
+                            keywordIndex = (keywordIndex + 1) % keywords.length;
+                            typingSpeed = 400; // Pause before typing next word
+                        }
+
+                        setTimeout(typeEffect, typingSpeed);
+                    }
+
+                    if(tickerEl) {
+                        setTimeout(typeEffect, 500);
+                    }
+                });
+            </script>
+
             <p class="lead mb-5 mx-auto" style="color: #4a4a4a; max-width: 650px; font-size: 1.15rem; line-height: 1.7;">
                 {{ $hero['description'] ?? 'Original deutsche Medikamente, Online-Rezepte und medizinische Produkte – Lieferung in 24-48 Stunden oder per Express in 2 Stunden / Selbstabholung möglich.' }}
             </p>
 
+            <style>
+                .btn-cta-pulse {
+                    animation: ctaPulse 2.5s ease-in-out infinite;
+                }
+                @keyframes ctaPulse {
+                    0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.4); }      
+                    50% { box-shadow: 0 0 0 12px rgba(124,58,237,0); }
+                }
+            </style>
             @if(!empty($hero['btn_text']))
-                <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
+                <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium btn-cta-pulse rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
                     {{ $hero['btn_text'] }}
                 </a>
             @endif
