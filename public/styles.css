@@ -208,3 +208,248 @@
 }
 
 
+/* ===== ED BANNER SECTION ===== */
+.ed-banner-section {
+  background: linear-gradient(160deg, #E6F1FB 0%, #d8e8f7 50%, #E6F1FB 100%);
+  padding: 48px 24px 0;
+  text-align: center;
+}
+.ed-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.ed-pill {
+  display: inline-block;
+  border: 1.5px solid #3b6fd4;
+  color: #2a52a8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 6px 18px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+.ed-heading {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #111;
+  margin: 0 0 14px;
+}
+.ed-blue { color: #3b6fd4; }
+.ed-sub {
+  font-size: 0.95rem;
+  color: #555;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+.ed-hero-img-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto -30px;
+}
+.ed-hero-img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+.ed-hero-img-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 180px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(220,233,248,0.65) 55%, rgba(215,230,248,0.97) 100%);
+  pointer-events: none;
+}
+.ed-btns-overlay {
+  position: absolute;
+  bottom: 80px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+.ed-btn {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.ed-btn-outline {
+  border: 1.5px solid #333;
+  color: #222;
+  background: rgba(250,248,255,0.95);
+}
+.ed-btn-filled {
+  background: #3b6fd4;
+  color: #fff;
+  border: 1.5px solid #3b6fd4;
+}
+.ed-btn-outline:hover { background: #faf8ff; }
+.ed-btn-filled:hover { background: #2a52a8; }
+
+/* 3-card layout */
+.ed-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+  padding: 0 24px 36px;
+}
+.ed-cards-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ed-card {
+  background: linear-gradient(135deg, #dce9f8 0%, #eaf2ff 100%);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 22px;
+  padding: 28px 0 28px 28px;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.ed-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(30,60,120,0.18);
+}
+.ed-card-large {
+  min-height: 480px;
+  padding: 28px !important;
+}
+.ed-card-large .ed-card-text {
+  width: 55% !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+.ed-card-large .ed-card-text h3 { color: #fff !important; }
+.ed-card-large .ed-card-btn {
+  background: rgba(255,255,255,0.2) !important;
+  color: #fff !important;
+  border: 1.5px solid rgba(255,255,255,0.6) !important;
+  backdrop-filter: blur(4px);
+}
+.ed-card-large .ed-card-btn:hover { background: rgba(255,255,255,0.35) !important; }
+.ed-card-large .ed-card-img-wrap {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 22px !important;
+  z-index: 0 !important;
+}
+.ed-card-large .ed-card-img-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(30,60,120,0.75) 0%, rgba(30,60,120,0.4) 60%, transparent 100%);
+  border-radius: 22px;
+  z-index: 1;
+}
+.ed-card-large .ed-card-img {
+  object-fit: cover;
+  object-position: center center;
+  border-radius: 22px;
+}
+.ed-card-small { min-height: 200px; flex: 1; }
+.ed-card-text {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 14px;
+  position: relative;
+  z-index: 2;
+}
+.ed-card-text h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+.ed-card-small .ed-card-text h3 { font-size: 1.15rem; }
+.ed-card-btn {
+  display: inline-block;
+  background: #3b6fd4;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+  width: fit-content;
+  white-space: nowrap;
+}
+.ed-card-btn:hover { background: #2a52a8; transform: scale(1.03); }
+.ed-card-img-wrap {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: 45%;
+  overflow: hidden;
+  border-radius: 0 22px 22px 0;
+}
+.ed-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.ed-card:hover .ed-card-img { transform: scale(1.06); }
+
+/* ED Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .ed-banner-section { padding: 36px 20px 0; }
+  .ed-heading { font-size: 1.8rem !important; }
+  .ed-cards { gap: 12px !important; padding: 0 20px 28px !important; }
+  .ed-card-large { min-height: 380px !important; }
+  .ed-card-text h3 { font-size: 1.2rem !important; }
+}
+
+/* ED Mobile */
+@media (max-width: 768px) {
+  .ed-banner-section { padding: 20px 10px 0; }
+  .ed-heading { font-size: 1.2rem !important; }
+  .ed-sub { font-size: 0.78rem !important; }
+  .ed-hero-img-wrap { max-width: 100% !important; margin-bottom: -20px; }
+  .ed-btns-overlay {
+    bottom: 40px !important;
+    gap: 6px !important;
+    padding: 0 8px !important;
+  }
+  .ed-btn { font-size: 0.65rem !important; padding: 7px 10px !important; }
+  .ed-cards {
+    grid-template-columns: 1fr 1fr !important;
+    padding: 0 8px 20px !important;
+  }
+  .ed-card { padding: 16px 0 16px 16px !important; }
+  .ed-card-text h3 { font-size: 0.9rem !important; }
+  .ed-card-btn { font-size: 0.6rem !important; padding: 6px 12px !important; }
+}

@@ -821,7 +821,9 @@
                                             $home = json_decode($setting->website_home_settings, true) ?: [];
                                             $hero = $home['hero'] ?? [];
                                             $how = $home['how_it_works'] ?? [];
+                                            $relief = $home['natural_relief'] ?? [];
                                             $about = $home['about'] ?? [];
+                                            $ed = $home['ed_banner'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1139,6 +1141,121 @@
                                             @endforeach
                                         </div>
                                         <button type="button" id="add-feature" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Feature')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('ED Banner Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="ed_banner_pill" value="{{ $ed['pill'] ?? '' }}" class="form-control" placeholder="LÖSUNG FÜR EREKTILE DYSFUNKTION">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="ed_banner_title" value="{{ $ed['title'] ?? '' }}" class="form-control" placeholder="Gewinnen Sie Ihr | Selbstvertrauen | und Ihre Intimität zurück (use | for blue)">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Hero Image')}}</label>
+                                                <input type="file" name="ed_banner_hero_image" class="form-control" accept="image/*">
+                                                @if(!empty($ed['hero_image']))
+                                                    <img src="{{ url('images/upload/'.$ed['hero_image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 (Outline) Text')}}</label>
+                                                <input type="text" name="ed_banner_btn1_text" value="{{ $ed['btn1_text'] ?? '' }}" class="form-control" placeholder="Meine Behandlung finden">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 URL')}}</label>
+                                                <input type="text" name="ed_banner_btn1_url" value="{{ $ed['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 (Filled) Text')}}</label>
+                                                <input type="text" name="ed_banner_btn2_text" value="{{ $ed['btn2_text'] ?? '' }}" class="form-control" placeholder="Meine kostenlose Beratung starten">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 URL')}}</label>
+                                                <input type="text" name="ed_banner_btn2_url" value="{{ $ed['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4 mb-3">{{__('Split Cards (Large Left, 2 Small Right)')}}</h6>
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Large Left Card')}}</strong></label>
+                                                        <input type="file" name="ed_card_large_image" class="form-control mb-1">
+                                                        @if(!empty($ed['large_card']['image']))
+                                                            <img src="{{ url('images/upload/'.$ed['large_card']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="ed_card_large_title" value="{{ $ed['large_card']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="ed_card_large_btn_text" value="{{ $ed['large_card']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="ed_card_large_btn_url" value="{{ $ed['large_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Right Card 1')}}</strong></label>
+                                                        <input type="file" name="ed_card_r1_image" class="form-control mb-1">
+                                                        @if(!empty($ed['right_card_1']['image']))
+                                                            <img src="{{ url('images/upload/'.$ed['right_card_1']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="ed_card_r1_title" value="{{ $ed['right_card_1']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="ed_card_r1_btn_text" value="{{ $ed['right_card_1']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="ed_card_r1_btn_url" value="{{ $ed['right_card_1']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Right Card 2')}}</strong></label>
+                                                        <input type="file" name="ed_card_r2_image" class="form-control mb-1">
+                                                        @if(!empty($ed['right_card_2']['image']))
+                                                            <img src="{{ url('images/upload/'.$ed['right_card_2']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="ed_card_r2_title" value="{{ $ed['right_card_2']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="ed_card_r2_btn_text" value="{{ $ed['right_card_2']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="ed_card_r2_btn_url" value="{{ $ed['right_card_2']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                      </div>
 
                                      <!-- Footer Settings -->

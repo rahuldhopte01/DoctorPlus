@@ -389,6 +389,56 @@ class SettingController extends Controller
             ];
         }
 
+        // ED Banner Section
+        if ($request->has('ed_banner_title')) {
+            $ed_banner = $home_settings['ed_banner'] ?? [];
+            
+            // Main Hero Image
+            if ($request->hasFile('ed_banner_hero_image')) {
+                if (!empty($ed_banner['hero_image'])) (new CustomController)->deleteFile($ed_banner['hero_image']);
+                $ed_banner['hero_image'] = (new CustomController)->imageUpload($request->ed_banner_hero_image);
+            }
+
+            // Large Card Image
+            if ($request->hasFile('ed_card_large_image')) {
+                if (!empty($ed_banner['large_card']['image'])) (new CustomController)->deleteFile($ed_banner['large_card']['image']);
+                $ed_banner['large_card']['image'] = (new CustomController)->imageUpload($request->ed_card_large_image);
+            }
+
+            // Right Card 1 Image
+            if ($request->hasFile('ed_card_r1_image')) {
+                if (!empty($ed_banner['right_card_1']['image'])) (new CustomController)->deleteFile($ed_banner['right_card_1']['image']);
+                $ed_banner['right_card_1']['image'] = (new CustomController)->imageUpload($request->ed_card_r1_image);
+            }
+
+            // Right Card 2 Image
+            if ($request->hasFile('ed_card_r2_image')) {
+                if (!empty($ed_banner['right_card_2']['image'])) (new CustomController)->deleteFile($ed_banner['right_card_2']['image']);
+                $ed_banner['right_card_2']['image'] = (new CustomController)->imageUpload($request->ed_card_r2_image);
+            }
+
+            $ed_banner['pill'] = $request->ed_banner_pill;
+            $ed_banner['title'] = $request->ed_banner_title;
+            $ed_banner['btn1_text'] = $request->ed_banner_btn1_text;
+            $ed_banner['btn1_url'] = $request->ed_banner_btn1_url;
+            $ed_banner['btn2_text'] = $request->ed_banner_btn2_text;
+            $ed_banner['btn2_url'] = $request->ed_banner_btn2_url;
+
+            $ed_banner['large_card']['title'] = $request->ed_card_large_title;
+            $ed_banner['large_card']['btn_text'] = $request->ed_card_large_btn_text;
+            $ed_banner['large_card']['btn_url'] = $request->ed_card_large_btn_url;
+
+            $ed_banner['right_card_1']['title'] = $request->ed_card_r1_title;
+            $ed_banner['right_card_1']['btn_text'] = $request->ed_card_r1_btn_text;
+            $ed_banner['right_card_1']['btn_url'] = $request->ed_card_r1_btn_url;
+
+            $ed_banner['right_card_2']['title'] = $request->ed_card_r2_title;
+            $ed_banner['right_card_2']['btn_text'] = $request->ed_card_r2_btn_text;
+            $ed_banner['right_card_2']['btn_url'] = $request->ed_card_r2_btn_url;
+
+            $home_settings['ed_banner'] = $ed_banner;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

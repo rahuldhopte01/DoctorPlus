@@ -641,7 +641,98 @@
     </div>
 </section>
 
-<!-- Services Section -->
+<!-- ED Banner Section -->
+@php
+    $ed = $homeSettings['ed_banner'] ?? [];
+    $edPill = $ed['pill'] ?? 'LÖSUNG FÜR EREKTILE DYSFUNKTION';
+    
+    // Process title: wrap text after | in a span with .ed-blue
+    $rawTitle = $ed['title'] ?? 'Gewinnen Sie Ihr | Selbstvertrauen | und Ihre Intimität zurück';
+    $parts = explode('|', $rawTitle);
+    if (count($parts) > 1) {
+        $processedTitle = $parts[0];
+        for ($i = 1; $i < count($parts); $i++) {
+            if ($i % 2 != 0) {
+                $processedTitle .= '<span class="ed-blue">' . $parts[$i] . '</span>';
+            } else {
+                $processedTitle .= $parts[$i];
+            }
+        }
+    } else {
+        $processedTitle = $rawTitle;
+    }
+    $edHeading = $processedTitle;
+
+    $edHeroImage = !empty($ed['hero_image']) ? url('images/upload/'.$ed['hero_image']) : 'https://images.unsplash.com/photo-1511130558040-bb3396b42b79?q=80&w=1000&auto=format&fit=crop';
+    
+    $edBtn1Text = !empty($ed['btn1_text']) ? $ed['btn1_text'] : 'Meine Behandlung finden';
+    $edBtn1Url = !empty($ed['btn1_url']) ? $ed['btn1_url'] : route('categories');
+    $edBtn2Text = !empty($ed['btn2_text']) ? $ed['btn2_text'] : 'Meine kostenlose Beratung starten';
+    $edBtn2Url = !empty($ed['btn2_url']) ? $ed['btn2_url'] : route('categories');
+
+    $largeCard = $ed['large_card'] ?? [];
+    $largeTitle = !empty($largeCard['title']) ? str_replace('|', '<br>', $largeCard['title']) : 'Es kommt häufiger vor, als Sie denken.';
+    $largeBtnText = !empty($largeCard['btn_text']) ? $largeCard['btn_text'] : 'Mehr über Ursachen erfahren';
+    $largeBtnUrl = !empty($largeCard['btn_url']) ? $largeCard['btn_url'] : route('categories');
+    $largeImage = !empty($largeCard['image']) ? url('images/upload/'.$largeCard['image']) : 'https://images.unsplash.com/photo-1621348123733-47a824707db9?q=80&w=1000&auto=format&fit=crop';
+
+    $r1 = $ed['right_card_1'] ?? [];
+    $r1Title = !empty($r1['title']) ? str_replace('|', '<br>', $r1['title']) : 'Wenn Leistung zu Druck wird';
+    $r1BtnText = !empty($r1['btn_text']) ? $r1['btn_text'] : 'Verstehen, wie ED funktioniert';
+    $r1BtnUrl = !empty($r1['btn_url']) ? $r1['btn_url'] : route('categories');
+    $r1Image = !empty($r1['image']) ? url('images/upload/'.$r1['image']) : 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1000&auto=format&fit=crop';
+
+    $r2 = $ed['right_card_2'] ?? [];
+    $r2Title = !empty($r2['title']) ? str_replace('|', '<br>', $r2['title']) : 'Professionelle Hilfe, die diskret wirkt.';
+    $r2BtnText = !empty($r2['btn_text']) ? $r2['btn_text'] : 'Mein Rezept erhalten';
+    $r2BtnUrl = !empty($r2['btn_url']) ? $r2['btn_url'] : route('categories');
+    $r2Image = !empty($r2['image']) ? url('images/upload/'.$r2['image']) : 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=1000&auto=format&fit=crop';
+@endphp
+<section class="ed-banner-section">
+    <div class="ed-inner">
+        <span class="ed-pill">{{ $edPill }}</span>
+        <h2 class="ed-heading">{!! $edHeading !!}</h2>
+        <div class="ed-hero-img-wrap">
+            <img src="{{ $edHeroImage }}" alt="Paar" class="ed-hero-img" />
+            <div class="ed-btns-overlay">
+                <a href="{{ $edBtn1Url }}" class="ed-btn ed-btn-outline">{{ $edBtn1Text }}</a>
+                <a href="{{ $edBtn2Url }}" class="ed-btn ed-btn-filled">{{ $edBtn2Text }}</a>
+            </div>
+        </div>
+    </div>
+    <div class="ed-cards">
+        <div class="ed-card ed-card-large">
+            <div class="ed-card-text">
+                <h3>{!! $largeTitle !!}</h3>
+                <a href="{{ $largeBtnUrl }}" class="ed-card-btn">{{ $largeBtnText }}</a>
+            </div>
+            <div class="ed-card-img-wrap">
+                <img src="{{ $largeImage }}" alt="" class="ed-card-img" />
+            </div>
+        </div>
+        <div class="ed-cards-right">
+            <div class="ed-card ed-card-small">
+                <div class="ed-card-text">
+                    <h3>{!! $r1Title !!}</h3>
+                    <a href="{{ $r1BtnUrl }}" class="ed-card-btn">{{ $r1BtnText }}</a>
+                </div>
+                <div class="ed-card-img-wrap">
+                    <img src="{{ $r1Image }}" alt="" class="ed-card-img" />
+                </div>
+            </div>
+            <div class="ed-card ed-card-small">
+                <div class="ed-card-text">
+                    <h3>{!! $r2Title !!}</h3>
+                    <a href="{{ $r2BtnUrl }}" class="ed-card-btn">{{ $r2BtnText }}</a>
+                </div>
+                <div class="ed-card-img-wrap">
+                    <img src="{{ $r2Image }}" alt="" class="ed-card-img" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 <!-- Our Treatment Areas – Carousel Section -->
     <div class="container py-4">
