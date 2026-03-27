@@ -41,10 +41,13 @@
     $hero = $homeSettings['hero'] ?? [];
 @endphp
 
+@php
+    $heroBgColor = $hero['bg_color'] ?? '#f3ecff';
+@endphp
 <style>
     /* Hero Background & Blend */
     .hero-fuxx {
-        background: linear-gradient(135deg, #f3ecff 0%, #ffffff 100%) !important;
+        background: linear-gradient(135deg, {{ $heroBgColor }} 0%, #ffffff 100%) !important;
     }
     .hero-bg-wrapper {
         opacity: 0.6;
@@ -94,14 +97,24 @@
 
 <section class="hero-fuxx position-relative overflow-hidden" style="min-height: 80vh; padding-top: 50px; padding-bottom: 80px;">
     
-    <!-- Background Image -->
+    <!-- Center Foreground Product Image -->
     @if(!empty($hero['image']))
         <div class="hero-bg-wrapper position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; width: 100%; max-width: 800px;">
             <img src="{{ url('images/upload/'.$hero['image']) }}" alt="Background" class="img-fluid w-100" style="mask-image: linear-gradient(to top, transparent 0%, black 50%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 50%);">
         </div>
     @endif
 
-    <div class="container position-relative" style="z-index: 2;">
+    <!-- Small Decorative Hero Image (like the plant/product on drfuxx) centered with overlay -->
+    @if(!empty($hero['bg_image']))
+        <!-- Image sits at z-index:1 (lowest) -->
+        <div class="position-absolute" style="top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;max-width:380px;width:100%;">
+            <img src="{{ url('images/upload/'.$hero['bg_image']) }}" alt="" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%); opacity: 0.9;">
+        </div>
+        <!-- Color overlay #f3ecfe sits at z-index:2, above image -->
+        <div class="position-absolute" style="top:0;left:0;right:0;bottom:0;background-color:#f3ecfe;opacity:0.78;z-index:2;pointer-events:none;"></div>
+    @endif
+
+    <div class="container position-relative" style="z-index: 3;">
         
         <!-- Top Quick Link Cards -->
         @if(!empty($hero['quick_links']) && count($hero['quick_links']) > 0)

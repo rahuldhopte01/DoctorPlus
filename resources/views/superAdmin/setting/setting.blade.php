@@ -827,7 +827,7 @@
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <label class="col-form-label"> {{__('Hero Image')}}</label>
+                                                <label class="col-form-label"> {{__('Hero Product Image (Center)')}}</label>
                                                 <div class="avatar-upload avatar-box">
                                                     <div class="avatar-edit">
                                                         <input type='file' id="hero_image" name="hero_image" accept=".png, .jpg, .jpeg" />
@@ -865,6 +865,26 @@
                                                         <input type="text" name="hero_btn_url" value="{{ $hero['btn_url'] ?? '' }}" class="form-control">
                                                     </div>
                                                 </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-md-3">
+                                                <label class="col-form-label">{{__('Hero Section Background Image')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="hero_bg_image" name="hero_bg_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="hero_bg_image"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="heroBgImagePreview" style="background-image: url({{ !empty($hero['bg_image']) ? url('images/upload/'.$hero['bg_image']) : url('/images/upload_empty/hero.png') }});"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 d-flex flex-column justify-content-end pb-2">
+                                                <label class="col-form-label d-block">{{__('Hero Section Background Color')}}</label>
+                                                <input type="color" name="hero_bg_color" value="{{ $hero['bg_color'] ?? '#f3ecff' }}" class="form-control form-control-color" style="height: 42px; width: 100%;">
+                                                <small class="text-muted mt-1">Tint color for the gradient background</small>
                                             </div>
                                         </div>
 

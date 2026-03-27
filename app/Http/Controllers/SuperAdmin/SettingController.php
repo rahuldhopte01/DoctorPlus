@@ -297,14 +297,21 @@ class SettingController extends Controller
                 'rating_score' => $request->hero_rating_score,
                 'rating_text' => $request->hero_rating_text,
                 'live_viewers' => $request->hero_live_viewers,
+                'bg_color' => $request->hero_bg_color ?? '#f3ecff',
                 'trust_items' => $trustItems,
                 'quick_links' => $quickLinks,
-                'image' => $home_settings['hero']['image'] ?? null
+                'image' => $home_settings['hero']['image'] ?? null,
+                'bg_image' => $home_settings['hero']['bg_image'] ?? null,
             ];
             
             if ($request->hasFile('hero_image')) {
                 if (!empty($home_settings['hero']['image'])) (new CustomController)->deleteFile($home_settings['hero']['image']);
                 $home_settings['hero']['image'] = (new CustomController)->imageUpload($request->hero_image);
+            }
+
+            if ($request->hasFile('hero_bg_image')) {
+                if (!empty($home_settings['hero']['bg_image'])) (new CustomController)->deleteFile($home_settings['hero']['bg_image']);
+                $home_settings['hero']['bg_image'] = (new CustomController)->imageUpload($request->hero_bg_image);
             }
         }
 
