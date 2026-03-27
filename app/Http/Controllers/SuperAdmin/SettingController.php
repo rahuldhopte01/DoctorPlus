@@ -439,40 +439,6 @@ class SettingController extends Controller
             $home_settings['ed_banner'] = $ed_banner;
         }
 
-        // Testosterone Section
-        if ($request->has('testo_banner_title')) {
-            $testo_banner = $home_settings['testo_banner'] ?? [];
-            
-            // Card 1 Image
-            if ($request->hasFile('testo_card_1_image')) {
-                if (!empty($testo_banner['card_1']['image'])) (new CustomController)->deleteFile($testo_banner['card_1']['image']);
-                $testo_banner['card_1']['image'] = (new CustomController)->imageUpload($request->testo_card_1_image);
-            }
-
-            // Card 2 Image
-            if ($request->hasFile('testo_card_2_image')) {
-                if (!empty($testo_banner['card_2']['image'])) (new CustomController)->deleteFile($testo_banner['card_2']['image']);
-                $testo_banner['card_2']['image'] = (new CustomController)->imageUpload($request->testo_card_2_image);
-            }
-
-            $testo_banner['pill'] = $request->testo_banner_pill;
-            $testo_banner['title'] = $request->testo_banner_title;
-            $testo_banner['btn1_text'] = $request->testo_banner_btn1_text;
-            $testo_banner['btn1_url'] = $request->testo_banner_btn1_url;
-            $testo_banner['btn2_text'] = $request->testo_banner_btn2_text;
-            $testo_banner['btn2_url'] = $request->testo_banner_btn2_url;
-
-            $testo_banner['card_1']['title'] = $request->testo_card_1_title;
-            $testo_banner['card_1']['btn_text'] = $request->testo_card_1_btn_text;
-            $testo_banner['card_1']['btn_url'] = $request->testo_card_1_btn_url;
-
-            $testo_banner['card_2']['title'] = $request->testo_card_2_title;
-            $testo_banner['card_2']['btn_text'] = $request->testo_card_2_btn_text;
-            $testo_banner['card_2']['btn_url'] = $request->testo_card_2_btn_url;
-
-            $home_settings['testo_banner'] = $testo_banner;
-        }
-
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

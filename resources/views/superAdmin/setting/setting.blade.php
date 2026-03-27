@@ -824,7 +824,6 @@
                                             $relief = $home['natural_relief'] ?? [];
                                             $about = $home['about'] ?? [];
                                             $ed = $home['ed_banner'] ?? [];
-                                            $testo = $home['testo_banner'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1253,88 +1252,6 @@
                                                     <div class="col-md-2">
                                                         <label>{{__('URL')}}</label>
                                                         <input type="text" name="ed_card_r2_btn_url" value="{{ $ed['right_card_2']['btn_url'] ?? '' }}" class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <hr>
-                                        <h5 class="my-4">{{__('Testosterone Section')}}</h5>
-                                        <div class="row">
-                                            <div class="col-md-3 form-group">
-                                                <label>{{__('Badge Text')}}</label>
-                                                <input type="text" name="testo_banner_pill" value="{{ $testo['pill'] ?? '' }}" class="form-control" placeholder="TESTOSTERON-INJEKTION">
-                                            </div>
-                                            <div class="col-md-5 form-group">
-                                                <label>{{__('Section Title')}}</label>
-                                                <input type="text" name="testo_banner_title" value="{{ $testo['title'] ?? '' }}" class="form-control" placeholder="Testosteron-Injektion — | fertig zur Direktnutzung | (use | for red)">
-                                            </div>
-                                            <div class="col-md-3 form-group">
-                                                <label>{{__('Button 1 (Outline) Text')}}</label>
-                                                <input type="text" name="testo_banner_btn1_text" value="{{ $testo['btn1_text'] ?? '' }}" class="form-control" placeholder="Mehr erfahren">
-                                            </div>
-                                            <div class="col-md-3 form-group">
-                                                <label>{{__('Button 1 URL')}}</label>
-                                                <input type="text" name="testo_banner_btn1_url" value="{{ $testo['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
-                                            </div>
-                                            <div class="col-md-3 form-group">
-                                                <label>{{__('Button 2 (Filled) Text')}}</label>
-                                                <input type="text" name="testo_banner_btn2_text" value="{{ $testo['btn2_text'] ?? '' }}" class="form-control" placeholder="Jetzt Beratung starten">
-                                            </div>
-                                            <div class="col-md-3 form-group">
-                                                <label>{{__('Button 2 URL')}}</label>
-                                                <input type="text" name="testo_banner_btn2_url" value="{{ $testo['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
-                                            </div>
-                                        </div>
-
-                                        <h6 class="mt-4 mb-3">{{__('Cards (2 Columns)')}}</h6>
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <div class="row align-items-end">
-                                                    <div class="col-md-4">
-                                                        <label><strong>{{__('Card 1')}}</strong></label>
-                                                        <input type="file" name="testo_card_1_image" class="form-control mb-1">
-                                                        @if(!empty($testo['card_1']['image']))
-                                                            <img src="{{ url('images/upload/'.$testo['card_1']['image']) }}" style="height: 40px;">
-                                                        @endif
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label>{{__('Title')}}</label>
-                                                        <input type="text" name="testo_card_1_title" value="{{ $testo['card_1']['title'] ?? '' }}" class="form-control">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label>{{__('Btn Text')}}</label>
-                                                        <input type="text" name="testo_card_1_btn_text" value="{{ $testo['card_1']['btn_text'] ?? '' }}" class="form-control">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label>{{__('URL')}}</label>
-                                                        <input type="text" name="testo_card_1_btn_url" value="{{ $testo['card_1']['btn_url'] ?? '' }}" class="form-control">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="card mb-3">
-                                            <div class="card-body">
-                                                <div class="row align-items-end">
-                                                    <div class="col-md-4">
-                                                        <label><strong>{{__('Card 2')}}</strong></label>
-                                                        <input type="file" name="testo_card_2_image" class="form-control mb-1">
-                                                        @if(!empty($testo['card_2']['image']))
-                                                            <img src="{{ url('images/upload/'.$testo['card_2']['image']) }}" style="height: 40px;">
-                                                        @endif
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label>{{__('Title')}}</label>
-                                                        <input type="text" name="testo_card_2_title" value="{{ $testo['card_2']['title'] ?? '' }}" class="form-control">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label>{{__('Btn Text')}}</label>
-                                                        <input type="text" name="testo_card_2_btn_text" value="{{ $testo['card_2']['btn_text'] ?? '' }}" class="form-control">
-                                                    </div>
-                                                    <div class="col-md-2">
-                                                        <label>{{__('URL')}}</label>
-                                                        <input type="text" name="testo_card_2_btn_url" value="{{ $testo['card_2']['btn_url'] ?? '' }}" class="form-control">
                                                     </div>
                                                 </div>
                                             </div>
