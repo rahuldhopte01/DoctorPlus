@@ -326,6 +326,7 @@
                     .btn-cta-pulse {
                         animation: ctaPulse 2.5s ease-in-out infinite;
                         position: relative;
+                        border-radius: 50px !important;
                     }
                     @keyframes ctaPulse {
                         0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); }
