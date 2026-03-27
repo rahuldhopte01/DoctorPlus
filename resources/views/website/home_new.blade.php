@@ -412,6 +412,154 @@
     </div>
 </section>
 
+@php
+    $how = $homeSettings['how_it_works'] ?? [];
+    // Provide default steps so section shows even if admin not yet configured
+    if (empty($how['steps'])) {
+        $how['title']    = $how['title']    ?? '3 einfache Schritte';
+        $how['subtitle'] = $how['subtitle'] ?? '100 % online';
+        $how['badge']    = $how['badge']    ?? '5 Ärzte online | täglich 8–18 Uhr';
+        $how['steps'] = [
+            ['title' => 'Füll den|medizinischen Fragebogen aus', 'text' => '', 'icon' => ''],
+            ['title' => 'Wähle die|gewünschte Behandlung',        'text' => '', 'icon' => ''],
+            ['title' => 'Lieferung|flexibel wählen',
+             'text' => ">Online Express: Lieferung in 1–2 Werktagen\n>Apotheke vor Ort: Selbstabholung möglich",
+             'icon' => ''],
+        ];
+    }
+@endphp
+
+<!-- How It Works Section -->
+<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); min-height: 560px;">
+
+    <!-- Wavy background line SVG -->
+    <svg class="position-absolute w-100" style="bottom: 60px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#7b42f6" stroke-width="3" fill="none"/>
+    </svg>
+
+    <style>
+        .hiw-title  { font-size: 2.3rem; font-weight: 800; color: #111; letter-spacing: -0.5px; font-family: 'Clash Display', sans-serif; }
+        .hiw-sub    { font-size: 2.1rem; font-weight: 800; color: #7b42f6; letter-spacing: -0.5px; font-style: italic; font-family: 'Clash Display', sans-serif; }
+        .hiw-badge  { display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 50px; padding: 6px 16px; font-size: 0.82rem; font-weight: 600; color: #333; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .hiw-dot    { width: 9px; height: 9px; background: #22c55e; border-radius: 50%; flex-shrink: 0; animation: hiwDotPulse 2s ease-in-out infinite; }
+        @keyframes hiwDotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+
+        /* Deck layout — exact reference values */
+        .hiw-deck   { display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 40px 0 20px; }
+        .step-card-tilted {
+            background: #faf8ff;
+            border-radius: 20px;
+            padding: 28px 24px 20px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            width: 280px;
+            flex-shrink: 0;
+            min-height: 360px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+        }
+        .step-card-tilted:hover {
+            box-shadow: 0 16px 45px rgba(80,40,180,0.22);
+        }
+        /* Exact transforms from reference */
+        .tilt-left   { transform: rotate(-6deg) translateY(10px); z-index: 1; margin-right: -30px; }
+        .tilt-center { transform: rotate(0deg) translateY(-20px); z-index: 2; }
+        .tilt-right  { transform: rotate(6deg) translateY(10px);  z-index: 1; margin-left: -30px; }
+        
+        /* JS adds this class to raise the hovered card */
+        .step-card-tilted.hiw-active { z-index: 10 !important; }
+        .tilt-left.hiw-active   { transform: rotate(-4deg) translateY(0px) scale(1.02); }
+        .tilt-center.hiw-active { transform: rotate(0deg)  translateY(-30px) scale(1.02); }
+        .tilt-right.hiw-active  { transform: rotate(4deg)  translateY(0px) scale(1.02); }
+
+        .step-num-tilted { width: 38px; height: 38px; background: #7b42f6; color: #fff; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1rem; margin-bottom: 16px; }
+        .step-card-tilted h3 { font-size: 1.2rem; font-weight: 600; color: #1a1a1a; line-height: 1.35; margin-bottom: 6px; }
+        .step-card-tilted h3 span { color: #7b42f6; display: block; }
+        .step-card-tilted > p { color: #666; font-size: 0.82rem; line-height: 1.5; margin-bottom: 16px; }
+        .hiw-sub-items { margin-top: 12px; }
+        .hiw-sub-item  { display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
+            border: 1px solid #ebe8f8; border-radius: 12px; margin-bottom: 8px; background: #fff; }
+        .hiw-sub-item i { color: #7b42f6; font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+        .hiw-sub-item-label { font-weight: 700; font-size: 0.82rem; color: #111; }
+        .hiw-sub-item-desc  { font-size: 0.74rem; color: #777; }
+        .hiw-card-photo { display: block; width: 100%; margin-top: 14px; object-fit: contain; max-height: 190px; }
+    </style>
+
+    <div class="container text-center position-relative" style="z-index:2;">
+        <p class="hiw-title mb-1">{{ $how['title'] ?? '3 einfache Schritte' }}</p>
+        <p class="hiw-sub mb-3">{{ $how['subtitle'] ?? '100 % online' }}</p>
+
+        @if(!empty($how['badge']))
+        <div class="hiw-badge mb-5 mx-auto" style="width:fit-content;">
+            <span class="hiw-dot"></span>{{ $how['badge'] }}
+        </div>
+        @endif
+
+        <div class="hiw-deck mx-auto" style="max-width: 950px;">
+            @foreach($how['steps'] as $i => $step)
+            @php
+                $tiltClass = ['tilt-left','tilt-center','tilt-right'][$i] ?? 'tilt-center';
+                // Support "Normal text|Purple text" split in the title field
+                $titleParts = explode('|', $step['title'] ?? '', 2);
+                $titleNormal = trim($titleParts[0]);
+                $titlePurple = isset($titleParts[1]) ? trim($titleParts[1]) : '';
+                // Parse sub-items from 'text' if they contain lines starting with ">"
+                $subItems = [];
+                $plainText = '';
+                foreach(explode("\n", $step['text'] ?? '') as $line) {
+                    $line = trim($line);
+                    if(str_starts_with($line, '>')) {
+                        $parts = explode(':', ltrim($line, '>'), 2);
+                        $subItems[] = ['label' => trim($parts[0]), 'desc' => isset($parts[1]) ? trim($parts[1]) : ''];
+                    } elseif($line) {
+                        $plainText .= $line . ' ';
+                    }
+                }
+            @endphp
+            <div class="step-card-tilted {{ $tiltClass }}">
+                <div class="step-num-tilted">{{ $i + 1 }}</div>
+                <h3>{{ $titleNormal }}@if($titlePurple)<span>{{ $titlePurple }}</span>@endif
+                </h3>
+                @if($subItems)
+                <div class="hiw-sub-items">
+                    @foreach($subItems as $sub)
+                    <div class="hiw-sub-item">
+                        <i class="bi bi-check2-circle"></i>
+                        <div>
+                            <div class="hiw-sub-item-label">{{ $sub['label'] }}</div>
+                            @if($sub['desc'])<div class="hiw-sub-item-desc">{{ $sub['desc'] }}</div>@endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @elseif(trim($plainText))
+                    <p class="mt-2" style="font-size:0.83rem;color:#666;">{{ trim($plainText) }}</p>
+                @endif
+                @if(!empty($step['icon']))
+                    <img src="{{ url('images/upload/'.$step['icon']) }}" class="hiw-card-photo" alt="">
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    <script>
+    document.querySelectorAll('.step-card-tilted').forEach(function(card) {
+        card.addEventListener('mouseenter', function() {
+            document.querySelectorAll('.step-card-tilted').forEach(function(c) { c.classList.remove('hiw-active'); });
+            card.classList.add('hiw-active');
+        });
+        card.addEventListener('mouseleave', function() {
+            card.classList.remove('hiw-active');
+        });
+    });
+    </script>
+</section>
+
+
 <!-- Services Section -->
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 <!-- Our Treatment Areas – Carousel Section -->

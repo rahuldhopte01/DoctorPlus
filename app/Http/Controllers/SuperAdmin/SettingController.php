@@ -332,6 +332,8 @@ class SettingController extends Controller
             }
             $home_settings['how_it_works'] = [
                 'title' => $request->how_it_works_title,
+                'subtitle' => $request->how_it_works_subtitle,
+                'badge' => $request->how_it_works_badge,
                 'steps' => $steps
             ];
         }

@@ -978,9 +978,19 @@
 
                                         <hr>
                                         <h5 class="my-4">{{__('How it Works Section')}}</h5>
-                                        <div class="form-group">
-                                            <label>{{__('Section Title')}}</label>
-                                            <input type="text" name="how_it_works_title" value="{{ $how['title'] ?? '' }}" class="form-control">
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="how_it_works_title" value="{{ $how['title'] ?? '' }}" class="form-control" placeholder="e.g. 3 einfache Schritte">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Section Subtitle (purple)')}}</label>
+                                                <input type="text" name="how_it_works_subtitle" value="{{ $how['subtitle'] ?? '' }}" class="form-control" placeholder="e.g. 100 % online">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Live Badge Text')}}</label>
+                                                <input type="text" name="how_it_works_badge" value="{{ $how['badge'] ?? '' }}" class="form-control" placeholder="e.g. 5 Ärzte online | täglich 8–18 Uhr">
+                                            </div>
                                         </div>
                                         <div id="steps-container">
                                             @foreach($how['steps'] ?? [] as $index => $step)
