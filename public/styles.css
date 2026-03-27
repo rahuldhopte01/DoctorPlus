@@ -1,0 +1,210 @@
+
+/* ===== CANNABIS BANNER SECTION ===== */
+.cannabis-banner-section {
+  background: #fdfdfd;
+  padding: 48px 16px 32px;
+  text-align: center;
+}
+.cbs-inner {
+  max-width: 390px;
+  margin: 0 auto;
+}
+.cbs-pill {
+  display: inline-block;
+  border: 1.5px solid #4caf50;
+  color: #2e7d32;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.cbs-heading {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #111;
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+.cbs-green { color: #3a8e3e; }
+.cbs-sub {
+  font-size: 0.82rem;
+  color: #555;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+.cbs-hero-img-wrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: -60px;
+}
+.cbs-hero-img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+.cbs-hero-img-wrap::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 160px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(220,240,220,0.6) 50%, rgba(210,235,210,0.95) 100%);
+  pointer-events: none;
+}
+.cbs-btns-overlay {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 16px;
+  z-index: 5;
+}
+.cbs-btn {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.cbs-btn-outline {
+  border: 1.5px solid #222;
+  color: #222;
+  background: #faf8ff;
+}
+.cbs-btn-filled {
+  background: #3a8e3e;
+  color: #fff;
+  border: 1.5px solid #3a8e3e;
+}
+.cbs-btn-outline:hover { background: #f3f0ff; }
+.cbs-btn-filled:hover { background: #2e7d32; }
+
+/* Desktop card grid */
+.cbs-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  position: relative;
+  z-index: 2;
+  padding: 0 20px 28px;
+}
+.cbs-card {
+  background: linear-gradient(135deg, #e8f5e9 0%, #f0faf0 100%);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 20px;
+  padding: 20px 0 20px 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+  position: relative;
+  min-height: 180px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+.cbs-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(124,58,237,0.18);
+}
+.cbs-card-text {
+  width: 55%;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 12px;
+}
+.cbs-card-text h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 6px;
+  line-height: 1.25;
+}
+.cbs-card-text p {
+  font-size: 0.72rem;
+  color: #444;
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+.cbs-card-btn {
+  display: inline-block;
+  background: #3a8e3e;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+  white-space: nowrap;
+  width: fit-content;
+  position: relative;
+  z-index: 2;
+}
+.cbs-card-btn:hover { background: #2e7d32; transform: scale(1.03); }
+.cbs-card-img-wrap {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 45%;
+  overflow: hidden;
+  border-radius: 0 20px 20px 0;
+}
+.cbs-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: right bottom;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.cbs-card:hover .cbs-card-img { transform: scale(1.05); }
+
+/* Desktop Opt */
+@media (min-width: 769px) {
+  .cbs-card {
+    min-height: 220px !important;
+    max-height: 240px !important;
+  }
+  .cbs-card-img-wrap {
+    width: 45%;
+    height: 100%;
+  }
+  .cbs-card:nth-child(1) .cbs-card-img { object-fit: cover; object-position: center top; }
+  .cbs-card:nth-child(2) .cbs-card-img { object-fit: contain; object-position: center center; }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .cbs-cards {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+    padding: 0 16px 20px;
+  }
+  .cbs-card {
+    min-height: 200px !important;
+  }
+}
+@media (max-width: 480px) {
+  .cbs-heading { font-size: 1.1rem !important; }
+  .cbs-card-text h3 { font-size: 0.85rem !important; }
+}
+@media (max-width: 360px) {
+  .cbs-heading { font-size: 1rem !important; }
+}
+
+

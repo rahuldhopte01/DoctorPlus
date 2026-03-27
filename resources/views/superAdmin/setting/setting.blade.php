@@ -17,7 +17,7 @@
     'status' => session('error_msg')])
     @endif
 
-    @if($errors->any())
+    @if(isset($errors) && is_object($errors) && $errors->any())
     @foreach ($errors->all() as $error)
         @include('superAdmin.auth.status',[
         'status' => $error, 'icon' => 'warning'])
@@ -1024,6 +1024,78 @@
                                         <button type="button" id="add-step" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Step')}}</button>
 
                                         <hr>
+                                        <h5 class="my-4">{{__('Natural Relief Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="natural_relief_badge" value="{{ $relief['badge'] ?? '' }}" class="form-control" placeholder="e.g. REZEPT WIRD ONLINE AUSGESTELLT">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="natural_relief_title" value="{{ $relief['title'] ?? '' }}" class="form-control" placeholder="e.g. Finden Sie | Linderung (use | for green)">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Center Background Image')}}</label>
+                                                <input type="file" name="natural_relief_image" class="form-control" accept="image/*">
+                                                @if(!empty($relief['image']))
+                                                    <img src="{{ url('images/upload/'.$relief['image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 (White) Text')}}</label>
+                                                <input type="text" name="natural_relief_btn1_text" value="{{ $relief['btn1_text'] ?? '' }}" class="form-control" placeholder="e.g. Berechtigung prüfen">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 URL')}}</label>
+                                                <input type="text" name="natural_relief_btn1_url" value="{{ $relief['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 (Green) Text')}}</label>
+                                                <input type="text" name="natural_relief_btn2_text" value="{{ $relief['btn2_text'] ?? '' }}" class="form-control" placeholder="e.g. Gratis Beratung starten">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 URL')}}</label>
+                                                <input type="text" name="natural_relief_btn2_url" value="{{ $relief['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                        </div>
+                                        
+                                        <h6 class="mt-4 mb-3">{{__('Split Cards (Overlapping bottom edge)')}}</h6>
+                                        <div id="relief-cards-container">
+                                            @foreach($relief['cards'] ?? [] as $index => $rcard)
+                                            <div class="card mb-3 relief-card-item">
+                                                <div class="card-body">
+                                                    <div class="row align-items-end">
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Card Main Image')}}</label>
+                                                            <input type="file" name="relief_card_icon[]" class="form-control mb-1">
+                                                            <input type="hidden" name="relief_card_icon_current[]" value="{{ $rcard['icon'] ?? '' }}">
+                                                            @if(!empty($rcard['icon']))
+                                                                <img src="{{ url('images/upload/'.$rcard['icon']) }}" style="height: 30px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Card Title')}}</label>
+                                                            <input type="text" name="relief_card_title[]" value="{{ $rcard['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Button Text')}}</label>
+                                                            <input type="text" name="relief_card_btn_text[]" value="{{ $rcard['btn_text'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <label>{{__('Button URL')}}</label>
+                                                            <input type="text" name="relief_card_btn_url[]" value="{{ $rcard['btn_url'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-1">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-relief-card"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-relief-card" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Split Card')}}</button>
+
+                                        <hr>
                                         <h5 class="my-4">{{__('About Section')}}</h5>
                                         <div class="row">
                                             <div class="col-md-3">
@@ -1521,6 +1593,15 @@
         });
         $(document).on('click', '.remove-feature', function() {
             $(this).closest('.feature-item').remove();
+        });
+
+        // Add Relief Card
+        $(document).on('click', '#add-relief-card', function() {
+            var html = '<div class="card mb-3 relief-card-item"><div class="card-body"><div class="row align-items-end"><div class="col-md-3"><label>{{__("Card Main Image")}}</label><input type="file" name="relief_card_icon[]" class="form-control mb-1"><input type="hidden" name="relief_card_icon_current[]" value=""></div><div class="col-md-3"><label>{{__("Card Title")}}</label><input type="text" name="relief_card_title[]" class="form-control"></div><div class="col-md-3"><label>{{__("Button Text")}}</label><input type="text" name="relief_card_btn_text[]" class="form-control"></div><div class="col-md-2"><label>{{__("Button URL")}}</label><input type="text" name="relief_card_btn_url[]" class="form-control"></div><div class="col-md-1"><button type="button" class="btn btn-danger btn-sm remove-relief-card"><i class="fas fa-trash"></i></button></div></div></div></div>';
+            $('#relief-cards-container').append(html);
+        });
+        $(document).on('click', '.remove-relief-card', function() {
+            $(this).closest('.relief-card-item').remove();
         });
 
         // Add Footer Column

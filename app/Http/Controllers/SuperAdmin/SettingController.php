@@ -354,6 +354,41 @@ class SettingController extends Controller
             }
         }
         
+        // Natural Relief Section
+        if ($request->has('natural_relief_title')) {
+            $reliefCards = [];
+            foreach ($request->relief_card_title ?? [] as $index => $title) {
+                $icon = $request->relief_card_icon_current[$index] ?? null;
+                if ($request->hasFile("relief_card_icon.$index")) {
+                    if ($icon) (new CustomController)->deleteFile($icon);
+                    $icon = (new CustomController)->imageUpload($request->file("relief_card_icon.$index"));
+                }
+                $reliefCards[] = [
+                    'title' => $title,
+                    'btn_text' => $request->relief_card_btn_text[$index] ?? '',
+                    'btn_url' => $request->relief_card_btn_url[$index] ?? '',
+                    'icon' => $icon
+                ];
+            }
+            
+            $reliefImage = $home_settings['natural_relief']['image'] ?? null;
+            if ($request->hasFile('natural_relief_image')) {
+                if ($reliefImage) (new CustomController)->deleteFile($reliefImage);
+                $reliefImage = (new CustomController)->imageUpload($request->natural_relief_image);
+            }
+
+            $home_settings['natural_relief'] = [
+                'badge' => $request->natural_relief_badge,
+                'title' => $request->natural_relief_title,
+                'image' => $reliefImage,
+                'btn1_text' => $request->natural_relief_btn1_text,
+                'btn1_url' => $request->natural_relief_btn1_url,
+                'btn2_text' => $request->natural_relief_btn2_text,
+                'btn2_url' => $request->natural_relief_btn2_url,
+                'cards' => $reliefCards
+            ];
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

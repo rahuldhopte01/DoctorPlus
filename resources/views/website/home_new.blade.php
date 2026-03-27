@@ -17,6 +17,7 @@
     <!-- Custom CSS -->
     <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
+    <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -559,6 +560,86 @@
     </script>
 </section>
 
+@php
+    $relief = $homeSettings['natural_relief'] ?? [];
+    if (empty($relief['cards'])) {
+        $relief['title'] = $relief['title'] ?? 'Finden Sie natürliche und|sichere Linderung';
+        $relief['badge'] = $relief['badge'] ?? 'REZEPT WIRD ONLINE AUSGESTELLT';
+        $relief['btn1_text'] = $relief['btn1_text'] ?? 'Berechtigung prüfen';
+        $relief['btn1_url'] = $relief['btn1_url'] ?? '#';
+        $relief['btn2_text'] = $relief['btn2_text'] ?? 'Gratis Beratung starten';
+        $relief['btn2_url'] = $relief['btn2_url'] ?? '#';
+        $relief['cards'] = [
+            [
+                'title' => 'Wenn Schmerzen nicht aufhören...',
+                'btn_text' => 'Mehr erfahren',
+                'btn_url' => '#',
+                'icon' => '' 
+            ],
+            [
+                'title' => 'Sind Sie es leid, alles andere auszuprobieren?',
+                'btn_text' => 'Behandlungen entdecken',
+                'btn_url' => '#',
+                'icon' => ''
+            ]
+        ];
+    }
+@endphp
+
+<!-- Natural Relief Section -->
+<section class="cannabis-banner-section">
+    <div class="cbs-inner">
+        @if(!empty($relief['badge']))
+            <span class="cbs-pill">{{ $relief['badge'] }}</span>
+        @endif
+
+        @php
+            $rTitleParts = explode('|', $relief['title'] ?? '', 2);
+            $rTitleNormal = trim($rTitleParts[0]);
+            $rTitleGreen = isset($rTitleParts[1]) ? trim($rTitleParts[1]) : '';
+        @endphp
+        
+        <h2 class="cbs-heading">{{ $rTitleNormal }} @if($rTitleGreen)<span class="cbs-green">{{ $rTitleGreen }}</span>@endif</h2>
+
+        <!-- Center hero image with buttons overlaid -->
+        <div class="cbs-hero-img-wrap">
+            @if(!empty($relief['image']))
+                <img src="{{ url('images/upload/'.$relief['image']) }}" alt="" class="cbs-hero-img">
+            @else
+                <!-- Placeholder if no image set so layout doesn't break -->
+                <div style="height: 350px;"></div>
+            @endif
+            
+            <div class="cbs-btns-overlay">
+                @if(!empty($relief['btn1_text']))
+                    <a href="{{ $relief['btn1_url'] ?? '#' }}" class="cbs-btn cbs-btn-outline">{{ $relief['btn1_text'] }}</a>
+                @endif
+                @if(!empty($relief['btn2_text']))
+                    <a href="{{ $relief['btn2_url'] ?? '#' }}" class="cbs-btn cbs-btn-filled">{{ $relief['btn2_text'] }}</a>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Two info cards -->
+    <div class="cbs-cards">
+        @foreach($relief['cards'] as $card)
+        <div class="cbs-card">
+            <div class="cbs-card-text">
+                <h3>{{ $card['title'] }}</h3>
+                @if(!empty($card['btn_text']))
+                    <a href="{{ $card['btn_url'] ?? '#' }}" class="cbs-card-btn">{{ $card['btn_text'] }}</a>
+                @endif
+            </div>
+            <div class="cbs-card-img-wrap">
+                @if(!empty($card['icon']))
+                    <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+</section>
 
 <!-- Services Section -->
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
