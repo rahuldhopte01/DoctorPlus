@@ -338,6 +338,8 @@
 
                     <div class="text-red-500 text-sm mt-1 font-fira-sans" id="error_{{ $question->id }}"></div>
 
+                    <div class="behavior-flag-container mt-2" id="flags_{{ $question->id }}"></div>
+
                     <div class="sub-questions-container mt-2" data-question-id="{{ $question->id }}">
                         @foreach($question->option_behaviors['behaviors'] ?? [] as $behavior)
                             @if(!empty($behavior['sub_question']))
@@ -522,7 +524,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function getQuestionValue(wrapper) {
         let value = '';
-        wrapper.querySelectorAll(':scope > .question-input, :scope > div > .question-input, :scope > .custom-dropdown-container > select').forEach(inp => {
+        // Use broad selector — sub-question inputs use 'sub-question-input' class, not 'question-input'
+        wrapper.querySelectorAll('.question-input').forEach(inp => {
             if (inp.type === 'radio' && inp.checked)       value = inp.value;
             else if (inp.type !== 'radio' && inp.type !== 'checkbox' && inp.type !== 'file') value = inp.value;
         });
@@ -538,15 +541,39 @@ document.addEventListener('DOMContentLoaded', function() {
         return value;
     }
 
-    function applyBehaviors(questionValue, behaviors, subQContainer) {
-        if (!subQContainer || !behaviors || !behaviors.length) return;
-        subQContainer.querySelectorAll(':scope > .sub-question-wrapper').forEach(sq => {
-            sq.classList.add('hidden');
-            sq.querySelectorAll('input, select, textarea').forEach(i => i.disabled = true);
-        });
+    function applyBehaviors(questionValue, behaviors, subQContainer, flagContainer) {
+        // Clear existing flags
+        if (flagContainer) flagContainer.innerHTML = '';
+
+        if (!behaviors || !behaviors.length) return;
+
+        if (subQContainer) {
+            subQContainer.querySelectorAll(':scope > .sub-question-wrapper').forEach(sq => {
+                sq.classList.add('hidden');
+                sq.querySelectorAll('input, select, textarea').forEach(i => i.disabled = true);
+            });
+        }
+
         const match = behaviors.find(b => evaluateCondition(questionValue, b.condition || {}));
         if (!match) return;
-        if (match.sub_question) {
+
+        // Show flags for the matched behavior
+        if (flagContainer && match.flags && match.flags.length) {
+            match.flags.forEach(flag => {
+                const div = document.createElement('div');
+                if (flag.flag_type === 'hard') {
+                    div.className = 'mt-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 font-body flex items-start gap-2';
+                    div.innerHTML = '<i class="fas fa-ban mt-0.5 flex-shrink-0"></i><span>' + flag.flag_message + '</span>';
+                } else {
+                    div.className = 'mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-700 font-body flex items-start gap-2';
+                    div.innerHTML = '<i class="fas fa-exclamation-triangle mt-0.5 flex-shrink-0"></i><span>' + flag.flag_message + '</span>';
+                }
+                flagContainer.appendChild(div);
+            });
+        }
+
+        // Show sub-question for the matched behavior
+        if (match.sub_question && subQContainer) {
             const sq = subQContainer.querySelector(`:scope > .sub-question-wrapper[data-temp-id="${match.sub_question.temp_id}"]`);
             if (sq) {
                 sq.classList.remove('hidden');
@@ -565,7 +592,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!raw || raw === '[]' || raw === 'null') return;
                 const behaviors = JSON.parse(raw);
                 if (!behaviors || !behaviors.behaviors) return;
-                applyBehaviors(getQuestionValue(wrapper), behaviors.behaviors, wrapper.querySelector('.sub-questions-container'));
+                const qId = wrapper.dataset.questionId;
+                applyBehaviors(
+                    getQuestionValue(wrapper),
+                    behaviors.behaviors,
+                    wrapper.querySelector('.sub-questions-container'),
+                    document.getElementById('flags_' + qId)
+                );
             } catch(e) {}
         });
     }
