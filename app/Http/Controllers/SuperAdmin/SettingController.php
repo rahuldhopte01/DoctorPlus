@@ -439,6 +439,108 @@ class SettingController extends Controller
             $home_settings['ed_banner'] = $ed_banner;
         }
 
+        // Sub-categories Ticker
+        $home_settings['sub_categories'] = collect($request->sub_cat_text ?? [])->map(fn($t) => ['text' => $t])->toArray();
+
+        // Trust Banner
+        $home_settings['trust_banner'] = [
+            'text' => $request->trust_banner_text,
+        ];
+
+        // Testosterone Section
+        $home_settings['testosterone'] = [
+            'pill'      => $request->testo_pill,
+            'title'     => $request->testo_title,
+            'btn1_text' => $request->testo_btn1_text,
+            'btn1_url'  => $request->testo_btn1_url ?? '#',
+            'btn2_text' => $request->testo_btn2_text,
+            'btn2_url'  => $request->testo_btn2_url ?? '#',
+            'bg_image'  => $request->hasFile('testo_bg_image')
+                ? (new CustomController)->imageUpload($request->file('testo_bg_image'))
+                : ($request->testo_bg_image_current ?? null),
+        ];
+
+        // Advisory Board
+        $home_settings['advisory'] = [
+            'title'   => $request->advisory_title,
+            'doctors' => collect($request->doctor_name ?? [])->map(function($name, $i) use ($request) {
+                return [
+                    'name'  => $name,
+                    'role'  => $request->doctor_role[$i] ?? '',
+                    'image' => $request->hasFile('doctor_image') && isset($request->file('doctor_image')[$i])
+                        ? (new CustomController)->imageUpload($request->file('doctor_image')[$i])
+                        : ($request->doctor_image_current[$i] ?? null),
+                ];
+            })->toArray(),
+        ];
+
+        // Stats Section
+        $home_settings['stats'] = [
+            'subtitle' => $request->stats_subtitle,
+            'items'    => collect($request->stat_label ?? [])->map(fn($l, $i) => [
+                'label'  => $l,
+                'number' => $request->stat_number[$i] ?? '',
+                'title'  => $request->stat_title[$i] ?? '',
+            ])->toArray(),
+        ];
+
+        // Comparison Table
+        $home_settings['comparison'] = [
+            'title'    => $request->compare_title,
+            'bg_image' => $request->hasFile('compare_bg_image')
+                ? (new CustomController)->imageUpload($request->file('compare_bg_image'))
+                : ($request->compare_bg_image_current ?? null),
+            'rows'     => collect($request->compare_left ?? [])->map(fn($l, $i) => [
+                'left'  => $l,
+                'right' => $request->compare_right[$i] ?? '',
+            ])->toArray(),
+        ];
+
+        // FAQ Section
+        $home_settings['faq'] = [
+            'title'    => $request->faq_title,
+            'subtitle' => $request->faq_subtitle,
+            'items'    => collect($request->faq_question ?? [])->map(fn($q, $i) => [
+                'question' => $q,
+                'answer'   => $request->faq_answer[$i] ?? '',
+            ])->toArray(),
+        ];
+
+        // Press Logos
+        $home_settings['press'] = [
+            'label' => $request->press_label,
+            'logos' => collect($request->press_name ?? [])->map(fn($n) => ['name' => $n])->toArray(),
+        ];
+
+        // Mid-page CTA
+        $home_settings['mid_cta'] = [
+            'heading'  => $request->mid_cta_heading,
+            'subtext'  => $request->mid_cta_subtext,
+            'btn_text' => $request->mid_cta_btn_text,
+            'btn_url'  => $request->mid_cta_btn_url ?? '#',
+            'note'     => $request->mid_cta_note,
+        ];
+
+        // Privacy Section
+        $home_settings['privacy_section'] = [
+            'heading'     => $request->privacy_heading,
+            'span'        => $request->privacy_span,
+            'description' => $request->privacy_description,
+            'image'       => $request->hasFile('privacy_image')
+                ? (new CustomController)->imageUpload($request->file('privacy_image'))
+                : ($request->privacy_image_current ?? null),
+        ];
+
+        // Newsletter Section
+        $home_settings['newsletter'] = [
+            'heading'     => $request->newsletter_heading,
+            'description' => $request->newsletter_description,
+            'legal_text'  => $request->newsletter_legal,
+            'bg_image'    => $request->hasFile('newsletter_bg_image')
+                ? (new CustomController)->imageUpload($request->file('newsletter_bg_image'))
+                : ($request->newsletter_bg_image_current ?? null),
+        ];
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings
@@ -473,6 +575,11 @@ class SettingController extends Controller
         }
 
         // abort(403, json_encode($data)); // DEBUG
+        $data['website_header_btn_text']       = $request->website_header_btn_text;
+        $data['website_header_btn_url']        = $request->website_header_btn_url;
+        $data['website_header_btn_bg_color']   = $request->website_header_btn_bg_color ?? '#7b42f6';
+        $data['website_header_btn_text_color'] = $request->website_header_btn_text_color ?? '#ffffff';
+
         $setting->landing_popup_switch = $request->has('landing_popup_switch') ? 1 : 0;
         $setting->website_header_search = $request->has('website_header_search') ? 1 : 0;
         $setting->website_header_user = $request->has('website_header_user') ? 1 : 0;

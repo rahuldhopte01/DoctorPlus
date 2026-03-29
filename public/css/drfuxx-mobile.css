@@ -1,0 +1,374 @@
+/* =============================================
+   dr.fuxx Mobile-Only View
+   Forces mobile layout regardless of screen size
+   ============================================= */
+
+/* Constrain entire page to mobile width, centered */
+html {
+  max-width: 390px;
+  margin: 0 auto;
+  background: #e8e8e8;
+  overflow-x: hidden;
+}
+
+body {
+  max-width: 390px;
+  margin: 0 auto;
+  box-shadow: 0 0 40px rgba(0,0,0,0.15);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== TICKER ===== */
+.ticker-bar {
+  height: 32px;
+}
+.ticker-item {
+  font-size: 0.7rem;
+  padding: 0 12px;
+}
+.ticker-item svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  height: 56px;
+}
+.header-inner {
+  padding: 0 16px;
+}
+.logo-img {
+  height: 48px !important;
+}
+.btn-cta.hdr {
+  display: none !important;
+}
+.icon-btn {
+  width: 36px;
+  height: 36px;
+}
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ===== PROMO BANNER ===== */
+.promo-banner {
+  padding: 10px 16px;
+  font-size: 0.8rem;
+}
+.promo-banner .floral-left,
+.promo-banner .floral-right {
+  width: 80px;
+}
+.cd-block {
+  padding: 4px 8px !important;
+}
+
+/* ===== HERO ===== */
+.hero {
+  margin: 0 !important;
+  padding: 32px 16px 24px !important;
+  max-width: 100% !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.hero-keyword {
+  font-size: 1.5rem !important;
+}
+.hero h1 {
+  font-size: 1.6rem !important;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.hero-sub {
+  font-size: 0.82rem;
+  margin-bottom: 14px !important;
+}
+.hero-search {
+  flex-direction: column !important;
+  gap: 8px;
+  max-width: 100% !important;
+}
+.btn-cta {
+  font-size: 0.85rem;
+  padding: 10px 20px;
+}
+.hero-trust-row {
+  flex-wrap: wrap !important;
+  gap: 6px 12px !important;
+  justify-content: center;
+}
+.hero-trust-item {
+  font-size: 0.72rem !important;
+}
+.hero-trust-item svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+.hero-rating {
+  font-size: 0.75rem;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.hero-rating .stars {
+  font-size: 0.85rem;
+}
+.hero-live-users {
+  font-size: 0.72rem !important;
+}
+
+/* ===== CATEGORIES ===== */
+.categories {
+  padding: 10px 12px 32px !important;
+}
+.cat-grid {
+  grid-template-columns: 1fr !important;
+  gap: 10px !important;
+}
+/* Top category cards always stay 3 columns */
+.top-cats .cat-grid-3 {
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 6px !important;
+}
+.cat-card {
+  padding: 18px 16px !important;
+  border-radius: 14px;
+}
+.cat-card h3 {
+  font-size: 1rem;
+}
+.cat-img-wrap {
+  height: 80px;
+}
+
+/* ===== ONLINE SECTION ===== */
+.online-section {
+  padding: 32px 16px;
+}
+.section-title {
+  font-size: 1.5rem !important;
+}
+.section-sub {
+  font-size: 0.85rem;
+}
+
+/* ===== STEPS ===== */
+.steps-wrapper {
+  padding: 32px 16px;
+}
+.steps-grid-tilted {
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 24px !important;
+}
+.tilt-left, .tilt-center, .tilt-right {
+  transform: none !important;
+  margin: 0 !important;
+}
+.step-card-tilted {
+  width: 100% !important;
+  max-width: 340px !important;
+  min-height: auto !important;
+}
+
+/* ===== STATS ===== */
+.stats-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  padding: 0 16px;
+}
+.stat-item {
+  padding: 16px 12px;
+}
+.stat-num {
+  font-size: 1.8rem !important;
+}
+
+/* ===== TRUST BANNER ===== */
+.trust-banner {
+  padding: 24px 16px !important;
+}
+.trust-banner h2 {
+  font-size: 1.3rem !important;
+  line-height: 1.3;
+}
+
+/* ===== FEATURES ===== */
+.features {
+  padding: 0 12px 32px;
+}
+.features-grid {
+  grid-template-columns: 1fr !important;
+  gap: 16px !important;
+}
+.feature-card {
+  padding: 24px 16px !important;
+}
+.feature-card h3 {
+  font-size: 1.2rem;
+}
+
+/* ===== PRIVACY ===== */
+.privacy {
+  padding: 32px 12px;
+}
+.privacy-inner {
+  grid-template-columns: 1fr !important;
+  gap: 20px;
+}
+.privacy h2 {
+  font-size: 1.4rem;
+}
+.badges {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.badge-item {
+  font-size: 0.7rem !important;
+  padding: 8px 12px !important;
+}
+
+/* ===== REVIEWS ===== */
+.reviews {
+  padding: 32px 12px;
+}
+.reviews-top {
+  grid-template-columns: 1fr !important;
+  gap: 20px;
+}
+.reviews-grid {
+  grid-template-columns: 1fr !important;
+  gap: 12px;
+}
+.big-num {
+  font-size: 2rem !important;
+}
+
+/* ===== SUB-CATEGORY TICKER ===== */
+.subcat-ticker {
+  padding: 10px 0;
+}
+
+/* ===== TREATMENT CARDS ===== */
+.treatment-cards {
+  grid-template-columns: 1fr !important;
+  gap: 12px;
+  padding: 0 12px;
+}
+.treatment-btns {
+  flex-direction: column !important;
+  align-items: center;
+}
+
+/* ===== NEWSLETTER ===== */
+.newsletter-hero {
+  min-height: 320px !important;
+}
+.nl-hero-content {
+  padding: 24px 16px !important;
+}
+.nl-hero-content h2 {
+  font-size: 1.5rem !important;
+}
+.nl-form {
+  flex-direction: column !important;
+  gap: 8px;
+}
+.nl-hero-bg::before {
+  background: linear-gradient(to right, rgba(200,230,245,0.95) 0%, rgba(200,230,245,0.85) 60%, rgba(200,230,245,0.5) 100%) !important;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding: 32px 16px 80px !important;
+}
+.footer-inner {
+  grid-template-columns: 1fr !important;
+  gap: 24px;
+}
+.footer-col h4 {
+  font-size: 0.9rem;
+}
+.footer-bottom {
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+/* ===== STICKY CTA BAR ===== */
+.sticky-cta-bar .sticky-cta-inner {
+  flex-direction: column !important;
+  text-align: center;
+  gap: 8px !important;
+  padding: 10px 16px !important;
+}
+.sticky-cta-text {
+  font-size: 0.78rem !important;
+}
+.sticky-btn {
+  font-size: 0.82rem !important;
+  padding: 8px 16px !important;
+}
+
+/* ===== SOCIAL PROOF TOAST ===== */
+.social-proof-toast {
+  left: 12px !important;
+  right: 12px !important;
+  max-width: none !important;
+  bottom: 140px !important;
+}
+
+/* ===== MADE IN GERMANY BADGE ===== */
+.made-in-germany-badge {
+  bottom: 140px !important;
+  right: 8px !important;
+  padding: 8px 12px !important;
+  border-radius: 10px;
+}
+.mig-flag {
+  width: 26px !important;
+  height: 18px !important;
+}
+.mig-text strong {
+  font-size: 0.72rem !important;
+}
+.mig-text small {
+  font-size: 0.58rem !important;
+}
+
+/* ===== COMPARISON TABLE (if exists) ===== */
+.comparison-table {
+  overflow-x: auto;
+}
+
+/* ===== PHONE FRAME WRAPPER ===== */
+/* Visual phone frame for desktop viewing */
+@media (min-width: 420px) {
+  html {
+    padding: 20px 0;
+    min-height: 100vh;
+  }
+  body {
+    border-radius: 32px;
+    border: 8px solid #1a1a1a;
+    overflow: hidden;
+    margin-top: 0;
+  }
+  body::before {
+    content: '';
+    display: block;
+    width: 120px;
+    height: 28px;
+    background: #1a1a1a;
+    border-radius: 0 0 14px 14px;
+    margin: 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+  }
+}

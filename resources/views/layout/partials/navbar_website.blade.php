@@ -64,6 +64,27 @@
             </a>
             @endif
 
+            @php
+                $languages = App\Models\Language::where('status',1)->get();
+                $currentLangIcon = App\Models\Language::where('name', session('locale'))->first();
+                $lang_image = $currentLangIcon ? $currentLangIcon->image : 'english.png';
+            @endphp
+            @if(count($languages) > 1)
+            <div class="dropdown header-lang-switcher">
+                <a href="javascript:void(0);" class="header-icon dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration:none;">
+                    <img class="rounded" src="{{ asset('images/upload/'.$lang_image) }}" style="width:32px; height:32px; object-fit:cover;">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    @foreach($languages as $language)
+                    <a href="{{ url('/change_language/'.$language->id) }}" class="dropdown-item d-flex align-items-center gap-2">
+                        <img src="{{ asset('images/upload/'.$language->image) }}" width="36" height="24" class="rounded" alt="{{ $language->name }}">
+                        <span>{{ $language->name }}</span>
+                    </a>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
+
             @if($setting->website_header_hamburger)
             <div class="header-icon" id="hamburgerMenu">
                 <i class="bi bi-list"></i>

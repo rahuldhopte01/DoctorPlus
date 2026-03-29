@@ -18,6 +18,126 @@
     <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
     <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
+    <link href="{{asset('css/drfuxx-landing.css')}}" rel="stylesheet">
+    <style>
+        /* ── CSS vars used by drfuxx-landing.css ── */
+        :root {
+            --color-primary: #7c3aed;
+            --color-primary-bg: #f5f3ff;
+            --color-dark: #1a1a1a;
+            --font-heading: 'Clash Display', sans-serif;
+        }
+        /* ── Sub-categories Ticker ── */
+        .subcat-ticker {
+            overflow: hidden;
+            padding: 14px 0;
+            border-top: 1px solid #e9e5f5;
+            border-bottom: 1px solid #e9e5f5;
+            background: #faf8ff;
+        }
+        .subcat-track {
+            display: flex;
+            gap: 8px;
+            animation: subcatScroll 40s linear infinite;
+            width: max-content;
+        }
+        .subcat-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 50px;
+            border: 1.5px solid #e0e0e0;
+            background: #faf8ff;
+            color: #1f2129;
+            font-size: 0.82rem;
+            font-weight: 500;
+            white-space: nowrap;
+            text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .subcat-item:hover {
+            border-color: #7c3aed;
+            color: #7c3aed;
+            background: #f5f3ff;
+        }
+        @keyframes subcatScroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        /* ── Online Section (How It Works) ── */
+        .online-section {
+            background: linear-gradient(160deg, #ece8ff 0%, #ddd6fe 50%, #ece8ff 100%);
+            padding: 80px 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .section-title {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 400;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+        .section-title span { color: #7c3aed !important; }
+        .section-sub {
+            color: #605f64;
+            max-width: 620px;
+            margin: 0 auto 40px;
+            font-size: 1rem;
+        }
+        .steps-wrapper {
+            position: relative;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .steps-wave {
+            position: absolute;
+            top: 50%;
+            left: -5%;
+            width: 110%;
+            height: 200px;
+            transform: translateY(-50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .steps-grid-tilted {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+        }
+        .step-img-tilted {
+            width: 100%;
+            flex: 1;
+            min-height: 180px;
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #f3f0ff, #f5f3ff);
+            margin-top: auto;
+        }
+        .step-img-tilted img { width:100%; height:100%; object-fit:cover; border-radius:14px; display:block; }
+        /* ── Trust Banner ── */
+        .trust-banner {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%);
+            color: white;
+            text-align: center;
+            padding: 80px 24px;
+        }
+        .trust-banner h2 {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 400;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.25;
+        }
+    </style>
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -731,6 +851,399 @@
             </div>
         </div>
     </div>
+</section>
+
+<!-- Testosterone Section -->
+@php
+    $testo = $homeSettings['testosterone'] ?? [];
+    $testoPill = $testo['pill'] ?? 'TESTOSTERON-INJEKTION';
+    $testoRaw = $testo['title'] ?? 'Testosteron-Injektion —|fertig zur Direktnutzung';
+    $testoParts = explode('|', $testoRaw, 2);
+    $testoLine1 = trim($testoParts[0]);
+    $testoLine2 = isset($testoParts[1]) ? trim($testoParts[1]) : '';
+@endphp
+<section class="ha-banner-section" style="background:linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #f5f3ff 100%) !important;position:relative;overflow:hidden;min-height:500px;display:flex;flex-direction:column;justify-content:center;">
+    @if(!empty($testo['bg_image']))
+        <img src="{{ url('images/upload/'.$testo['bg_image']) }}" alt="" style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:90%;width:auto;object-fit:contain;z-index:0;opacity:0.5;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(245,243,255,0.9) 0%,rgba(237,233,254,0.5) 40%,transparent 70%);z-index:1;"></div>
+    @endif
+    <div class="ha-inner" style="position:relative;z-index:2;">
+        <span class="ha-pill" style="border-color:#7c3aed !important;color:#7c3aed !important;">{{ $testoPill }}</span>
+        <h2 class="ha-heading">{{ $testoLine1 }}@if($testoLine2)<br><span style="color:#7c3aed">{{ $testoLine2 }}</span>@endif</h2>
+        <div class="testo-btns">
+            <a href="{{ $testo['btn1_url'] ?? '#' }}" class="testo-btn-outline">{{ $testo['btn1_text'] ?? 'Mehr erfahren' }}</a>
+            <a href="{{ $testo['btn2_url'] ?? '#' }}" class="testo-btn-filled" style="background:#7c3aed;border-color:#7c3aed;">{{ $testo['btn2_text'] ?? 'Jetzt Beratung starten' }}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Advisory Board Section (COMMAND 7a) -->
+@php $advisory = $home['advisory'] ?? []; @endphp
+<section class="advisory-section">
+    <div style="max-width:900px;margin:0 auto;">
+        <h2 style="font-size:1.8rem;font-weight:800;color:#1a1a1a;text-align:center;margin-bottom:8px;">{{ $advisory['title'] ?? 'Unser medizinischer Beirat' }}</h2>
+        <div class="doc-grid">
+            @if(!empty($advisory['doctors']))
+                @foreach($advisory['doctors'] as $doctor)
+                <div class="doc-card">
+                    @if(!empty($doctor['image']))
+                        <img src="{{ url('images/upload/'.$doctor['image']) }}" alt="{{ $doctor['name'] ?? '' }}">
+                    @else
+                        <img src="https://placehold.co/320x200/f3f0ff/1a1a1a?text=Dr.+med." alt="Placeholder">
+                    @endif
+                    <div class="doc-card-info">
+                        <div class="doc-card-name">{{ $doctor['name'] ?? '' }}</div>
+                        @if(!empty($doctor['role']))<div class="doc-card-role">{{ $doctor['role'] }}</div>@endif
+                    </div>
+                </div>
+                @endforeach
+            @else
+                @for($i = 1; $i <= 5; $i++)
+                <div class="doc-card">
+                    <img src="https://placehold.co/320x200/f3f0ff/1a1a1a?text=Dr.+med.+Expert" alt="Dr. med. Expert">
+                    <div class="doc-card-info">
+                        <div class="doc-card-name">Dr. med. Expert</div>
+                    </div>
+                </div>
+                @endfor
+            @endif
+        </div>
+        <div class="doc-dots" id="docDots">
+            <span class="doc-dot active"></span>
+            <span class="doc-dot"></span>
+            <span class="doc-dot"></span>
+            <span class="doc-dot"></span>
+            <span class="doc-dot"></span>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section (COMMAND 7b) -->
+@php $stats = $home['stats'] ?? []; @endphp
+<section class="cbs-stats-section">
+    <p class="cbs-stats-sub">{{ $stats['subtitle'] ?? 'Rund um die Uhr Hilfe von deutschen Ärzten' }}</p>
+    <div class="cbs-stats-grid">
+        @if(!empty($stats['items']))
+            @foreach($stats['items'] as $stat)
+            <div class="cbs-stat">
+                <span class="cbs-stat-label">ÜBER</span>
+                <span class="cbs-stat-num">{{ $stat['number'] ?? '' }}</span>
+                <span class="cbs-stat-title">{{ $stat['title'] ?? '' }}</span>
+            </div>
+            @endforeach
+        @else
+            <div class="cbs-stat">
+                <span class="cbs-stat-label">ÜBER</span>
+                <span class="cbs-stat-num">8.000</span>
+                <span class="cbs-stat-title">Stammkunden</span>
+            </div>
+            <div class="cbs-stat">
+                <span class="cbs-stat-label">ÜBER</span>
+                <span class="cbs-stat-num">12</span>
+                <span class="cbs-stat-title">Jahre Expertise</span>
+            </div>
+        @endif
+    </div>
+</section>
+
+<!-- Comparison Section (COMMAND 7b) -->
+@php $compare = $home['comparison'] ?? []; @endphp
+<section class="comparison-section" style="position:relative;overflow:hidden;@if(!empty($compare['bg_image']))background-image:url('{{ url('images/upload/'.$compare['bg_image']) }}');background-size:cover;background-position:center;@endif">
+    <div class="comparison-inner" style="position:relative;z-index:2;">
+        <h2 class="comparison-title" style="margin-top:0;">{{ $compare['title'] ?? 'Warum dr.fuxx?' }}</h2>
+        <div class="comp-table">
+            <!-- Header row (hardcoded) -->
+            <div class="comp-row comp-header">
+                <div class="comp-col comp-left">
+                    <span class="comp-badge-red">&#10007;</span>
+                    Andere Anbieter
+                </div>
+                <div class="comp-col comp-right">
+                    <span class="comp-badge-green">&#10003;</span>
+                    Dr. Fuxx
+                </div>
+            </div>
+            @if(!empty($compare['rows']))
+                @foreach($compare['rows'] as $row)
+                <div class="comp-row">
+                    <div class="comp-col comp-left"><span class="comp-x">&times;</span> {{ $row['left'] ?? '' }}</div>
+                    <div class="comp-col comp-right"><span class="comp-check">&#10003;</span> {{ $row['right'] ?? '' }}</div>
+                </div>
+                @endforeach
+            @else
+                <div class="comp-row">
+                    <div class="comp-col comp-left"><span class="comp-x">&times;</span> Keine deutschen Ärzte</div>
+                    <div class="comp-col comp-right"><span class="comp-check">&#10003;</span> Deutsche Ärzte</div>
+                </div>
+                <div class="comp-row">
+                    <div class="comp-col comp-left"><span class="comp-x">&times;</span> Daten im Ausland</div>
+                    <div class="comp-col comp-right"><span class="comp-check">&#10003;</span> Daten sicher in DE</div>
+                </div>
+                <div class="comp-row">
+                    <div class="comp-col comp-left"><span class="comp-x">&times;</span> Keine DSGVO</div>
+                    <div class="comp-col comp-right"><span class="comp-check">&#10003;</span> 100% DSGVO-konform</div>
+                </div>
+                <div class="comp-row">
+                    <div class="comp-col comp-left"><span class="comp-x">&times;</span> Support eingeschränkt</div>
+                    <div class="comp-col comp-right"><span class="comp-check">&#10003;</span> Immer erreichbar</div>
+                </div>
+                <div class="comp-row">
+                    <div class="comp-col comp-left"><span class="comp-x">&times;</span> Ausländische Tech</div>
+                    <div class="comp-col comp-right"><span class="comp-check">&#10003;</span> Made in Germany</div>
+                </div>
+            @endif
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section (COMMAND 7c) -->
+@php $faq = $home['faq'] ?? []; @endphp
+<section class="faq-section" id="faq-section">
+    <div class="faq-inner">
+        <div class="faq-header">
+            <h2 class="faq-title">{{ $faq['title'] ?? 'Sie haben Fragen?' }}</h2>
+            <p class="faq-subtitle">{{ $faq['subtitle'] ?? 'Hier gibt es Antworten!' }}</p>
+        </div>
+        <div class="faq-list">
+            @if(!empty($faq['items']))
+                @foreach($faq['items'] as $index => $item)
+                <div class="faq-item {{ $index === 0 ? 'active' : '' }}">
+                    <button class="faq-q">{{ $item['question'] ?? '' }}<span class="faq-icon">{{ $index === 0 ? '&#8963;' : '&#8964;' }}</span></button>
+                    <div class="faq-a">
+                        <p>{{ $item['answer'] ?? '' }}</p>
+                    </div>
+                </div>
+                @endforeach
+            @else
+                <div class="faq-item active">
+                    <button class="faq-q">Was ist dr.fuxx?<span class="faq-icon">&#8963;</span></button>
+                    <div class="faq-a">
+                        <p>dr.fuxx ist eine digitale Gesundheits- und Apothekenplattform mit Sitz in Deutschland. Wir verbinden Patienten mit zugelassenen Ärzten, die medizinische Fernuntersuchungen durchführen und bei Bedarf elektronische Rezepte ausstellen.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q">Wie funktioniert dr.fuxx?<span class="faq-icon">&#8964;</span></button>
+                    <div class="faq-a">
+                        <p>Wählen Sie Ihre Behandlung aus, beantworten Sie einen kurzen medizinischen Fragebogen und ein zugelassener Arzt prüft Ihre Angaben. Bei Eignung wird ein Rezept ausgestellt und das Medikament diskret zu Ihnen nach Hause geliefert – alles online, ohne Wartezeit.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q">Wer sind die Anbieter bei dr.fuxx?<span class="faq-icon">&#8964;</span></button>
+                    <div class="faq-a">
+                        <p>Alle Ärzte auf dr.fuxx sind vollständig zugelassen und in Deutschland registriert. Unsere Partnerapotheken sind ebenfalls staatlich zertifiziert und unterliegen strengen Qualitätskontrollen.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q">Benötigt man für dr.fuxx eine Versicherung?<span class="faq-icon">&#8964;</span></button>
+                    <div class="faq-a">
+                        <p>Nein, eine Krankenversicherung ist nicht erforderlich. dr.fuxx ist ein Privatanbieter und kann von jedem genutzt werden. Je nach Behandlung und Versicherung können jedoch Erstattungen möglich sein.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q">Für wen ist dr.fuxx gedacht?<span class="faq-icon">&#8964;</span></button>
+                    <div class="faq-a">
+                        <p>dr.fuxx richtet sich an Erwachsene, die eine schnelle, diskrete und unkomplizierte medizinische Beratung und Behandlung suchen – ganz ohne Arzttermin oder lange Wartezeiten.</p>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</section>
+
+<!-- Press Logos Section (COMMAND 8) -->
+@php $press = $home['press'] ?? []; @endphp
+<section class="press-logos">
+    <div class="press-logos-inner">
+        <span class="press-label">{{ $press['label'] ?? 'Bekannt aus' }}</span>
+        <div class="press-logos-track">
+            @if(!empty($press['logos']))
+                @foreach($press['logos'] as $logo)
+                    <span class="press-logo-name">{{ $logo['name'] }}</span>
+                @endforeach
+            @else
+                <span class="press-logo-name">BILD</span>
+                <span class="press-logo-name">TAGESSPIEGEL</span>
+                <span class="press-logo-name">FOCUS</span>
+                <span class="press-logo-name">news.de</span>
+                <span class="press-logo-name">OK!</span>
+                <span class="press-logo-name">WESTFALEN</span>
+            @endif
+        </div>
+    </div>
+</section>
+
+<!-- Mid-page CTA Section (COMMAND 8) -->
+@php $cta = $home['mid_cta'] ?? []; @endphp
+<section class="mid-cta">
+    <div class="mid-cta-inner">
+        <h2 class="mid-cta-heading">{{ $cta['heading'] ?? 'Bereit? In 3 Minuten zu deinem Rezept.' }}</h2>
+        <a href="{{ $cta['btn_url'] ?? '#' }}" class="mid-cta-btn">{{ $cta['btn_text'] ?? 'Jetzt kostenlos starten' }}</a>
+        <p class="mid-cta-note">{{ $cta['note'] ?? 'Keine Kosten bis zur Rezeptausstellung' }}</p>
+    </div>
+</section>
+
+<!-- Privacy Section (COMMAND 8) -->
+@php $priv = $home['privacy_section'] ?? []; @endphp
+<section class="privacy-v2">
+    <div class="privacy-v2-inner">
+        <div class="privacy-v2-text">
+            <h2 class="privacy-v2-heading">
+                {{ $priv['heading'] ?? 'Ihre Privatsphäre' }}
+                <span class="privacy-v2-span">{{ $priv['span'] ?? 'Unsere Priorität' }}</span>
+            </h2>
+            <p class="privacy-v2-desc">{{ $priv['description'] ?? 'Ihre Daten bleiben sicher in Deutschland' }}</p>
+            <div class="privacy-v2-badge">
+                <span class="privacy-v2-flag">🇩🇪</span>
+                <span class="privacy-v2-made">Made in Germany</span>
+            </div>
+        </div>
+        <div class="privacy-v2-image">
+            @if(!empty($priv['image']))
+                <img src="{{ url('images/upload/'.$priv['image']) }}" alt="Privacy" />
+            @else
+                <div class="privacy-v2-placeholder">
+                    <svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" fill="none">
+                        <circle cx="60" cy="45" r="30" fill="#d0e8d0"/>
+                        <ellipse cx="60" cy="130" rx="45" ry="35" fill="#d0e8d0"/>
+                    </svg>
+                </div>
+            @endif
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section (COMMAND 8) -->
+@php $news = $home['newsletter'] ?? []; @endphp
+<section class="newsletter-hero"@if(!empty($news['bg_image'])) style="background-image: url('{{ url('images/upload/'.$news['bg_image']) }}'); background-size: cover; background-position: center;"@endif>
+    <div class="newsletter-hero-inner">
+        <h2 class="newsletter-hero-heading">{{ $news['heading'] ?? 'Bleib auf dem Laufenden' }}</h2>
+        <p class="newsletter-hero-desc">{{ $news['description'] ?? 'Meld dich für unseren Newsletter an und erhalte die neuesten Gesundheitstipps und Angebote direkt in dein Postfach.' }}</p>
+        <form class="newsletter-hero-form" action="#" method="post">
+            @csrf
+            <input class="newsletter-hero-input" type="email" name="email" placeholder="Deine E-Mail-Adresse" required />
+            <button class="newsletter-hero-submit" type="submit">Anmelden</button>
+        </form>
+        <p class="newsletter-hero-legal">{{ $news['legal_text'] ?? 'Mit der Erstellung eines Kontos stimmst du unseren Nutzungsbedingungen und unserer Datenschutzrichtlinie zu.' }}</p>
+    </div>
+</section>
+
+<!-- Sub-categories Ticker (COMMAND 5a) -->
+<section class="subcat-ticker">
+    <div class="subcat-track">
+        <a href="{{ route('categories') }}" class="subcat-item">💊 Erektile Dysfunktion</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🌿 Haarausfall</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🌱 Cannabis-Therapie</a>
+        <a href="{{ route('categories') }}" class="subcat-item">💪 Testosteron</a>
+        <a href="{{ route('categories') }}" class="subcat-item">❤️ Herzgesundheit</a>
+        <a href="{{ route('categories') }}" class="subcat-item">😴 Schlafstörungen</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🧬 Diabetes</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🫁 Atemwegserkrankungen</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🧠 Mentale Gesundheit</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🌸 Frauengesundheit</a>
+        <a href="{{ route('categories') }}" class="subcat-item">⚖️ Gewichtsmanagement</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🔬 Labordiagnostik</a>
+        {{-- Duplicate for seamless loop --}}
+        <a href="{{ route('categories') }}" class="subcat-item">💊 Erektile Dysfunktion</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🌿 Haarausfall</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🌱 Cannabis-Therapie</a>
+        <a href="{{ route('categories') }}" class="subcat-item">💪 Testosteron</a>
+        <a href="{{ route('categories') }}" class="subcat-item">❤️ Herzgesundheit</a>
+        <a href="{{ route('categories') }}" class="subcat-item">😴 Schlafstörungen</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🧬 Diabetes</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🫁 Atemwegserkrankungen</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🧠 Mentale Gesundheit</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🌸 Frauengesundheit</a>
+        <a href="{{ route('categories') }}" class="subcat-item">⚖️ Gewichtsmanagement</a>
+        <a href="{{ route('categories') }}" class="subcat-item">🔬 Labordiagnostik</a>
+    </div>
+</section>
+
+<!-- How It Works — drfuxx .online-section (COMMAND 5b) -->
+<section class="online-section">
+    <h2 class="section-title">{{ $how['title'] ?? '3 einfache Schritte' }} <span>{{ $how['subtitle'] ?? '100 % online' }}</span></h2>
+    <p class="section-sub">
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:50px;padding:6px 16px;font-size:0.82rem;font-weight:600;color:#333;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <span style="width:9px;height:9px;background:#22c55e;border-radius:50%;flex-shrink:0;display:inline-block;"></span>
+            {{ $how['badge'] ?? '5 Ärzte online' }}
+        </span>
+    </p>
+
+    {{-- Desktop: tilted deck --}}
+    <div class="steps-wrapper steps-desktop-only">
+        <svg class="steps-wave" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0,100 C180,40 360,160 540,100 C720,40 900,160 1080,100 C1260,40 1380,120 1440,100" stroke="#c4b5fd" stroke-width="2" fill="none"/>
+        </svg>
+        <div class="steps-grid-tilted">
+            @foreach($how['steps'] as $sIdx => $sStep)
+            @php
+                $sTiltClass = ['tilt-left','tilt-center','tilt-right'][$sIdx] ?? 'tilt-center';
+                $sTitleParts = explode('|', $sStep['title'] ?? '', 2);
+                $sTitleNormal = trim($sTitleParts[0]);
+                $sTitlePurple = isset($sTitleParts[1]) ? trim($sTitleParts[1]) : '';
+                $sIconUrl = !empty($sStep['icon']) ? url('images/upload/'.$sStep['icon']) : null;
+            @endphp
+            <div class="step-card-tilted {{ $sTiltClass }}">
+                <div class="step-num-tilted">{{ $sIdx + 1 }}</div>
+                <h3>{{ $sTitleNormal }}@if($sTitlePurple)<span>{{ $sTitlePurple }}</span>@endif</h3>
+                @if(!empty($sStep['text']))<p>{{ $sStep['text'] }}</p>@endif
+                <div class="step-img-tilted">
+                    @if($sIconUrl)
+                    <div class="step-img-swap">
+                        <img src="{{ $sIconUrl }}" class="step-img-default" alt="">
+                        <img src="{{ $sIconUrl }}" class="step-img-hover" alt="">
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    {{-- Mobile: sbook page-turn --}}
+    <div class="sbook-wrap steps-mobile-only">
+        <div class="sbook" id="stepBook">
+            @foreach($how['steps'] as $sIdx => $sStep)
+            @php
+                $sTitleParts = explode('|', $sStep['title'] ?? '', 2);
+                $sTitleNormal = trim($sTitleParts[0]);
+                $sTitlePurple = isset($sTitleParts[1]) ? trim($sTitleParts[1]) : '';
+                $sIconUrl = !empty($sStep['icon']) ? url('images/upload/'.$sStep['icon']) : null;
+            @endphp
+            <div class="sbook-page">
+                <div class="sbook-num">{{ $sIdx + 1 }}</div>
+                <div class="sbook-text">
+                    <h3>{{ $sTitleNormal }}@if($sTitlePurple)<span>{{ $sTitlePurple }}</span>@endif</h3>
+                    @if(!empty($sStep['text']))<p>{{ $sStep['text'] }}</p>@endif
+                </div>
+                <div class="sbook-img">
+                    @if($sIconUrl)
+                        <img src="{{ $sIconUrl }}" alt="">
+                    @else
+                        <div style="width:100%;height:100%;background:linear-gradient(135deg,#f3f0ff,#ede9fe);display:flex;align-items:center;justify-content:center;">
+                            <span style="font-size:3rem;opacity:0.35;font-weight:800;color:#7c3aed;">{{ $sIdx + 1 }}</span>
+                        </div>
+                    @endif
+                </div>
+                <div class="sbook-curl"></div>
+            </div>
+            @endforeach
+        </div>
+        <div class="sbook-hint" id="sbookHint">
+            <svg viewBox="0 0 28 10" fill="none"><path d="M2 5 H26 M20 1 L26 5 L20 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Wisch um zu blättern
+        </div>
+        <div class="sbook-dots" id="sbookDots">
+            @foreach($how['steps'] as $sIdx => $sStep)
+            <span class="sbook-dot {{ $sIdx === 0 ? 'active' : '' }}"></span>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- Trust Banner (COMMAND 5c) --}}
+@php $trust_text = $homeSettings['trust_banner']['text'] ?? "Deutschlands größte Online-Klinik – mit echten deutschen Ärzten, rund um die Uhr für dich da"; @endphp
+<section class="trust-banner">
+    <h2>{{ $trust_text }}</h2>
 </section>
 
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
@@ -1462,6 +1975,128 @@
     buildDots();
     render(false);
 })();
+</script>
+<script>
+// ── Step Book — Page-Turn Swiper (COMMAND 5) ──
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        var book = document.getElementById('stepBook');
+        if (!book) return;
+
+        var pages   = Array.from(book.querySelectorAll('.sbook-page'));
+        var dots    = Array.from(document.querySelectorAll('#sbookDots .sbook-dot'));
+        var hint    = document.getElementById('sbookHint');
+        var current = 0;
+        var busy    = false;
+        var turned  = pages.map(function() { return false; });
+
+        function applyLayout() {
+            pages.forEach(function(p) {
+                p.classList.remove('turning-out', 'turning-back', 'rising-in');
+            });
+            pages.forEach(function(p, i) {
+                if (turned[i]) {
+                    p.style.transition = 'none';
+                    p.style.transform  = 'rotateY(-100deg)';
+                    p.style.zIndex     = '1';
+                } else if (i === current) {
+                    p.style.transition = '';
+                    p.style.transform  = '';
+                    p.style.zIndex     = '30';
+                } else {
+                    var depth = i - current;
+                    p.style.transition = 'none';
+                    p.style.transform  = 'translateX(' + (depth * 5) + 'px) translateY(' + (depth * 5) + 'px) scale(' + (1 - depth * 0.025) + ')';
+                    p.style.zIndex     = String(20 - depth);
+                }
+            });
+        }
+        applyLayout();
+
+        function updateDots() {
+            dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+        }
+
+        function goTo(next) {
+            if (busy || next === current || next < 0 || next >= pages.length) return;
+            busy = true;
+            var prev    = current;
+            var forward = next > prev;
+            if (forward) {
+                pages[prev].style.transition = '';
+                pages[prev].style.zIndex     = '50';
+                pages[prev].classList.add('turning-out');
+                pages[next].style.transition = '';
+                pages[next].style.zIndex     = '40';
+                pages[next].classList.add('rising-in');
+                turned[prev] = true;
+            } else {
+                pages[next].style.transition = 'none';
+                pages[next].style.transform  = 'rotateY(-100deg)';
+                pages[next].style.zIndex     = '50';
+                void pages[next].offsetWidth;
+                pages[next].style.transition = '';
+                pages[next].classList.add('turning-back');
+                turned[next] = false;
+            }
+            current = next;
+            updateDots();
+            if (hint) hint.classList.add('hidden');
+            setTimeout(function() { applyLayout(); busy = false; }, 660);
+        }
+
+        var tx = 0, ty = 0;
+        book.addEventListener('touchstart', function(e) {
+            tx = e.touches[0].clientX;
+            ty = e.touches[0].clientY;
+        }, { passive: true });
+        book.addEventListener('touchend', function(e) {
+            var dx = e.changedTouches[0].clientX - tx;
+            var dy = e.changedTouches[0].clientY - ty;
+            if (Math.abs(dx) < 35 || Math.abs(dy) > Math.abs(dx)) return;
+            if (dx < 0) goTo(current + 1);
+            else        goTo(current - 1);
+        }, { passive: true });
+        book.addEventListener('click', function(e) {
+            var rect = book.getBoundingClientRect();
+            if (e.clientX > rect.left + rect.width / 2) goTo(current + 1);
+            else goTo(current - 1);
+        });
+    });
+})();
+</script>
+<script>
+// ── Doc-grid swipe dots (COMMAND 7a) ──
+document.addEventListener('DOMContentLoaded', function() {
+    var grid = document.querySelector('.doc-grid');
+    var dots = document.querySelectorAll('#docDots .doc-dot');
+    if (!grid || !dots.length) return;
+    grid.addEventListener('scroll', function() {
+        var cards = grid.querySelectorAll('.doc-card');
+        if (!cards.length) return;
+        var cardW = cards[0].offsetWidth + 12;
+        var idx = Math.min(Math.round(grid.scrollLeft / cardW), dots.length - 1);
+        dots.forEach(function(d, i) { d.classList.toggle('active', i === idx); });
+    }, { passive: true });
+});
+
+// ── FAQ accordion (COMMAND 7c) ──
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#faq-section .faq-q').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var item = this.closest('.faq-item');
+            var isActive = item.classList.contains('active');
+            document.querySelectorAll('#faq-section .faq-item').forEach(function(el) {
+                el.classList.remove('active');
+                el.querySelector('.faq-icon').innerHTML = '&#8964;';
+            });
+            if (!isActive) {
+                item.classList.add('active');
+                item.querySelector('.faq-icon').innerHTML = '&#8963;';
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>

@@ -635,7 +635,6 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <!-- Header Settings -->
                                     <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
-                                    <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
                                         <h5 class="mb-4">{{__('Promo Bar Settings')}}</h5>
                                         @php
                                             $promo = json_decode($setting->website_header_promo_bar, true) ?: [];
@@ -1256,6 +1255,224 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        {{-- ===== Sub-categories Ticker ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Sub-categories Ticker</h5>
+                                        <p class="text-muted small mb-3">Scrolling pill row below the hero. One text item per row.</p>
+                                        <div id="subcat-container">
+                                            @php $sub_cats = $home['sub_categories'] ?? []; @endphp
+                                            @if(count($sub_cats) > 0)
+                                                @foreach($sub_cats as $sc)
+                                                <div class="row subcat-item mb-2 align-items-end">
+                                                    <div class="col-md-10">
+                                                        <input type="text" name="sub_cat_text[]" value="{{ $sc['text'] }}" class="form-control" placeholder="e.g. Vorzeitiger Samenerguss">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-subcat"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row subcat-item mb-2 align-items-end">
+                                                    <div class="col-md-10">
+                                                        <input type="text" name="sub_cat_text[]" class="form-control" placeholder="e.g. Vorzeitiger Samenerguss">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-subcat"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-subcat" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Sub-category</button>
+
+                                        {{-- ===== Trust Banner ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Trust Banner</h5>
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                <label>Banner Text</label>
+                                                <input type="text" name="trust_banner_text" value="{{ $home['trust_banner']['text'] ?? '' }}" class="form-control" placeholder="Deutschlands größte Online-Klinik...">
+                                            </div>
+                                        </div>
+
+                                        {{-- ===== Testosterone Section ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Testosterone Section</h5>
+                                        @php $testo = $home['testosterone'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-4"><label>Pill/Badge Text</label><input type="text" name="testo_pill" value="{{ $testo['pill'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-8"><label>Title</label><input type="text" name="testo_title" value="{{ $testo['title'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-3"><label>Button 1 Text</label><input type="text" name="testo_btn1_text" value="{{ $testo['btn1_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button 1 URL</label><input type="text" name="testo_btn1_url" value="{{ $testo['btn1_url'] ?? '#' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button 2 Text</label><input type="text" name="testo_btn2_text" value="{{ $testo['btn2_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button 2 URL</label><input type="text" name="testo_btn2_url" value="{{ $testo['btn2_url'] ?? '#' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <label>Background Image</label>
+                                                <input type="file" name="testo_bg_image" class="form-control mb-1">
+                                                <input type="hidden" name="testo_bg_image_current" value="{{ $testo['bg_image'] ?? '' }}">
+                                                @if(!empty($testo['bg_image']))<img src="{{ url('images/upload/'.$testo['bg_image']) }}" style="height:60px; margin-top:5px;">@endif
+                                            </div>
+                                        </div>
+
+                                        {{-- ===== Medical Advisory Board ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Medical Advisory Board</h5>
+                                        @php $advisory = $home['advisory'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Section Title</label><input type="text" name="advisory_title" value="{{ $advisory['title'] ?? 'Unser medizinischer Beirat' }}" class="form-control"></div>
+                                        </div>
+                                        <p class="text-muted small">Doctor Cards:</p>
+                                        <div id="doctor-container">
+                                            @if(count($advisory['doctors'] ?? []) > 0)
+                                                @foreach($advisory['doctors'] as $i => $doc)
+                                                <div class="row doctor-item mb-3 align-items-end border-bottom pb-3">
+                                                    <div class="col-md-4"><label>Name</label><input type="text" name="doctor_name[]" value="{{ $doc['name'] }}" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Role</label><input type="text" name="doctor_role[]" value="{{ $doc['role'] ?? '' }}" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Photo</label><input type="file" name="doctor_image[]" class="form-control mb-1"><input type="hidden" name="doctor_image_current[]" value="{{ $doc['image'] ?? '' }}">@if(!empty($doc['image']))<img src="{{ url('images/upload/'.$doc['image']) }}" style="height:40px">@endif</div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-doctor"><i class="fas fa-trash"></i></button></div>
+                                                </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row doctor-item mb-3 align-items-end border-bottom pb-3">
+                                                    <div class="col-md-4"><label>Name</label><input type="text" name="doctor_name[]" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Role</label><input type="text" name="doctor_role[]" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Photo</label><input type="file" name="doctor_image[]" class="form-control"><input type="hidden" name="doctor_image_current[]" value=""></div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-doctor"><i class="fas fa-trash"></i></button></div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-doctor" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Doctor</button>
+
+                                        {{-- ===== Stats Section ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Stats Section</h5>
+                                        @php $stats = $home['stats'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-8"><label>Subtitle</label><input type="text" name="stats_subtitle" value="{{ $stats['subtitle'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div id="stats-container">
+                                            @foreach($stats['items'] ?? [['label'=>'','number'=>'','title'=>'']] as $stat)
+                                            <div class="row stat-item mb-2 align-items-end">
+                                                <div class="col-md-3"><label>Label (e.g. ÜBER)</label><input type="text" name="stat_label[]" value="{{ $stat['label'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-3"><label>Number (e.g. 8.000)</label><input type="text" name="stat_number[]" value="{{ $stat['number'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-4"><label>Title</label><input type="text" name="stat_title[]" value="{{ $stat['title'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-stat"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-stat" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Stat</button>
+
+                                        {{-- ===== Comparison Table ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Comparison Table (Why dr.fuxx)</h5>
+                                        @php $compare = $home['comparison'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Title</label><input type="text" name="compare_title" value="{{ $compare['title'] ?? 'Warum dr.fuxx?' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Background Image</label><input type="file" name="compare_bg_image" class="form-control"><input type="hidden" name="compare_bg_image_current" value="{{ $compare['bg_image'] ?? '' }}">@if(!empty($compare['bg_image']))<img src="{{ url('images/upload/'.$compare['bg_image']) }}" style="height:40px">@endif</div>
+                                        </div>
+                                        <p class="text-muted small">Rows (header row is automatic: "Andere Anbieter" vs "Dr. Fuxx"):</p>
+                                        <div id="compare-container">
+                                            @foreach($compare['rows'] ?? [['left'=>'','right'=>'']] as $row)
+                                            <div class="row compare-item mb-2 align-items-end">
+                                                <div class="col-md-5"><label>Left (competitor, ✗)</label><input type="text" name="compare_left[]" value="{{ $row['left'] ?? '' }}" class="form-control" placeholder="Keine deutschen Ärzte"></div>
+                                                <div class="col-md-5"><label>Right (dr.fuxx, ✓)</label><input type="text" name="compare_right[]" value="{{ $row['right'] ?? '' }}" class="form-control" placeholder="Deutsche Ärzte"></div>
+                                                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-compare"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-compare" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Row</button>
+
+                                        {{-- ===== FAQ Section ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">FAQ Section</h5>
+                                        @php $faq = $home['faq'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-4"><label>Title</label><input type="text" name="faq_title" value="{{ $faq['title'] ?? 'Sie haben Fragen?' }}" class="form-control"></div>
+                                            <div class="col-md-4"><label>Subtitle (purple)</label><input type="text" name="faq_subtitle" value="{{ $faq['subtitle'] ?? 'Hier gibt es Antworten!' }}" class="form-control"></div>
+                                        </div>
+                                        <div id="faq-container">
+                                            @foreach($faq['items'] ?? [['question'=>'','answer'=>'']] as $item)
+                                            <div class="row faq-item mb-3 align-items-start">
+                                                <div class="col-md-5"><label>Question</label><input type="text" name="faq_question[]" value="{{ $item['question'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-5"><label>Answer</label><textarea name="faq_answer[]" class="form-control" rows="3">{{ $item['answer'] ?? '' }}</textarea></div>
+                                                <div class="col-md-2 pt-4"><button type="button" class="btn btn-danger btn-sm remove-faq"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-faq" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add FAQ</button>
+
+                                        {{-- ===== Press Logos ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Press Logos</h5>
+                                        @php $press = $home['press'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Label Text (e.g. "Bekannt aus")</label><input type="text" name="press_label" value="{{ $press['label'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div id="press-container">
+                                            @foreach($press['logos'] ?? [['name'=>'']] as $logo)
+                                            <div class="row press-item mb-2 align-items-end">
+                                                <div class="col-md-10"><label>Logo Name</label><input type="text" name="press_name[]" value="{{ $logo['name'] ?? '' }}" class="form-control" placeholder="Bild, Spiegel..."></div>
+                                                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-press"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-press" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Logo</button>
+
+                                        {{-- ===== Mid-page CTA ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Mid-page CTA</h5>
+                                        @php $mid_cta = $home['mid_cta'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Heading</label><input type="text" name="mid_cta_heading" value="{{ $mid_cta['heading'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Subtext</label><input type="text" name="mid_cta_subtext" value="{{ $mid_cta['subtext'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-3"><label>Button Text</label><input type="text" name="mid_cta_btn_text" value="{{ $mid_cta['btn_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button URL</label><input type="text" name="mid_cta_btn_url" value="{{ $mid_cta['btn_url'] ?? '#' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Note (small text below button)</label><input type="text" name="mid_cta_note" value="{{ $mid_cta['note'] ?? '' }}" class="form-control"></div>
+                                        </div>
+
+                                        {{-- ===== Privacy Section ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Privacy Section</h5>
+                                        @php $privacy = $home['privacy_section'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Heading</label><input type="text" name="privacy_heading" value="{{ $privacy['heading'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Span / Highlight Text</label><input type="text" name="privacy_span" value="{{ $privacy['span'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-8"><label>Description</label><textarea name="privacy_description" class="form-control" rows="3">{{ $privacy['description'] ?? '' }}</textarea></div>
+                                            <div class="col-md-4">
+                                                <label>Image</label>
+                                                <input type="file" name="privacy_image" class="form-control mb-1">
+                                                <input type="hidden" name="privacy_image_current" value="{{ $privacy['image'] ?? '' }}">
+                                                @if(!empty($privacy['image']))<img src="{{ url('images/upload/'.$privacy['image']) }}" style="height:60px; margin-top:5px;">@endif
+                                            </div>
+                                        </div>
+
+                                        {{-- ===== Newsletter Section ===== --}}
+                                        <hr>
+                                        <h5 class="mb-4">Newsletter Section</h5>
+                                        @php $newsletter = $home['newsletter'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Heading</label><input type="text" name="newsletter_heading" value="{{ $newsletter['heading'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Description</label><input type="text" name="newsletter_description" value="{{ $newsletter['description'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-6"><label>Legal / Fine Print Text</label><input type="text" name="newsletter_legal" value="{{ $newsletter['legal_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6">
+                                                <label>Background Image</label>
+                                                <input type="file" name="newsletter_bg_image" class="form-control mb-1">
+                                                <input type="hidden" name="newsletter_bg_image_current" value="{{ $newsletter['bg_image'] ?? '' }}">
+                                                @if(!empty($newsletter['bg_image']))<img src="{{ url('images/upload/'.$newsletter['bg_image']) }}" style="height:60px; margin-top:5px;">@endif
+                                            </div>
+                                        </div>
+
                                      </div>
 
                                      <!-- Footer Settings -->
@@ -1719,6 +1936,60 @@
         });
         $(document).on('click', '.remove-relief-card', function() {
             $(this).closest('.relief-card-item').remove();
+        });
+
+        // Sub-category Repeater
+        $('#add-subcat').click(function() {
+            var html = '<div class="row subcat-item mb-2 align-items-end"><div class="col-md-10"><input type="text" name="sub_cat_text[]" class="form-control" placeholder="e.g. Vorzeitiger Samenerguss"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-subcat"><i class="fas fa-trash"></i></button></div></div>';
+            $('#subcat-container').append(html);
+        });
+        $(document).on('click', '.remove-subcat', function() {
+            $(this).closest('.subcat-item').remove();
+        });
+
+        // Doctor Repeater
+        $('#add-doctor').click(function() {
+            var html = '<div class="row doctor-item mb-3 align-items-end border-bottom pb-3"><div class="col-md-4"><label>Name</label><input type="text" name="doctor_name[]" class="form-control"></div><div class="col-md-3"><label>Role</label><input type="text" name="doctor_role[]" class="form-control"></div><div class="col-md-3"><label>Photo</label><input type="file" name="doctor_image[]" class="form-control"><input type="hidden" name="doctor_image_current[]" value=""></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-doctor"><i class="fas fa-trash"></i></button></div></div>';
+            $('#doctor-container').append(html);
+        });
+        $(document).on('click', '.remove-doctor', function() {
+            $(this).closest('.doctor-item').remove();
+        });
+
+        // Stat Repeater
+        $('#add-stat').click(function() {
+            var html = '<div class="row stat-item mb-2 align-items-end"><div class="col-md-3"><label>Label (e.g. ÜBER)</label><input type="text" name="stat_label[]" class="form-control"></div><div class="col-md-3"><label>Number (e.g. 8.000)</label><input type="text" name="stat_number[]" class="form-control"></div><div class="col-md-4"><label>Title</label><input type="text" name="stat_title[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-stat"><i class="fas fa-trash"></i></button></div></div>';
+            $('#stats-container').append(html);
+        });
+        $(document).on('click', '.remove-stat', function() {
+            $(this).closest('.stat-item').remove();
+        });
+
+        // Comparison Row Repeater
+        $('#add-compare').click(function() {
+            var html = '<div class="row compare-item mb-2 align-items-end"><div class="col-md-5"><label>Left (competitor, ✗)</label><input type="text" name="compare_left[]" class="form-control" placeholder="Keine deutschen Ärzte"></div><div class="col-md-5"><label>Right (dr.fuxx, ✓)</label><input type="text" name="compare_right[]" class="form-control" placeholder="Deutsche Ärzte"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-compare"><i class="fas fa-trash"></i></button></div></div>';
+            $('#compare-container').append(html);
+        });
+        $(document).on('click', '.remove-compare', function() {
+            $(this).closest('.compare-item').remove();
+        });
+
+        // FAQ Repeater
+        $('#add-faq').click(function() {
+            var html = '<div class="row faq-item mb-3 align-items-start"><div class="col-md-5"><label>Question</label><input type="text" name="faq_question[]" class="form-control"></div><div class="col-md-5"><label>Answer</label><textarea name="faq_answer[]" class="form-control" rows="3"></textarea></div><div class="col-md-2 pt-4"><button type="button" class="btn btn-danger btn-sm remove-faq"><i class="fas fa-trash"></i></button></div></div>';
+            $('#faq-container').append(html);
+        });
+        $(document).on('click', '.remove-faq', function() {
+            $(this).closest('.faq-item').remove();
+        });
+
+        // Press Logo Repeater
+        $('#add-press').click(function() {
+            var html = '<div class="row press-item mb-2 align-items-end"><div class="col-md-10"><label>Logo Name</label><input type="text" name="press_name[]" class="form-control" placeholder="Bild, Spiegel..."></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-press"><i class="fas fa-trash"></i></button></div></div>';
+            $('#press-container').append(html);
+        });
+        $(document).on('click', '.remove-press', function() {
+            $(this).closest('.press-item').remove();
         });
 
         // Add Footer Column
