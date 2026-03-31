@@ -1293,6 +1293,7 @@ class QuestionnaireReviewController extends Controller
                 'doctor_notes' => $answer->question->doctor_notes,
                 'file_url' => $answer->full_file_url,
                 'file_name' => $answer->answer_value,
+                'sub_answers' => $answer->sub_answers ?? [],
             ];
         }
         

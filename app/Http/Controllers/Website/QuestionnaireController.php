@@ -708,8 +708,8 @@ class QuestionnaireController extends Controller
         $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
         $uploadedFiles = $savedData['files'] ?? [];
 
-        // Decode sub-answers from request
-        $subAnswers = [];
+        // Decode sub-answers — start with all previously saved section sub-answers, overlay current request
+        $subAnswers = $savedData['sub_answers'] ?? [];
         foreach ($request->input('sub_answers_json', []) as $qId => $json) {
             $decoded = json_decode($json, true);
             if (is_array($decoded)) {
@@ -866,18 +866,18 @@ class QuestionnaireController extends Controller
         $answers = $normalizedAnswers;
         $files = $request->file('files', []);
 
-        // Decode sub-answers from request
-        $subAnswers = [];
+        // Get any existing data from session (files + previously saved sub-answers from earlier sections)
+        $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
+        $uploadedFiles = $savedData['files'] ?? [];
+
+        // Decode sub-answers — start with session, overlay current request
+        $subAnswers = $savedData['sub_answers'] ?? [];
         foreach ($request->input('sub_answers_json', []) as $qId => $json) {
             $decoded = json_decode($json, true);
             if (is_array($decoded)) {
                 $subAnswers[(int) $qId] = $decoded;
             }
         }
-
-        // Get any existing files from session (in case files were uploaded earlier)
-        $savedData = session()->get('questionnaire_answers_' . $categoryId, []);
-        $uploadedFiles = $savedData['files'] ?? [];
 
         // Handle file uploads if provided in final submit (Issue 3: File upload)
         if (!empty($files)) {
