@@ -73,8 +73,7 @@ class WebsiteController extends Controller
             ->get();
 
         // Use new design if available, otherwise fallback to old
-        $home = json_decode($setting->website_home_settings, true) ?: [];
-        return view('website.home_new', compact('banners', 'doctors', 'treatments', 'setting', 'reviews', 'blogs', 'categories', 'home'));
+        return view('website.home_new', compact('banners', 'doctors', 'treatments', 'setting', 'reviews', 'blogs', 'categories'));
     }
 
     public function sign_up(Request $request)
