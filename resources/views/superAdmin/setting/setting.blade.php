@@ -619,119 +619,859 @@
                             <form action="{{url('update_content')}}" method="POST" enctype="multipart/form-data" class="myform">
                                 @csrf
 
-                                <div class="row">
-                                    <div class="col-md-3">
-                                        <label for="app_id" class="col-form-label"> {{__('Website Banner Image')}}</label>
-                                        <div class="avatar-upload avatar-box avatar-box-left">
-                                            <div class="avatar-edit">
-                                                <input type='file' id="image4" name="banner_image" accept=".png, .jpg, .jpeg" />
-                                                <label for="image4"></label>
+                                <!-- Sub-tabs for Website Setting -->
+                                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="pills-header-tab" data-toggle="pill" href="#pills-header" role="tab" aria-controls="pills-header" aria-selected="true">{{__('Header')}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="false">{{__('Home Page')}}</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="pills-footer-tab" data-toggle="pill" href="#pills-footer" role="tab" aria-controls="pills-footer" aria-selected="false">{{__('Footer')}}</a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content" id="pills-tabContent">
+                                    <!-- Header Settings -->
+                                    <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
+                                        <h5 class="mb-4">{{__('Promo Bar Settings')}}</h5>
+                                        @php $promo = json_decode($setting->website_header_promo_bar, true) ?: []; @endphp
+                                        <div class="row align-items-center mb-3">
+                                            <div class="col-md-2">
+                                                <label>{{__('Enable Promo Bar')}}</label>
+                                                <div>
+                                                    <label class="switch">
+                                                        <input type="checkbox" name="promo_status" {{ ($promo['status'] ?? 0) == 1 ? 'checked' : '' }}>
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
                                             </div>
-                                            <div class="avatar-preview">
-                                                <div id="imagePreview4" style="background-image: url({{ 'images/upload/'.$setting->banner_image }});"></div>
+                                            <div class="col-md-5">
+                                                <label>{{__('Promo Text (Italic)')}}</label>
+                                                <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im März Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im März Ihre Gesundheit:">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <label>{{__('Promo Text (Bold)')}}</label>
+                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode M4RZ sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode M4RZ sparen Sie 10 €">
                                             </div>
                                         </div>
-                                        @error('banner_image')
-                                        <div class="custom_error">
-                                            {{ $message }}
+                                        <div class="row mb-5">
+                                            <div class="col-md-4">
+                                                <label>{{__('Countdown End Date')}}</label>
+                                                <input type="datetime-local" name="promo_end_date" value="{{ $promo['end_date'] ?? '' }}" class="form-control">
+                                                <small class="text-muted">{{__('Leave empty to hide countdown timer.')}}</small>
+                                            </div>
                                         </div>
-                                        @enderror
+
+                                        <hr>
+                                        <h5 class="mb-4">{{__('Top Marquee Settings')}}</h5>
+                                        <div id="marquee-container">
+                                            @php $marquees = json_decode($setting->website_header_top_marquee, true) ?: []; @endphp
+                                            @if(count($marquees) > 0)
+                                                @foreach($marquees as $index => $marquee)
+                                                    <div class="row marquee-item mb-3 align-items-end">
+                                                        <div class="col-md-5">
+                                                            <label>{{__('Text')}}</label>
+                                                            <input type="text" name="marquee_text[]" value="{{ $marquee['text'] }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <label>{{__('Icon')}}</label>
+                                                            <input type="file" name="marquee_icon[]" class="form-control mb-1">
+                                                            <input type="hidden" name="marquee_icon_current[]" value="{{ $marquee['icon'] }}">
+                                                            @if($marquee['icon'])
+                                                                <img src="{{ url('images/upload/'.$marquee['icon']) }}" style="height: 20px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row marquee-item mb-3 align-items-end">
+                                                    <div class="col-md-5">
+                                                        <label>{{__('Text')}}</label>
+                                                        <input type="text" name="marquee_text[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <label>{{__('Icon')}}</label>
+                                                        <input type="file" name="marquee_icon[]" class="form-control">
+                                                        <input type="hidden" name="marquee_icon_current[]" value="">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-marquee" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Marquee Item')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Main Header Settings')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label class="col-form-label"> {{__('Website Header Logo')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="website_header_logo" name="website_header_logo" accept=".png, .jpg, .jpeg" />
+                                                        <label for="website_header_logo"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="websiteHeaderLogoPreview" style="background-image: url({{ $setting->website_header_logo ? url('images/upload/'.$setting->website_header_logo) : url('/images/upload_empty/fuxxlogo.png') }});"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label d-block">{{__('Search Icon')}}</label>
+                                                        <label class="cursor-pointer">
+                                                            <input type="checkbox" name="website_header_search" class="custom-switch-input" value="1" {{ $setting->website_header_search == 1 ? 'checked' : '' }}>
+                                                            <span class="custom-switch-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label d-block">{{__('User Icon')}}</label>
+                                                        <label class="cursor-pointer">
+                                                            <input type="checkbox" name="website_header_user" class="custom-switch-input" value="1" {{ $setting->website_header_user == 1 ? 'checked' : '' }}>
+                                                            <span class="custom-switch-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="col-form-label d-block">{{__('Hamburger Menu')}}</label>
+                                                        <label class="cursor-pointer">
+                                                            <input type="checkbox" name="website_header_hamburger" class="custom-switch-input" value="1" {{ $setting->website_header_hamburger == 1 ? 'checked' : '' }}>
+                                                            <span class="custom-switch-indicator"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button Text')}}</label>
+                                                        <input type="text" name="website_header_btn_text" value="{{ $setting->website_header_btn_text }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button URL')}}</label>
+                                                        <input type="text" name="website_header_btn_url" value="{{ $setting->website_header_btn_url }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-3">
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button BG Color')}}</label>
+                                                        <input type="color" name="website_header_btn_bg_color" value="{{ $setting->website_header_btn_bg_color ?: '#7b42f6' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label>{{__('Button Text Color')}}</label>
+                                                        <input type="color" name="website_header_btn_text_color" value="{{ $setting->website_header_btn_text_color ?: '#ffffff' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Sidebar Menu Items')}}</h5>
+                                        <div id="menu-container">
+                                            @php $menus = json_decode($setting->website_header_sidebar_menu, true) ?: []; @endphp
+                                            @if(count($menus) > 0)
+                                                @foreach($menus as $index => $item)
+                                                    <div class="row menu-item mb-3 align-items-end">
+                                                        <div class="col-md-5">
+                                                            <label>{{__('Label')}}</label>
+                                                            <input type="text" name="menu_label[]" value="{{ $item['label'] }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            <label>{{__('URL')}}</label>
+                                                            <input type="text" name="menu_url[]" value="{{ $item['url'] }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row menu-item mb-3 align-items-end">
+                                                    <div class="col-md-5">
+                                                        <label>{{__('Label')}}</label>
+                                                        <input type="text" name="menu_label[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="menu_url[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-menu" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Menu Item')}}</button>
                                     </div>
-                                    <div class="col-md-9">
+
+                                     <!-- Home Page Settings -->
+                                     <div class="tab-pane fade" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                                        @php
+                                            $home = json_decode($setting->website_home_settings, true) ?: [];
+                                            $hero = $home['hero'] ?? [];
+                                            $how = $home['how_it_works'] ?? [];
+                                            $relief = $home['natural_relief'] ?? [];
+                                            $about = $home['about'] ?? [];
+                                            $ed = $home['ed_banner'] ?? [];
+                                        @endphp
+
+                                        <h5 class="mb-4">{{__('Hero Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label class="col-form-label"> {{__('Hero Product Image (Center)')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="hero_image" name="hero_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="hero_image"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="heroImagePreview" style="background-image: url({{ !empty($hero['image']) ? url('images/upload/'.$hero['image']) : url('/images/upload_empty/hero.png') }});"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="form-group">
+                                                    <label>{{__('Hero Top Badge')}}</label>
+                                                    <input type="text" name="hero_badge" value="{{ $hero['badge'] ?? '' }}" class="form-control" placeholder="e.g. MED. CANNABIS">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Hero Main Title')}}</label>
+                                                    <textarea name="hero_title" class="form-control" rows="2">{{ $hero['title'] ?? '' }}</textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Hero Typing Keywords (Comma separated)')}}</label>
+                                                    <input type="text" name="hero_typing_keywords" value="{{ $hero['typing_keywords'] ?? 'MED. CANNABIS, EREKTIONSSTÖRUNGEN, TESTOSTERON, HAARAUSFALL, ÜBERGEWICHT' }}" class="form-control" placeholder="e.g. MED. CANNABIS, TESTOSTERON">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Hero Description')}}</label>
+                                                    <textarea name="hero_description" class="form-control" rows="3">{{ $hero['description'] ?? '' }}</textarea>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button Text')}}</label>
+                                                        <input type="text" name="hero_btn_text" value="{{ $hero['btn_text'] ?? '' }}" class="form-control" placeholder="e.g. Jetzt Rezept anfragen">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button URL')}}</label>
+                                                        <input type="text" name="hero_btn_url" value="{{ $hero['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-md-3">
+                                                <label class="col-form-label">{{__('Hero Section Background Image')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="hero_bg_image" name="hero_bg_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="hero_bg_image"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="heroBgImagePreview" style="background-image: url({{ !empty($hero['bg_image']) ? url('images/upload/'.$hero['bg_image']) : url('/images/upload_empty/hero.png') }});"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 d-flex flex-column justify-content-end pb-2">
+                                                <label class="col-form-label d-block">{{__('Hero Section Background Color')}}</label>
+                                                <input type="color" name="hero_bg_color" value="{{ $hero['bg_color'] ?? '#f3ecff' }}" class="form-control form-control-color" style="height: 42px; width: 100%;">
+                                                <small class="text-muted mt-1">Tint color for the gradient background</small>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h6 class="mt-3">{{__('Hero Ratings & Live Counter')}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Stars Amount (1-5)')}}</label>
+                                                <input type="number" step="0.1" name="hero_rating_stars" value="{{ $hero['rating_stars'] ?? '5' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Score Text')}}</label>
+                                                <input type="text" name="hero_rating_score" value="{{ $hero['rating_score'] ?? '4,79' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Rating Description')}}</label>
+                                                <input type="text" name="hero_rating_text" value="{{ $hero['rating_text'] ?? 'Hervorragend aus 13.764 Bewertungen' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Live Viewers Text')}}</label>
+                                                <input type="text" name="hero_live_viewers" value="{{ $hero['live_viewers'] ?? 'Personen schauen sich gerade Behandlungen an' }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <label class="mt-3">{{__('Hero Trust Items')}}</label>
+                                        <div id="hero-trust-container">
+                                            @foreach($hero['trust_items'] ?? [] as $trust)
+                                            <div class="row mb-2 trust-item align-items-end">
+                                                <div class="col-md-4">
+                                                    <label>{{__('Icon Class or Badge (e.g. bi-shield-check or DE)')}}</label>
+                                                    <input type="text" name="hero_trust_icon_class[]" value="{{ $trust['icon_class'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label>{{__('Text')}}</label>
+                                                    <input type="text" name="hero_trust_text[]" value="{{ $trust['text'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-trust"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-trust" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Trust Item')}}</button>
+
+                                        <hr>
+                                        <label class="mt-3">{{__('Hero Quick Links (Cards)')}}</label>
+                                        <div id="hero-quick-link-container">
+                                            @foreach($hero['quick_links'] ?? [] as $index => $qlink)
+                                            <div class="card mb-3 quick-link-item">
+                                                <div class="card-body">
+                                                    <div class="row align-items-end">
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Background Image')}}</label>
+                                                            <input type="file" name="hero_quick_link_image[{{ $index }}]" class="form-control mb-1">
+                                                            <input type="hidden" name="hero_quick_link_image_current[{{ $index }}]" value="{{ $qlink['image'] ?? '' }}">
+                                                            @if(!empty($qlink['image']))
+                                                                <img src="{{ url('images/upload/'.$qlink['image']) }}" style="height: 30px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="hero_quick_link_title[{{ $index }}]" value="{{ $qlink['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <label>{{__('Subtitle')}}</label>
+                                                            <input type="text" name="hero_quick_link_subtitle[{{ $index }}]" value="{{ $qlink['subtitle'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <label>{{__('Badge (e.g. NEU)')}}</label>
+                                                            <input type="text" name="hero_quick_link_badge[{{ $index }}]" value="{{ $qlink['badge'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-quick-link"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                        <div class="col-md-4 mt-2">
+                                                            <label>{{__('URL')}}</label>
+                                                            <input type="text" name="hero_quick_link_url[{{ $index }}]" value="{{ $qlink['url'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 mt-2">
+                                                            <label>{{__('Small Icon Class')}}</label>
+                                                            <input type="text" name="hero_quick_link_icon_class[{{ $index }}]" value="{{ $qlink['icon_class'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-quick-link" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Quick Link Card')}}</button>
+
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('How it Works Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="how_it_works_title" value="{{ $how['title'] ?? '' }}" class="form-control" placeholder="e.g. 3 einfache Schritte">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Section Subtitle (purple)')}}</label>
+                                                <input type="text" name="how_it_works_subtitle" value="{{ $how['subtitle'] ?? '' }}" class="form-control" placeholder="e.g. 100 % online">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Live Badge Text')}}</label>
+                                                <input type="text" name="how_it_works_badge" value="{{ $how['badge'] ?? '' }}" class="form-control" placeholder="e.g. 5 Ärzte online | täglich 8–18 Uhr">
+                                            </div>
+                                        </div>
+                                        <div id="steps-container">
+                                            @foreach($how['steps'] ?? [] as $index => $step)
+                                            <div class="card mb-3 step-item">
+                                                <div class="card-body">
+                                                    <div class="row align-items-end">
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Step Icon')}}</label>
+                                                            <input type="file" name="step_icon[]" class="form-control mb-1">
+                                                            <input type="hidden" name="step_icon_current[]" value="{{ $step['icon'] ?? '' }}">
+                                                            @if(!empty($step['icon']))
+                                                                <img src="{{ url('images/upload/'.$step['icon']) }}" style="height: 30px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="step_title[]" value="{{ $step['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label>{{__('Description')}}</label>
+                                                            <input type="text" name="step_text[]" value="{{ $step['text'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-step"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-step" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Step')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Natural Relief Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="natural_relief_badge" value="{{ $relief['badge'] ?? '' }}" class="form-control" placeholder="e.g. REZEPT WIRD ONLINE AUSGESTELLT">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="natural_relief_title" value="{{ $relief['title'] ?? '' }}" class="form-control" placeholder="e.g. Finden Sie | Linderung (use | for green)">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Center Background Image')}}</label>
+                                                <input type="file" name="natural_relief_image" class="form-control" accept="image/*">
+                                                @if(!empty($relief['image']))
+                                                    <img src="{{ url('images/upload/'.$relief['image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 (White) Text')}}</label>
+                                                <input type="text" name="natural_relief_btn1_text" value="{{ $relief['btn1_text'] ?? '' }}" class="form-control" placeholder="e.g. Berechtigung prüfen">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 URL')}}</label>
+                                                <input type="text" name="natural_relief_btn1_url" value="{{ $relief['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 (Outline) Text')}}</label>
+                                                <input type="text" name="natural_relief_btn2_text" value="{{ $relief['btn2_text'] ?? '' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 URL')}}</label>
+                                                <input type="text" name="natural_relief_btn2_url" value="{{ $relief['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('About Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="about_badge" value="{{ $about['badge'] ?? '' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Title')}}</label>
+                                                <input type="text" name="about_title" value="{{ $about['title'] ?? '' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Image')}}</label>
+                                                <input type="file" name="about_image" class="form-control" accept="image/*">
+                                                @if(!empty($about['image']))
+                                                    <img src="{{ url('images/upload/'.$about['image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Description')}}</label>
+                                                <textarea name="about_description" class="form-control" rows="4">{{ $about['description'] ?? '' }}</textarea>
+                                            </div>
+                                        </div>
+                                        <label class="mt-3">{{__('Feature List')}}</label>
+                                        <div id="about-features-container">
+                                            @foreach($about['features'] ?? [] as $feature)
+                                            <div class="row mb-2 feature-item">
+                                                <div class="col-md-10">
+                                                    <input type="text" name="about_features[]" value="{{ $feature }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-feature"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-feature" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Feature')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('ED Banner Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="ed_banner_pill" value="{{ $ed['pill'] ?? '' }}" class="form-control" placeholder="LÖSUNG FÜR EREKTILE DYSFUNKTION">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="ed_banner_title" value="{{ $ed['title'] ?? '' }}" class="form-control" placeholder="Gewinnen Sie Ihr | Selbstvertrauen | und Ihre Intimität zurück (use | for blue)">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Hero Image')}}</label>
+                                                <input type="file" name="ed_banner_hero_image" class="form-control" accept="image/*">
+                                                @if(!empty($ed['hero_image']))
+                                                    <img src="{{ url('images/upload/'.$ed['hero_image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 (Outline) Text')}}</label>
+                                                <input type="text" name="ed_banner_btn1_text" value="{{ $ed['btn1_text'] ?? '' }}" class="form-control" placeholder="Meine Behandlung finden">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 URL')}}</label>
+                                                <input type="text" name="ed_banner_btn1_url" value="{{ $ed['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 (Filled) Text')}}</label>
+                                                <input type="text" name="ed_banner_btn2_text" value="{{ $ed['btn2_text'] ?? '' }}" class="form-control" placeholder="Meine kostenlose Beratung starten">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 URL')}}</label>
+                                                <input type="text" name="ed_banner_btn2_url" value="{{ $ed['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4 mb-3">{{__('Split Cards (Large Left, 2 Small Right)')}}</h6>
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Large Left Card')}}</strong></label>
+                                                        <input type="file" name="ed_card_large_image" class="form-control mb-1">
+                                                        @if(!empty($ed['large_card']['image']))
+                                                            <img src="{{ url('images/upload/'.$ed['large_card']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="ed_card_large_title" value="{{ $ed['large_card']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="ed_card_large_btn_text" value="{{ $ed['large_card']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="ed_card_large_btn_url" value="{{ $ed['large_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Right Card 1')}}</strong></label>
+                                                        <input type="file" name="ed_card_r1_image" class="form-control mb-1">
+                                                        @if(!empty($ed['right_card_1']['image']))
+                                                            <img src="{{ url('images/upload/'.$ed['right_card_1']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="ed_card_r1_title" value="{{ $ed['right_card_1']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="ed_card_r1_btn_text" value="{{ $ed['right_card_1']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="ed_card_r1_btn_url" value="{{ $ed['right_card_1']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Right Card 2')}}</strong></label>
+                                                        <input type="file" name="ed_card_r2_image" class="form-control mb-1">
+                                                        @if(!empty($ed['right_card_2']['image']))
+                                                            <img src="{{ url('images/upload/'.$ed['right_card_2']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="ed_card_r2_title" value="{{ $ed['right_card_2']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="ed_card_r2_btn_text" value="{{ $ed['right_card_2']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="ed_card_r2_btn_url" value="{{ $ed['right_card_2']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="mb-4">Sub-categories Ticker</h5>
+                                        <p class="text-muted small mb-3">Scrolling pill row below the hero. One text item per row.</p>
+                                        <div id="subcat-container">
+                                            @php $sub_cats = $home['sub_categories'] ?? []; @endphp
+                                            @if(count($sub_cats) > 0)
+                                                @foreach($sub_cats as $sc)
+                                                <div class="row subcat-item mb-2 align-items-end">
+                                                    <div class="col-md-10">
+                                                        <input type="text" name="sub_cat_text[]" value="{{ $sc['text'] }}" class="form-control" placeholder="e.g. Vorzeitiger Samenerguss">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-subcat"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row subcat-item mb-2 align-items-end">
+                                                    <div class="col-md-10">
+                                                        <input type="text" name="sub_cat_text[]" class="form-control" placeholder="e.g. Vorzeitiger Samenerguss">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-subcat"><i class="fas fa-trash"></i></button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-subcat" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Sub-category</button>
+
+                                        <hr>
+                                        <h5 class="mb-4">Trust Banner</h5>
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                <label>Banner Text</label>
+                                                <input type="text" name="trust_banner_text" value="{{ $home['trust_banner']['text'] ?? '' }}" class="form-control" placeholder="Deutschlands größte Online-Klinik...">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="mb-4">Testosterone Section</h5>
+                                        @php $testo = $home['testosterone'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-4"><label>Pill/Badge Text</label><input type="text" name="testo_pill" value="{{ $testo['pill'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-8"><label>Title</label><input type="text" name="testo_title" value="{{ $testo['title'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-3"><label>Button 1 Text</label><input type="text" name="testo_btn1_text" value="{{ $testo['btn1_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button 1 URL</label><input type="text" name="testo_btn1_url" value="{{ $testo['btn1_url'] ?? '#' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button 2 Text</label><input type="text" name="testo_btn2_text" value="{{ $testo['btn2_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button 2 URL</label><input type="text" name="testo_btn2_url" value="{{ $testo['btn2_url'] ?? '#' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <label>Background Image</label>
+                                                <input type="file" name="testo_bg_image" class="form-control mb-1">
+                                                <input type="hidden" name="testo_bg_image_current" value="{{ $testo['bg_image'] ?? '' }}">
+                                                @if(!empty($testo['bg_image']))<img src="{{ url('images/upload/'.$testo['bg_image']) }}" style="height:60px; margin-top:5px;">@endif
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="mb-4">Medical Advisory Board</h5>
+                                        @php $advisory = $home['advisory'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Section Title</label><input type="text" name="advisory_title" value="{{ $advisory['title'] ?? 'Unser medizinischer Beirat' }}" class="form-control"></div>
+                                        </div>
+                                        <p class="text-muted small">Doctor Cards:</p>
+                                        <div id="doctor-container">
+                                            @if(count($advisory['doctors'] ?? []) > 0)
+                                                @foreach($advisory['doctors'] as $i => $doc)
+                                                <div class="row doctor-item mb-3 align-items-end border-bottom pb-3">
+                                                    <div class="col-md-4"><label>Name</label><input type="text" name="doctor_name[]" value="{{ $doc['name'] }}" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Role</label><input type="text" name="doctor_role[]" value="{{ $doc['role'] ?? '' }}" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Photo</label><input type="file" name="doctor_image[]" class="form-control mb-1"><input type="hidden" name="doctor_image_current[]" value="{{ $doc['image'] ?? '' }}">@if(!empty($doc['image']))<img src="{{ url('images/upload/'.$doc['image']) }}" style="height:40px">@endif</div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-doctor"><i class="fas fa-trash"></i></button></div>
+                                                </div>
+                                                @endforeach
+                                            @else
+                                                <div class="row doctor-item mb-3 align-items-end border-bottom pb-3">
+                                                    <div class="col-md-4"><label>Name</label><input type="text" name="doctor_name[]" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Role</label><input type="text" name="doctor_role[]" class="form-control"></div>
+                                                    <div class="col-md-3"><label>Photo</label><input type="file" name="doctor_image[]" class="form-control"><input type="hidden" name="doctor_image_current[]" value=""></div>
+                                                    <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-doctor"><i class="fas fa-trash"></i></button></div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button type="button" id="add-doctor" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Doctor</button>
+
+                                        <hr>
+                                        <h5 class="mb-4">Stats Section</h5>
+                                        @php $stats = $home['stats'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-8"><label>Subtitle</label><input type="text" name="stats_subtitle" value="{{ $stats['subtitle'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div id="stats-container">
+                                            @foreach($stats['items'] ?? [['label'=>'','number'=>'','title'=>'']] as $stat)
+                                            <div class="row stat-item mb-2 align-items-end">
+                                                <div class="col-md-3"><label>Label (e.g. ÜBER)</label><input type="text" name="stat_label[]" value="{{ $stat['label'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-3"><label>Number (e.g. 8.000)</label><input type="text" name="stat_number[]" value="{{ $stat['number'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-4"><label>Title</label><input type="text" name="stat_title[]" value="{{ $stat['title'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-stat"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-stat" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Stat</button>
+
+                                        <hr>
+                                        <h5 class="mb-4">Comparison Table (Why dr.fuxx)</h5>
+                                        @php $compare = $home['comparison'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Title</label><input type="text" name="compare_title" value="{{ $compare['title'] ?? 'Warum dr.fuxx?' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Background Image</label><input type="file" name="compare_bg_image" class="form-control"><input type="hidden" name="compare_bg_image_current" value="{{ $compare['bg_image'] ?? '' }}">@if(!empty($compare['bg_image']))<img src="{{ url('images/upload/'.$compare['bg_image']) }}" style="height:40px">@endif</div>
+                                        </div>
+                                        <p class="text-muted small">Rows (header row is automatic: "Andere Anbieter" vs "Dr. Fuxx"):</p>
+                                        <div id="compare-container">
+                                            @foreach($compare['rows'] ?? [['left'=>'','right'=>'']] as $row)
+                                            <div class="row compare-item mb-2 align-items-end">
+                                                <div class="col-md-5"><label>Left (competitor, ✗)</label><input type="text" name="compare_left[]" value="{{ $row['left'] ?? '' }}" class="form-control" placeholder="Keine deutschen Ärzte"></div>
+                                                <div class="col-md-5"><label>Right (dr.fuxx, ✓)</label><input type="text" name="compare_right[]" value="{{ $row['right'] ?? '' }}" class="form-control" placeholder="Deutsche Ärzte"></div>
+                                                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-compare"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-compare" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Row</button>
+
+                                        <hr>
+                                        <h5 class="mb-4">FAQ Section</h5>
+                                        @php $faq = $home['faq'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-4"><label>Title</label><input type="text" name="faq_title" value="{{ $faq['title'] ?? 'Sie haben Fragen?' }}" class="form-control"></div>
+                                            <div class="col-md-4"><label>Subtitle (purple)</label><input type="text" name="faq_subtitle" value="{{ $faq['subtitle'] ?? 'Hier gibt es Antworten!' }}" class="form-control"></div>
+                                        </div>
+                                        <div id="faq-container">
+                                            @foreach($faq['items'] ?? [['question'=>'','answer'=>'']] as $item)
+                                            <div class="row faq-item mb-3 align-items-start">
+                                                <div class="col-md-5"><label>Question</label><input type="text" name="faq_question[]" value="{{ $item['question'] ?? '' }}" class="form-control"></div>
+                                                <div class="col-md-5"><label>Answer</label><textarea name="faq_answer[]" class="form-control" rows="3">{{ $item['answer'] ?? '' }}</textarea></div>
+                                                <div class="col-md-2 pt-4"><button type="button" class="btn btn-danger btn-sm remove-faq"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-faq" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add FAQ</button>
+
+                                        <hr>
+                                        <h5 class="mb-4">Press Logos</h5>
+                                        @php $press = $home['press'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Label Text (e.g. "Bekannt aus")</label><input type="text" name="press_label" value="{{ $press['label'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div id="press-container">
+                                            @foreach($press['logos'] ?? [['name'=>'']] as $logo)
+                                            <div class="row press-item mb-2 align-items-end">
+                                                <div class="col-md-10"><label>Logo Name</label><input type="text" name="press_name[]" value="{{ $logo['name'] ?? '' }}" class="form-control" placeholder="Bild, Spiegel..."></div>
+                                                <div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-press"><i class="fas fa-trash"></i></button></div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-press" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> Add Logo</button>
+
+                                        <hr>
+                                        <h5 class="mb-4">Mid-page CTA</h5>
+                                        @php $mid_cta = $home['mid_cta'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Heading</label><input type="text" name="mid_cta_heading" value="{{ $mid_cta['heading'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Subtext</label><input type="text" name="mid_cta_subtext" value="{{ $mid_cta['subtext'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-3"><label>Button Text</label><input type="text" name="mid_cta_btn_text" value="{{ $mid_cta['btn_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-3"><label>Button URL</label><input type="text" name="mid_cta_btn_url" value="{{ $mid_cta['btn_url'] ?? '#' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Note (small text below button)</label><input type="text" name="mid_cta_note" value="{{ $mid_cta['note'] ?? '' }}" class="form-control"></div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="mb-4">Privacy Section</h5>
+                                        @php $privacy = $home['privacy_section'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Heading</label><input type="text" name="privacy_heading" value="{{ $privacy['heading'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Span / Highlight Text</label><input type="text" name="privacy_span" value="{{ $privacy['span'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-8"><label>Description</label><textarea name="privacy_description" class="form-control" rows="3">{{ $privacy['description'] ?? '' }}</textarea></div>
+                                            <div class="col-md-4">
+                                                <label>Image</label>
+                                                <input type="file" name="privacy_image" class="form-control mb-1">
+                                                <input type="hidden" name="privacy_image_current" value="{{ $privacy['image'] ?? '' }}">
+                                                @if(!empty($privacy['image']))<img src="{{ url('images/upload/'.$privacy['image']) }}" style="height:60px; margin-top:5px;">@endif
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="mb-4">Newsletter Section</h5>
+                                        @php $newsletter = $home['newsletter'] ?? []; @endphp
+                                        <div class="row mb-3">
+                                            <div class="col-md-6"><label>Heading</label><input type="text" name="newsletter_heading" value="{{ $newsletter['heading'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6"><label>Description</label><input type="text" name="newsletter_description" value="{{ $newsletter['description'] ?? '' }}" class="form-control"></div>
+                                        </div>
+                                        <div class="row mb-4">
+                                            <div class="col-md-6"><label>Legal / Fine Print Text</label><input type="text" name="newsletter_legal" value="{{ $newsletter['legal_text'] ?? '' }}" class="form-control"></div>
+                                            <div class="col-md-6">
+                                                <label>Background Image</label>
+                                                <input type="file" name="newsletter_bg_image" class="form-control mb-1">
+                                                <input type="hidden" name="newsletter_bg_image_current" value="{{ $newsletter['bg_image'] ?? '' }}">
+                                                @if(!empty($newsletter['bg_image']))<img src="{{ url('images/upload/'.$newsletter['bg_image']) }}" style="height:60px; margin-top:5px;">@endif
+                                            </div>
+                                        </div>
+
+                                     </div>
+
+                                     <!-- Footer Settings -->
+                                     <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
+                                        @php $footer = json_decode($setting->website_footer_settings, true) ?: []; @endphp
                                         <div class="form-group">
-                                            <label class="col-form-label">{{__('Banner URL')}}</label>
-                                            <input type="text" name="banner_url" required class="form-control @error('banner_url') is-invalid @enderror" value="{{ $setting->banner_url }}">
-                                            @error('banner_url')
-                                            <div class="invalid-feedback"> {{ $message }}</div>
-                                            @enderror
+                                            <label>{{__('Copyright Text')}}</label>
+                                            <input type="text" name="footer_copy" value="{{ $footer['copy'] ?? '' }}" class="form-control">
                                         </div>
-                                    </div>
+
+                                        <h5 class="my-4">{{__('Social Links')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Facebook URL')}}</label>
+                                                <input type="url" name="facebook_url" class="form-control" value="{{ $setting->facebook_url }}">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Twitter URL')}}</label>
+                                                <input type="url" name="twitter_url" class="form-control" value="{{ $setting->twitter_url }}">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Instagram URL')}}</label>
+                                                <input type="url" name="instagram_url" class="form-control" value="{{ $setting->instagram_url }}">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="col-form-label">{{__('Linkedin URL')}}</label>
+                                                <input type="url" name="linkdin_url" class="form-control" value="{{ $setting->linkdin_url }}">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Footer Columns (Links)')}}</h5>
+                                        <div id="footer-cols-container">
+                                            @foreach($footer['columns'] ?? [] as $col)
+                                            <div class="card mb-3 footer-col-item">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <label>{{__('Column Title')}}</label>
+                                                            <input type="text" name="footer_col_title[]" value="{{ $col['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>{{__('Links (Format: Label|URL per line)')}}</label>
+                                                            <textarea name="footer_col_links[]" class="form-control" rows="3">@foreach($col['links'] ?? [] as $link){{ $link['label'] }}|{{ $link['url'] }}&#10;@endforeach</textarea>
+                                                        </div>
+                                                        <div class="col-md-2 align-self-end">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-footer-col"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-footer-col" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Footer Column')}}</button>
+                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="form-group col-md-6">
-                                        <label class="col-form-label">{{__('Landing Page Pop-up')}}</label>
-                                        <input type="file" name="landing_popup_image" id="popup_image" class="form-control @error('landing_popup_image') is-invalid @enderror landing_popup_image" value="{{ $setting->landing_popup_image }}">
-                                        @error('landing_popup_image')
-                                        <div class="invalid-feedback"> {{ $message }}</div>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group col-md-6">
-                                        <label class="col-form-label">{{__('Show Popup after X Seconds')}}</label>
-                                        <input type="number" name="popup_timer_seconds" id="popup_timer_seconds" class="form-control @error('popup_timer_seconds') is-invalid @enderror popup_timer_seconds" value="{{ $setting->popup_timer_seconds }}">
-                                        @error('popup_timer_seconds')
-                                        <div class="invalid-feedback"> {{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('PopUp Redirection URL')}}</label>
-                                    <input type="url" name="popup_target_url" class="form-control @error('popup_target_url') is-invalid @enderror" value="{{ $setting->popup_target_url }}">
-                                    @error('popup_target_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Popup Switch')}}</label>
-                                    <label class="cursor-pointer">
-                                        <input type="checkbox" name="landing_popup_switch" class="custom-switch-input" value="1" {{ $setting->landing_popup_switch == 1 ? 'checked' : '' }}>
-                                        <span class="custom-switch-indicator"></span>
-                                    </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Play Store URL')}}</label>
-                                    <input type="url" name="playstore" required class="form-control @error('playstore') is-invalid @enderror" value="{{ $setting->playstore }}">
-                                    @error('playstore')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('App Store URL')}}</label>
-                                    <input type="url" name="appstore" required class="form-control @error('appstore') is-invalid @enderror" value="{{ $setting->appstore }}">
-                                    @error('appstore')
-                                    <div class="invalid-feedback"> {{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Facebook url')}}</label>
-                                    <input type="url" name="facebook_url" required class="form-control @error('facebook_url') is-invalid @enderror" value="{{ $setting->facebook_url }}">
-                                    @error('facebook_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Twitter url')}}</label>
-                                    <input type="url" name="twitter_url" required class="form-control @error('twitter_url') is-invalid @enderror" value="{{ $setting->twitter_url }}">
-                                    @error('twitter_url')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Instagram url')}}</label>
-                                    <input type="url" name="instagram_url" required class="form-control @error('instagram_url') is-invalid @enderror" value="{{ $setting->instagram_url }}">
-                                    @error('instagram_url')
-                                    <div class="invalid-feedback"> {{ $message }} </div>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-form-label">{{__('Linkdin url')}}</label>
-                                    <input type="url" name="linkdin_url" required class="form-control @error('linkdin_url') is-invalid @enderror" value="{{ $setting->linkdin_url }}">
-                                    @error('linkdin_url')
-                                    <div class="invalid-feedback"> {{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary mt-5">{{__('save')}}</button>
+                                <div class="text-center mt-5">
+                                    <button type="submit" class="btn btn-primary">{{__('Save All Website Settings')}}</button>
                                 </div>
                             </form>
                         </div>
@@ -1071,4 +1811,152 @@
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{App\Models\Setting::first()->map_key}}&callback=initAutocomplete&libraries=places&v=weekly" async></script>
 <script src="{{ url('assets_admin/js/hospital_map.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Generic cloneAndAdd helper
+    function cloneFirstRow(container, itemClass) {
+        var $first = container.find('.' + itemClass + ':first').clone(true);
+        $first.find('input[type=text], input[type=url], input[type=hidden]').val('');
+        $first.find('input[type=file]').val('');
+        $first.find('textarea').val('');
+        $first.find('img').remove();
+        container.append($first);
+    }
+
+    // Marquee
+    $('#add-marquee').on('click', function() {
+        cloneFirstRow($('#marquee-container'), 'marquee-item');
+    });
+    $(document).on('click', '.remove-marquee', function() {
+        if ($('.marquee-item').length > 1) $(this).closest('.marquee-item').remove();
+    });
+
+    // Menu
+    $('#add-menu').on('click', function() {
+        cloneFirstRow($('#menu-container'), 'menu-item');
+    });
+    $(document).on('click', '.remove-menu', function() {
+        if ($('.menu-item').length > 1) $(this).closest('.menu-item').remove();
+    });
+
+    // Trust items
+    $('#add-trust').on('click', function() {
+        cloneFirstRow($('#hero-trust-container'), 'trust-item');
+    });
+    $(document).on('click', '.remove-trust', function() {
+        $(this).closest('.trust-item').remove();
+    });
+
+    // Quick links
+    $('#add-quick-link').on('click', function() {
+        cloneFirstRow($('#hero-quick-link-container'), 'quick-link-item');
+    });
+    $(document).on('click', '.remove-quick-link', function() {
+        $(this).closest('.quick-link-item').remove();
+    });
+
+    // Steps
+    $('#add-step').on('click', function() {
+        cloneFirstRow($('#steps-container'), 'step-item');
+    });
+    $(document).on('click', '.remove-step', function() {
+        $(this).closest('.step-item').remove();
+    });
+
+    // About features
+    $('#add-feature').on('click', function() {
+        cloneFirstRow($('#about-features-container'), 'feature-item');
+    });
+    $(document).on('click', '.remove-feature', function() {
+        if ($('.feature-item').length > 1) $(this).closest('.feature-item').remove();
+    });
+
+    // Sub-categories
+    $('#add-subcat').on('click', function() {
+        cloneFirstRow($('#subcat-container'), 'subcat-item');
+    });
+    $(document).on('click', '.remove-subcat', function() {
+        if ($('.subcat-item').length > 1) $(this).closest('.subcat-item').remove();
+    });
+
+    // Doctors
+    $('#add-doctor').on('click', function() {
+        cloneFirstRow($('#doctor-container'), 'doctor-item');
+    });
+    $(document).on('click', '.remove-doctor', function() {
+        if ($('.doctor-item').length > 1) $(this).closest('.doctor-item').remove();
+    });
+
+    // Stats
+    $('#add-stat').on('click', function() {
+        cloneFirstRow($('#stats-container'), 'stat-item');
+    });
+    $(document).on('click', '.remove-stat', function() {
+        if ($('.stat-item').length > 1) $(this).closest('.stat-item').remove();
+    });
+
+    // Comparison rows
+    $('#add-compare').on('click', function() {
+        cloneFirstRow($('#compare-container'), 'compare-item');
+    });
+    $(document).on('click', '.remove-compare', function() {
+        if ($('.compare-item').length > 1) $(this).closest('.compare-item').remove();
+    });
+
+    // FAQ items
+    $('#add-faq').on('click', function() {
+        cloneFirstRow($('#faq-container'), 'faq-item');
+    });
+    $(document).on('click', '.remove-faq', function() {
+        if ($('.faq-item').length > 1) $(this).closest('.faq-item').remove();
+    });
+
+    // Press logos
+    $('#add-press').on('click', function() {
+        cloneFirstRow($('#press-container'), 'press-item');
+    });
+    $(document).on('click', '.remove-press', function() {
+        if ($('.press-item').length > 1) $(this).closest('.press-item').remove();
+    });
+
+    // Footer columns
+    $('#add-footer-col').on('click', function() {
+        cloneFirstRow($('#footer-cols-container'), 'footer-col-item');
+    });
+    $(document).on('click', '.remove-footer-col', function() {
+        if ($('.footer-col-item').length > 1) $(this).closest('.footer-col-item').remove();
+    });
+
+    // Header logo preview
+    $('#website_header_logo').change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#websiteHeaderLogoPreview').css('background-image', 'url(' + e.target.result + ')');
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    // Hero image previews
+    $('#hero_image').change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#heroImagePreview').css('background-image', 'url(' + e.target.result + ')');
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    $('#hero_bg_image').change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('#heroBgImagePreview').css('background-image', 'url(' + e.target.result + ')');
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+});
+</script>
 @endsection

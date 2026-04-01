@@ -190,8 +190,10 @@ class SettingController extends Controller
         $request->validate([
             'popup_target_url' => 'bail|required',
         ]);
-        $data = $request->all();
         $setting = Setting::first();
+        $data = $request->all();
+
+        // Banner image
         if ($request->hasFile('banner_image')) {
             (new CustomController)->deleteFile($setting->banner_image);
             $data['banner_image'] = (new CustomController)->imageUpload($request->banner_image);
@@ -201,6 +203,306 @@ class SettingController extends Controller
             $data['landing_popup_image'] = (new CustomController)->imageUpload($request->landing_popup_image);
         }
         $setting->landing_popup_switch = $request->has('landing_popup_switch') ? 1 : 0;
+
+        // Header checkboxes
+        $data['website_header_search']    = $request->has('website_header_search') ? 1 : 0;
+        $data['website_header_user']      = $request->has('website_header_user') ? 1 : 0;
+        $data['website_header_hamburger'] = $request->has('website_header_hamburger') ? 1 : 0;
+
+        // Header logo
+        if ($request->hasFile('website_header_logo')) {
+            $data['website_header_logo'] = (new CustomController)->imageUpload($request->file('website_header_logo'));
+        }
+
+        // Promo bar JSON
+        $data['website_header_promo_bar'] = json_encode([
+            'status'      => $request->has('promo_status') ? 1 : 0,
+            'text_italic' => $request->promo_text_italic,
+            'text_bold'   => $request->promo_text_bold,
+            'end_date'    => $request->promo_end_date,
+        ]);
+
+        // Top marquee JSON (with file uploads)
+        $marquees = collect($request->marquee_text ?? [])->map(function ($text, $i) use ($request) {
+            $icon = $request->marquee_icon_current[$i] ?? null;
+            if ($request->hasFile('marquee_icon') && isset($request->file('marquee_icon')[$i])) {
+                $icon = (new CustomController)->imageUpload($request->file('marquee_icon')[$i]);
+            }
+            return ['text' => $text, 'icon' => $icon];
+        })->toArray();
+        $data['website_header_top_marquee'] = json_encode($marquees);
+
+        // Sidebar menu JSON
+        $data['website_header_sidebar_menu'] = json_encode(
+            collect($request->menu_label ?? [])->map(fn($l, $i) => [
+                'label' => $l,
+                'url'   => $request->menu_url[$i] ?? '#',
+            ])->toArray()
+        );
+
+        // ---- Home Page Settings ----
+        $existingHome = json_decode($setting->website_home_settings, true) ?: [];
+
+        // Hero image uploads
+        $heroImage   = $existingHome['hero']['image'] ?? null;
+        $heroBgImage = $existingHome['hero']['bg_image'] ?? null;
+        if ($request->hasFile('hero_image')) {
+            $heroImage = (new CustomController)->imageUpload($request->file('hero_image'));
+        }
+        if ($request->hasFile('hero_bg_image')) {
+            $heroBgImage = (new CustomController)->imageUpload($request->file('hero_bg_image'));
+        }
+
+        // Trust items
+        $trustItems = collect($request->hero_trust_icon_class ?? [])->map(fn($ic, $i) => [
+            'icon_class' => $ic,
+            'text'       => $request->hero_trust_text[$i] ?? '',
+        ])->toArray();
+
+        // Quick link cards (indexed file uploads)
+        $quickLinks = collect($request->hero_quick_link_title ?? [])->map(function ($title, $i) use ($request, $existingHome) {
+            $image = $request->hero_quick_link_image_current[$i] ?? ($existingHome['hero']['quick_links'][$i]['image'] ?? null);
+            if ($request->hasFile('hero_quick_link_image') && isset($request->file('hero_quick_link_image')[$i])) {
+                $image = (new CustomController)->imageUpload($request->file('hero_quick_link_image')[$i]);
+            }
+            return [
+                'image'      => $image,
+                'title'      => $title,
+                'subtitle'   => $request->hero_quick_link_subtitle[$i] ?? '',
+                'badge'      => $request->hero_quick_link_badge[$i] ?? '',
+                'url'        => $request->hero_quick_link_url[$i] ?? '#',
+                'icon_class' => $request->hero_quick_link_icon_class[$i] ?? '',
+            ];
+        })->toArray();
+
+        // How it Works steps
+        $steps = collect($request->step_title ?? [])->map(function ($title, $i) use ($request, $existingHome) {
+            $icon = $request->step_icon_current[$i] ?? ($existingHome['how_it_works']['steps'][$i]['icon'] ?? null);
+            if ($request->hasFile('step_icon') && isset($request->file('step_icon')[$i])) {
+                $icon = (new CustomController)->imageUpload($request->file('step_icon')[$i]);
+            }
+            return [
+                'icon'  => $icon,
+                'title' => $title,
+                'text'  => $request->step_text[$i] ?? '',
+            ];
+        })->toArray();
+
+        // Natural Relief image
+        $reliefImage = $existingHome['natural_relief']['image'] ?? null;
+        if ($request->hasFile('natural_relief_image')) {
+            $reliefImage = (new CustomController)->imageUpload($request->file('natural_relief_image'));
+        }
+
+        // About image
+        $aboutImage = $existingHome['about']['image'] ?? null;
+        if ($request->hasFile('about_image')) {
+            $aboutImage = (new CustomController)->imageUpload($request->file('about_image'));
+        }
+
+        // ED Banner hero image + cards
+        $edHeroImage  = $existingHome['ed_banner']['hero_image'] ?? null;
+        $edLargeImage = $existingHome['ed_banner']['large_card']['image'] ?? null;
+        $edR1Image    = $existingHome['ed_banner']['right_card_1']['image'] ?? null;
+        $edR2Image    = $existingHome['ed_banner']['right_card_2']['image'] ?? null;
+        if ($request->hasFile('ed_banner_hero_image'))  $edHeroImage  = (new CustomController)->imageUpload($request->file('ed_banner_hero_image'));
+        if ($request->hasFile('ed_card_large_image'))   $edLargeImage = (new CustomController)->imageUpload($request->file('ed_card_large_image'));
+        if ($request->hasFile('ed_card_r1_image'))      $edR1Image    = (new CustomController)->imageUpload($request->file('ed_card_r1_image'));
+        if ($request->hasFile('ed_card_r2_image'))      $edR2Image    = (new CustomController)->imageUpload($request->file('ed_card_r2_image'));
+
+        // Testosterone bg image
+        $testoBg = $existingHome['testosterone']['bg_image'] ?? null;
+        if ($request->hasFile('testo_bg_image')) {
+            $testoBg = (new CustomController)->imageUpload($request->file('testo_bg_image'));
+        } elseif ($request->filled('testo_bg_image_current')) {
+            $testoBg = $request->testo_bg_image_current;
+        }
+
+        // Advisory doctor images
+        $doctors = collect($request->doctor_name ?? [])->map(function ($name, $i) use ($request, $existingHome) {
+            $image = $request->doctor_image_current[$i] ?? ($existingHome['advisory']['doctors'][$i]['image'] ?? null);
+            if ($request->hasFile('doctor_image') && isset($request->file('doctor_image')[$i])) {
+                $image = (new CustomController)->imageUpload($request->file('doctor_image')[$i]);
+            }
+            return [
+                'name'  => $name,
+                'role'  => $request->doctor_role[$i] ?? '',
+                'image' => $image,
+            ];
+        })->toArray();
+
+        // Comparison bg image
+        $compareBg = $existingHome['comparison']['bg_image'] ?? null;
+        if ($request->hasFile('compare_bg_image')) {
+            $compareBg = (new CustomController)->imageUpload($request->file('compare_bg_image'));
+        } elseif ($request->filled('compare_bg_image_current')) {
+            $compareBg = $request->compare_bg_image_current;
+        }
+
+        // Privacy image
+        $privacyImage = $existingHome['privacy_section']['image'] ?? null;
+        if ($request->hasFile('privacy_image')) {
+            $privacyImage = (new CustomController)->imageUpload($request->file('privacy_image'));
+        } elseif ($request->filled('privacy_image_current')) {
+            $privacyImage = $request->privacy_image_current;
+        }
+
+        // Newsletter bg image
+        $newsletterBg = $existingHome['newsletter']['bg_image'] ?? null;
+        if ($request->hasFile('newsletter_bg_image')) {
+            $newsletterBg = (new CustomController)->imageUpload($request->file('newsletter_bg_image'));
+        } elseif ($request->filled('newsletter_bg_image_current')) {
+            $newsletterBg = $request->newsletter_bg_image_current;
+        }
+
+        $data['website_home_settings'] = json_encode([
+            'hero' => [
+                'image'           => $heroImage,
+                'bg_image'        => $heroBgImage,
+                'bg_color'        => $request->hero_bg_color ?? '#f3ecff',
+                'badge'           => $request->hero_badge,
+                'title'           => $request->hero_title,
+                'typing_keywords' => $request->hero_typing_keywords,
+                'description'     => $request->hero_description,
+                'btn_text'        => $request->hero_btn_text,
+                'btn_url'         => $request->hero_btn_url ?? '#',
+                'rating_stars'    => $request->hero_rating_stars ?? '5',
+                'rating_score'    => $request->hero_rating_score ?? '4,79',
+                'rating_text'     => $request->hero_rating_text,
+                'live_viewers'    => $request->hero_live_viewers,
+                'trust_items'     => $trustItems,
+                'quick_links'     => $quickLinks,
+            ],
+            'how_it_works' => [
+                'title'    => $request->how_it_works_title,
+                'subtitle' => $request->how_it_works_subtitle,
+                'badge'    => $request->how_it_works_badge,
+                'steps'    => $steps,
+            ],
+            'natural_relief' => [
+                'badge'      => $request->natural_relief_badge,
+                'title'      => $request->natural_relief_title,
+                'image'      => $reliefImage,
+                'btn1_text'  => $request->natural_relief_btn1_text,
+                'btn1_url'   => $request->natural_relief_btn1_url ?? '#',
+                'btn2_text'  => $request->natural_relief_btn2_text,
+                'btn2_url'   => $request->natural_relief_btn2_url ?? '#',
+                'categories' => collect($request->relief_cat ?? [])->map(fn($c) => ['name' => $c])->toArray(),
+            ],
+            'about' => [
+                'badge'       => $request->about_badge,
+                'title'       => $request->about_title,
+                'description' => $request->about_description,
+                'image'       => $aboutImage,
+                'features'    => $request->about_features ?? [],
+            ],
+            'ed_banner' => [
+                'pill'         => $request->ed_banner_pill,
+                'title'        => $request->ed_banner_title,
+                'hero_image'   => $edHeroImage,
+                'btn1_text'    => $request->ed_banner_btn1_text,
+                'btn1_url'     => $request->ed_banner_btn1_url ?? '#',
+                'btn2_text'    => $request->ed_banner_btn2_text,
+                'btn2_url'     => $request->ed_banner_btn2_url ?? '#',
+                'large_card'   => [
+                    'image'    => $edLargeImage,
+                    'title'    => $request->ed_card_large_title,
+                    'btn_text' => $request->ed_card_large_btn_text,
+                    'btn_url'  => $request->ed_card_large_btn_url ?? '#',
+                ],
+                'right_card_1' => [
+                    'image'    => $edR1Image,
+                    'title'    => $request->ed_card_r1_title,
+                    'btn_text' => $request->ed_card_r1_btn_text,
+                    'btn_url'  => $request->ed_card_r1_btn_url ?? '#',
+                ],
+                'right_card_2' => [
+                    'image'    => $edR2Image,
+                    'title'    => $request->ed_card_r2_title,
+                    'btn_text' => $request->ed_card_r2_btn_text,
+                    'btn_url'  => $request->ed_card_r2_btn_url ?? '#',
+                ],
+            ],
+            'sub_categories' => collect($request->sub_cat_text ?? [])->map(fn($t) => ['text' => $t])->toArray(),
+            'trust_banner' => [
+                'text' => $request->trust_banner_text,
+            ],
+            'testosterone' => [
+                'pill'      => $request->testo_pill,
+                'title'     => $request->testo_title,
+                'btn1_text' => $request->testo_btn1_text,
+                'btn1_url'  => $request->testo_btn1_url ?? '#',
+                'btn2_text' => $request->testo_btn2_text,
+                'btn2_url'  => $request->testo_btn2_url ?? '#',
+                'bg_image'  => $testoBg,
+            ],
+            'advisory' => [
+                'title'   => $request->advisory_title,
+                'doctors' => $doctors,
+            ],
+            'stats' => [
+                'subtitle' => $request->stats_subtitle,
+                'items'    => collect($request->stat_label ?? [])->map(fn($l, $i) => [
+                    'label'  => $l,
+                    'number' => $request->stat_number[$i] ?? '',
+                    'title'  => $request->stat_title[$i] ?? '',
+                ])->toArray(),
+            ],
+            'comparison' => [
+                'title'    => $request->compare_title,
+                'bg_image' => $compareBg,
+                'rows'     => collect($request->compare_left ?? [])->map(fn($l, $i) => [
+                    'left'  => $l,
+                    'right' => $request->compare_right[$i] ?? '',
+                ])->toArray(),
+            ],
+            'faq' => [
+                'title'    => $request->faq_title,
+                'subtitle' => $request->faq_subtitle,
+                'items'    => collect($request->faq_question ?? [])->map(fn($q, $i) => [
+                    'question' => $q,
+                    'answer'   => $request->faq_answer[$i] ?? '',
+                ])->toArray(),
+            ],
+            'press' => [
+                'label' => $request->press_label,
+                'logos' => collect($request->press_name ?? [])->map(fn($n) => ['name' => $n])->toArray(),
+            ],
+            'mid_cta' => [
+                'heading'  => $request->mid_cta_heading,
+                'subtext'  => $request->mid_cta_subtext,
+                'btn_text' => $request->mid_cta_btn_text,
+                'btn_url'  => $request->mid_cta_btn_url ?? '#',
+                'note'     => $request->mid_cta_note,
+            ],
+            'privacy_section' => [
+                'heading'     => $request->privacy_heading,
+                'span'        => $request->privacy_span,
+                'description' => $request->privacy_description,
+                'image'       => $privacyImage,
+            ],
+            'newsletter' => [
+                'heading'     => $request->newsletter_heading,
+                'description' => $request->newsletter_description,
+                'legal_text'  => $request->newsletter_legal,
+                'bg_image'    => $newsletterBg,
+            ],
+        ]);
+
+        // Footer settings JSON
+        $footerColumns = collect($request->footer_col_title ?? [])->map(function ($title, $i) use ($request) {
+            $rawLinks = $request->footer_col_links[$i] ?? '';
+            $links = collect(explode("\n", $rawLinks))->filter()->map(function ($line) {
+                $parts = explode('|', trim($line), 2);
+                return ['label' => trim($parts[0] ?? ''), 'url' => trim($parts[1] ?? '#')];
+            })->toArray();
+            return ['title' => $title, 'links' => $links];
+        })->toArray();
+        $data['website_footer_settings'] = json_encode([
+            'copy'    => $request->footer_copy,
+            'columns' => $footerColumns,
+        ]);
+
         $setting->update($data);
 
         return redirect()->back()->withStatus(__('Website Setting updated successfully.!'));
