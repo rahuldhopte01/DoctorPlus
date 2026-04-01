@@ -19,6 +19,7 @@
 <script type="text/javascript" src="{{ url('assets_admin/js/sweetalert2@10.js') }}"></script>
 
 <link rel="stylesheet" href="{{ url('assets/css/style.css') }}">
+<link rel="stylesheet" href="{{ url('css/website_header.css') }}">
 
 
 @yield('css')

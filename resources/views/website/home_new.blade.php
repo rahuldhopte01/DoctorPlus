@@ -16,6 +16,8 @@
     
     <!-- Custom CSS -->
     <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
+    <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -35,101 +37,702 @@
 @include('layout.partials.navbar_website')
 
 <!-- Hero Section -->
-<section class="hero-bloomwell text-start text-white">
-    <div class="container position-relative z-index-2 w-100 h-100 d-flex align-items-center">
-        <div class="row align-items-center justify-content-between w-100">
+@php
+    $homeSettings = json_decode($setting->website_home_settings, true) ?: [];
+    $hero = $homeSettings['hero'] ?? [];
+@endphp
+
+@php
+    $heroBgColor = $hero['bg_color'] ?? '#f3ecff';
+@endphp
+<style>
+    /* Hero Background & Blend */
+    .hero-fuxx {
+        background: linear-gradient(135deg, {{ $heroBgColor }} 0%, #ffffff 100%) !important;
+    }
+    .hero-bg-wrapper {
+        opacity: 0.6;
+        mix-blend-mode: multiply;
+    }
+    
+    /* Premium Button Interactive Styles */
+    .btn-hero-premium {
+        background-color: #8a48ff !important;
+        border-color: #8a48ff !important;
+        color: #ffffff !important;
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-hero-premium:hover {
+        transform: translateY(-4px) !important;
+        background-color: #7a35fa !important;
+        border-color: #7a35fa !important;
+    }
+
+    /* Quick Link Cards Interactive Styles */
+    .quick-link-card .card {
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+    }
+    
+    .quick-link-card:hover .card {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1) !important;
+    }
+    
+    /* Trust Icons */
+    .trust-icon-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 6px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        background: #fff;
+    }
+</style>
+
+<section class="hero-fuxx position-relative overflow-hidden" style="min-height: 80vh; padding-top: 50px; padding-bottom: 80px;">
+    
+    <!-- Center Foreground Product Image -->
+    @if(!empty($hero['image']))
+        <div class="hero-bg-wrapper position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; width: 100%; max-width: 800px;">
+            <img src="{{ url('images/upload/'.$hero['image']) }}" alt="Background" class="img-fluid w-100" style="mask-image: linear-gradient(to top, transparent 0%, black 50%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 50%);">
+        </div>
+    @endif
+
+    <!-- Small Decorative Hero Image (like the plant/product on drfuxx) centered with overlay -->
+    @if(!empty($hero['bg_image']))
+        <!-- Image sits at z-index:1 (lowest) -->
+        <div class="position-absolute" style="top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;max-width:380px;width:100%;">
+            <img src="{{ url('images/upload/'.$hero['bg_image']) }}" alt="" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%); opacity: 0.9;">
+        </div>
+        <!-- Color overlay #f3ecfe sits at z-index:2, above image -->
+        <div class="position-absolute" style="top:0;left:0;right:0;bottom:0;background-color:#f3ecfe;opacity:0.78;z-index:2;pointer-events:none;"></div>
+    @endif
+
+    <div class="container position-relative" style="z-index: 3;">
+        
+        <!-- Top Quick Link Cards -->
+        @if(!empty($hero['quick_links']) && count($hero['quick_links']) > 0)
+        <style>
+            .hero-quick-links-container {
+                max-width: 1100px;
+                margin: 0 auto;
+            }
+            .quick-link-card {
+                flex: 1 1 300px;
+                max-width: 350px;
+                perspective: 1000px;
+            }
+            .quick-link-card .card {
+                border-radius: 20px !important;
+                background-color: #ffffff;
+                border: none !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
+                min-height: 140px;
+                padding: 24px;
+                overflow: hidden;
+                position: relative;
+                transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .quick-link-card:hover .card {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
+            }
             
-            <!-- Left Column: Text & Search -->
-            <div class="col-lg-6 col-xl-5 mb-5 mb-lg-0">
-                <!-- Trustpilot / Rating Badge -->
-                <div class="mb-4 d-inline-flex align-items-center gap-2 px-3 py-2 bg-dark rounded-pill" style="border: 1px solid rgba(255,255,255,0.1);">
-                    <div class="d-flex text-success">
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                        <i class="bi bi-star-fill mx-1"></i>
-                    </div>
-                    <span class="fw-bold small ms-1">{{ __('landing.hero.excellent') }} {{ number_format($reviews->count() * 12500) }}+</span>
-                </div>
+            /* Dark Tint Overlay */
+            .quick-link-card .card-overlay {
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background-color: rgba(60, 60, 60, 0.85); /* Dark grey filter */
+                opacity: 0;
+                transition: opacity 0.4s ease;
+                z-index: 3;
+            }
+            .quick-link-card:hover .card-overlay {
+                opacity: 1;
+            }
+            
+            /* Typography Wrapper - needs high z-index to stay above overlay */
+            .quick-link-card .qlink-title-wrapper {
+                position: relative;
+                z-index: 10;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
 
-                <!-- Main Heading -->
-                <h1 class="display-5 fw-bold mb-4" style="line-height: 1.25;">
-                    {{ __('landing.hero.title_prefix') }} <span class="text-primary text-nowrap">{{ __('landing.hero.title_highlight') }}</span> {{ __('landing.hero.title_suffix') }}
-                </h1>
-                
-                <p class="lead mb-4" style="color: rgba(255,255,255,0.8);">
-                    {{ __('landing.hero.subtitle') }}
-                </p>
+            /* Title */
+            .quick-link-card .qlink-title {
+                font-size: 1.15rem;
+                font-weight: 800;
+                color: #111;
+                margin-bottom: 4px;
+                letter-spacing: -0.3px;
+                transition: color 0.4s ease;
+                text-transform: uppercase;
+            }
+            .quick-link-card:hover .qlink-title {
+                color: #8a48ff !important;
+            }
 
-                <!-- Search Bar -->
-                <form action="{{ route('categories') }}" method="GET" class="mb-5 bloomwell-search w-100">
-                    <div class="input-group input-group-lg shadow-lg rounded-3 overflow-hidden">
-                        <span class="input-group-text border-0">
-                            <i class="bi bi-search"></i>
-                        </span>
-                        <input type="text" name="search" class="form-control border-0" placeholder="{{ __('landing.hero.search_placeholder') }}" value="{{ request('search') }}">
-                        <button type="submit" class="bloomwell-btn ms-0 rounded-0 rounded-end">{{ __('landing.common.search') }}</button>
-                    </div>
-                </form>
-                
-                <!-- Trust Indicators -->
-                <div class="d-flex flex-wrap gap-3">
-                    <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
-                        <span class="small fw-medium">{{ __('landing.hero.eu_registered_doctors') }}</span>
-                    </div>
-                    <div class="d-flex align-items-center text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-                        <i class="bi bi-check-circle-fill text-success me-2 fs-5"></i>
-                        <span class="small fw-medium">{{ __('landing.hero.free_shipping') }}</span>
-                    </div>
-                </div>
-            </div>
+            /* Subtitle Reveal */
+            .quick-link-card .qlink-subtitle {
+                font-size: 0.85rem;
+                color: #ffffff;
+                font-weight: 500;
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(10px);
+                transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+                margin: 0;
+            }
+            .quick-link-card:hover .qlink-subtitle {
+                opacity: 0.9;
+                max-height: 100px;
+                transform: translateY(0);
+                margin-top: 6px;
+            }
 
-            <!-- Right Column: Image & Floating Cards -->
-            <div class="col-lg-6 col-xl-6 position-relative d-flex justify-content-center justify-content-lg-end align-items-center" style="z-index: 2;">
-                <div class="hero-image-container ms-auto me-auto me-lg-0 mt-4 mt-lg-0 w-100">
-                    <!-- Central Subject (Using a transparent cutout style image) -->
-                    <img src="https://images.unsplash.com/photo-1638202993928-7267aad84c31?q=80&w=600&auto=format&fit=crop&bg=transparent" alt="{{ __('landing.hero.image_alt') }}" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 20%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);">
+            /* Image setup */
+            .quick-link-card .qlink-img {
+                position: absolute;
+                bottom: 15px;
+                left: 50%;
+                transform: translateX(-50%) scale(1);
+                height: 55px; /* Fixed height for clean proportion scaling */
+                width: auto;
+                object-fit: contain;
+                transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+                z-index: 2; /* Below the overlay */
+            }
+            
+            /* Hover Image Expansion */
+            .quick-link-card:hover .qlink-img {
+                transform: translateX(-50%) scale(8); /* Massive scale to fill background */
+                opacity: 0.3; /* Fade into the background under the overlay */
+            }
+
+            /* Badge */
+            .qlink-badge {
+                background-color: #f79d00;
+                color: #fff;
+                border-radius: 4px;
+                font-size: 0.65rem;
+                padding: 3px 6px;
+                font-weight: 700;
+                vertical-align: middle;
+            }
+        </style>
+        <div class="hero-quick-links-container d-flex flex-wrap justify-content-center gap-4 mb-5 px-3">
+            @foreach($hero['quick_links'] as $qlink)
+            <a href="{{ $qlink['url'] ?? '#' }}" class="quick-link-card text-decoration-none">
+                <div class="card position-relative">
+                    <div class="card-overlay"></div>
+                    <div class="qlink-title-wrapper">
+                        <div class="d-flex align-items-center gap-2">
+                            <h5 class="qlink-title mb-0">{{ $qlink['title'] ?? '' }}</h5>
+                            @if(!empty($qlink['badge']))
+                                <span class="qlink-badge">{{ $qlink['badge'] }}</span>
+                            @endif
+                        </div>
+                        @if(!empty($qlink['subtitle']))
+                            <p class="qlink-subtitle">{{ $qlink['subtitle'] }}</p>
+                        @endif
+                    </div>
                     
-                    <!-- Floating Feature Cards -->
-                    <div class="bloomwell-floating-card card-1 d-none d-md-flex text-dark">
-                        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-check-lg"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold fs-6">{{ __('landing.hero.card_order_title') }}</div>
-                            <div class="small text-muted">{{ __('landing.hero.card_order_subtitle') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="bloomwell-floating-card card-2 d-none d-md-flex text-dark">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-box-seam"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold fs-6">{{ __('landing.hero.card_shipping_title') }}</div>
-                            <div class="small text-muted">{{ __('landing.hero.card_shipping_subtitle') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="bloomwell-floating-card card-3 d-none d-md-flex text-dark">
-                        <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <div>
-                            <div class="fw-bold fs-6">{{ __('landing.hero.card_eu_title') }}</div>
-                            <div class="small text-muted">{{ __('landing.hero.card_eu_subtitle') }}</div>
-                        </div>
-                    </div>
+                    @if(!empty($qlink['image']))
+                        <img src="{{ url('images/upload/'.$qlink['image']) }}" class="qlink-img" alt="">
+                    @elseif(!empty($qlink['icon_class']))
+                        <i class="{{ $qlink['icon_class'] }} qlink-img" style="font-size: 2.5rem; color: #7b42f6; bottom: 5px;"></i>
+                    @endif
                 </div>
+            </a>
+            @endforeach
+        </div>
+        @endif
+
+        <!-- Main Content -->
+        <div class="hero-main-content text-center mx-auto" style="max-width: 800px; margin-top: 60px;">
+            <style>
+                .hero-ticker-badge {
+                    display: inline-block;
+                    position: relative;
+                }
+                .hero-ticker-badge::after {
+                    content: '|';
+                    color: #7b42f6;
+                    animation: blink 1s step-end infinite;
+                }
+                @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0; }
+                }
+            </style>
+
+            <div class="text-uppercase fw-bold mb-3 d-inline-block px-3 py-1" style="color: #8a48ff; background-color: #f4effe; border-radius: 20px; letter-spacing: 1.5px; font-size: 0.85rem;">
+                <span class="hero-ticker-badge" id="heroTicker"></span>
             </div>
-            
+
+            <h1 class="display-4 fw-bold mb-4" style="color: #1a1a1a; letter-spacing: -1px;">
+                {{ $hero['title'] ?? 'Ganz einfach mit dr.fuxx' }}
+            </h1>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    @php
+                        $typingKeywordsStr = $hero['typing_keywords'] ?? 'MED. CANNABIS, EREKTIONSSTÖRUNGEN, TESTOSTERON, HAARAUSFALL, ÜBERGEWICHT';
+                        $typingKeywordsArray = array_map('trim', explode(',', $typingKeywordsStr));
+                        $typingKeywordsArray = array_filter($typingKeywordsArray);
+                        if(empty($typingKeywordsArray)) {
+                            $typingKeywordsArray = ['MED. CANNABIS'];
+                        }
+                    @endphp
+                    const keywords = {!! json_encode(array_values($typingKeywordsArray)) !!};
+                    const tickerEl = document.getElementById('heroTicker');
+                    let keywordIndex = 0;
+                    let charIndex = 0;
+                    let isDeleting = false;
+                    let typingSpeed = 100;
+
+                    function typeEffect() {
+                        const currentKeyword = keywords[keywordIndex];
+                        
+                        if (isDeleting) {
+                            tickerEl.textContent = currentKeyword.substring(0, charIndex - 1);
+                            charIndex--;
+                            typingSpeed = 50; // Faster when deleting
+                        } else {
+                            tickerEl.textContent = currentKeyword.substring(0, charIndex + 1);
+                            charIndex++;
+                            typingSpeed = 120; // Normal typing speed
+                        }
+
+                        if (!isDeleting && charIndex === currentKeyword.length) {
+                            typingSpeed = 2000; // Pause at the end of word
+                            isDeleting = true;
+                        } else if (isDeleting && charIndex === 0) {
+                            isDeleting = false;
+                            keywordIndex = (keywordIndex + 1) % keywords.length;
+                            typingSpeed = 400; // Pause before typing next word
+                        }
+
+                        setTimeout(typeEffect, typingSpeed);
+                    }
+
+                    if(tickerEl) {
+                        setTimeout(typeEffect, 500);
+                    }
+                });
+            </script>
+
+            <p class="lead mb-5 mx-auto" style="color: #4a4a4a; max-width: 650px; font-size: 1.15rem; line-height: 1.7;">
+                {{ $hero['description'] ?? 'Original deutsche Medikamente, Online-Rezepte und medizinische Produkte – Lieferung in 24-48 Stunden oder per Express in 2 Stunden / Selbstabholung möglich.' }}
+            </p>
+
+            @if(!empty($hero['btn_text']))
+                <style>
+                    .btn-cta-pulse {
+                        animation: ctaPulse 2.5s ease-in-out infinite;
+                        position: relative;
+                        border-radius: 50px !important;
+                    }
+                    @keyframes ctaPulse {
+                        0%, 100% { box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4); }
+                        50%       { box-shadow: 0 0 0 12px rgba(124, 58, 237, 0); }
+                    }
+                </style>
+                <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium btn-cta-pulse rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
+                    {{ $hero['btn_text'] }}
+                </a>
+            @endif
+
+            <!-- Trust Items -->
+            @if(!empty($hero['trust_items']) && count($hero['trust_items']) > 0)
+            <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
+                @foreach($hero['trust_items'] as $trust)
+                    <div class="d-flex align-items-center text-dark" style="font-size: 0.95rem;">
+                        @if(strpos($trust['icon_class'], 'bi-') !== false || strpos($trust['icon_class'], 'fa-') !== false)
+                            <i class="{{ $trust['icon_class'] }} fs-5 me-2" style="color: #7b42f6;"></i>
+                        @elseif(!empty($trust['icon_class']))
+                            <span class="trust-icon-badge me-2">{{ $trust['icon_class'] }}</span>
+                        @endif
+                        <span class="fw-medium text-secondary">{{ $trust['text'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+            @endif
+
+            <!-- Ratings -->
+            <div class="rating-section mb-3 d-flex flex-wrap align-items-center justify-content-center gap-2 mt-4">
+                <div class="stars text-warning d-flex fs-5">
+                    @php 
+                        $stars = floatval($hero['rating_stars'] ?? 5);
+                        $fullStars = floor($stars);
+                        $halfStar = $stars - $fullStars >= 0.5;
+                        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                    @endphp
+                    @for($i=0; $i<$fullStars; $i++) <i class="bi bi-star-fill mx-1"></i> @endfor
+                    @if($halfStar) <i class="bi bi-star-half mx-1"></i> @endif
+                    @for($i=0; $i<$emptyStars; $i++) <i class="bi bi-star mx-1"></i> @endfor
+                </div>
+                <div class="fw-bold fs-6">{{ $hero['rating_score'] ?? '4,79' }}</div>
+                <div class="text-muted small">{{ $hero['rating_text'] ?? 'Hervorragend aus 13.764 Bewertungen' }}</div>
+            </div>
+
+            <!-- Live Viewers -->
+            @if(!empty($hero['live_viewers']))
+            <div class="live-viewers d-flex align-items-center justify-content-center text-muted small mt-3">
+                <div class="spinner-grow spinner-grow-sm me-2" role="status" style="width: 8px; height: 8px; background-color: #7b42f6;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span class="fw-bold text-dark me-1" id="live-viewer-count">{{ rand(100, 250) }}</span> {{ $hero['live_viewers'] }}
+            </div>
+            <script>
+                // Make the viewer count dynamic
+                document.addEventListener("DOMContentLoaded", function() {
+                    let countElement = document.getElementById('live-viewer-count');
+                    if (countElement) {
+                        setInterval(() => {
+                            let current = parseInt(countElement.innerText);
+                            let change = Math.floor(Math.random() * 5) - 2; // -2 to +2
+                            let newCount = current + change;
+                            if(newCount < 50) newCount = 50; 
+                            countElement.innerText = newCount;
+                        }, 5000);
+                    }
+                });
+            </script>
+            @endif
         </div>
     </div>
 </section>
 
-<!-- Services Section -->
+@php
+    $how = $homeSettings['how_it_works'] ?? [];
+    // Provide default steps so section shows even if admin not yet configured
+    if (empty($how['steps'])) {
+        $how['title']    = $how['title']    ?? '3 einfache Schritte';
+        $how['subtitle'] = $how['subtitle'] ?? '100 % online';
+        $how['badge']    = $how['badge']    ?? '5 Ärzte online | täglich 8–18 Uhr';
+        $how['steps'] = [
+            ['title' => 'Füll den|medizinischen Fragebogen aus', 'text' => '', 'icon' => ''],
+            ['title' => 'Wähle die|gewünschte Behandlung',        'text' => '', 'icon' => ''],
+            ['title' => 'Lieferung|flexibel wählen',
+             'text' => ">Online Express: Lieferung in 1–2 Werktagen\n>Apotheke vor Ort: Selbstabholung möglich",
+             'icon' => ''],
+        ];
+    }
+@endphp
+
+<!-- How It Works Section -->
+<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); min-height: 560px;">
+
+    <!-- Wavy background line SVG -->
+    <svg class="position-absolute w-100" style="bottom: 60px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#7b42f6" stroke-width="3" fill="none"/>
+    </svg>
+
+    <style>
+        .hiw-title  { font-size: 2.3rem; font-weight: 800; color: #111; letter-spacing: -0.5px; font-family: 'Clash Display', sans-serif; }
+        .hiw-sub    { font-size: 2.1rem; font-weight: 800; color: #7b42f6; letter-spacing: -0.5px; font-style: italic; font-family: 'Clash Display', sans-serif; }
+        .hiw-badge  { display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 50px; padding: 6px 16px; font-size: 0.82rem; font-weight: 600; color: #333; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .hiw-dot    { width: 9px; height: 9px; background: #22c55e; border-radius: 50%; flex-shrink: 0; animation: hiwDotPulse 2s ease-in-out infinite; }
+        @keyframes hiwDotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+
+        /* Deck layout — exact reference values */
+        .hiw-deck   { display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 40px 0 20px; }
+        .step-card-tilted {
+            background: #faf8ff;
+            border-radius: 20px;
+            padding: 28px 24px 20px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            width: 280px;
+            flex-shrink: 0;
+            min-height: 360px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+        }
+        .step-card-tilted:hover {
+            box-shadow: 0 16px 45px rgba(80,40,180,0.22);
+        }
+        /* Exact transforms from reference */
+        .tilt-left   { transform: rotate(-6deg) translateY(10px); z-index: 1; margin-right: -30px; }
+        .tilt-center { transform: rotate(0deg) translateY(-20px); z-index: 2; }
+        .tilt-right  { transform: rotate(6deg) translateY(10px);  z-index: 1; margin-left: -30px; }
+        
+        /* JS adds this class to raise the hovered card */
+        .step-card-tilted.hiw-active { z-index: 10 !important; }
+        .tilt-left.hiw-active   { transform: rotate(-4deg) translateY(0px) scale(1.02); }
+        .tilt-center.hiw-active { transform: rotate(0deg)  translateY(-30px) scale(1.02); }
+        .tilt-right.hiw-active  { transform: rotate(4deg)  translateY(0px) scale(1.02); }
+
+        .step-num-tilted { width: 38px; height: 38px; background: #7b42f6; color: #fff; border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1rem; margin-bottom: 16px; }
+        .step-card-tilted h3 { font-size: 1.2rem; font-weight: 600; color: #1a1a1a; line-height: 1.35; margin-bottom: 6px; }
+        .step-card-tilted h3 span { color: #7b42f6; display: block; }
+        .step-card-tilted > p { color: #666; font-size: 0.82rem; line-height: 1.5; margin-bottom: 16px; }
+        .hiw-sub-items { margin-top: 12px; }
+        .hiw-sub-item  { display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
+            border: 1px solid #ebe8f8; border-radius: 12px; margin-bottom: 8px; background: #fff; }
+        .hiw-sub-item i { color: #7b42f6; font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
+        .hiw-sub-item-label { font-weight: 700; font-size: 0.82rem; color: #111; }
+        .hiw-sub-item-desc  { font-size: 0.74rem; color: #777; }
+        .hiw-card-photo { display: block; width: 100%; margin-top: 14px; object-fit: contain; max-height: 190px; }
+    </style>
+
+    <div class="container text-center position-relative" style="z-index:2;">
+        <p class="hiw-title mb-1">{{ $how['title'] ?? '3 einfache Schritte' }}</p>
+        <p class="hiw-sub mb-3">{{ $how['subtitle'] ?? '100 % online' }}</p>
+
+        @if(!empty($how['badge']))
+        <div class="hiw-badge mb-5 mx-auto" style="width:fit-content;">
+            <span class="hiw-dot"></span>{{ $how['badge'] }}
+        </div>
+        @endif
+
+        <div class="hiw-deck mx-auto" style="max-width: 950px;">
+            @foreach($how['steps'] as $i => $step)
+            @php
+                $tiltClass = ['tilt-left','tilt-center','tilt-right'][$i] ?? 'tilt-center';
+                // Support "Normal text|Purple text" split in the title field
+                $titleParts = explode('|', $step['title'] ?? '', 2);
+                $titleNormal = trim($titleParts[0]);
+                $titlePurple = isset($titleParts[1]) ? trim($titleParts[1]) : '';
+                // Parse sub-items from 'text' if they contain lines starting with ">"
+                $subItems = [];
+                $plainText = '';
+                foreach(explode("\n", $step['text'] ?? '') as $line) {
+                    $line = trim($line);
+                    if(str_starts_with($line, '>')) {
+                        $parts = explode(':', ltrim($line, '>'), 2);
+                        $subItems[] = ['label' => trim($parts[0]), 'desc' => isset($parts[1]) ? trim($parts[1]) : ''];
+                    } elseif($line) {
+                        $plainText .= $line . ' ';
+                    }
+                }
+            @endphp
+            <div class="step-card-tilted {{ $tiltClass }}">
+                <div class="step-num-tilted">{{ $i + 1 }}</div>
+                <h3>{{ $titleNormal }}@if($titlePurple)<span>{{ $titlePurple }}</span>@endif
+                </h3>
+                @if($subItems)
+                <div class="hiw-sub-items">
+                    @foreach($subItems as $sub)
+                    <div class="hiw-sub-item">
+                        <i class="bi bi-check2-circle"></i>
+                        <div>
+                            <div class="hiw-sub-item-label">{{ $sub['label'] }}</div>
+                            @if($sub['desc'])<div class="hiw-sub-item-desc">{{ $sub['desc'] }}</div>@endif
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @elseif(trim($plainText))
+                    <p class="mt-2" style="font-size:0.83rem;color:#666;">{{ trim($plainText) }}</p>
+                @endif
+                @if(!empty($step['icon']))
+                    <img src="{{ url('images/upload/'.$step['icon']) }}" class="hiw-card-photo" alt="">
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    <script>
+    document.querySelectorAll('.step-card-tilted').forEach(function(card) {
+        card.addEventListener('mouseenter', function() {
+            document.querySelectorAll('.step-card-tilted').forEach(function(c) { c.classList.remove('hiw-active'); });
+            card.classList.add('hiw-active');
+        });
+        card.addEventListener('mouseleave', function() {
+            card.classList.remove('hiw-active');
+        });
+    });
+    </script>
+</section>
+
+@php
+    $relief = $homeSettings['natural_relief'] ?? [];
+    if (empty($relief['cards'])) {
+        $relief['title'] = $relief['title'] ?? 'Finden Sie natürliche und|sichere Linderung';
+        $relief['badge'] = $relief['badge'] ?? 'REZEPT WIRD ONLINE AUSGESTELLT';
+        $relief['btn1_text'] = $relief['btn1_text'] ?? 'Berechtigung prüfen';
+        $relief['btn1_url'] = $relief['btn1_url'] ?? '#';
+        $relief['btn2_text'] = $relief['btn2_text'] ?? 'Gratis Beratung starten';
+        $relief['btn2_url'] = $relief['btn2_url'] ?? '#';
+        $relief['cards'] = [
+            [
+                'title' => 'Wenn Schmerzen nicht aufhören...',
+                'btn_text' => 'Mehr erfahren',
+                'btn_url' => '#',
+                'icon' => '' 
+            ],
+            [
+                'title' => 'Sind Sie es leid, alles andere auszuprobieren?',
+                'btn_text' => 'Behandlungen entdecken',
+                'btn_url' => '#',
+                'icon' => ''
+            ]
+        ];
+    }
+@endphp
+
+<!-- Natural Relief Section -->
+<section class="cannabis-banner-section">
+    <div class="cbs-inner">
+        @if(!empty($relief['badge']))
+            <span class="cbs-pill">{{ $relief['badge'] }}</span>
+        @endif
+
+        @php
+            $rTitleParts = explode('|', $relief['title'] ?? '', 2);
+            $rTitleNormal = trim($rTitleParts[0]);
+            $rTitleGreen = isset($rTitleParts[1]) ? trim($rTitleParts[1]) : '';
+        @endphp
+        
+        <h2 class="cbs-heading">{{ $rTitleNormal }} @if($rTitleGreen)<span class="cbs-green">{{ $rTitleGreen }}</span>@endif</h2>
+
+        <!-- Center hero image with buttons overlaid -->
+        <div class="cbs-hero-img-wrap">
+            @if(!empty($relief['image']))
+                <img src="{{ url('images/upload/'.$relief['image']) }}" alt="" class="cbs-hero-img">
+            @else
+                <!-- Placeholder if no image set so layout doesn't break -->
+                <div style="height: 350px;"></div>
+            @endif
+            
+            <div class="cbs-btns-overlay">
+                @if(!empty($relief['btn1_text']))
+                    <a href="{{ $relief['btn1_url'] ?? '#' }}" class="cbs-btn cbs-btn-outline">{{ $relief['btn1_text'] }}</a>
+                @endif
+                @if(!empty($relief['btn2_text']))
+                    <a href="{{ $relief['btn2_url'] ?? '#' }}" class="cbs-btn cbs-btn-filled">{{ $relief['btn2_text'] }}</a>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Two info cards -->
+    <div class="cbs-cards">
+        @foreach($relief['cards'] as $card)
+        <div class="cbs-card">
+            <div class="cbs-card-text">
+                <h3>{{ $card['title'] }}</h3>
+                @if(!empty($card['btn_text']))
+                    <a href="{{ $card['btn_url'] ?? '#' }}" class="cbs-card-btn">{{ $card['btn_text'] }}</a>
+                @endif
+            </div>
+            <div class="cbs-card-img-wrap">
+                @if(!empty($card['icon']))
+                    <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+</section>
+
+<!-- ED Banner Section -->
+@php
+    $ed = $homeSettings['ed_banner'] ?? [];
+    $edPill = $ed['pill'] ?? 'LÖSUNG FÜR EREKTILE DYSFUNKTION';
+    
+    // Process title: wrap text after | in a span with .ed-blue
+    $rawTitle = $ed['title'] ?? 'Gewinnen Sie Ihr | Selbstvertrauen | und Ihre Intimität zurück';
+    $parts = explode('|', $rawTitle);
+    if (count($parts) > 1) {
+        $processedTitle = $parts[0];
+        for ($i = 1; $i < count($parts); $i++) {
+            if ($i % 2 != 0) {
+                $processedTitle .= '<span class="ed-blue">' . $parts[$i] . '</span>';
+            } else {
+                $processedTitle .= $parts[$i];
+            }
+        }
+    } else {
+        $processedTitle = $rawTitle;
+    }
+    $edHeading = $processedTitle;
+
+    $edHeroImage = !empty($ed['hero_image']) ? url('images/upload/'.$ed['hero_image']) : 'https://images.unsplash.com/photo-1511130558040-bb3396b42b79?q=80&w=1000&auto=format&fit=crop';
+    
+    $edBtn1Text = !empty($ed['btn1_text']) ? $ed['btn1_text'] : 'Meine Behandlung finden';
+    $edBtn1Url = !empty($ed['btn1_url']) ? $ed['btn1_url'] : route('categories');
+    $edBtn2Text = !empty($ed['btn2_text']) ? $ed['btn2_text'] : 'Meine kostenlose Beratung starten';
+    $edBtn2Url = !empty($ed['btn2_url']) ? $ed['btn2_url'] : route('categories');
+
+    $largeCard = $ed['large_card'] ?? [];
+    $largeTitle = !empty($largeCard['title']) ? str_replace('|', '<br>', $largeCard['title']) : 'Es kommt häufiger vor, als Sie denken.';
+    $largeBtnText = !empty($largeCard['btn_text']) ? $largeCard['btn_text'] : 'Mehr über Ursachen erfahren';
+    $largeBtnUrl = !empty($largeCard['btn_url']) ? $largeCard['btn_url'] : route('categories');
+    $largeImage = !empty($largeCard['image']) ? url('images/upload/'.$largeCard['image']) : 'https://images.unsplash.com/photo-1621348123733-47a824707db9?q=80&w=1000&auto=format&fit=crop';
+
+    $r1 = $ed['right_card_1'] ?? [];
+    $r1Title = !empty($r1['title']) ? str_replace('|', '<br>', $r1['title']) : 'Wenn Leistung zu Druck wird';
+    $r1BtnText = !empty($r1['btn_text']) ? $r1['btn_text'] : 'Verstehen, wie ED funktioniert';
+    $r1BtnUrl = !empty($r1['btn_url']) ? $r1['btn_url'] : route('categories');
+    $r1Image = !empty($r1['image']) ? url('images/upload/'.$r1['image']) : 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1000&auto=format&fit=crop';
+
+    $r2 = $ed['right_card_2'] ?? [];
+    $r2Title = !empty($r2['title']) ? str_replace('|', '<br>', $r2['title']) : 'Professionelle Hilfe, die diskret wirkt.';
+    $r2BtnText = !empty($r2['btn_text']) ? $r2['btn_text'] : 'Mein Rezept erhalten';
+    $r2BtnUrl = !empty($r2['btn_url']) ? $r2['btn_url'] : route('categories');
+    $r2Image = !empty($r2['image']) ? url('images/upload/'.$r2['image']) : 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=1000&auto=format&fit=crop';
+@endphp
+<section class="ed-banner-section">
+    <div class="ed-inner">
+        <span class="ed-pill">{{ $edPill }}</span>
+        <h2 class="ed-heading">{!! $edHeading !!}</h2>
+        <div class="ed-hero-img-wrap">
+            <img src="{{ $edHeroImage }}" alt="Paar" class="ed-hero-img" />
+            <div class="ed-btns-overlay">
+                <a href="{{ $edBtn1Url }}" class="ed-btn ed-btn-outline">{{ $edBtn1Text }}</a>
+                <a href="{{ $edBtn2Url }}" class="ed-btn ed-btn-filled">{{ $edBtn2Text }}</a>
+            </div>
+        </div>
+    </div>
+    <div class="ed-cards">
+        <div class="ed-card ed-card-large">
+            <div class="ed-card-text">
+                <h3>{!! $largeTitle !!}</h3>
+                <a href="{{ $largeBtnUrl }}" class="ed-card-btn">{{ $largeBtnText }}</a>
+            </div>
+            <div class="ed-card-img-wrap">
+                <img src="{{ $largeImage }}" alt="" class="ed-card-img" />
+            </div>
+        </div>
+        <div class="ed-cards-right">
+            <div class="ed-card ed-card-small">
+                <div class="ed-card-text">
+                    <h3>{!! $r1Title !!}</h3>
+                    <a href="{{ $r1BtnUrl }}" class="ed-card-btn">{{ $r1BtnText }}</a>
+                </div>
+                <div class="ed-card-img-wrap">
+                    <img src="{{ $r1Image }}" alt="" class="ed-card-img" />
+                </div>
+            </div>
+            <div class="ed-card ed-card-small">
+                <div class="ed-card-text">
+                    <h3>{!! $r2Title !!}</h3>
+                    <a href="{{ $r2BtnUrl }}" class="ed-card-btn">{{ $r2BtnText }}</a>
+                </div>
+                <div class="ed-card-img-wrap">
+                    <img src="{{ $r2Image }}" alt="" class="ed-card-img" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 <!-- Our Treatment Areas – Carousel Section -->
     <div class="container py-4">

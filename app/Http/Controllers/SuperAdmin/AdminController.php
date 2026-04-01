@@ -23,9 +23,7 @@ class AdminController extends Controller
 {
     public function admin_login()
     {
-        if (env('DB_DATABASE') == '') {
-            return view('first_page');
-        } elseif (auth()->check()) {
+        if (auth()->check()) {
             return redirect('home');
         }
 

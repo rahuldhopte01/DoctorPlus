@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- New Design CSS -->
     <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
 
     @yield('css')
     <style>
