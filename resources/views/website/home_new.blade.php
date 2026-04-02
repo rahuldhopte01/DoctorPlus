@@ -1036,6 +1036,53 @@
     </div>
 </section>
 
+<!-- FAQ Section -->
+@php
+    $faqData = $homeSettings['faq_section'] ?? [];
+    $faqItems = $faqData['items'] ?? [];
+    
+    // Provide demo defaults if empty so it's always visible for the user to see the design
+    if (empty($faqItems)) {
+        $faqItems = [
+            ['question' => 'Was ist dr.fuxx?', 'answer' => 'dr.fuxx ist eine digitale Gesundheits- und Apothekenplattform mit Sitz in Deutschland. Wir verbinden Patienten mit zugelassenen Ärzten.'],
+            ['question' => 'Wie funktioniert dr.fuxx?', 'answer' => 'Sie wählen eine Behandlung, füllen den medizinischen Fragebogen aus und erhalten nach ärztlicher Prüfung Ihr Rezept.'],
+            ['question' => 'Wer sind die Anbieter bei dr.fuxx?', 'answer' => 'Wir arbeiten ausschließlich mit zertifizierten deutschen Ärzten und Partnerapotheken zusammen.'],
+        ];
+    }
+@endphp
+@if(!empty($faqItems))
+<section class="faq-section">
+    <div class="faq-container">
+        <div class="faq-header">
+            <h2 class="faq-heading">{{ $faqData['heading'] ?? 'Sie haben Fragen?' }}</h2>
+            <p class="faq-sub">{{ $faqData['subheading'] ?? 'Hier gibt es Antworten!' }}</p>
+        </div>
+
+        <div class="faq-accordion" id="homeFaqAccordion">
+            @foreach($faqItems as $index => $item)
+            <div class="faq-item">
+                <div class="faq-question" 
+                     data-bs-toggle="collapse" 
+                     data-bs-target="#faqCollapse{{ $index }}" 
+                     aria-expanded="{{ $index === 0 ? 'true' : 'false' }}" 
+                     aria-controls="faqCollapse{{ $index }}">
+                    <span class="faq-q-text">{{ $item['question'] }}</span>
+                    <i class="bi bi-chevron-down faq-chevron"></i>
+                </div>
+                <div id="faqCollapse{{ $index }}" 
+                     class="collapse {{ $index === 0 ? 'show' : '' }}" 
+                     data-bs-parent="#homeFaqAccordion">
+                    <div class="faq-answer">
+                        {!! nl2br(e($item['answer'])) !!}
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 
 <!-- Our Treatment Areas – Carousel Section -->

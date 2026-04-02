@@ -829,6 +829,7 @@
                                             $adv = $home['medical_advisors'] ?? [];
                                             $statsSec = $home['stats_section'] ?? [];
                                             $compSec = $home['comparison_section'] ?? [];
+                                            $faqSec = $home['faq_section'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1624,6 +1625,38 @@
                                                 <input type="text" name="comp_btn_subtext" value="{{ $compSec['btn_subtext'] ?? 'Kostenlose Erstberatung • Rezept in 24h' }}" class="form-control">
                                             </div>
                                         </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('FAQ Section (Sie haben Fragen?)')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Heading')}}</label>
+                                                <input type="text" name="faq_heading" value="{{ $faqSec['heading'] ?? 'Sie haben Fragen?' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Subheading')}}</label>
+                                                <input type="text" name="faq_subheading" value="{{ $faqSec['subheading'] ?? 'Hier gibt es Antworten!' }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4">{{__('FAQ Items (up to 5)')}}</h6>
+                                        @for ($i = 0; $i < 5; $i++)
+                                        @php 
+                                            $item = $faqSec['items'][$i] ?? [];
+                                        @endphp
+                                        <div class="card mb-3 border">
+                                            <div class="card-body">
+                                                <div class="form-group mb-2">
+                                                    <label><small>Question {{ $i+1 }}</small></label>
+                                                    <input type="text" name="faq_question_{{$i}}" value="{{ $item['question'] ?? '' }}" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="form-group mb-0">
+                                                    <label><small>Answer {{ $i+1 }}</small></label>
+                                                    <textarea name="faq_answer_{{$i}}" class="form-control form-control-sm" rows="2">{{ $item['answer'] ?? '' }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endfor
 
                                      </div>
                                      <!-- Footer Settings -->

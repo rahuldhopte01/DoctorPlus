@@ -593,6 +593,24 @@ class SettingController extends Controller
             $home_settings['comparison_section'] = $comp;
         }
 
+        // FAQ Section
+        if ($request->has('faq_heading')) {
+            $faq = [];
+            $faq['heading'] = $request->faq_heading;
+            $faq['subheading'] = $request->faq_subheading;
+            
+            $faq['items'] = [];
+            for ($i = 0; $i < 5; $i++) {
+                if ($request->filled("faq_question_$i")) {
+                    $faq['items'][] = [
+                        'question' => $request->input("faq_question_$i"),
+                        'answer' => $request->input("faq_answer_$i")
+                    ];
+                }
+            }
+            $home_settings['faq_section'] = $faq;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings
