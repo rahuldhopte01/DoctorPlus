@@ -40,6 +40,7 @@
     <!-- New Design CSS -->
     <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
+    <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
 
     @yield('css')
     <style>

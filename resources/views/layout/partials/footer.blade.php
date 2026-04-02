@@ -1,68 +1,87 @@
-<div class="w-full" style="background-color: #f2efea;">
-    <div class="xl:w-3/4 mx-auto pt-5">
-        <div class="xxsm:mx-5 xl:mx-0 2xl:mx-0">
-            <div class="xxsm:pt-5 xxsm:pb-5 justify-between flex sm:flex-row xxsm:flex-col">
-                <div>
-                    <a href="{{ url('/') }}" class="">
-                        @if($setting->company_white_logo && file_exists(public_path('images/upload/'.$setting->company_white_logo)))
-                        <img src="{{ $setting->companyWhite }}" width="150px" height="40px" alt="Logo" >
-                        @else
-                        <img src="{{url('/images/upload_empty/logo_white.png')}}" class="h-6 mr-3 sm:h-9" alt="Doctro Logo"  />
-                        @endif
-                    </a>
-                    <div class="flex pt-5">
-                        <a href="{{ $setting->facebook_url }}" target="_blank" class=""><i class="fa-brands fa-facebook text-gray-800 border-gray-400 border rounded-full p-2"></i></a>
-                        <a href="{{ $setting->twitter_url }}" target="_blank" class="lg:mx-4 md:mx-2 xsm:mx-1 xxsm:mx-1"><i class="fa-brands fa-twitter text-gray-800 border-gray-400 border rounded-full p-2"></i></a>
-                        <a href="{{ $setting->instagram_url }}" target="_blank" class=""><i class="fa-brands fa-instagram text-gray-800 border-gray-400 border rounded-full p-2"></i></a>
-                        <a href="{{ $setting->linkdin_url }}" target="_blank" class="lg:mx-4 md:mx-2 xsm:mx-1 xxsm:mx-1"><i class="fa-brands fa-linkedin-in text-gray-800 border-gray-400 border rounded-full p-2"></i></a>
-                    </div>
-                </div>
-                <div class="grid msm:grid-cols-2 gap-10 xsm:grid-cols-1 xxsm:grid-cols-1 mb-5">
-                    <div>
-                        <h1 class="text-primary font-medium text-lg leading-5 font-fira-sans xxsm:pt-5 sm:pt-0">{{__('For Patients')}}</h1>
-                        <div class="2xl:pt-10 xxsm:pt-5">
-                            <a href="{{url('/show-doctors')}}" class="text-gray-800 hover:text-primary text-sm font-normal leading-4 font-fira-sans pt-10">{{__('Search for Doctors')}}</a>
-                        </div>
-                        <div class="mt-2">
-                            <a href="{{url('/all-pharmacies')}}" class="text-gray-800 hover:text-primary text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Pharmacy')}}</a>
-                        </div>
-                        <div class="mt-2">
-                            <a href="{{url('/all-labs')}}" class="text-gray-800 hover:text-primary text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Lab Tests')}}</a>
-                        </div>
-                        <div class="mt-2">
-                            <a href="{{url('/our-offers')}}" class="text-gray-800 hover:text-primary text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Offers')}}</a>
-                        </div>
-                        <div class="mt-2">
-                            <a href="{{url('/our_blogs')}}" class="text-gray-800 hover:text-primary text-sm font-normal leading-4 font-fira-sans pt-2">{{__('Blog')}}</a>
-                        </div>
-                    </div>
-                    <div>
-                        <h1 class="text-primary font-medium text-lg leading-5 font-fira-sans msm:pt-5 sm:pt-0">{{__('Contact Us:')}}</h1>
-                        <div class="2xl:pt-10 xxsm:pt-5">
-                            <a href="tel:{{ $setting->phone }}" class="text-gray-800 hover:text-primary text-sm leading-4 font-fira-sans font-normal underline pt-2">{{ $setting->phone }}</a>
-                        </div>
-                        <div class="mt-2">
-                            <a href="mailto:{{ $setting->email }}" class="text-gray-800 hover:text-primary text-sm leading-4 font-fira-sans font-normal underline pt-2">{{ $setting->email }}</a>
-                        </div>
-                    </div>
-                </div>
+@php
+    $footerSettings = json_decode($setting->website_footer_settings, true) ?: [];
+    $tickerItems = $footerSettings['ticker'] ?? ['100% DSGVO-konform', 'Deutsche Server', 'Deutsche Ärzte', 'Express in 1-2 Tagen'];
+    $brandDesc = $footerSettings['desc'] ?? 'Deutschlands moderne Telemedizin-Plattform. Zertifizierte Medikamente, deutsche Ärzte, diskret zu Ihnen nach Hause.';
+    $brandAddr = $footerSettings['address'] ?? 'dr.fuxx GmbH · Berlin, Deutschland';
+    $cols = $footerSettings['columns'] ?? [
+        ['title' => 'Behandlungen', 'links' => [['name' => 'Med. Cannabis', 'url' => '#'], ['name' => 'Erektionsstörungen', 'url' => '#']]],
+        ['title' => 'Service', 'links' => [['name' => 'FAQ (Hilfe)', 'url' => '#'], ['name' => 'Versand', 'url' => '#']]],
+        ['title' => 'Rechtliches', 'links' => [['name' => 'AGB', 'url' => '#'], ['name' => 'Datenschutz', 'url' => '#']]]
+    ];
+    $disclaimer = $footerSettings['disclaimer'] ?? 'dr.fuxx ist eine Vermittlungsplattform – keine Internetapotheke und kein Ersatz für ärztliche Beratung.';
+@endphp
+
+<!-- Top Ticker Bar -->
+<div class="ticker-bar-v2">
+    <div class="ticker-inner-v2">
+        @php
+            $tickerIcons = ['fa-shield-halved', 'fa-server', 'fa-user-doctor', 'fa-truck-fast'];
+        @endphp
+        @foreach($tickerItems as $index => $item)
+            @if(!empty($item))
+            <div class="ticker-item-v2">
+                <i class="fa-solid {{ $tickerIcons[$index] ?? 'fa-check-circle' }}"></i>
+                <span>{{ $item }}</span>
             </div>
-        </div>
-        <div class="border-t border-gray-300 pb-5 xxsm:mx-5 xl:mx-0 2xl:mx-0">
-            <div class="xxsm:pt-5 justify-between flex sm:flex-row xxsm:flex-col w-[97%]">
-                <p class="text-gray-800 text-sm font-normal leading-5 font-fira-sans mb-5">{{__('Copyright')}} &copy; {{ Carbon\Carbon::now(env('timezone'))->year }} {{ __($setting->business_name) }}{{__(', All rights reserved')}} </p>
-                <div class="flex flex-row">
-                    <div>
-                        <a href="{{ url('zoom') }}" class="text-gray-800 hover:text-primary text-sm font-normal leading-5 font-fira-sans mr-[80px]">{{__('Zoom')}}</a>
-                    </div>
-                    <div>
-                        <a href="{{ url('about-us') }}" class="text-gray-800 hover:text-primary text-sm font-normal leading-5 font-fira-sans mr-[80px]">{{__('About us')}}</a>
-                    </div>
-                    <div>
-                        <a href="{{ url('privacy-policy') }}" class="text-gray-800 hover:text-primary text-sm font-normal leading-5 font-fira-sans mr-12">{{__('Privacy Policy')}}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+            @endif
+        @endforeach
     </div>
 </div>
+
+<footer class="footer-v2">
+    <div class="footer-inner-v2">
+        <!-- Brand Column -->
+        <div class="footer-brand-v2">
+            <a href="{{ url('/') }}" class="footer-logo">
+                @if($setting->company_white_logo && file_exists(public_path('images/upload/'.$setting->company_white_logo)))
+                    <img src="{{ url('images/upload/'.$setting->company_white_logo) }}" width="140" alt="Logo">
+                @else
+                    <img src="{{ url('/images/upload_empty/logo_white.png') }}" width="140" alt="Logo">
+                @endif
+            </a>
+            <p>{{ $brandDesc }}</p>
+            
+            <div class="footer-social-v2">
+                @if($setting->facebook_url)
+                    <a href="{{ $setting->facebook_url }}" class="soc-icon-v2" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                @endif
+                @if($setting->twitter_url)
+                    <a href="{{ $setting->twitter_url }}" class="soc-icon-v2" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+                @endif
+                @if($setting->instagram_url)
+                    <a href="{{ $setting->instagram_url }}" class="soc-icon-v2" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                @endif
+                @if($setting->linkdin_url)
+                    <a href="{{ $setting->linkdin_url }}" class="soc-icon-v2" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+                @endif
+            </div>
+
+            <div class="footer-contact-v2">
+                {!! nl2br(e($brandAddr)) !!}<br>
+                <a href="mailto:{{ $setting->email }}">{{ $setting->email }}</a>
+            </div>
+        </div>
+
+        <!-- Dynamic Columns -->
+        @foreach($cols as $col)
+        <div class="footer-col-v2">
+            <h4>{{ $col['title'] ?? '' }}</h4>
+            <ul>
+                @foreach($col['links'] ?? [] as $link)
+                <li><a href="{{ $link['url'] ?? '#' }}">{{ $link['name'] ?? $link['label'] ?? '' }}</a></li>
+                @endforeach
+            </ul>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- Bottom Disclaimer & Copyright -->
+    <div class="footer-bottom-v2">
+        <div class="footer-disclaimer-v2">
+            {{ $disclaimer }}
+        </div>
+        <div class="footer-copyright-v2">
+            © {{ date('Y') }} {{ __($setting->business_name) }}. Alle Rechte vorbehalten.
+        </div>
+    </div>
+</footer>

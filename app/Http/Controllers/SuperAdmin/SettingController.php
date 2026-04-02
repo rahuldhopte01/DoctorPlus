@@ -440,37 +440,286 @@ class SettingController extends Controller
             $home_settings['ed_banner'] = $ed_banner;
         }
 
+        // Testosterone Banner Section
+        if ($request->has('testo_banner_title')) {
+            $testo_banner = $home_settings['testosterone_banner'] ?? [];
+            
+            // Main Hero Image
+            if ($request->hasFile('testo_banner_hero_image')) {
+                if (!empty($testo_banner['hero_image'])) (new CustomController)->deleteFile($testo_banner['hero_image']);
+                $testo_banner['hero_image'] = (new CustomController)->imageUpload($request->testo_banner_hero_image);
+            }
+
+            // Left Card Image
+            if ($request->hasFile('testo_card_left_image')) {
+                if (!empty($testo_banner['left_card']['image'])) (new CustomController)->deleteFile($testo_banner['left_card']['image']);
+                $testo_banner['left_card']['image'] = (new CustomController)->imageUpload($request->testo_card_left_image);
+            }
+
+            // Right Card Image
+            if ($request->hasFile('testo_card_right_image')) {
+                if (!empty($testo_banner['right_card']['image'])) (new CustomController)->deleteFile($testo_banner['right_card']['image']);
+                $testo_banner['right_card']['image'] = (new CustomController)->imageUpload($request->testo_card_right_image);
+            }
+
+            $testo_banner['pill'] = $request->testo_banner_pill;
+            $testo_banner['title'] = $request->testo_banner_title;
+            $testo_banner['btn1_text'] = $request->testo_banner_btn1_text;
+            $testo_banner['btn1_url'] = $request->testo_banner_btn1_url;
+            $testo_banner['btn2_text'] = $request->testo_banner_btn2_text;
+            $testo_banner['btn2_url'] = $request->testo_banner_btn2_url;
+
+            $testo_banner['left_card']['title'] = $request->testo_card_left_title;
+            $testo_banner['left_card']['btn_text'] = $request->testo_card_left_btn_text;
+            $testo_banner['left_card']['btn_url'] = $request->testo_card_left_btn_url;
+
+            $testo_banner['right_card']['title'] = $request->testo_card_right_title;
+            $testo_banner['right_card']['btn_text'] = $request->testo_card_right_btn_text;
+            $testo_banner['right_card']['btn_url'] = $request->testo_card_right_btn_url;
+
+            $home_settings['testosterone_banner'] = $testo_banner;
+        }
+
+        // Weight Loss Banner Section
+        if ($request->has('wl_banner_title')) {
+            $wl_banner = $home_settings['weight_loss_banner'] ?? [];
+            
+            // Main Hero Image
+            if ($request->hasFile('wl_banner_hero_image')) {
+                if (!empty($wl_banner['hero_image'])) (new CustomController)->deleteFile($wl_banner['hero_image']);
+                $wl_banner['hero_image'] = (new CustomController)->imageUpload($request->wl_banner_hero_image);
+            }
+
+            // Left Card Image
+            if ($request->hasFile('wl_card_left_image')) {
+                if (!empty($wl_banner['left_card']['image'])) (new CustomController)->deleteFile($wl_banner['left_card']['image']);
+                $wl_banner['left_card']['image'] = (new CustomController)->imageUpload($request->wl_card_left_image);
+            }
+
+            // Right Card Image
+            if ($request->hasFile('wl_card_right_image')) {
+                if (!empty($wl_banner['right_card']['image'])) (new CustomController)->deleteFile($wl_banner['right_card']['image']);
+                $wl_banner['right_card']['image'] = (new CustomController)->imageUpload($request->wl_card_right_image);
+            }
+
+            $wl_banner['pill'] = $request->wl_banner_pill;
+            $wl_banner['title'] = $request->wl_banner_title;
+            $wl_banner['subtext'] = $request->wl_banner_subtext;
+            $wl_banner['btn1_text'] = $request->wl_banner_btn1_text;
+            $wl_banner['btn1_url'] = $request->wl_banner_btn1_url;
+            $wl_banner['btn2_text'] = $request->wl_banner_btn2_text;
+            $wl_banner['btn2_url'] = $request->wl_banner_btn2_url;
+
+            $wl_banner['left_card']['title'] = $request->wl_card_left_title;
+            $wl_banner['left_card']['btn_text'] = $request->wl_card_left_btn_text;
+            $wl_banner['left_card']['btn_url'] = $request->wl_card_left_btn_url;
+
+            $wl_banner['right_card']['title'] = $request->wl_card_right_title;
+            $wl_banner['right_card']['btn_text'] = $request->wl_card_right_btn_text;
+            $wl_banner['right_card']['btn_url'] = $request->wl_card_right_btn_url;
+
+            $home_settings['weight_loss_banner'] = $wl_banner;
+        }
+
+        // Medical Advisory Board Section
+        if ($request->has('advisors_heading')) {
+            $advisors = $home_settings['medical_advisors'] ?? ['heading' => '', 'slots' => []];
+            $advisors['heading'] = $request->advisors_heading;
+            
+            // Re-initialize array or update existing
+            if (!isset($advisors['slots'])) $advisors['slots'] = [];
+            
+            for ($i = 0; $i < 6; $i++) {
+                if ($request->has('advisor_name_'.$i) || $request->hasFile('advisor_image_'.$i)) {
+                    $slot = $advisors['slots'][$i] ?? [];
+                    
+                    if ($request->has('advisor_name_'.$i)) {
+                        $slot['name'] = $request->input('advisor_name_'.$i);
+                    }
+                    
+                    if ($request->hasFile('advisor_image_'.$i)) {
+                        if (!empty($slot['image'])) (new CustomController)->deleteFile($slot['image']);
+                        $slot['image'] = (new CustomController)->imageUpload($request->file('advisor_image_'.$i));
+                    }
+                    
+                    $advisors['slots'][$i] = $slot;
+                }
+            }
+            $home_settings['medical_advisors'] = $advisors;
+        }
+
+        // Stats Section
+        if ($request->has('stats_heading')) {
+            $stats = [];
+            $stats['heading'] = $request->stats_heading;
+            
+            $stats['left_card']['top_text'] = $request->stats_left_top;
+            $stats['left_card']['number'] = $request->stats_left_number;
+            $stats['left_card']['bottom_text'] = $request->stats_left_bottom;
+
+            $stats['right_card']['top_text'] = $request->stats_right_top;
+            $stats['right_card']['number'] = $request->stats_right_number;
+            $stats['right_card']['bottom_text'] = $request->stats_right_bottom;
+            
+            $home_settings['stats_section'] = $stats;
+        }
+
+        // Comparison Section
+        if ($request->has('comp_heading')) {
+            $comp = $home_settings['comparison_section'] ?? [];
+            $comp['pill'] = $request->comp_pill;
+            $comp['heading'] = $request->comp_heading;
+            $comp['subheading'] = $request->comp_subheading;
+            
+            if ($request->hasFile('comp_center_image')) {
+                if (!empty($comp['center_image'])) (new CustomController)->deleteFile($comp['center_image']);
+                $comp['center_image'] = (new CustomController)->imageUpload($request->file('comp_center_image'));
+            }
+
+            $comp['left_col_title'] = $request->comp_left_title;
+            $comp['right_col_title'] = $request->comp_right_title;
+
+            $comp['rows'] = [];
+            for ($i = 0; $i < 5; $i++) {
+                $comp['rows'][] = [
+                    'left' => $request->input("comp_row_left_$i"),
+                    'right' => $request->input("comp_row_right_$i")
+                ];
+            }
+
+            $comp['btn_text'] = $request->comp_btn_text;
+            $comp['btn_url'] = $request->comp_btn_url;
+            $comp['btn_subtext'] = $request->comp_btn_subtext;
+
+            $home_settings['comparison_section'] = $comp;
+        }
+
+        // FAQ Section
+        if ($request->has('faq_heading')) {
+            $faq = [];
+            $faq['heading'] = $request->faq_heading;
+            $faq['subheading'] = $request->faq_subheading;
+            
+            $faq['items'] = [];
+            for ($i = 0; $i < 5; $i++) {
+                if ($request->filled("faq_question_$i")) {
+                    $faq['items'][] = [
+                        'question' => $request->input("faq_question_$i"),
+                        'answer' => $request->input("faq_answer_$i")
+                    ];
+                }
+            }
+            $home_settings['faq_section'] = $faq;
+        }
+
+        // Media Logos Section
+        if ($request->has('media_heading')) {
+            $media = [];
+            $media['heading'] = $request->media_heading;
+            $media['items'] = [];
+            for ($i = 0; $i < 8; $i++) {
+                if ($request->filled("media_item_$i")) {
+                    $media['items'][] = $request->input("media_item_$i");
+                }
+            }
+            $home_settings['media_section'] = $media;
+        }
+
+        // Final CTA Section
+        if ($request->has('cta_heading')) {
+            $home_settings['cta_section'] = [
+                'heading' => $request->cta_heading,
+                'btn_text' => $request->cta_btn_text,
+                'btn_url' => $request->cta_btn_url,
+                'subtext' => $request->cta_subtext
+            ];
+        }
+
+        // Privacy Section
+        if ($request->has('priv_label')) {
+            $priv = [];
+            $priv['label'] = $request->priv_label;
+            $priv['heading_1'] = $request->priv_heading_1;
+            $priv['heading_2'] = $request->priv_heading_2;
+            $priv['subtext'] = $request->priv_subtext;
+            
+            $priv['features'] = [];
+            for ($i = 0; $i < 4; $i++) {
+                if ($request->filled("priv_feature_$i")) {
+                    $priv['features'][] = $request->input("priv_feature_$i");
+                }
+            }
+            
+            $priv['pills'] = [];
+            for ($i = 0; $i < 3; $i++) {
+                if ($request->filled("priv_pill_$i")) {
+                    $priv['pills'][] = $request->input("priv_pill_$i");
+                }
+            }
+            $home_settings['privacy_section'] = $priv;
+        }
+
+        // Newsletter Section
+        if ($request->has('nl_heading')) {
+            $home_settings['newsletter_section'] = [
+                'heading' => $request->nl_heading,
+                'subtext' => $request->nl_subtext,
+                'btn_text' => $request->nl_btn_text,
+                'legal' => $request->nl_legal,
+                'bg_image' => $request->nl_bg_image
+            ];
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
-        // Handle Footer Settings
-        if ($request->has('footer_copy')) {
-            $columns = [];
-            foreach ($request->footer_col_title ?? [] as $index => $title) {
+        // Handle Footer Settings (Multi-column Premium)
+        if ($request->has('footer_copy') || $request->has('footer_desc')) {
+            $footer_sett = [];
+            $footer_sett['copy'] = $request->footer_copy;
+            $footer_sett['desc'] = $request->footer_desc;
+            $footer_sett['address'] = $request->footer_address;
+            $footer_sett['disclaimer'] = $request->footer_disclaimer;
+
+            // Update individual social columns as well
+            $data['facebook_url'] = $request->facebook_url;
+            $data['twitter_url'] = $request->twitter_url;
+            $data['instagram_url'] = $request->instagram_url;
+            $data['linkdin_url'] = $request->linkdin_url;
+
+            // Ticker Bar
+            $footer_sett['ticker'] = [];
+            for($i=1; $i<=4; $i++) {
+                if ($request->filled("footer_ticker_$i")) {
+                    $footer_sett['ticker'][] = $request->input("footer_ticker_$i");
+                }
+            }
+
+            // Columns (2, 3, 4)
+            $footer_sett['columns'] = [];
+            for($i=1; $i<=3; $i++) {
+                $colTitle = $request->input("footer_col_title_$i");
+                $colLinksRaw = $request->input("footer_col_links_$i");
+                
                 $links = [];
-                // Expecting links as a newline separated string or another repeater. 
-                // Let's use a simple newline for now or a sub-JSON if needed.
-                $col_links_raw = $request->footer_col_links[$index] ?? '';
-                $lines = explode("\n", str_replace("\r", "", $col_links_raw));
-                foreach($lines as $line) {
-                    if (strpos($line, '|') !== false) {
-                        list($l, $u) = explode('|', $line);
-                        $links[] = ['label' => trim($l), 'url' => trim($u)];
+                if (!empty($colLinksRaw)) {
+                    $lLines = explode("\n", str_replace("\r", "", $colLinksRaw));
+                    foreach($lLines as $lLine) {
+                        $parts = explode("|", $lLine);
+                        if (count($parts) >= 2) {
+                            $links[] = [
+                                'name' => trim($parts[0]),
+                                'label' => trim($parts[0]), // Keep both for safety
+                                'url' => trim($parts[1])
+                            ];
+                        }
                     }
                 }
-                $columns[] = [
-                    'title' => $title,
+                $footer_sett['columns'][] = [
+                    'title' => $colTitle,
                     'links' => $links
                 ];
             }
-            $footer_settings = [
-                'copy' => $request->footer_copy,
-                'columns' => $columns,
-                'facebook' => $request->facebook_url,
-                'twitter' => $request->twitter_url,
-                'instagram' => $request->instagram_url,
-                'linkedin' => $request->linkdin_url
-            ];
-            $data['website_footer_settings'] = json_encode($footer_settings);
+            $data['website_footer_settings'] = json_encode($footer_sett);
         }
 
         // abort(403, json_encode($data)); // DEBUG

@@ -635,7 +635,6 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <!-- Header Settings -->
                                     <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
-                                    <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
                                         <h5 class="mb-4">{{__('Promo Bar Settings')}}</h5>
                                         @php
                                             $promo = json_decode($setting->website_header_promo_bar, true) ?: [];
@@ -824,6 +823,12 @@
                                             $relief = $home['natural_relief'] ?? [];
                                             $about = $home['about'] ?? [];
                                             $ed = $home['ed_banner'] ?? [];
+                                            $testo = $home['testosterone_banner'] ?? [];
+                                            $wl = $home['weight_loss_banner'] ?? [];
+                                            $adv = $home['medical_advisors'] ?? [];
+                                            $statsSec = $home['stats_section'] ?? [];
+                                            $compSec = $home['comparison_section'] ?? [];
+                                            $faqSec = $home['faq_section'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1258,6 +1263,509 @@
                                         </div>
                                      </div>
 
+                                        <hr>
+                                        <h5 class="my-4">{{__('Testosterone Banner Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="testo_banner_pill" value="{{ $testo['pill'] ?? '' }}" class="form-control" placeholder="TESTOSTERON-INJEKTION">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="testo_banner_title" value="{{ $testo['title'] ?? '' }}" class="form-control" placeholder="Testosteron-Injektion — | fertig zur Direktnutzung (use | for red)">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Hero Image')}}</label>
+                                                <input type="file" name="testo_banner_hero_image" class="form-control" accept="image/*">
+                                                @if(!empty($testo['hero_image']))
+                                                    <img src="{{ url('images/upload/'.$testo['hero_image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 (Outline) Text')}}</label>
+                                                <input type="text" name="testo_banner_btn1_text" value="{{ $testo['btn1_text'] ?? '' }}" class="form-control" placeholder="Mehr erfahren">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 URL')}}</label>
+                                                <input type="text" name="testo_banner_btn1_url" value="{{ $testo['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 (Filled) Text')}}</label>
+                                                <input type="text" name="testo_banner_btn2_text" value="{{ $testo['btn2_text'] ?? '' }}" class="form-control" placeholder="Jetzt Beratung starten">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 URL')}}</label>
+                                                <input type="text" name="testo_banner_btn2_url" value="{{ $testo['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4 mb-3">{{__('Bottom Cards (Left & Right)')}}</h6>
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Left Card')}}</strong></label>
+                                                        <input type="file" name="testo_card_left_image" class="form-control mb-1">
+                                                        @if(!empty($testo['left_card']['image']))
+                                                            <img src="{{ url('images/upload/'.$testo['left_card']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="testo_card_left_title" value="{{ $testo['left_card']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="testo_card_left_btn_text" value="{{ $testo['left_card']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="testo_card_left_btn_url" value="{{ $testo['left_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Right Card')}}</strong></label>
+                                                        <input type="file" name="testo_card_right_image" class="form-control mb-1">
+                                                        @if(!empty($testo['right_card']['image']))
+                                                            <img src="{{ url('images/upload/'.$testo['right_card']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="testo_card_right_title" value="{{ $testo['right_card']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="testo_card_right_btn_text" value="{{ $testo['right_card']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="testo_card_right_btn_url" value="{{ $testo['right_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Weight Management Banner Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label>{{__('Hero Image')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="wl_banner_hero_img" name="wl_banner_hero_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="wl_banner_hero_img"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="wl_banner_hero_img_Preview" style="background-image: url('{{ !empty($wl['hero_image']) ? url('images/upload/'.$wl['hero_image']) : url('images/upload/default.png') }}');"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="row">
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Pill Text')}}</label>
+                                                        <input type="text" name="wl_banner_pill" value="{{ $wl['pill'] ?? 'GEWICHTSMANAGEMENT' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Title (Use | for colored text)')}}</label>
+                                                        <input type="text" name="wl_banner_title" value="{{ $wl['title'] ?? '' }}" class="form-control" placeholder="Gesund abnehmen — mit | ärztlicher Begleitung">
+                                                    </div>
+                                                    <div class="col-md-12 form-group">
+                                                        <label>{{__('Sub Title Text')}}</label>
+                                                        <input type="text" name="wl_banner_subtext" value="{{ $wl['subtext'] ?? '' }}" class="form-control" placeholder="Abnehmspritze, Ernährungsberatung und medikamentöse Therapie...">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 1 Text')}}</label>
+                                                        <input type="text" name="wl_banner_btn1_text" value="{{ $wl['btn1_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 1 URL')}}</label>
+                                                        <input type="text" name="wl_banner_btn1_url" value="{{ $wl['btn1_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 2 Text')}}</label>
+                                                        <input type="text" name="wl_banner_btn2_text" value="{{ $wl['btn2_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 2 URL')}}</label>
+                                                        <input type="text" name="wl_banner_btn2_url" value="{{ $wl['btn2_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-3">{{__('Weight Management - Bottom Cards')}}</h6>
+                                        <div class="row">
+                                            <!-- Left Card -->
+                                            <div class="col-md-6 border-right">
+                                                <label class="font-weight-bold">{{__('Left Card')}}</label>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="avatar-upload avatar-box">
+                                                            <div class="avatar-edit">
+                                                                <input type='file' id="wl_card_left_image" name="wl_card_left_image" accept=".png, .jpg, .jpeg" />
+                                                                <label for="wl_card_left_image"></label>
+                                                            </div>
+                                                            <div class="avatar-preview">
+                                                                <div id="wl_card_left_image_Preview" style="background-image: url('{{ !empty($wl['left_card']['image']) ? url('images/upload/'.$wl['left_card']['image']) : url('images/upload/default.png') }}');"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="wl_card_left_title" value="{{ $wl['left_card']['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label>{{__('Btn Text')}}</label>
+                                                                <input type="text" name="wl_card_left_btn_text" value="{{ $wl['left_card']['btn_text'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>{{__('URL')}}</label>
+                                                                <input type="text" name="wl_card_left_btn_url" value="{{ $wl['left_card']['btn_url'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Right Card -->
+                                            <div class="col-md-6">
+                                                <label class="font-weight-bold">{{__('Right Card')}}</label>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="avatar-upload avatar-box">
+                                                            <div class="avatar-edit">
+                                                                <input type='file' id="wl_card_right_image" name="wl_card_right_image" accept=".png, .jpg, .jpeg" />
+                                                                <label for="wl_card_right_image"></label>
+                                                            </div>
+                                                            <div class="avatar-preview">
+                                                                <div id="wl_card_right_image_Preview" style="background-image: url('{{ !empty($wl['right_card']['image']) ? url('images/upload/'.$wl['right_card']['image']) : url('images/upload/default.png') }}');"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="wl_card_right_title" value="{{ $wl['right_card']['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label>{{__('Btn Text')}}</label>
+                                                                <input type="text" name="wl_card_right_btn_text" value="{{ $wl['right_card']['btn_text'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>{{__('URL')}}</label>
+                                                                <input type="text" name="wl_card_right_btn_url" value="{{ $wl['right_card']['btn_url'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Medical Advisory Board Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Section Heading')}}</label>
+                                                <input type="text" name="advisors_heading" value="{{ $adv['heading'] ?? 'Unser medizinischer Beirat' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <h6 class="mt-2">{{__('Advisors (Up to 6 slots)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 6; $i++)
+                                                @php $slot = $adv['slots'][$i] ?? []; @endphp
+                                                <div class="col-md-4 border-right border-bottom p-3">
+                                                    <label class="font-weight-bold">{{__('Advisor Slot ' . ($i + 1))}}</label>
+                                                    <div class="avatar-upload avatar-box">
+                                                        <div class="avatar-edit">
+                                                            <input type='file' id="advisor_image_{{$i}}" name="advisor_image_{{$i}}" accept=".png, .jpg, .jpeg" />
+                                                            <label for="advisor_image_{{$i}}"></label>
+                                                        </div>
+                                                        <div class="avatar-preview">
+                                                            <div id="advisor_image_{{$i}}_Preview" style="background-image: url('{{ !empty($slot['image']) ? url('images/upload/'.$slot['image']) : url('images/upload/default.png') }}');"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mt-2">
+                                                        <label>{{__('Advisor Name')}}</label>
+                                                        <input type="text" name="advisor_name_{{$i}}" value="{{ $slot['name'] ?? '' }}" class="form-control" placeholder="E.g., Dr. med. Roland M. Ruiken">
+                                                    </div>
+                                                </div>
+                                            @endfor
+                                        </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Statistics Showcase Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Section Heading')}}</label>
+                                                <input type="text" name="stats_heading" value="{{ $statsSec['heading'] ?? 'Rund um die Uhr Hilfe von deutschen Ärzten' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <!-- Stats Card Left -->
+                                            <div class="col-md-6 border-right">
+                                                <h6 class="mt-2 text-primary">{{__('Left Card')}}</h6>
+                                                <div class="form-group">
+                                                    <label>{{__('Top Text')}}</label>
+                                                    <input type="text" name="stats_left_top" value="{{ $statsSec['left_card']['top_text'] ?? 'ÜBER' }}" class="form-control" placeholder="ÜBER">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Large Number')}}</label>
+                                                    <input type="text" name="stats_left_number" value="{{ $statsSec['left_card']['number'] ?? '8.000' }}" class="form-control" placeholder="8.000">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Bottom Text')}}</label>
+                                                    <input type="text" name="stats_left_bottom" value="{{ $statsSec['left_card']['bottom_text'] ?? 'Stammkunden' }}" class="form-control" placeholder="Stammkunden">
+                                                </div>
+                                            </div>
+                                            <!-- Stats Card Right -->
+                                            <div class="col-md-6">
+                                                <h6 class="mt-2 text-primary">{{__('Right Card')}}</h6>
+                                                <div class="form-group">
+                                                    <label>{{__('Top Text')}}</label>
+                                                    <input type="text" name="stats_right_top" value="{{ $statsSec['right_card']['top_text'] ?? 'ÜBER' }}" class="form-control" placeholder="ÜBER">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Large Number')}}</label>
+                                                    <input type="text" name="stats_right_number" value="{{ $statsSec['right_card']['number'] ?? '12' }}" class="form-control" placeholder="12">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Bottom Text')}}</label>
+                                                    <input type="text" name="stats_right_bottom" value="{{ $statsSec['right_card']['bottom_text'] ?? 'Jahre Expertise' }}" class="form-control" placeholder="Jahre Expertise">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Comparison Section (Warum dr.fuxx?)')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Top Pill Text')}}</label>
+                                                <input type="text" name="comp_pill" value="{{ $compSec['pill'] ?? 'Natürlich. Sicher. Deutsch.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Heading (use | to highlight)')}}</label>
+                                                <input type="text" name="comp_heading" value="{{ $compSec['heading'] ?? 'Warum |dr.fuxx|?' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Subheading')}}</label>
+                                                <input type="text" name="comp_subheading" value="{{ $compSec['subheading'] ?? 'Der Unterschied, der zählt' }}" class="form-control">
+                                            </div>
+                                            
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Center Upload Image (Hands with Phone)')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="comp_center_image" name="comp_center_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="comp_center_image"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="comp_center_image_Preview" style="background-image: url('{{ !empty($compSec['center_image']) ? url('images/upload/'.$compSec['center_image']) : url('images/upload/default.png') }}');"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4">{{__('Comparison Table Data')}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label class="text-danger">{{__('Left Column Title')}}</label>
+                                                <input type="text" name="comp_left_title" value="{{ $compSec['left_col_title'] ?? 'ANDERE ANBIETER' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="text-primary">{{__('Right Column Title')}}</label>
+                                                <input type="text" name="comp_right_title" value="{{ $compSec['right_col_title'] ?? 'DR. FUXX' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        
+                                        @for ($i = 0; $i < 5; $i++)
+                                        @php 
+                                            // Fallbacks specific to the original image to be helpful
+                                            $defL = ['Keine deutschen Ärzte', 'Daten im Ausland', 'Keine DSGVO', 'Support eingeschränkt', 'Ausländische Tech'];
+                                            $defR = ['Deutsche Ärzte', 'Daten sicher in DE', '100% DSGVO-konform', 'Immer erreichbar', 'Made in Germany'];
+                                            $row = $compSec['rows'][$i] ?? [];
+                                        @endphp
+                                        <div class="row border-bottom pb-2 pt-2">
+                                            <div class="col-md-6 form-group mb-0">
+                                                <label class="text-muted"><small>Row {{ $i+1 }} Left</small></label>
+                                                <input type="text" name="comp_row_left_{{$i}}" value="{{ $row['left'] ?? $defL[$i] }}" class="form-control form-control-sm">
+                                            </div>
+                                            <div class="col-md-6 form-group mb-0">
+                                                <label class="text-muted"><small>Row {{ $i+1 }} Right</small></label>
+                                                <input type="text" name="comp_row_right_{{$i}}" value="{{ $row['right'] ?? $defR[$i] }}" class="form-control form-control-sm">
+                                            </div>
+                                        </div>
+                                        @endfor
+
+                                        <h6 class="mt-4">{{__('Bottom CTA Button')}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button Text')}}</label>
+                                                <input type="text" name="comp_btn_text" value="{{ $compSec['btn_text'] ?? 'Jetzt Rezept anfragen &rarr;' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button URL')}}</label>
+                                                <input type="text" name="comp_btn_url" value="{{ $compSec['btn_url'] ?? '#' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button Subtext')}}</label>
+                                                <input type="text" name="comp_btn_subtext" value="{{ $compSec['btn_subtext'] ?? 'Kostenlose Erstberatung • Rezept in 24h' }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('FAQ Section (Sie haben Fragen?)')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Heading')}}</label>
+                                                <input type="text" name="faq_heading" value="{{ $faqSec['heading'] ?? 'Sie haben Fragen?' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Subheading')}}</label>
+                                                <input type="text" name="faq_subheading" value="{{ $faqSec['subheading'] ?? 'Hier gibt es Antworten!' }}" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4">{{__('FAQ Items (up to 5)')}}</h6>
+                                        @for ($i = 0; $i < 5; $i++)
+                                        @php 
+                                            $item = $faqSec['items'][$i] ?? [];
+                                        @endphp
+                                        <div class="card mb-3 border">
+                                            <div class="card-body">
+                                                <div class="form-group mb-2">
+                                                    <label><small>Question {{ $i+1 }}</small></label>
+                                                    <input type="text" name="faq_question_{{$i}}" value="{{ $item['question'] ?? '' }}" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="form-group mb-0">
+                                                    <label><small>Answer {{ $i+1 }}</small></label>
+                                                    <textarea name="faq_answer_{{$i}}" class="form-control form-control-sm" rows="2">{{ $item['answer'] ?? '' }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endfor
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Media Logos Section (Bekannt aus)')}}</h5>
+                                        @php
+                                            $mediaSec = $home['media_section'] ?? [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Section Heading')}}</label>
+                                                <input type="text" name="media_heading" value="{{ $mediaSec['heading'] ?? 'Bekannt aus' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <h6 class="mt-2">{{__('Media Names (one per line or comma separated, or multiple inputs)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 8; $i++)
+                                            <div class="col-md-3 mb-2">
+                                                <input type="text" name="media_item_{{$i}}" value="{{ $mediaSec['items'][$i] ?? '' }}" class="form-control form-control-sm" placeholder="Media Name {{$i+1}}">
+                                            </div>
+                                            @endfor
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Bottom CTA Section (Bereit?...)')}}</h5>
+                                        @php
+                                            $ctaSec = $home['cta_section'] ?? [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Main Heading')}}</label>
+                                                <input type="text" name="cta_heading" value="{{ $ctaSec['heading'] ?? 'Bereit? In 3 Minuten zu deinem Rezept.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button Text')}}</label>
+                                                <input type="text" name="cta_btn_text" value="{{ $ctaSec['btn_text'] ?? 'Jetzt kostenlos starten' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button URL')}}</label>
+                                                <input type="text" name="cta_btn_url" value="{{ $ctaSec['btn_url'] ?? '#' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Bottom Subtext')}}</label>
+                                                <input type="text" name="cta_subtext" value="{{ $ctaSec['subtext'] ?? 'Keine Kosten bis zur Rezeptausstellung – unverbindlich testen' }}" class="form-control">
+                                            </div>
+                                        <hr>
+                                        <h5 class="my-4">{{__('Privacy Section (Datenschutz)')}}</h5>
+                                        @php
+                                            $privSec = $home['privacy_section'] ?? [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Section Label')}}</label>
+                                                <input type="text" name="priv_label" value="{{ $privSec['label'] ?? 'DATENSCHUTZ' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Heading Part 1')}}</label>
+                                                <input type="text" name="priv_heading_1" value="{{ $privSec['heading_1'] ?? 'Ihre Privatsphäre.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Heading Part 2 (Khaki Italic)')}}</label>
+                                                <input type="text" name="priv_heading_2" value="{{ $privSec['heading_2'] ?? 'Unsere Priorität.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Intro Subtext')}}</label>
+                                                <textarea name="priv_subtext" class="form-control" rows="2">{{ $privSec['subtext'] ?? 'Ihre Daten bleiben sicher in Deutschland — geschützt durch deutsche Ärzte, deutsche Server und volle DSGVO-Konformität.' }}</textarea>
+                                            </div>
+                                        </div>
+                                        <h6 class="mt-4">{{__('Feature Grid (4 items)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 4; $i++)
+                                            <div class="col-md-3 mb-2">
+                                                <input type="text" name="priv_feature_{{$i}}" value="{{ $privSec['features'][$i] ?? '' }}" class="form-control form-control-sm" placeholder="Feature {{$i+1}}">
+                                            </div>
+                                            @endfor
+                                        </div>
+                                        <h6 class="mt-4">{{__('Bottom Pills (3 items)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 3; $i++)
+                                            <div class="col-md-4 mb-2">
+                                                <input type="text" name="priv_pill_{{$i}}" value="{{ $privSec['pills'][$i] ?? '' }}" class="form-control form-control-sm" placeholder="Pill {{$i+1}}">
+                                            </div>
+                                            @endfor
+                                        </div>
+                                        <hr>
+                                        <h5 class="my-4">{{__('Newsletter Section (Stay Updated)')}}</h5>
+                                        @php
+                                            $nlSec = $home['newsletter_section'] ?? [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Main Heading')}}</label>
+                                                <input type="text" name="nl_heading" value="{{ $nlSec['heading'] ?? 'Bleib auf dem Laufenden' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Button Text')}}</label>
+                                                <input type="text" name="nl_btn_text" value="{{ $nlSec['btn_text'] ?? 'Abonnieren' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Subtext')}}</label>
+                                                <input type="text" name="nl_subtext" value="{{ $nlSec['subtext'] ?? 'Meld dich für unseren Newsletter an und erhalte Updates, Tipps und Sonderangebote per E-Mail.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Legal / Small Print')}}</label>
+                                                <textarea name="nl_legal" class="form-control" rows="2">{{ $nlSec['legal'] ?? 'Mit der Erstellung eines Kontos per E-Mail stimme ich den AGB zu und erkenne die Datenschutzerklärung an.' }}</textarea>
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Background Image URL (Doctor image)')}}</label>
+                                                <input type="text" name="nl_bg_image" value="{{ $nlSec['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                     </div>
                                      <!-- Footer Settings -->
                                      <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
                                         @php
