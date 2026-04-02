@@ -671,35 +671,54 @@ class SettingController extends Controller
 
         $data['website_home_settings'] = json_encode($home_settings);
 
-        // Handle Footer Settings
-        if ($request->has('footer_copy')) {
-            $columns = [];
-            foreach ($request->footer_col_title ?? [] as $index => $title) {
+        // Handle Footer Settings (Multi-column Premium)
+        if ($request->has('footer_copy') || $request->has('footer_desc')) {
+            $footer_sett = [];
+            $footer_sett['copy'] = $request->footer_copy;
+            $footer_sett['desc'] = $request->footer_desc;
+            $footer_sett['address'] = $request->footer_address;
+            $footer_sett['disclaimer'] = $request->footer_disclaimer;
+
+            // Update individual social columns as well
+            $data['facebook_url'] = $request->facebook_url;
+            $data['twitter_url'] = $request->twitter_url;
+            $data['instagram_url'] = $request->instagram_url;
+            $data['linkdin_url'] = $request->linkdin_url;
+
+            // Ticker Bar
+            $footer_sett['ticker'] = [];
+            for($i=1; $i<=4; $i++) {
+                if ($request->filled("footer_ticker_$i")) {
+                    $footer_sett['ticker'][] = $request->input("footer_ticker_$i");
+                }
+            }
+
+            // Columns (2, 3, 4)
+            $footer_sett['columns'] = [];
+            for($i=1; $i<=3; $i++) {
+                $colTitle = $request->input("footer_col_title_$i");
+                $colLinksRaw = $request->input("footer_col_links_$i");
+                
                 $links = [];
-                // Expecting links as a newline separated string or another repeater. 
-                // Let's use a simple newline for now or a sub-JSON if needed.
-                $col_links_raw = $request->footer_col_links[$index] ?? '';
-                $lines = explode("\n", str_replace("\r", "", $col_links_raw));
-                foreach($lines as $line) {
-                    if (strpos($line, '|') !== false) {
-                        list($l, $u) = explode('|', $line);
-                        $links[] = ['label' => trim($l), 'url' => trim($u)];
+                if (!empty($colLinksRaw)) {
+                    $lLines = explode("\n", str_replace("\r", "", $colLinksRaw));
+                    foreach($lLines as $lLine) {
+                        $parts = explode("|", $lLine);
+                        if (count($parts) >= 2) {
+                            $links[] = [
+                                'name' => trim($parts[0]),
+                                'label' => trim($parts[0]), // Keep both for safety
+                                'url' => trim($parts[1])
+                            ];
+                        }
                     }
                 }
-                $columns[] = [
-                    'title' => $title,
+                $footer_sett['columns'][] = [
+                    'title' => $colTitle,
                     'links' => $links
                 ];
             }
-            $footer_settings = [
-                'copy' => $request->footer_copy,
-                'columns' => $columns,
-                'facebook' => $request->facebook_url,
-                'twitter' => $request->twitter_url,
-                'instagram' => $request->instagram_url,
-                'linkedin' => $request->linkdin_url
-            ];
-            $data['website_footer_settings'] = json_encode($footer_settings);
+            $data['website_footer_settings'] = json_encode($footer_sett);
         }
 
         // abort(403, json_encode($data)); // DEBUG
