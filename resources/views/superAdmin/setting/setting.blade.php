@@ -826,6 +826,7 @@
                                             $ed = $home['ed_banner'] ?? [];
                                             $testo = $home['testosterone_banner'] ?? [];
                                             $wl = $home['weight_loss_banner'] ?? [];
+                                            $adv = $home['medical_advisors'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1466,6 +1467,38 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Medical Advisory Board Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Section Heading')}}</label>
+                                                <input type="text" name="advisors_heading" value="{{ $adv['heading'] ?? 'Unser medizinischer Beirat' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <h6 class="mt-2">{{__('Advisors (Up to 6 slots)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 6; $i++)
+                                                @php $slot = $adv['slots'][$i] ?? []; @endphp
+                                                <div class="col-md-4 border-right border-bottom p-3">
+                                                    <label class="font-weight-bold">{{__('Advisor Slot ' . ($i + 1))}}</label>
+                                                    <div class="avatar-upload avatar-box">
+                                                        <div class="avatar-edit">
+                                                            <input type='file' id="advisor_image_{{$i}}" name="advisor_image_{{$i}}" accept=".png, .jpg, .jpeg" />
+                                                            <label for="advisor_image_{{$i}}"></label>
+                                                        </div>
+                                                        <div class="avatar-preview">
+                                                            <div id="advisor_image_{{$i}}_Preview" style="background-image: url('{{ !empty($slot['image']) ? url('images/upload/'.$slot['image']) : url('images/upload/default.png') }}');"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mt-2">
+                                                        <label>{{__('Advisor Name')}}</label>
+                                                        <input type="text" name="advisor_name_{{$i}}" value="{{ $slot['name'] ?? '' }}" class="form-control" placeholder="E.g., Dr. med. Roland M. Ruiken">
+                                                    </div>
+                                                </div>
+                                            @endfor
                                         </div>
 
                                      </div>

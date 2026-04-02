@@ -904,3 +904,78 @@
   .wl-card-img-wrap { position: absolute; width: 100%; height: 120px; right: 0; bottom: 0; top: auto; margin-top: auto; }
   .wl-card-img { width: 100%; object-fit: cover; }
 }
+
+/* ==========================================================================
+   MEDICAL ADVISORY BOARD SECTION (Unser medizinischer Beirat)
+   ========================================================================== */
+.advisors-section {
+  padding: 60px 24px;
+  text-align: center;
+  background-color: transparent;
+}
+.advisors-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.advisors-heading {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 40px;
+}
+.advisors-grid {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.advisor-card {
+  background-color: #f7f6fc; /* Soft purple-gray card background */
+  border-radius: 16px;
+  padding: 10px 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 180px;
+  max-width: 240px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.advisor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+.advisor-img-wrap {
+  width: 100%;
+  aspect-ratio: 4/5;
+  display: flex;
+  align-items: flex-end; /* Images align to bottom of container if they are transparent cutouts */
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.advisor-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom; /* Crucial for portrait cutouts */
+}
+.advisor-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #222;
+  line-height: 1.4;
+}
+
+@media (max-width: 1024px) {
+  .advisor-card { min-width: 200px; flex: 0 1 calc(33.333% - 16px); }
+  .advisors-heading { font-size: 1.8rem; }
+}
+
+@media (max-width: 768px) {
+  .advisors-section { padding: 40px 16px; }
+  .advisor-card { min-width: 150px; flex: 0 1 calc(50% - 16px); }
+  .advisor-name { font-size: 0.85rem; }
+}

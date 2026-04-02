@@ -886,6 +886,43 @@
     </div>
 </section>
 
+<!-- Medical Advisory Board Section -->
+@php
+    $advData = $homeSettings['medical_advisors'] ?? [];
+    $advHeading = $advData['heading'] ?? 'Unser medizinischer Beirat';
+    $advSlots = $advData['slots'] ?? [];
+    
+    // Provide some default dummy data if nothing is configured yet
+    if (empty($advSlots)) {
+        $advSlots = [
+            ['name' => 'Dr. med. Roland M. Ruiken', 'image' => ''],
+            ['name' => 'Dr. med. Salomé Apitz', 'image' => ''],
+            ['name' => 'Dr. med. Viktor Simunovic', 'image' => ''],
+            ['name' => 'Dr. med. Expert', 'image' => ''],
+            ['name' => 'Dr. med. Senior Berater', 'image' => '']
+        ];
+    }
+@endphp
+<section class="advisors-section">
+    <div class="advisors-container">
+        <h2 class="advisors-heading">{{ $advHeading }}</h2>
+        <div class="advisors-grid">
+            @foreach($advSlots as $slot)
+                @if(!empty($slot['name']) || !empty($slot['image']))
+                    <div class="advisor-card">
+                        <div class="advisor-img-wrap">
+                            <img src="{{ !empty($slot['image']) ? url('images/upload/'.$slot['image']) : url('images/upload/default.png') }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
+                        </div>
+                        <div class="advisor-name">
+                            {!! !empty($slot['name']) ? str_replace('|', '<br>', $slot['name']) : '' !!}
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 
 <!-- Our Treatment Areas – Carousel Section -->

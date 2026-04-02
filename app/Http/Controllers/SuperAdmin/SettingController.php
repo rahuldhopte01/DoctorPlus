@@ -520,6 +520,33 @@ class SettingController extends Controller
             $home_settings['weight_loss_banner'] = $wl_banner;
         }
 
+        // Medical Advisory Board Section
+        if ($request->has('advisors_heading')) {
+            $advisors = $home_settings['medical_advisors'] ?? ['heading' => '', 'slots' => []];
+            $advisors['heading'] = $request->advisors_heading;
+            
+            // Re-initialize array or update existing
+            if (!isset($advisors['slots'])) $advisors['slots'] = [];
+            
+            for ($i = 0; $i < 6; $i++) {
+                if ($request->has('advisor_name_'.$i) || $request->hasFile('advisor_image_'.$i)) {
+                    $slot = $advisors['slots'][$i] ?? [];
+                    
+                    if ($request->has('advisor_name_'.$i)) {
+                        $slot['name'] = $request->input('advisor_name_'.$i);
+                    }
+                    
+                    if ($request->hasFile('advisor_image_'.$i)) {
+                        if (!empty($slot['image'])) (new CustomController)->deleteFile($slot['image']);
+                        $slot['image'] = (new CustomController)->imageUpload($request->file('advisor_image_'.$i));
+                    }
+                    
+                    $advisors['slots'][$i] = $slot;
+                }
+            }
+            $home_settings['medical_advisors'] = $advisors;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings
