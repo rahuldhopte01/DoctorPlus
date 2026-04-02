@@ -923,6 +923,39 @@
     </div>
 </section>
 
+<!-- Statistics Showcase Section -->
+@php
+    $statsData = $homeSettings['stats_section'] ?? [];
+    $statsHeading = $statsData['heading'] ?? 'Rund um die Uhr Hilfe von deutschen Ärzten';
+    
+    $statsLeft = $statsData['left_card'] ?? [];
+    $sLeftTop = $statsLeft['top_text'] ?? 'ÜBER';
+    $sLeftNum = $statsLeft['number'] ?? '8.000';
+    $sLeftBot = $statsLeft['bottom_text'] ?? 'Stammkunden';
+
+    $statsRight = $statsData['right_card'] ?? [];
+    $sRightTop = $statsRight['top_text'] ?? 'ÜBER';
+    $sRightNum = $statsRight['number'] ?? '12';
+    $sRightBot = $statsRight['bottom_text'] ?? 'Jahre Expertise';
+@endphp
+<section class="stats-section">
+    <div class="stats-container">
+        <h3 class="stats-heading">{{ $statsHeading }}</h3>
+        <div class="stats-cards">
+            <div class="stats-card">
+                <span class="stats-top">{{ $sLeftTop }}</span>
+                <span class="stats-num">{{ $sLeftNum }}</span>
+                <span class="stats-bot">{{ $sLeftBot }}</span>
+            </div>
+            <div class="stats-card">
+                <span class="stats-top">{{ $sRightTop }}</span>
+                <span class="stats-num">{{ $sRightNum }}</span>
+                <span class="stats-bot">{{ $sRightBot }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 
 <!-- Our Treatment Areas – Carousel Section -->

@@ -547,6 +547,22 @@ class SettingController extends Controller
             $home_settings['medical_advisors'] = $advisors;
         }
 
+        // Stats Section
+        if ($request->has('stats_heading')) {
+            $stats = [];
+            $stats['heading'] = $request->stats_heading;
+            
+            $stats['left_card']['top_text'] = $request->stats_left_top;
+            $stats['left_card']['number'] = $request->stats_left_number;
+            $stats['left_card']['bottom_text'] = $request->stats_left_bottom;
+
+            $stats['right_card']['top_text'] = $request->stats_right_top;
+            $stats['right_card']['number'] = $request->stats_right_number;
+            $stats['right_card']['bottom_text'] = $request->stats_right_bottom;
+            
+            $home_settings['stats_section'] = $stats;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

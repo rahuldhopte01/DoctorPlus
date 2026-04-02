@@ -827,6 +827,7 @@
                                             $testo = $home['testosterone_banner'] ?? [];
                                             $wl = $home['weight_loss_banner'] ?? [];
                                             $adv = $home['medical_advisors'] ?? [];
+                                            $statsSec = $home['stats_section'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1499,6 +1500,50 @@
                                                     </div>
                                                 </div>
                                             @endfor
+                                        </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Statistics Showcase Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Section Heading')}}</label>
+                                                <input type="text" name="stats_heading" value="{{ $statsSec['heading'] ?? 'Rund um die Uhr Hilfe von deutschen Ärzten' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <!-- Stats Card Left -->
+                                            <div class="col-md-6 border-right">
+                                                <h6 class="mt-2 text-primary">{{__('Left Card')}}</h6>
+                                                <div class="form-group">
+                                                    <label>{{__('Top Text')}}</label>
+                                                    <input type="text" name="stats_left_top" value="{{ $statsSec['left_card']['top_text'] ?? 'ÜBER' }}" class="form-control" placeholder="ÜBER">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Large Number')}}</label>
+                                                    <input type="text" name="stats_left_number" value="{{ $statsSec['left_card']['number'] ?? '8.000' }}" class="form-control" placeholder="8.000">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Bottom Text')}}</label>
+                                                    <input type="text" name="stats_left_bottom" value="{{ $statsSec['left_card']['bottom_text'] ?? 'Stammkunden' }}" class="form-control" placeholder="Stammkunden">
+                                                </div>
+                                            </div>
+                                            <!-- Stats Card Right -->
+                                            <div class="col-md-6">
+                                                <h6 class="mt-2 text-primary">{{__('Right Card')}}</h6>
+                                                <div class="form-group">
+                                                    <label>{{__('Top Text')}}</label>
+                                                    <input type="text" name="stats_right_top" value="{{ $statsSec['right_card']['top_text'] ?? 'ÜBER' }}" class="form-control" placeholder="ÜBER">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Large Number')}}</label>
+                                                    <input type="text" name="stats_right_number" value="{{ $statsSec['right_card']['number'] ?? '12' }}" class="form-control" placeholder="12">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>{{__('Bottom Text')}}</label>
+                                                    <input type="text" name="stats_right_bottom" value="{{ $statsSec['right_card']['bottom_text'] ?? 'Jahre Expertise' }}" class="form-control" placeholder="Jahre Expertise">
+                                                </div>
+                                            </div>
                                         </div>
 
                                      </div>

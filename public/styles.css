@@ -979,3 +979,65 @@
   .advisor-card { min-width: 150px; flex: 0 1 calc(50% - 16px); }
   .advisor-name { font-size: 0.85rem; }
 }
+
+/* ==========================================================================
+   STATISTICS SHOWCASE SECTION
+   ========================================================================== */
+.stats-section {
+  background-color: #eeeaf8; /* Soft lavender/purple background */
+  padding: 60px 20px;
+  text-align: center;
+  width: 100%;
+}
+.stats-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.stats-heading {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #6a6775;
+  margin-bottom: 30px;
+}
+.stats-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.stats-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+}
+.stats-top {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #7b7886;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.stats-num {
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #7d4cf6; /* Vibrant purple */
+  line-height: 1;
+  margin: 6px 0;
+}
+.stats-bot {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1a1a1a;
+}
+
+@media (max-width: 768px) {
+  .stats-section { padding: 40px 16px; }
+  .stats-card { width: 100%; max-width: 320px; padding: 25px 20px; }
+  .stats-num { font-size: 3.5rem; }
+}
