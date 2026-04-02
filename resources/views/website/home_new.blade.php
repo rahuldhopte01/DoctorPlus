@@ -1084,50 +1084,47 @@
 @endif
 
 @php
-    $pressData = $homeSettings['press_section'] ?? [];
-    $pressLogos = $pressData['logos'] ?? [];
-    $ctaData = $homeSettings['cta_banner'] ?? [];
+    $mediaData = $homeSettings['media_section'] ?? [];
+    $mediaItems = $mediaData['items'] ?? [];
+    
+    // Provide demo defaults if empty
+    if (empty($mediaItems)) {
+        $mediaItems = ["BILD", "TAGESSPIEGEL", "FOCUS", "news.de", "OK!", "WESTFALEN", "nordbayern", "Rhönische Nachrichten"];
+    }
+    
+    $ctaData = $homeSettings['cta_section'] ?? [];
+    
+    // Provide demo CTA if empty
+    if (is_array($ctaData) && empty($ctaData)) {
+        $ctaData = [
+            'heading' => 'Bereit? In 3 Minuten zu deinem Rezept.',
+            'btn_text' => 'Jetzt kostenlos starten',
+            'btn_url' => '#',
+            'subtext' => 'Keine Kosten bis zur Rezeptausstellung – unverbindlich testen'
+        ];
+    }
 @endphp
 
-<!-- Press Section -->
-<section class="press-section">
-    <div class="container">
-        <h6 class="press-heading">{{ $pressData['heading'] ?? 'BEKANNT AUS' }}</h6>
-        <div class="press-logos-grid text-center">
-            @if(count($pressLogos) > 0)
-                @foreach($pressLogos as $logo)
-                    @if($logo)
-                        <div class="press-logo-item">
-                            <img src="{{ url('images/upload/'.$logo) }}" alt="Press Logo">
-                        </div>
-                    @endif
-                @endforeach
-            @else
-                <!-- Fallback Logo List (grayscale icons/text placeholders for demo) -->
-                @for($i=1; $i<=6; $i++)
-                <div class="press-logo-item">
-                    <img src="{{ url('images/upload_empty/fuxxlogo.png') }}" alt="Demo Logo" style="height: 25px; filter: grayscale(1);">
-                </div>
-                @endfor
-            @endif
+<section class="press-logos">
+    <div class="press-logos-inner">
+        <span class="press-label">{{ $mediaData['heading'] ?? 'Bekannt aus' }}</span>
+        <div class="press-track">
+            @foreach($mediaItems as $item)
+                <span class="press-logo-item">{{ $item }}</span>
+            @endforeach
         </div>
     </div>
 </section>
 
-<!-- Bottom CTA Banner Section -->
-@if(!empty($ctaData))
-<section class="cta-banner-section">
-    <div class="container">
-        <h2 class="cta-banner-heading">{{ $ctaData['heading'] ?? 'Bereit? In 3 Minuten zu deinem Rezept.' }}</h2>
-        <div class="cta-btn-wrap">
-            <a href="{{ $ctaData['btn_url'] ?? '#' }}" class="btn-cta-white">
-                {{ $ctaData['btn_text'] ?? 'Jetzt kostenlos starten' }}
-            </a>
-        </div>
-        <p class="cta-subtext">{{ $ctaData['subtext'] ?? 'Keine Kosten bis zur Rezeptausstellung – unverbindlich testen' }}</p>
+<section class="mid-cta">
+    <div class="mid-cta-inner">
+        <h2>{{ $ctaData['heading'] ?? 'Bereit? In 3 Minuten zu deinem Rezept.' }}</h2>
+        <a href="{{ $ctaData['btn_url'] ?? '#' }}" class="btn-cta-lg">{{ $ctaData['btn_text'] ?? 'Jetzt kostenlos starten' }}</a>
+        @if(!empty($ctaData['subtext']))
+            <p class="mid-cta-note">{{ $ctaData['subtext'] }}</p>
+        @endif
     </div>
 </section>
-@endif
 
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 

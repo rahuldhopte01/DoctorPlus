@@ -611,30 +611,27 @@ class SettingController extends Controller
             $home_settings['faq_section'] = $faq;
         }
 
-        // Press Logos Section
-        if ($request->has('press_heading')) {
-            $press = $home_settings['press_section'] ?? [];
-            $press['heading'] = $request->press_heading;
-            
-            if (!isset($press['logos'])) $press['logos'] = [];
-            
-            for ($i = 0; $i < 6; $i++) {
-                if ($request->hasFile("press_logo_$i")) {
-                    if (!empty($press['logos'][$i])) (new CustomController)->deleteFile($press['logos'][$i]);
-                    $press['logos'][$i] = (new CustomController)->imageUpload($request->file("press_logo_$i"));
+        // Media Logos Section
+        if ($request->has('media_heading')) {
+            $media = [];
+            $media['heading'] = $request->media_heading;
+            $media['items'] = [];
+            for ($i = 0; $i < 8; $i++) {
+                if ($request->filled("media_item_$i")) {
+                    $media['items'][] = $request->input("media_item_$i");
                 }
             }
-            $home_settings['press_section'] = $press;
+            $home_settings['media_section'] = $media;
         }
 
-        // Bottom CTA Banner
+        // Final CTA Section
         if ($request->has('cta_heading')) {
-            $cta = [];
-            $cta['heading'] = $request->cta_heading;
-            $cta['btn_text'] = $request->cta_btn_text;
-            $cta['btn_url'] = $request->cta_btn_url;
-            $cta['subtext'] = $request->cta_subtext;
-            $home_settings['cta_banner'] = $cta;
+            $home_settings['cta_section'] = [
+                'heading' => $request->cta_heading,
+                'btn_text' => $request->cta_btn_text,
+                'btn_url' => $request->cta_btn_url,
+                'subtext' => $request->cta_subtext
+            ];
         }
 
         $data['website_home_settings'] = json_encode($home_settings);

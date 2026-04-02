@@ -1324,98 +1324,107 @@
   .faq-section { padding: 60px 15px; }
 }
 
-/* ==========================================================================
-   PRESS LOGOS SECTION ("Bekannt aus")
-   ========================================================================== */
-.press-section {
-  background-color: #fff;
-  padding: 60px 0;
-  border-top: 1px solid rgba(0,0,0,0.05);
-}
-.press-heading {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-align: center;
-  margin-bottom: 40px;
-}
-.press-logos-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 40px 60px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-.press-logo-item img {
-  max-height: 35px;
-  width: auto;
-  filter: grayscale(100%);
-  opacity: 0.6;
-  transition: all 0.3s ease;
-}
-.press-logo-item img:hover {
-  filter: grayscale(0%);
-  opacity: 1;
-}
-
-/* ==========================================================================
-   BOTTOM CTA BANNER
-   ========================================================================== */
-.cta-banner-section {
-  background-color: #8b5cf6;
-  padding: 100px 20px;
-  text-align: center;
-  color: #fff;
-}
-.cta-banner-heading {
-  font-family: 'Clash Display', sans-serif;
-  font-size: 2.8rem;
-  font-weight: 700;
-  margin-bottom: 40px;
-  color: #fff;
-}
-.cta-btn-wrap {
-  margin-bottom: 25px;
-}
-.btn-cta-white {
-  background-color: #fff !important;
-  color: #8b5cf6 !important;
-  font-family: 'Inter', sans-serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  padding: 18px 45px;
-  border-radius: 50px;
-  text-decoration: none;
-  display: inline-block;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: none;
-}
-.btn-cta-white:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-}
-.cta-subtext {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  color: rgba(255,255,255,0.9);
-  font-style: italic;
-}
-
-@media (max-width: 768px) {
-  .cta-banner-heading { font-size: 2rem; }
-  .btn-cta-white { padding: 15px 30px; font-size: 1.1rem; }
-  .press-logos-grid { gap: 30px; }
-  .cta-banner-section { padding: 70px 20px; }
-}
-
 @media (max-width: 768px) {
   .faq-heading { font-size: 1.8rem; }
   .faq-sub { font-size: 1.4rem; }
   .faq-q-text { font-size: 1rem; }
+}
+
+/* ==========================================================================
+   MEDIA LOGOS SECTION ("Bekannt aus")
+   ========================================================================== */
+.press-logos {
+  padding: 40px 20px;
+  background-color: #faf8ff;
+  border-top: 1px solid #e9e5f5;
+  border-bottom: 1px solid #e9e5f5;
+  text-align: center;
+}
+.press-logos-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.press-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: #98a0af;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.press-track {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.press-logo-item {
+  font-family: 'Georgia', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #999;
+  opacity: 0.65;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+.press-logo-item:hover {
+  opacity: 1;
+  color: #444;
+  transform: scale(1.08);
+}
+
+/* ==========================================================================
+   FINAL CTA SECTION
+   ========================================================================== */
+.mid-cta {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  padding: 80px 20px;
+  text-align: center;
+  color: #fff;
+}
+.mid-cta-inner {
+  max-width: 850px;
+  margin: 0 auto;
+}
+.mid-cta h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+.btn-cta-lg {
+  display: inline-block;
+  background-color: #fff;
+  color: #7c3aed !important;
+  padding: 18px 56px;
+  border-radius: 60px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.btn-cta-lg:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  background-color: #f3ecff;
+}
+.mid-cta-note {
+  margin-top: 24px;
+  font-size: 0.95rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .mid-cta h2 { font-size: 2rem; }
+  .press-logos-inner { flex-direction: column; gap: 20px; }
+  .press-track { gap: 20px; }
+  .mid-cta { padding: 60px 20px; }
 }
