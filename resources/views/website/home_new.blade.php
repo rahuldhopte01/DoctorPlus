@@ -1205,17 +1205,18 @@
 @php
     $nlData = $homeSettings['newsletter_section'] ?? [];
     $nlHeading = $nlData['heading'] ?? "Bleib auf dem\nLaufenden";
+    $nlBg = $nlData['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg';
 @endphp
 
 <section class="newsletter-hero">
-    <div class="nl-hero-bg" style="background-image: url('{{ $nlData['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg' }}');"></div>
+    <div class="nl-hero-bg" style="background-image: url('{{ $nlBg }}');"></div>
     <div class="nl-hero-content">
         <h2>{!! nl2br(e($nlHeading)) !!}</h2>
         <p>{{ $nlData['subtext'] ?? 'Meld dich für unseren Newsletter an und erhalte Updates, Tipps und Sonderangebote per E-Mail.' }}</p>
         
         <form class="nl-hero-form">
             <input type="email" placeholder="E-Mail" required>
-            <button type="submit">{{ $nlData['btn_text'] ?? 'Abonnieren' }}</button>
+            <button type="submit">{{ $nlData['btn_text'] ?? $nlData['label'] ?? 'Abonnieren' }}</button>
         </form>
         
         <div class="nl-hero-legal">
