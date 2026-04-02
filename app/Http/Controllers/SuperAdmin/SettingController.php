@@ -479,6 +479,47 @@ class SettingController extends Controller
             $home_settings['testosterone_banner'] = $testo_banner;
         }
 
+        // Weight Loss Banner Section
+        if ($request->has('wl_banner_title')) {
+            $wl_banner = $home_settings['weight_loss_banner'] ?? [];
+            
+            // Main Hero Image
+            if ($request->hasFile('wl_banner_hero_image')) {
+                if (!empty($wl_banner['hero_image'])) (new CustomController)->deleteFile($wl_banner['hero_image']);
+                $wl_banner['hero_image'] = (new CustomController)->imageUpload($request->wl_banner_hero_image);
+            }
+
+            // Left Card Image
+            if ($request->hasFile('wl_card_left_image')) {
+                if (!empty($wl_banner['left_card']['image'])) (new CustomController)->deleteFile($wl_banner['left_card']['image']);
+                $wl_banner['left_card']['image'] = (new CustomController)->imageUpload($request->wl_card_left_image);
+            }
+
+            // Right Card Image
+            if ($request->hasFile('wl_card_right_image')) {
+                if (!empty($wl_banner['right_card']['image'])) (new CustomController)->deleteFile($wl_banner['right_card']['image']);
+                $wl_banner['right_card']['image'] = (new CustomController)->imageUpload($request->wl_card_right_image);
+            }
+
+            $wl_banner['pill'] = $request->wl_banner_pill;
+            $wl_banner['title'] = $request->wl_banner_title;
+            $wl_banner['subtext'] = $request->wl_banner_subtext;
+            $wl_banner['btn1_text'] = $request->wl_banner_btn1_text;
+            $wl_banner['btn1_url'] = $request->wl_banner_btn1_url;
+            $wl_banner['btn2_text'] = $request->wl_banner_btn2_text;
+            $wl_banner['btn2_url'] = $request->wl_banner_btn2_url;
+
+            $wl_banner['left_card']['title'] = $request->wl_card_left_title;
+            $wl_banner['left_card']['btn_text'] = $request->wl_card_left_btn_text;
+            $wl_banner['left_card']['btn_url'] = $request->wl_card_left_btn_url;
+
+            $wl_banner['right_card']['title'] = $request->wl_card_right_title;
+            $wl_banner['right_card']['btn_text'] = $request->wl_card_right_btn_text;
+            $wl_banner['right_card']['btn_url'] = $request->wl_card_right_btn_url;
+
+            $home_settings['weight_loss_banner'] = $wl_banner;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

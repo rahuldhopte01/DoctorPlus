@@ -808,7 +808,86 @@
     </div>
 </section>
 
+<!-- Weight Management Banner Section -->
+@php
+    $wl = $homeSettings['weight_loss_banner'] ?? [];
+    $wlPill = $wl['pill'] ?? 'GEWICHTSMANAGEMENT';
+    
+    // Process title: wrap text after | in a span with .wl-tint (dark teal)
+    $rawWlTitle = $wl['title'] ?? 'Gesund abnehmen — mit | ärztlicher Begleitung';
+    $wParts = explode('|', $rawWlTitle);
+    if (count($wParts) > 1) {
+        $processedWlTitle = $wParts[0];
+        for ($i = 1; $i < count($wParts); $i++) {
+            if ($i % 2 != 0) {
+                $processedWlTitle .= '<span class="wl-tint">' . $wParts[$i] . '</span>';
+            } else {
+                $processedWlTitle .= $wParts[$i];
+            }
+        }
+    } else {
+        $processedWlTitle = $rawWlTitle;
+    }
+    $wlHeading = $processedWlTitle;
+    
+    $wlSubtext = $wl['subtext'] ?? 'Abnehmspritze, Ernährungsberatung und medikamentöse Therapie – alles aus einer Hand, 100% online.';
+
+    $wlHeroImage = !empty($wl['hero_image']) ? url('images/upload/'.$wl['hero_image']) : 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=800&q=80';
+    
+    $wlBtn1Text = !empty($wl['btn1_text']) ? $wl['btn1_text'] : 'Mehr erfahren';
+    $wlBtn1Url = !empty($wl['btn1_url']) ? $wl['btn1_url'] : route('categories');
+    $wlBtn2Text = !empty($wl['btn2_text']) ? $wl['btn2_text'] : 'Beratung starten';
+    $wlBtn2Url = !empty($wl['btn2_url']) ? $wl['btn2_url'] : route('categories');
+
+    $wlLeft = $wl['left_card'] ?? [];
+    $wlLeftTitle = !empty($wlLeft['title']) ? str_replace('|', '<br>', $wlLeft['title']) : 'Abnehmspritze — einfach und effektiv';
+    $wlLeftBtnText = !empty($wlLeft['btn_text']) ? $wlLeft['btn_text'] : 'Jetzt informieren';
+    $wlLeftBtnUrl = !empty($wlLeft['btn_url']) ? $wlLeft['btn_url'] : route('categories');
+    $wlLeftImage = !empty($wlLeft['image']) ? url('images/upload/'.$wlLeft['image']) : 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800&q=80';
+
+    $wlRight = $wl['right_card'] ?? [];
+    $wlRightTitle = !empty($wlRight['title']) ? str_replace('|', '<br>', $wlRight['title']) : 'Ärztlich begleitet — sicher zum Wunschgewicht';
+    $wlRightBtnText = !empty($wlRight['btn_text']) ? $wlRight['btn_text'] : 'Behandlung starten';
+    $wlRightBtnUrl = !empty($wlRight['btn_url']) ? $wlRight['btn_url'] : route('categories');
+    $wlRightImage = !empty($wlRight['image']) ? url('images/upload/'.$wlRight['image']) : 'https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?w=800&q=80';
+@endphp
+<section class="wl-banner-section">
+    <div class="wl-inner">
+        <span class="wl-pill">{{ $wlPill }}</span>
+        <h2 class="wl-heading">{!! $wlHeading !!}</h2>
+        <p class="wl-sub">{{ $wlSubtext }}</p>
+        <div class="wl-hero-img-wrap">
+            <img src="{{ $wlHeroImage }}" alt="Weight Management" class="wl-hero-img" />
+            <div class="wl-btns-overlay">
+                <a href="{{ $wlBtn1Url }}" class="wl-btn wl-btn-outline">{{ $wlBtn1Text }}</a>
+                <a href="{{ $wlBtn2Url }}" class="wl-btn wl-btn-filled">{{ $wlBtn2Text }}</a>
+            </div>
+        </div>
+    </div>
+    <div class="wl-cards">
+        <div class="wl-card">
+            <div class="wl-card-text">
+                <h3>{!! $wlLeftTitle !!}</h3>
+                <a href="{{ $wlLeftBtnUrl }}" class="wl-card-btn">{{ $wlLeftBtnText }}</a>
+            </div>
+            <div class="wl-card-img-wrap">
+                <img src="{{ $wlLeftImage }}" alt="" class="wl-card-img" />
+            </div>
+        </div>
+        <div class="wl-card">
+            <div class="wl-card-text">
+                <h3>{!! $wlRightTitle !!}</h3>
+                <a href="{{ $wlRightBtnUrl }}" class="wl-card-btn">{{ $wlRightBtnText }}</a>
+            </div>
+            <div class="wl-card-img-wrap">
+                <img src="{{ $wlRightImage }}" alt="" class="wl-card-img" />
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
+
 <!-- Our Treatment Areas – Carousel Section -->
     <div class="container py-4">
         <div class="treatment-areas-header mb-4">

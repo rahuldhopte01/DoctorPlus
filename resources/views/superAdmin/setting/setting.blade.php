@@ -825,6 +825,7 @@
                                             $about = $home['about'] ?? [];
                                             $ed = $home['ed_banner'] ?? [];
                                             $testo = $home['testosterone_banner'] ?? [];
+                                            $wl = $home['weight_loss_banner'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1343,6 +1344,125 @@
                                                     <div class="col-md-2">
                                                         <label>{{__('URL')}}</label>
                                                         <input type="text" name="testo_card_right_btn_url" value="{{ $testo['right_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Weight Management Banner Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <label>{{__('Hero Image')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="wl_banner_hero_img" name="wl_banner_hero_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="wl_banner_hero_img"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="wl_banner_hero_img_Preview" style="background-image: url('{{ !empty($wl['hero_image']) ? url('images/upload/'.$wl['hero_image']) : url('images/upload/default.png') }}');"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <div class="row">
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Pill Text')}}</label>
+                                                        <input type="text" name="wl_banner_pill" value="{{ $wl['pill'] ?? 'GEWICHTSMANAGEMENT' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Title (Use | for colored text)')}}</label>
+                                                        <input type="text" name="wl_banner_title" value="{{ $wl['title'] ?? '' }}" class="form-control" placeholder="Gesund abnehmen — mit | ärztlicher Begleitung">
+                                                    </div>
+                                                    <div class="col-md-12 form-group">
+                                                        <label>{{__('Sub Title Text')}}</label>
+                                                        <input type="text" name="wl_banner_subtext" value="{{ $wl['subtext'] ?? '' }}" class="form-control" placeholder="Abnehmspritze, Ernährungsberatung und medikamentöse Therapie...">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 1 Text')}}</label>
+                                                        <input type="text" name="wl_banner_btn1_text" value="{{ $wl['btn1_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 1 URL')}}</label>
+                                                        <input type="text" name="wl_banner_btn1_url" value="{{ $wl['btn1_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 2 Text')}}</label>
+                                                        <input type="text" name="wl_banner_btn2_text" value="{{ $wl['btn2_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-6 form-group">
+                                                        <label>{{__('Button 2 URL')}}</label>
+                                                        <input type="text" name="wl_banner_btn2_url" value="{{ $wl['btn2_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-3">{{__('Weight Management - Bottom Cards')}}</h6>
+                                        <div class="row">
+                                            <!-- Left Card -->
+                                            <div class="col-md-6 border-right">
+                                                <label class="font-weight-bold">{{__('Left Card')}}</label>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="avatar-upload avatar-box">
+                                                            <div class="avatar-edit">
+                                                                <input type='file' id="wl_card_left_image" name="wl_card_left_image" accept=".png, .jpg, .jpeg" />
+                                                                <label for="wl_card_left_image"></label>
+                                                            </div>
+                                                            <div class="avatar-preview">
+                                                                <div id="wl_card_left_image_Preview" style="background-image: url('{{ !empty($wl['left_card']['image']) ? url('images/upload/'.$wl['left_card']['image']) : url('images/upload/default.png') }}');"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="wl_card_left_title" value="{{ $wl['left_card']['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label>{{__('Btn Text')}}</label>
+                                                                <input type="text" name="wl_card_left_btn_text" value="{{ $wl['left_card']['btn_text'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>{{__('URL')}}</label>
+                                                                <input type="text" name="wl_card_left_btn_url" value="{{ $wl['left_card']['btn_url'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Right Card -->
+                                            <div class="col-md-6">
+                                                <label class="font-weight-bold">{{__('Right Card')}}</label>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="avatar-upload avatar-box">
+                                                            <div class="avatar-edit">
+                                                                <input type='file' id="wl_card_right_image" name="wl_card_right_image" accept=".png, .jpg, .jpeg" />
+                                                                <label for="wl_card_right_image"></label>
+                                                            </div>
+                                                            <div class="avatar-preview">
+                                                                <div id="wl_card_right_image_Preview" style="background-image: url('{{ !empty($wl['right_card']['image']) ? url('images/upload/'.$wl['right_card']['image']) : url('images/upload/default.png') }}');"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="form-group">
+                                                            <label>{{__('Title')}}</label>
+                                                            <input type="text" name="wl_card_right_title" value="{{ $wl['right_card']['title'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label>{{__('Btn Text')}}</label>
+                                                                <input type="text" name="wl_card_right_btn_text" value="{{ $wl['right_card']['btn_text'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label>{{__('URL')}}</label>
+                                                                <input type="text" name="wl_card_right_btn_url" value="{{ $wl['right_card']['btn_url'] ?? '' }}" class="form-control">
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
