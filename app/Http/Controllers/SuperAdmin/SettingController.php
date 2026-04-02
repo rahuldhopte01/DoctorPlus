@@ -188,7 +188,7 @@ class SettingController extends Controller
     {
         abort_if(Gate::denies('superadmin_setting'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $request->validate([
-            'popup_target_url' => 'bail|required',
+            //'popup_target_url' => 'bail|required',
         ]);
         $data = $request->all();
         $setting = Setting::first();
