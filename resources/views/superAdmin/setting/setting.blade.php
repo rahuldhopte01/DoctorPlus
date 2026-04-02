@@ -1739,6 +1739,33 @@
                                             </div>
                                             @endfor
                                         </div>
+                                        <hr>
+                                        <h5 class="my-4">{{__('Newsletter Section (Stay Updated)')}}</h5>
+                                        @php
+                                            $nlSec = $home['newsletter_section'] ?? [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Main Heading')}}</label>
+                                                <input type="text" name="nl_heading" value="{{ $nlSec['heading'] ?? 'Bleib auf dem Laufenden' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Button Text')}}</label>
+                                                <input type="text" name="nl_btn_text" value="{{ $nlSec['btn_text'] ?? 'Abonnieren' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Subtext')}}</label>
+                                                <input type="text" name="nl_subtext" value="{{ $nlSec['subtext'] ?? 'Meld dich für unseren Newsletter an und erhalte Updates, Tipps und Sonderangebote per E-Mail.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Legal / Small Print')}}</label>
+                                                <textarea name="nl_legal" class="form-control" rows="2">{{ $nlSec['legal'] ?? 'Mit der Erstellung eines Kontos per E-Mail stimme ich den AGB zu und erkenne die Datenschutzerklärung an.' }}</textarea>
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Background Image URL (Doctor image)')}}</label>
+                                                <input type="text" name="nl_bg_image" value="{{ $nlSec['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg' }}" class="form-control">
+                                            </div>
+                                        </div>
                                      </div>
                                      <!-- Footer Settings -->
                                      <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">

@@ -1196,6 +1196,28 @@
     </div>
 </section>
 
+@php
+    $nlData = $homeSettings['newsletter_section'] ?? [];
+    $nlHeading = $nlData['heading'] ?? "Bleib auf dem\nLaufenden";
+@endphp
+
+<section class="newsletter-hero">
+    <div class="nl-hero-bg" style="background-image: url('{{ $nlData['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg' }}');"></div>
+    <div class="nl-hero-content">
+        <h2>{!! nl2br(e($nlHeading)) !!}</h2>
+        <p>{{ $nlData['subtext'] ?? 'Meld dich für unseren Newsletter an und erhalte Updates, Tipps und Sonderangebote per E-Mail.' }}</p>
+        
+        <form class="nl-hero-form">
+            <input type="email" placeholder="E-Mail" required>
+            <button type="submit">{{ $nlData['btn_text'] ?? 'Abonnieren' }}</button>
+        </form>
+        
+        <div class="nl-hero-legal">
+            {!! $nlData['legal'] ?? 'Mit der Erstellung eines Kontos per E-Mail stimme ich den <a href="#">AGB</a> zu und erkenne die <a href="#">Datenschutzerklärung</a> an.' !!}
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 
 <!-- Our Treatment Areas – Carousel Section -->

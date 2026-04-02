@@ -658,6 +658,17 @@ class SettingController extends Controller
             $home_settings['privacy_section'] = $priv;
         }
 
+        // Newsletter Section
+        if ($request->has('nl_heading')) {
+            $home_settings['newsletter_section'] = [
+                'heading' => $request->nl_heading,
+                'subtext' => $request->nl_subtext,
+                'btn_text' => $request->nl_btn_text,
+                'legal' => $request->nl_legal,
+                'bg_image' => $request->nl_bg_image
+            ];
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings
