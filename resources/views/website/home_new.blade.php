@@ -956,6 +956,86 @@
     </div>
 </section>
 
+<!-- Comparison Section -->
+@php
+    $compData = $homeSettings['comparison_section'] ?? [];
+    $compPill = $compData['pill'] ?? 'Natürlich. Sicher. Deutsch.';
+    
+    // Process title: wrap text within | in a span with .comp-tint (vibrant purple)
+    $rawCompTitle = $compData['heading'] ?? 'Warum |dr.fuxx|?';
+    $cParts = explode('|', $rawCompTitle);
+    if (count($cParts) > 1) {
+        $processedCompTitle = $cParts[0];
+        for ($i = 1; $i < count($cParts); $i++) {
+            if ($i % 2 != 0) {
+                $processedCompTitle .= '<span class="comp-tint">' . $cParts[$i] . '</span>';
+            } else {
+                $processedCompTitle .= $cParts[$i];
+            }
+        }
+    } else {
+        $processedCompTitle = $rawCompTitle;
+    }
+    
+    $compSub = $compData['subheading'] ?? 'Der Unterschied, der zählt';
+    $compCenterImage = !empty($compData['center_image']) ? url('images/upload/'.$compData['center_image']) : 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=800&q=80'; /* default phone placeholder */
+
+    $compLeftTitle = $compData['left_col_title'] ?? 'ANDERE ANBIETER';
+    $compRightTitle = $compData['right_col_title'] ?? 'DR. FUXX';
+    $compRows = $compData['rows'] ?? [
+        ['left' => 'Keine deutschen Ärzte', 'right' => 'Deutsche Ärzte'],
+        ['left' => 'Daten im Ausland', 'right' => 'Daten sicher in DE'],
+        ['left' => 'Keine DSGVO', 'right' => '100% DSGVO-konform'],
+        ['left' => 'Support eingeschränkt', 'right' => 'Immer erreichbar'],
+        ['left' => 'Ausländische Tech', 'right' => 'Made in Germany']
+    ];
+
+    $compBtnText = !empty($compData['btn_text']) ? $compData['btn_text'] : 'Jetzt Rezept anfragen &rarr;';
+    $compBtnUrl = !empty($compData['btn_url']) ? $compData['btn_url'] : route('categories');
+    $compBtnSub = $compData['btn_subtext'] ?? 'Kostenlose Erstberatung &bull; Rezept in 24h';
+@endphp
+<section class="comparison-section">
+    <div class="comp-container">
+        <div class="comp-header">
+            <span class="comp-pill"><i class="bi bi-shield-check"></i> {{ $compPill }}</span>
+            <h2 class="comp-heading">{!! $processedCompTitle !!}</h2>
+            <p class="comp-sub">{{ $compSub }}</p>
+        </div>
+        
+        <div class="comp-board">
+            <div class="comp-floating-img-wrap">
+                <img src="{{ $compCenterImage }}" alt="App Demo" class="comp-img" />
+            </div>
+            
+            <div class="comp-table-card">
+                <div class="comp-table-head">
+                    <div class="comp-col-h comp-col-left">{{ $compLeftTitle }}</div>
+                    <div class="comp-col-h comp-col-right"><i class="bi bi-shield-check"></i> {{ $compRightTitle }}</div>
+                </div>
+                <div class="comp-table-body">
+                    @foreach($compRows as $row)
+                        @if(!empty($row['left']) || !empty($row['right']))
+                        <div class="comp-row">
+                            <div class="comp-col comp-left-item">
+                                <span class="comp-dot-left"></span> {{ $row['left'] }}
+                            </div>
+                            <div class="comp-col comp-right-item">
+                                <span class="comp-dot-right"></span> {{ $row['right'] }}
+                            </div>
+                        </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        <div class="comp-cta-wrap">
+            <a href="{{ $compBtnUrl }}" class="comp-btn">{!! $compBtnText !!}</a>
+            <p class="comp-btn-sub">{!! $compBtnSub !!}</p>
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 
 <!-- Our Treatment Areas – Carousel Section -->

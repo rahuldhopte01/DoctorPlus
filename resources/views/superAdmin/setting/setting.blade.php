@@ -828,6 +828,7 @@
                                             $wl = $home['weight_loss_banner'] ?? [];
                                             $adv = $home['medical_advisors'] ?? [];
                                             $statsSec = $home['stats_section'] ?? [];
+                                            $compSec = $home['comparison_section'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1543,6 +1544,84 @@
                                                     <label>{{__('Bottom Text')}}</label>
                                                     <input type="text" name="stats_right_bottom" value="{{ $statsSec['right_card']['bottom_text'] ?? 'Jahre Expertise' }}" class="form-control" placeholder="Jahre Expertise">
                                                 </div>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Comparison Section (Warum dr.fuxx?)')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Top Pill Text')}}</label>
+                                                <input type="text" name="comp_pill" value="{{ $compSec['pill'] ?? 'Natürlich. Sicher. Deutsch.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Heading (use | to highlight)')}}</label>
+                                                <input type="text" name="comp_heading" value="{{ $compSec['heading'] ?? 'Warum |dr.fuxx|?' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Subheading')}}</label>
+                                                <input type="text" name="comp_subheading" value="{{ $compSec['subheading'] ?? 'Der Unterschied, der zählt' }}" class="form-control">
+                                            </div>
+                                            
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Center Upload Image (Hands with Phone)')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="comp_center_image" name="comp_center_image" accept=".png, .jpg, .jpeg" />
+                                                        <label for="comp_center_image"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="comp_center_image_Preview" style="background-image: url('{{ !empty($compSec['center_image']) ? url('images/upload/'.$compSec['center_image']) : url('images/upload/default.png') }}');"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4">{{__('Comparison Table Data')}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label class="text-danger">{{__('Left Column Title')}}</label>
+                                                <input type="text" name="comp_left_title" value="{{ $compSec['left_col_title'] ?? 'ANDERE ANBIETER' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label class="text-primary">{{__('Right Column Title')}}</label>
+                                                <input type="text" name="comp_right_title" value="{{ $compSec['right_col_title'] ?? 'DR. FUXX' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        
+                                        @for ($i = 0; $i < 5; $i++)
+                                        @php 
+                                            // Fallbacks specific to the original image to be helpful
+                                            $defL = ['Keine deutschen Ärzte', 'Daten im Ausland', 'Keine DSGVO', 'Support eingeschränkt', 'Ausländische Tech'];
+                                            $defR = ['Deutsche Ärzte', 'Daten sicher in DE', '100% DSGVO-konform', 'Immer erreichbar', 'Made in Germany'];
+                                            $row = $compSec['rows'][$i] ?? [];
+                                        @endphp
+                                        <div class="row border-bottom pb-2 pt-2">
+                                            <div class="col-md-6 form-group mb-0">
+                                                <label class="text-muted"><small>Row {{ $i+1 }} Left</small></label>
+                                                <input type="text" name="comp_row_left_{{$i}}" value="{{ $row['left'] ?? $defL[$i] }}" class="form-control form-control-sm">
+                                            </div>
+                                            <div class="col-md-6 form-group mb-0">
+                                                <label class="text-muted"><small>Row {{ $i+1 }} Right</small></label>
+                                                <input type="text" name="comp_row_right_{{$i}}" value="{{ $row['right'] ?? $defR[$i] }}" class="form-control form-control-sm">
+                                            </div>
+                                        </div>
+                                        @endfor
+
+                                        <h6 class="mt-4">{{__('Bottom CTA Button')}}</h6>
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button Text')}}</label>
+                                                <input type="text" name="comp_btn_text" value="{{ $compSec['btn_text'] ?? 'Jetzt Rezept anfragen &rarr;' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button URL')}}</label>
+                                                <input type="text" name="comp_btn_url" value="{{ $compSec['btn_url'] ?? '#' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Button Subtext')}}</label>
+                                                <input type="text" name="comp_btn_subtext" value="{{ $compSec['btn_subtext'] ?? 'Kostenlose Erstberatung • Rezept in 24h' }}" class="form-control">
                                             </div>
                                         </div>
 

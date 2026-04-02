@@ -563,6 +563,36 @@ class SettingController extends Controller
             $home_settings['stats_section'] = $stats;
         }
 
+        // Comparison Section
+        if ($request->has('comp_heading')) {
+            $comp = $home_settings['comparison_section'] ?? [];
+            $comp['pill'] = $request->comp_pill;
+            $comp['heading'] = $request->comp_heading;
+            $comp['subheading'] = $request->comp_subheading;
+            
+            if ($request->hasFile('comp_center_image')) {
+                if (!empty($comp['center_image'])) (new CustomController)->deleteFile($comp['center_image']);
+                $comp['center_image'] = (new CustomController)->imageUpload($request->file('comp_center_image'));
+            }
+
+            $comp['left_col_title'] = $request->comp_left_title;
+            $comp['right_col_title'] = $request->comp_right_title;
+
+            $comp['rows'] = [];
+            for ($i = 0; $i < 5; $i++) {
+                $comp['rows'][] = [
+                    'left' => $request->input("comp_row_left_$i"),
+                    'right' => $request->input("comp_row_right_$i")
+                ];
+            }
+
+            $comp['btn_text'] = $request->comp_btn_text;
+            $comp['btn_url'] = $request->comp_btn_url;
+            $comp['btn_subtext'] = $request->comp_btn_subtext;
+
+            $home_settings['comparison_section'] = $comp;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

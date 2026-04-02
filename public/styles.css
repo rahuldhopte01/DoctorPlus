@@ -1041,3 +1041,182 @@
   .stats-card { width: 100%; max-width: 320px; padding: 25px 20px; }
   .stats-num { font-size: 3.5rem; }
 }
+
+/* ==========================================================================
+   COMPARISON SECTION ("Warum dr.fuxx?")
+   ========================================================================== */
+.comparison-section {
+  background-color: #f7f6fc; /* Closer matching section background */
+  padding: 60px 20px 80px;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+.comp-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.comp-header {
+  margin-bottom: 50px;
+}
+.comp-pill {
+  display: inline-block;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 20px;
+}
+.comp-pill i { color: #7d4cf6; margin-right: 4px; }
+.comp-heading {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 12px;
+}
+.comp-tint { color: #7d4cf6; } 
+
+.comp-sub {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.comp-board {
+  position: relative;
+  max-width: 800px;
+  margin: 180px auto 40px; /* Increased top margin from 120px to 180px to clear image away from text */
+}
+.comp-floating-img-wrap {
+  position: absolute; /* Using absolute positioning for the image */
+  bottom: 100%; /* Sit entirely ABOVE the box, no overlap */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  z-index: 10;
+  pointer-events: none;
+}
+.comp-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.comp-table-card {
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.05); /* Softer, broader shadow */
+  overflow: hidden; /* Clips the background colors to rounded corners */
+}
+.comp-table-head {
+  display: flex;
+  border-bottom: 1px solid #f6f6f6; /* Very light border */
+}
+.comp-col-h {
+  flex: 1;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 18px 30px;
+  text-align: center; /* Center the headers */
+}
+.comp-col-left { 
+  color: #777; 
+  background: #ffffff; 
+}
+.comp-col-right { 
+  color: #222; 
+  background: #f6f0fd; /* Soft lilac background ONLY on header */ 
+} 
+.comp-col-right i { color: #7d4cf6; font-size: 1rem; margin-right: 6px; vertical-align: middle; }
+
+.comp-table-body {
+  background: #ffffff;
+}
+
+.comp-row {
+  display: flex;
+  border-bottom: 1px solid #f6f6f6;
+}
+.comp-row:last-child {
+  border-bottom: none;
+}
+.comp-col {
+  flex: 1;
+  padding: 24px 40px; /* Generous padding */
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+.comp-left-item {
+  color: #999;
+  font-size: 1rem;
+  font-weight: 500;
+  border-right: 1px solid #f6f6f6; /* Very subtle vertical divider */
+  background: #ffffff;
+}
+.comp-right-item {
+  color: #1a1a1a;
+  font-size: 1rem;
+  font-weight: 800;
+  background: #ffffff; /* pure white rows matching left */
+}
+.comp-dot-left {
+  display: inline-block;
+  min-width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #f1a9b4; 
+  margin-right: 16px;
+}
+.comp-dot-right {
+  display: inline-block;
+  min-width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #7d4cf6;
+  margin-right: 16px;
+}
+
+.comp-cta-wrap {
+  margin-top: 40px;
+}
+.comp-btn {
+  display: inline-block;
+  background-color: #7d4cf6;
+  color: #fff;
+  font-weight: 700;
+  padding: 18px 45px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: 1.05rem;
+  transition: all 0.3s;
+  box-shadow: 0 8px 25px rgba(125,76,246,0.25);
+}
+.comp-btn:hover {
+  background-color: #6a3add;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(125,76,246,0.35);
+}
+.comp-btn-sub {
+  margin-top: 15px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+@media (max-width: 768px) {
+  .comp-table-head { flex-direction: column; }
+  .comp-col-left { padding-top: 40px; padding-bottom: 20px;}
+  .comp-col-right { padding-top: 20px; padding-bottom: 20px;}
+  .comp-row { flex-direction: column; }
+  .comp-col { padding: 15px 20px; }
+  .comp-left-item { border-right: none; border-bottom: 1px solid #f6f6f6; }
+  .comp-heading { font-size: 1.8rem; }
+  .comp-floating-img-wrap { width: 140px; top: -70px; }
+  .comp-board { margin-top: 90px; }
+}
