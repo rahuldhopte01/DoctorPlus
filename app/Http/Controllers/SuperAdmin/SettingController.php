@@ -634,6 +634,30 @@ class SettingController extends Controller
             ];
         }
 
+        // Privacy Section
+        if ($request->has('priv_label')) {
+            $priv = [];
+            $priv['label'] = $request->priv_label;
+            $priv['heading_1'] = $request->priv_heading_1;
+            $priv['heading_2'] = $request->priv_heading_2;
+            $priv['subtext'] = $request->priv_subtext;
+            
+            $priv['features'] = [];
+            for ($i = 0; $i < 4; $i++) {
+                if ($request->filled("priv_feature_$i")) {
+                    $priv['features'][] = $request->input("priv_feature_$i");
+                }
+            }
+            
+            $priv['pills'] = [];
+            for ($i = 0; $i < 3; $i++) {
+                if ($request->filled("priv_pill_$i")) {
+                    $priv['pills'][] = $request->input("priv_pill_$i");
+                }
+            }
+            $home_settings['privacy_section'] = $priv;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

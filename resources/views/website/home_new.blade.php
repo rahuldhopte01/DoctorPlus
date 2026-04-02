@@ -1126,6 +1126,76 @@
     </div>
 </section>
 
+@php
+    $privData = $homeSettings['privacy_section'] ?? [];
+    $privFeatures = $privData['features'] ?? [];
+    $privPills = $privData['pills'] ?? [];
+    
+    // Provide demo defaults if empty
+    if (empty($privFeatures)) {
+        $privFeatures = ["Deutsche Ärzte", "DSGVO-konform", "Sitz in DE", "Immer erreichbar"];
+    }
+    if (empty($privPills)) {
+        $privPills = ["100% DSGVO", "Deutsche Server", "Kein Ausland"];
+    }
+@endphp
+
+<section class="privacy-v2">
+    <div class="privacy-container container">
+        <div class="row align-items-center">
+            <div class="col-lg-5 mb-5 mb-lg-0">
+                <span class="privacy-label">{{ $privData['label'] ?? 'DATENSCHUTZ' }}</span>
+                <h2 class="privacy-heading">
+                    {{ $privData['heading_1'] ?? 'Ihre Privatsphäre.' }}
+                    <span class="khaki-italic">{{ $privData['heading_2'] ?? 'Unsere Priorität.' }}</span>
+                </h2>
+                <div class="privacy-intro">
+                    {{ $privData['subtext'] ?? 'Ihre Daten bleiben sicher in Deutschland — geschützt durch deutsche Ärzte, deutsche Server und volle DSGVO-Konformität.' }}
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="privacy-card">
+                    <div class="germany-badge">
+                        <div class="badge-icon">
+                            <img src="https://drfuxx.stratolution.de/sample-a-klassisch/img/made-in-germany.svg" width="30" alt="Shield" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2092/2092663.png'">
+                        </div>
+                        <div class="badge-text">
+                            <h4>Made in Germany</h4>
+                            <p>Entwickelt, gehostet und betrieben in Deutschland</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flags-row">
+                        <div class="flag-pill">
+                            <img src="https://flagcdn.com/w20/de.png" width="18" alt="DE"> DE
+                        </div>
+                        <span class="text-muted small">— Daten hier</span>
+                        <div class="flag-pill">
+                            <img src="https://flagcdn.com/w20/eu.png" width="18" alt="EU"> EU
+                        </div>
+                        <span class="text-muted small">Kein Transfer</span>
+                    </div>
+
+                    <div class="privacy-feature-grid">
+                        @foreach($privFeatures as $feature)
+                        <div class="privacy-feature-item">
+                            <span class="purple-dot"></span>
+                            {{ $feature }}
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="privacy-bottom-pills text-center">
+            @foreach($privPills as $pill)
+            <span class="priv-pill">{{ $pill }}</span>
+            @endforeach
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 
 <!-- Our Treatment Areas – Carousel Section -->

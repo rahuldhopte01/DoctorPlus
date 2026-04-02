@@ -1700,6 +1700,44 @@
                                                 <label>{{__('Bottom Subtext')}}</label>
                                                 <input type="text" name="cta_subtext" value="{{ $ctaSec['subtext'] ?? 'Keine Kosten bis zur Rezeptausstellung – unverbindlich testen' }}" class="form-control">
                                             </div>
+                                        <hr>
+                                        <h5 class="my-4">{{__('Privacy Section (Datenschutz)')}}</h5>
+                                        @php
+                                            $privSec = $home['privacy_section'] ?? [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Section Label')}}</label>
+                                                <input type="text" name="priv_label" value="{{ $privSec['label'] ?? 'DATENSCHUTZ' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Heading Part 1')}}</label>
+                                                <input type="text" name="priv_heading_1" value="{{ $privSec['heading_1'] ?? 'Ihre Privatsphäre.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Heading Part 2 (Khaki Italic)')}}</label>
+                                                <input type="text" name="priv_heading_2" value="{{ $privSec['heading_2'] ?? 'Unsere Priorität.' }}" class="form-control">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Intro Subtext')}}</label>
+                                                <textarea name="priv_subtext" class="form-control" rows="2">{{ $privSec['subtext'] ?? 'Ihre Daten bleiben sicher in Deutschland — geschützt durch deutsche Ärzte, deutsche Server und volle DSGVO-Konformität.' }}</textarea>
+                                            </div>
+                                        </div>
+                                        <h6 class="mt-4">{{__('Feature Grid (4 items)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 4; $i++)
+                                            <div class="col-md-3 mb-2">
+                                                <input type="text" name="priv_feature_{{$i}}" value="{{ $privSec['features'][$i] ?? '' }}" class="form-control form-control-sm" placeholder="Feature {{$i+1}}">
+                                            </div>
+                                            @endfor
+                                        </div>
+                                        <h6 class="mt-4">{{__('Bottom Pills (3 items)')}}</h6>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 3; $i++)
+                                            <div class="col-md-4 mb-2">
+                                                <input type="text" name="priv_pill_{{$i}}" value="{{ $privSec['pills'][$i] ?? '' }}" class="form-control form-control-sm" placeholder="Pill {{$i+1}}">
+                                            </div>
+                                            @endfor
                                         </div>
                                      </div>
                                      <!-- Footer Settings -->
