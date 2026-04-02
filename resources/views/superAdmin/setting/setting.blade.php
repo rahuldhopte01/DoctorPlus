@@ -635,7 +635,6 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <!-- Header Settings -->
                                     <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
-                                    <div class="tab-pane fade show active" id="pills-header" role="tabpanel" aria-labelledby="pills-header-tab">
                                         <h5 class="mb-4">{{__('Promo Bar Settings')}}</h5>
                                         @php
                                             $promo = json_decode($setting->website_header_promo_bar, true) ?: [];
