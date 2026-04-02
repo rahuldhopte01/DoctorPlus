@@ -1658,6 +1658,57 @@
                                         </div>
                                         @endfor
 
+                                         <hr>
+                                         <h5 class="my-4">{{__('Press Logos (Bekannt aus)')}}</h5>
+                                         @php
+                                             $pressSec = $home['press_section'] ?? [];
+                                         @endphp
+                                         <div class="row">
+                                             <div class="col-md-12 form-group">
+                                                 <label>{{__('Heading')}}</label>
+                                                 <input type="text" name="press_heading" value="{{ $pressSec['heading'] ?? 'BEKANNT AUS' }}" class="form-control">
+                                             </div>
+                                             @for($i = 0; $i < 6; $i++)
+                                             <div class="col-md-4 mb-4">
+                                                 <label><small>{{__('Logo Logo')}} {{ $i + 1 }}</small></label>
+                                                 @php $currentLogo = $pressSec['logos'][$i] ?? null; @endphp
+                                                 <div class="avatar-upload avatar-box">
+                                                     <div class="avatar-edit">
+                                                         <input type='file' id="press_logo_{{$i}}" name="press_logo_{{$i}}" accept=".png, .jpg, .jpeg" />
+                                                         <label for="press_logo_{{$i}}"></label>
+                                                     </div>
+                                                     <div class="avatar-preview">
+                                                         <div id="pressLogoPreview_{{$i}}" style="background-image: url({{ $currentLogo ? url('images/upload/'.$currentLogo) : url('/images/upload_empty/fuxxlogo.png') }});"></div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             @endfor
+                                         </div>
+
+                                         <hr>
+                                         <h5 class="my-4">{{__('Bottom CTA Banner')}}</h5>
+                                         @php
+                                             $ctaBanner = $home['cta_banner'] ?? [];
+                                         @endphp
+                                         <div class="form-group">
+                                             <label>{{__('Heading')}}</label>
+                                             <input type="text" name="cta_heading" value="{{ $ctaBanner['heading'] ?? 'Bereit? In 3 Minuten zu deinem Rezept.' }}" class="form-control">
+                                         </div>
+                                         <div class="row">
+                                             <div class="col-md-6 form-group">
+                                                 <label>{{__('Button Text')}}</label>
+                                                 <input type="text" name="cta_btn_text" value="{{ $ctaBanner['btn_text'] ?? 'Jetzt kostenlos starten' }}" class="form-control">
+                                             </div>
+                                             <div class="col-md-6 form-group">
+                                                 <label>{{__('Button URL')}}</label>
+                                                 <input type="text" name="cta_btn_url" value="{{ $ctaBanner['btn_url'] ?? '#' }}" class="form-control">
+                                             </div>
+                                             <div class="col-md-12 form-group">
+                                                 <label>{{__('Subtext (Italic)')}}</label>
+                                                 <input type="text" name="cta_subtext" value="{{ $ctaBanner['subtext'] ?? 'Keine Kosten bis zur Rezeptausstellung – unverbindlich testen' }}" class="form-control">
+                                             </div>
+                                         </div>
+
                                      </div>
                                      <!-- Footer Settings -->
                                      <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
