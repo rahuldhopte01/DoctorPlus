@@ -824,6 +824,7 @@
                                             $relief = $home['natural_relief'] ?? [];
                                             $about = $home['about'] ?? [];
                                             $ed = $home['ed_banner'] ?? [];
+                                            $testo = $home['testosterone_banner'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1258,6 +1259,96 @@
                                         </div>
                                      </div>
 
+                                        <hr>
+                                        <h5 class="my-4">{{__('Testosterone Banner Section')}}</h5>
+                                        <div class="row">
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Badge Text')}}</label>
+                                                <input type="text" name="testo_banner_pill" value="{{ $testo['pill'] ?? '' }}" class="form-control" placeholder="TESTOSTERON-INJEKTION">
+                                            </div>
+                                            <div class="col-md-5 form-group">
+                                                <label>{{__('Section Title')}}</label>
+                                                <input type="text" name="testo_banner_title" value="{{ $testo['title'] ?? '' }}" class="form-control" placeholder="Testosteron-Injektion — | fertig zur Direktnutzung (use | for red)">
+                                            </div>
+                                            <div class="col-md-4 form-group">
+                                                <label>{{__('Hero Image')}}</label>
+                                                <input type="file" name="testo_banner_hero_image" class="form-control" accept="image/*">
+                                                @if(!empty($testo['hero_image']))
+                                                    <img src="{{ url('images/upload/'.$testo['hero_image']) }}" style="height: 40px; margin-top: 5px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 (Outline) Text')}}</label>
+                                                <input type="text" name="testo_banner_btn1_text" value="{{ $testo['btn1_text'] ?? '' }}" class="form-control" placeholder="Mehr erfahren">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 1 URL')}}</label>
+                                                <input type="text" name="testo_banner_btn1_url" value="{{ $testo['btn1_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 (Filled) Text')}}</label>
+                                                <input type="text" name="testo_banner_btn2_text" value="{{ $testo['btn2_text'] ?? '' }}" class="form-control" placeholder="Jetzt Beratung starten">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Button 2 URL')}}</label>
+                                                <input type="text" name="testo_banner_btn2_url" value="{{ $testo['btn2_url'] ?? '' }}" class="form-control" placeholder="#">
+                                            </div>
+                                        </div>
+
+                                        <h6 class="mt-4 mb-3">{{__('Bottom Cards (Left & Right)')}}</h6>
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Left Card')}}</strong></label>
+                                                        <input type="file" name="testo_card_left_image" class="form-control mb-1">
+                                                        @if(!empty($testo['left_card']['image']))
+                                                            <img src="{{ url('images/upload/'.$testo['left_card']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="testo_card_left_title" value="{{ $testo['left_card']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="testo_card_left_btn_text" value="{{ $testo['left_card']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="testo_card_left_btn_url" value="{{ $testo['left_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="card mb-3">
+                                            <div class="card-body">
+                                                <div class="row align-items-end">
+                                                    <div class="col-md-4">
+                                                        <label><strong>{{__('Right Card')}}</strong></label>
+                                                        <input type="file" name="testo_card_right_image" class="form-control mb-1">
+                                                        @if(!empty($testo['right_card']['image']))
+                                                            <img src="{{ url('images/upload/'.$testo['right_card']['image']) }}" style="height: 40px;">
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label>{{__('Title')}}</label>
+                                                        <input type="text" name="testo_card_right_title" value="{{ $testo['right_card']['title'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('Btn Text')}}</label>
+                                                        <input type="text" name="testo_card_right_btn_text" value="{{ $testo['right_card']['btn_text'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label>{{__('URL')}}</label>
+                                                        <input type="text" name="testo_card_right_btn_url" value="{{ $testo['right_card']['btn_url'] ?? '' }}" class="form-control">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                     </div>
                                      <!-- Footer Settings -->
                                      <div class="tab-pane fade" id="pills-footer" role="tabpanel" aria-labelledby="pills-footer-tab">
                                         @php

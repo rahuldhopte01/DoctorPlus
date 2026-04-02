@@ -733,6 +733,81 @@
     </div>
 </section>
 
+<!-- Testosterone Banner Section -->
+@php
+    $testo = $homeSettings['testosterone_banner'] ?? [];
+    $testoPill = $testo['pill'] ?? 'TESTOSTERON-INJEKTION';
+    
+    // Process title: wrap text after | in a span with .testo-red
+    $rawTestoTitle = $testo['title'] ?? 'Testosteron-Injektion — | fertig zur Direktnutzung';
+    $tParts = explode('|', $rawTestoTitle);
+    if (count($tParts) > 1) {
+        $processedTestoTitle = $tParts[0];
+        for ($i = 1; $i < count($tParts); $i++) {
+            if ($i % 2 != 0) {
+                $processedTestoTitle .= '<span class="testo-red">' . $tParts[$i] . '</span>';
+            } else {
+                $processedTestoTitle .= $tParts[$i];
+            }
+        }
+    } else {
+        $processedTestoTitle = $rawTestoTitle;
+    }
+    $testoHeading = $processedTestoTitle;
+
+    $testoHeroImage = !empty($testo['hero_image']) ? url('images/upload/'.$testo['hero_image']) : 'https://images.unsplash.com/photo-1579722820308-d74e571900a9?q=80&w=1000&auto=format&fit=crop';
+    
+    $testoBtn1Text = !empty($testo['btn1_text']) ? $testo['btn1_text'] : 'Mehr erfahren';
+    $testoBtn1Url = !empty($testo['btn1_url']) ? $testo['btn1_url'] : route('categories');
+    $testoBtn2Text = !empty($testo['btn2_text']) ? $testo['btn2_text'] : 'Jetzt Beratung starten';
+    $testoBtn2Url = !empty($testo['btn2_url']) ? $testo['btn2_url'] : route('categories');
+
+    $tLeft = $testo['left_card'] ?? [];
+    $tLeftTitle = !empty($tLeft['title']) ? str_replace('|', '<br>', $tLeft['title']) : 'Energie und Antrieb zurückgewinnen';
+    $tLeftBtnText = !empty($tLeft['btn_text']) ? $tLeft['btn_text'] : 'Mehr erfahren';
+    $tLeftBtnUrl = !empty($tLeft['btn_url']) ? $tLeft['btn_url'] : route('categories');
+    $tLeftImage = !empty($tLeft['image']) ? url('images/upload/'.$tLeft['image']) : 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1000&auto=format&fit=crop';
+
+    $tRight = $testo['right_card'] ?? [];
+    $tRightTitle = !empty($tRight['title']) ? str_replace('|', '<br>', $tRight['title']) : 'Fertige Injektion — einfach und sicher';
+    $tRightBtnText = !empty($tRight['btn_text']) ? $tRight['btn_text'] : 'Behandlung starten';
+    $tRightBtnUrl = !empty($tRight['btn_url']) ? $tRight['btn_url'] : route('categories');
+    $tRightImage = !empty($tRight['image']) ? url('images/upload/'.$tRight['image']) : 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop';
+@endphp
+<section class="testo-banner-section">
+    <div class="testo-inner">
+        <span class="testo-pill">{{ $testoPill }}</span>
+        <h2 class="testo-heading">{!! $testoHeading !!}</h2>
+        <div class="testo-hero-img-wrap">
+            <img src="{{ $testoHeroImage }}" alt="Testosterone" class="testo-hero-img" />
+            <div class="testo-btns-overlay">
+                <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
+                <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
+            </div>
+        </div>
+    </div>
+    <div class="testo-cards">
+        <div class="testo-card">
+            <div class="testo-card-text">
+                <h3>{!! $tLeftTitle !!}</h3>
+                <a href="{{ $tLeftBtnUrl }}" class="testo-card-btn">{{ $tLeftBtnText }}</a>
+            </div>
+            <div class="testo-card-img-wrap">
+                <img src="{{ $tLeftImage }}" alt="" class="testo-card-img" />
+            </div>
+        </div>
+        <div class="testo-card">
+            <div class="testo-card-text">
+                <h3>{!! $tRightTitle !!}</h3>
+                <a href="{{ $tRightBtnUrl }}" class="testo-card-btn">{{ $tRightBtnText }}</a>
+            </div>
+            <div class="testo-card-img-wrap">
+                <img src="{{ $tRightImage }}" alt="" class="testo-card-img" />
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="treatment-areas-section py-5" style="background-color: #f2efea !important;" id="services">
 <!-- Our Treatment Areas – Carousel Section -->
     <div class="container py-4">

@@ -439,6 +439,46 @@ class SettingController extends Controller
             $home_settings['ed_banner'] = $ed_banner;
         }
 
+        // Testosterone Banner Section
+        if ($request->has('testo_banner_title')) {
+            $testo_banner = $home_settings['testosterone_banner'] ?? [];
+            
+            // Main Hero Image
+            if ($request->hasFile('testo_banner_hero_image')) {
+                if (!empty($testo_banner['hero_image'])) (new CustomController)->deleteFile($testo_banner['hero_image']);
+                $testo_banner['hero_image'] = (new CustomController)->imageUpload($request->testo_banner_hero_image);
+            }
+
+            // Left Card Image
+            if ($request->hasFile('testo_card_left_image')) {
+                if (!empty($testo_banner['left_card']['image'])) (new CustomController)->deleteFile($testo_banner['left_card']['image']);
+                $testo_banner['left_card']['image'] = (new CustomController)->imageUpload($request->testo_card_left_image);
+            }
+
+            // Right Card Image
+            if ($request->hasFile('testo_card_right_image')) {
+                if (!empty($testo_banner['right_card']['image'])) (new CustomController)->deleteFile($testo_banner['right_card']['image']);
+                $testo_banner['right_card']['image'] = (new CustomController)->imageUpload($request->testo_card_right_image);
+            }
+
+            $testo_banner['pill'] = $request->testo_banner_pill;
+            $testo_banner['title'] = $request->testo_banner_title;
+            $testo_banner['btn1_text'] = $request->testo_banner_btn1_text;
+            $testo_banner['btn1_url'] = $request->testo_banner_btn1_url;
+            $testo_banner['btn2_text'] = $request->testo_banner_btn2_text;
+            $testo_banner['btn2_url'] = $request->testo_banner_btn2_url;
+
+            $testo_banner['left_card']['title'] = $request->testo_card_left_title;
+            $testo_banner['left_card']['btn_text'] = $request->testo_card_left_btn_text;
+            $testo_banner['left_card']['btn_url'] = $request->testo_card_left_btn_url;
+
+            $testo_banner['right_card']['title'] = $request->testo_card_right_title;
+            $testo_banner['right_card']['btn_text'] = $request->testo_card_right_btn_text;
+            $testo_banner['right_card']['btn_url'] = $request->testo_card_right_btn_url;
+
+            $home_settings['testosterone_banner'] = $testo_banner;
+        }
+
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings

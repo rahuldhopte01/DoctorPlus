@@ -440,11 +440,16 @@
   .ed-sub { font-size: 0.78rem !important; }
   .ed-hero-img-wrap { max-width: 100% !important; margin-bottom: -20px; }
   .ed-btns-overlay {
-    bottom: 40px !important;
-    gap: 6px !important;
-    padding: 0 8px !important;
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 5% !important;
+    right: 5% !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px !important;
+    padding: 0 !important;
   }
-  .ed-btn { font-size: 0.65rem !important; padding: 7px 10px !important; }
+  .ed-btn { font-size: 0.75rem !important; padding: 10px 10px !important; text-align: center; }
   .ed-cards {
     grid-template-columns: 1fr 1fr !important;
     padding: 0 8px 20px !important;
@@ -452,4 +457,225 @@
   .ed-card { padding: 16px 0 16px 16px !important; }
   .ed-card-text h3 { font-size: 0.9rem !important; }
   .ed-card-btn { font-size: 0.6rem !important; padding: 6px 12px !important; }
+}
+
+/* ==========================================================================
+   TESTOSTERONE BANNER SECTION (Testosteron-Injektion)
+   ========================================================================== */
+.testo-banner-section {
+  background: linear-gradient(145deg, #fcebe9 0%, #f6d2ce 100%);
+  border-radius: 24px;
+  overflow: hidden;
+  padding: 48px 48px 0;
+  margin: 0 auto 60px;
+  max-width: 1300px;
+  text-align: center;
+  position: relative;
+}
+.testo-inner {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.testo-pill {
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: rgba(255,255,255,0.7);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 24px;
+}
+.testo-heading {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.1;
+  margin-bottom: 30px;
+  max-width: 700px;
+}
+.testo-red { color: #e73d40; } /* Highlight word color */
+
+.testo-hero-img-wrap {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+.testo-hero-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* Color tint overlay over the image */
+.testo-hero-img-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(231, 61, 64, 0.15); /* Red tint */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  z-index: 1;
+}
+/* Bottom fade overlay */
+.testo-hero-img-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 180px; /* Adjust height of the fade as needed */
+  background: linear-gradient(to bottom, transparent 0%, rgba(246,210,206,0.7) 50%, #f6d2ce 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.testo-btns-overlay {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  z-index: 5;
+  padding: 0 15px;
+}
+.testo-btn {
+  display: inline-block;
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.testo-btn-outline {
+  background: #fff;
+  color: #333;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.testo-btn-outline:hover { background: #f8f8f8; }
+.testo-btn-filled {
+  background: #e73d40;
+  color: #fff;
+}
+.testo-btn-filled:hover { background: #d02d30; color: #fff; transform: translateY(-1px); }
+
+.testo-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 0 48px 48px;
+  position: relative;
+  z-index: 3;
+  margin-top: -60px; /* Bring cards up over the hero bottom */
+}
+.testo-card {
+  background: #fffaf9;
+  border-radius: 20px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+  transition: box-shadow 0.3s, transform 0.3s;
+  min-height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+.testo-card:hover {
+  box-shadow: 0 12px 30px rgba(231,61,64,0.12);
+  transform: translateY(-2px);
+}
+.testo-card-text {
+  width: 55%;
+  position: relative;
+  z-index: 2;
+  text-align: left;
+}
+.testo-card-text h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 15px;
+  line-height: 1.2;
+}
+.testo-card-btn {
+  display: inline-block;
+  background: #e73d40;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+.testo-card-btn:hover { background: #d02d30; color: #fff; transform: scale(1.03); }
+
+.testo-card-img-wrap {
+  width: 40%;
+  position: absolute;
+  bottom: 0;
+  right: 15px;
+  height: 90%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.testo-card-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+.testo-card:hover .testo-card-img { transform: scale(1.05); }
+
+/* Testosterone Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .testo-banner-section { padding: 36px 20px 0; }
+  .testo-heading { font-size: 2.2rem; }
+  .testo-cards { padding: 0 20px 30px; margin-top: -30px; gap: 15px; }
+  .testo-card { padding: 24px; }
+  .testo-btns-overlay { top: 0px; }
+}
+
+/* Testosterone Mobile */
+@media (max-width: 768px) {
+  .testo-banner-section { padding: 24px 12px 0; margin-bottom: 40px; }
+  .testo-heading { font-size: 1.6rem; }
+  .testo-hero-img-wrap { max-width: 100%; margin-bottom: -15px; }
+  .testo-cards {
+    grid-template-columns: 1fr;
+    padding: 0 12px 24px;
+    margin-top: 0;
+  }
+  .testo-btns-overlay { 
+    position: absolute; 
+    top: 20px; 
+    left: 5%; 
+    right: 5%; 
+    transform: none; 
+    flex-direction: column; 
+    align-items: stretch; 
+    margin-bottom: 0px; 
+    padding: 0;
+  }
+  .testo-btns-overlay a { text-align: center; }
+  .testo-card { flex-direction: column; text-align: center; padding: 20px; min-height: 250px; justify-content: flex-start; }
+  .testo-card-text { width: 100%; text-align: center; margin-bottom: 20px; }
+  .testo-card-img-wrap { position: relative; width: 100%; height: 140px; right: 0; bottom: 0; margin-top: auto; }
 }
