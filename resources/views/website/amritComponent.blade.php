@@ -172,7 +172,17 @@
         .step-card img { width: 100%; height: 180px; object-fit: contain; border-radius: 12px; transition: transform 0.5s ease; margin-top: auto; }
         .step-card:hover img { transform: scale(1.06); }
         
+        /* PAYMENT BAR */
+        .payment-bar { background: var(--ed-dark); padding: 24px 0; }
+        .payment-bar-inner { max-width: 960px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; gap: 32px; flex-wrap: wrap; justify-content: center; }
+        .payment-bar-inner > span { color: rgba(255,255,255,0.8); font-size: 0.85rem; font-weight: 600; }
+        .payment-logos { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .payment-logos .pay-logo { background: #fff; border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; font-weight: 800; color: var(--ed-dark); display: inline-flex; align-items: center; }
+
         @media (max-width: 768px) {
+            .payment-bar-inner { gap: 16px; }
+            .payment-logos { gap: 10px; }
+            .pay-logo { padding: 6px 10px; font-size: 0.75rem; }
             .steps-section { padding: 48px 16px; }
             .steps-title { font-size: 1.5rem; }
             .steps-grid { flex-direction: column; align-items: center; gap: 32px; }
@@ -359,6 +369,21 @@
         </div>
       </div>
     </div>
+</section>
+
+<!-- Payment Methods -->
+<section class="payment-bar">
+  <div class="payment-bar-inner">
+    <span>Akzeptierte Zahlungsmethoden:</span>
+    <div class="payment-logos">
+      <span class="pay-logo">Klarna.</span>
+      <span class="pay-logo">VISA</span>
+      <span class="pay-logo">Maestro</span>
+      <span class="pay-logo">G Pay</span>
+      <span class="pay-logo">Apple Pay</span>
+      <span class="pay-logo">PayPal</span>
+    </div>
+  </div>
 </section>
 
 <!-- Main Content -->
