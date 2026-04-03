@@ -1835,6 +1835,6 @@ class WebsiteController extends Controller
         $setting = Setting::first();
 
         // Use new design treatment detail page
-        return view('website.treatment_detail', compact('category', 'treatment', 'hasQuestionnaire', 'setting', 'medicines', 'treatments'));
+        return view('website.amritComponent', compact('category', 'treatment', 'hasQuestionnaire', 'setting', 'medicines', 'treatments'));
     }
 }
