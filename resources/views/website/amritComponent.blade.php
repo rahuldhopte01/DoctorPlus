@@ -179,6 +179,46 @@
         .payment-logos { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
         .payment-logos .pay-logo { background: #fff; border-radius: 8px; padding: 8px 16px; font-size: 0.85rem; font-weight: 800; color: var(--ed-dark); display: inline-flex; align-items: center; }
 
+        /* MEDICAL CONTENT */
+        .med-content { max-width: 800px; margin: 0 auto; padding: 72px 24px; }
+        .med-content > h2:first-child { font-size: 2.4rem; font-weight: 800; color: var(--ed-dark); text-align: center; margin-bottom: 40px; }
+        .toc { margin-bottom: 48px; }
+        .toc h3 { font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+        .toc a { display: block; color: var(--ed-primary); font-size: 0.9rem; line-height: 1.8; text-decoration: underline; text-underline-offset: 3px; }
+        .toc a:hover { color: #2a52a8; }
+        .med-article { margin-bottom: 48px; }
+        .med-article h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 18px; line-height: 1.15; }
+        .med-article h3 { font-size: 1.6rem; font-weight: 800; color: var(--ed-dark); margin: 32px 0 14px; line-height: 1.2; }
+        .med-article h4 { font-size: 1.25rem; font-weight: 700; color: var(--ed-dark); margin: 28px 0 10px; }
+        .med-article p { font-size: 0.92rem; color: #444; line-height: 1.75; margin-bottom: 16px; }
+        .med-article ul { margin: 12px 0 20px 20px; list-style: disc; }
+        .med-article ul li { font-size: 0.92rem; color: #444; line-height: 1.75; margin-bottom: 8px; }
+        .med-article a { color: var(--ed-primary); text-decoration: underline; }
+
+        /* TABLE */
+        .med-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 24px 0 20px; }
+        .med-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 500px; }
+        .med-table th { background: #3b6fd4; color: #fff; padding: 12px 14px; text-align: center; font-weight: 700; }
+        .med-table td { padding: 12px 14px; text-align: center; border: 1px solid #e5e5e5; color: #444; }
+        .med-table tr:nth-child(even) { background: #fafafa; }
+        .med-table td:first-child, .med-table th:first-child { text-align: left; font-weight: 600; background: #f5f5f5; color: var(--ed-dark); }
+        .med-table th:first-child { background: #2a52a8; color: #fff; }
+
+        /* CALLOUT BOX */
+        .callout { background: #f8f8f8; border-radius: 12px; padding: 24px 28px; margin: 28px 0; }
+        .callout h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+        .callout p { font-size: 0.88rem; color: #555; line-height: 1.7; margin: 0; }
+
+        /* MEDICAL REVIEW */
+        .med-review { max-width: 800px; margin: 0 auto; padding: 0 24px 72px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+        .med-review-img { border-radius: var(--ed-radius-lg); overflow: hidden; background: #f0f0f0; }
+        .med-review-img img { width: 100%; height: 400px; object-fit: cover; object-position: center top; display: block; }
+        .med-review-doc { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+        .med-review-role { font-size: 0.82rem; color: var(--ed-primary); margin-bottom: 16px; }
+        .med-review-text h3 { font-size: 2rem; font-weight: 800; color: var(--ed-primary); margin-bottom: 16px; line-height: 1.2; }
+        .med-review-text p { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 12px; }
+        .med-review-text .update { font-size: 0.78rem; color: var(--ed-primary); margin-top: 16px; }
+
         @media (max-width: 768px) {
             .payment-bar-inner { gap: 16px; }
             .payment-logos { gap: 10px; }
@@ -385,6 +425,134 @@
     </div>
   </div>
 </section>
+
+<!-- Medical Content -->
+<div class="med-content">
+  <h2>Behandlungen bei {{ $category->name ?? 'Erektionsstörungen' }}</h2>
+
+  <div class="toc">
+    <h3>Themenliste</h3>
+    <a href="#was-ist-ed">Was ist eine erektile Dysfunktion?</a>
+    <a href="#wann-behandeln">Wann sollte ED behandelt werden?</a>
+    <a href="#wie-behandeln">Wie kann ich eine erektile Dysfunktion behandeln?</a>
+    <a href="#pde5">PDE5-Hemmer Medikation</a>
+    <a href="#nebenwirkungen">K&ouml;nnen Nebenwirkungen auftreten?</a>
+    <a href="#kontraindikation">Wann man PDE5-Hemmer nicht einnehmen sollte</a>
+    <a href="#alternativen">Alternative Behandlungsm&ouml;glichkeiten</a>
+    <a href="#psycho">Psychologische und Wellness Therapien</a>
+    <a href="#andere">Andere Behandlungsm&ouml;glichkeiten</a>
+    <a href="#warum-drfuxx">Warum dr.fuxx?</a>
+  </div>
+
+  <div class="med-article" id="was-ist-ed">
+    <h2>Was ist eine erektile Dysfunktion?</h2>
+    <p>Zwischen 3 und 5 Millionen M&auml;nner leiden alleine in Deutschland an einer erektilen Dysfunktion. Das entspricht in etwa jedem f&uuml;nften Mann und zeigt deutlich, dass es sich dabei um ein sehr h&auml;ufig auftretendes Krankheitsbild handelt. Unter einer erektilen Dysfunktion versteht man die anhaltende oder immer wiederkehrende Unf&auml;higkeit eine Erektion dauerhaft und stark genug aufrechtzuerhalten, um Geschlechtsverkehr zu haben.</p>
+    <p>M&auml;nner jeden Alters sind davon betroffen und suchen nach Gr&uuml;nden und L&ouml;sungen f&uuml;r ihre Potenzprobleme. H&auml;ufig ist die erektile Dysfunktion aber gut behandelbar. Es gibt eine Bandbreite an organischen aber auch psychologischen Ursachen, die eine erektile Dysfunktion ausl&ouml;sen k&ouml;nnen.</p>
+  </div>
+
+  <div class="med-article" id="wann-behandeln">
+    <h2>Wann sollte ED behandelt werden?</h2>
+    <p>Wenn ein Mann &uuml;ber einen l&auml;ngeren Zeitraum hinweg oder immer wieder mit Erektionsst&ouml;rungen konfrontiert ist und unter diesem Zustand leidet, dann sollte die erektile Dysfunktion behandelt werden. Erektionsst&ouml;rungen und Potenzprobleme k&ouml;nnen unterschiedlicher Natur sein. Oft ist die Erektion entweder nicht stark genug oder aber sie dauert nicht lange genug f&uuml;r den Sexualakt an. Dieses Problem kann jedoch behandelt werden. Bei dr.fuxx haben Sie die M&ouml;glichkeit Online &Auml;rzte zu konsultieren und eine erektile Dysfunktion rasch und effektiv zu behandeln.</p>
+  </div>
+
+  <div class="med-article" id="wie-behandeln">
+    <h2>Wie kann ich eine erektile Dysfunktion behandeln?</h2>
+    <p>Unter dem Begriff erektile Dysfunktion (ED) versteht man das Unvermögen, eine Erektion zu bekommen oder diese lang genug f&uuml;r den Sexualakt aufrechtzuerhalten. F&uuml;r ED gibt es viele verschiedene Ursachen, doch letztendlich tritt eine erektile Dysfunktion dann auf, wenn zu wenig Blut in den Penis flie&szlig;t bzw. w&auml;hrend einer Erektion wieder herausflie&szlig;t. Dieser Umstand ist teilweise auf ein Enzym namens PDE5 zur&uuml;ckzuf&uuml;hren. Sogenannte PDE5-Hemmer, die oral eingenommen werden, sorgen daf&uuml;r, den Blutfluss in das Glied zu erh&ouml;hen und so eine Erektion &uuml;ber einen l&auml;ngeren Zeitraum aufrechtzuerhalten.</p>
+    <p>Da die Blutgef&auml;&szlig;e des Glieds im nicht-erigierten Zustand verengt sind, enth&auml;lt der Schwellk&ouml;rper nur wenig Blut. Wenn es zu einer sexuellen Erregung kommt, wird das sogenannte zyklische Guanin-Monophosphat (cGMP), ausgesch&uuml;ttet. Dieses f&uuml;hrt dazu, dass sich die Gef&auml;&szlig;muskulatur entspannt und mehr Blut in die Schwellk&ouml;rper str&ouml;men kann &ndash; der Penis wird steif. PDE5-Hemmer wirken dadurch, dass sie das Enzym Phosphodiesterase-5 (kurz PDE-5) blockieren. Dieses ist f&uuml;r den Abbau von cGMP verantwortlich und beeinflusst so die Erektionsf&auml;higkeit.</p>
+  </div>
+
+  <div class="med-article" id="pde5">
+    <h2>PDE5-Hemmer Medikation</h2>
+    <p>Phosphodiesterase-5-Hemmer, kurz PDE-5-Hemmer, bezeichnen eine Wirkstoffgruppe, die in Medikamenten zur Behandlung der erektilen Dysfunktion zum Einsatz kommt. In Deutschland sind vier verschiedene PDE-5-Hemmer zugelassen.</p>
+    <p>Erektile Dysfunktion, kurz ED kommt dadurch zustande, dass nicht gen&uuml;gend Blut in das Glied flie&szlig;t. Dieser Umstand l&auml;sst sich h&auml;ufig auf ein Enzym namens Phosphodiesterase-5, kurz PDE5 zur&uuml;ckf&uuml;hren. In den meisten F&auml;llen wird Ihnen Ihr Arzt deshalb zu einer Einnahme von PDE5-Hemmern raten.</p>
+
+    <h3>Verf&uuml;gbare Potenztabletten</h3>
+    <div class="med-table-wrapper">
+    <table class="med-table">
+      <tr><th>Medikation</th><th>Viagra&reg;</th><th>Cialis&reg;</th><th>Levitra&reg;</th><th>Spedra&reg;</th></tr>
+      <tr><td>Wirkstoff</td><td>Sildenafil</td><td>Tadalafil</td><td>Vardenafil</td><td>Avanafil</td></tr>
+      <tr><td>Wirksam</td><td>nach 30 Min f&uuml;r 4 Std.</td><td>nach 30 Min f&uuml;r 36 Std.</td><td>nach 30 Min f&uuml;r 6 Std.</td><td>nach 15 Min f&uuml;r 6 Std.</td></tr>
+      <tr><td>Dosierung</td><td>25 mg, 50 mg, 100 mg</td><td>10 mg, 20 mg</td><td>5 mg, 10 mg, 20 mg</td><td>50 mg, 100 mg, 200 mg</td></tr>
+      <tr><td>Beschreibung</td><td>Zuverl&auml;ssig, bekannt, bew&auml;hrt</td><td>Lange wirkend f&uuml;r Sex ohne Zeitdruck</td><td>Sehr gut vertr&auml;glich, auch f&uuml;r M&auml;nner &uuml;ber 50</td><td>Schnellste Wirkung, f&uuml;r die, die Sex nicht immer planen</td></tr>
+    </table>
+    </div>
+    <p><strong>Diese Behandlungen k&ouml;nnen von den &Auml;rzten auf der Plattform verschrieben werden</strong></p>
+    <p>Sildenafil und Tadalafil sind die am h&auml;ufigsten eingesetzten Wirkstoffe in der Behandlung von erektiler Dysfunktion. Beide fallen in die Kategorie der PDE5-Hemmer und entfalten kurz nach der Einnahme ihre erektionssteigernde Wirkung.</p>
+    <p>Seit 2013 der Patentschutz f&uuml;r das Originalmedikament von Pfizer fiel, haben zahlreiche kosteng&uuml;nstigere Nachahmerprodukte (sogenannte Generika) den Markt erobert. Bei dr.fuxx k&ouml;nnen neben Viagra&reg; auch noch viele weitere PDE-5-Hemmer mit dem Wirkstoff Sildenafil von den behandelnden &Auml;rzten verschrieben werden.</p>
+  </div>
+
+  <div class="med-article" id="nebenwirkungen">
+    <h2>K&ouml;nnen Nebenwirkungen auftreten?</h2>
+    <p>Wie jedes andere verschreibungspflichtige Arzneimittel k&ouml;nnen auch PDE5-Hemmer mit m&ouml;glichen Nebenwirkungen einhergehen.</p>
+    <p>Zu den h&auml;ufigsten Nebenwirkungen bei einer Behandlung mit PDE-5-Hemmern geh&ouml;ren Kopfschmerzen, Hautr&ouml;tungen im Gesicht und am Oberk&ouml;rper oder eine verstopfte Nase. Ihr Arzt wird Sie &uuml;ber m&ouml;gliche Nebenwirkungen in Kenntnis setzen.</p>
+  </div>
+
+  <div class="med-article" id="kontraindikation">
+    <h2>Wann man PDE5-Hemmer nicht einnehmen sollte</h2>
+    <p>In gewissen F&auml;llen sollten PDE 5-Hemmer nicht eingenommen werden. Sprechen Sie bitte immer mit Ihrem Arzt bevor Sie mit der Medikation beginnen.</p>
+    <p>Wenn Sie unter schweren Herz-Kreislauf- und Lebererkrankungen leiden oder innerhalb der vergangenen sechs Monate einen Herzinfarkt oder einen Schlaganfall erlitten haben, sollte Sie keine PDE5-Hemmer nehmen. Auch bei bestimmten Augenkrankheiten ist die Anwendung von Phosphodiesterasehemmern kontraindiziert.</p>
+    <p>Weiters gibt es eine Reihe an Medikamenten, die Stickstoffmonoxid absondern, Mediziner bezeichnen sie als NO-Donatoren. Werden PDE-5-Hemmer und Stickstoffmonoxid kombiniert so kann es im K&ouml;rper zu einem starken Blutdruckabfall kommen, der im schlimmsten Fall lebensbedrohlich sein kann.</p>
+    <p>Generell ist es m&ouml;glich, dass sich Potenzmittel und andere Arzneistoffe gegenseitig in ihrer Wirksamkeit beeinflussen.</p>
+    <div class="callout">
+      <h4>Wie dr.fuxx helfen kann?</h4>
+      <p>Bei dr.fuxx k&ouml;nnen M&auml;nner eine medizinische Konsultation beginnen oder sich ihr Rezept von einem der behandelnden &Auml;rzte ausstellen lassen. F&uuml;llen Sie einfach einen kurzen Fragebogen aus und wenn keine gesundheitlichen Einw&auml;nde aufkommen wird Ihnen der Arzt ein Rezept ausstellen und es weiterleiten. Unser Service k&uuml;mmert sich dann darum, dass Sie Ihre Bestellung so rasch wie m&ouml;glich erhalten.</p>
+    </div>
+  </div>
+
+  <div class="med-article" id="alternativen">
+    <h2>Alternative Behandlungsm&ouml;glichkeiten</h2>
+    <h3>Nat&uuml;rliche Behandlungsm&ouml;glichkeiten</h3>
+    <p>Neben einer medikament&ouml;sen Behandlung gibt es auch eine Vielzahl an nat&uuml;rlichen Alternativen, die zus&auml;tzlich Anwendung finden k&ouml;nnen. Einigen Pflanzen und nat&uuml;rlichen Substanzen wird eine potenzsteigernde Wirkung nachgesagt. Die Bekanntesten stellen wir Ihnen hier vor.</p>
+    <ul>
+      <li><strong>Ginkgo:</strong> Der Wirkstoff wird aus den Bl&auml;ttern des Ginkgobaumes gewonnen, der in China beheimatet, mittlerweile aber auf der ganzen Welt zuhause ist. Die Bl&auml;tter enthalten Flavonoide, Terpene, Ketone und S&auml;uren, die die arterielle Durchblutung verbessern.</li>
+      <li><strong>Ginseng:</strong> Eine der beliebtesten pflanzlichen Substanzen. Sie wird in China bereits seit Jahrtausenden als Aphrodisiakum verwendet.</li>
+    </ul>
+    <p>Diese Substanzen werden zwar von Ihren Herstellern vermarktet, allerdings gibt es kaum aussagekr&auml;ftige Studien, die ihre Wirkung belegen. Au&szlig;erdem werden diese pflanzlichen Pr&auml;parate nicht von &Auml;rzten verschrieben.</p>
+  </div>
+
+  <div class="med-article" id="psycho">
+    <h2>Psychologische und Wellness Therapien</h2>
+    <p>Eine Psychotherapie als Erg&auml;nzung zur medikament&ouml;sen Behandlung kann ebenfalls einen Unterschied machen, wenn psychologische Faktoren bei der Entstehung von ED mitspielen.</p>
+    <h4>Coaching oder Psychologe</h4>
+    <p>F&uuml;r M&auml;nner, bei denen eindeutig psychologische Bedingungen zu einer Erektionsst&ouml;rung f&uuml;hren, ist anzunehmen, dass diese sich auch anderweitig bemerkbar machen. Coaching bietet sich bei niedrigem Selbstbewusstsein, Hemmungen oder Partnerkonflikten als Therapiemethode an.</p>
+    <h4>K&ouml;rperliches Training</h4>
+    <p>Auch dies ist Teil eines gesunden Lebensstils. Regelm&auml;&szlig;ige k&ouml;rperliche Aktivit&auml;t sorgt f&uuml;r gesunde K&ouml;rperfunktionen. Au&szlig;erdem kann ein Arzt gezielte &Uuml;bungen zur St&auml;rkung des Beckenbodens empfehlen, um die Potenz zu trainieren.</p>
+    <h4>Gesunder Lebensstil</h4>
+    <p>Dies ist weniger eine Behandlung, als eine allgemeine Empfehlung unabh&auml;ngig von der Diagnose der eigentlichen Ursache der Impotenz. Zu einem gesunden Lebensstil geh&ouml;ren eine ausgewogene, fett- und cholesterinarme Ern&auml;hrung, sowie ein gem&auml;&szlig;igter Alkoholkonsum und kein Nikotin oder andere Drogen.</p>
+  </div>
+
+  <div class="med-article" id="andere">
+    <h2>Andere Behandlungsm&ouml;glichkeiten</h2>
+    <h4>Intrakavern&ouml;se Injektionstherapie</h4>
+    <p>Bei dieser Methode wird das Medikament direkt in den Schwellk&ouml;rper des Penis gespritzt. Der Penis wird nach etwa 20 Minuten steif und bleibt 30&ndash;60 Minuten erekt. Diese Methode kann nur ein Urologe nach gr&uuml;ndlicher Diagnose verschreiben. Sie ist geeignet f&uuml;r Patienten, die PDE-5 Hemmer nicht vertragen oder diese nicht einnehmen k&ouml;nnen.</p>
+    <h4>Penispumpe</h4>
+    <p>Wer keine Medikamente einnehmen kann oder darf oder allergisch auf bestimmte Inhaltsstoffe reagiert, kann Erektionsst&ouml;rung auch mit mechanischen Mitteln entgegenwirken. Die bekannteste Methode ist die sogenannte Penispumpe. Hierbei handelt es sich um eine Vakuumpumpe, mit deren Hilfe Blut regelrecht in das m&auml;nnliche Glied gepumpt wird.</p>
+    <h4>Penisring</h4>
+    <p>&Auml;hnlich angewendet, wie die Vakuumpumpe, wird der Penisring. Dieser Plastikring wird zu Beginn der sexuellen Aktivit&auml;t um das m&auml;nnliche Glied gelegt. Eine Erektion kommt zustande, wenn Blut verst&auml;rkt in die Schwellk&ouml;rper des Penis einflie&szlig;t.</p>
+    <h4>Operative M&ouml;glichkeiten</h4>
+    <p>Wenn andere konventionelle Methoden nicht angewendet werden k&ouml;nnen oder nicht erfolgreich sind, besteht die M&ouml;glichkeit eines Implantats in den Schwellk&ouml;rper. Diese Methode ist zuverl&auml;ssig und erfordert lediglich eine einmalige Operation um eine Erektion wieder m&ouml;glich zu machen.</p>
+  </div>
+
+  <div class="med-article" id="warum-drfuxx">
+    <h2>Warum dr.fuxx?</h2>
+    <p>Die medizinische Plattform von dr.fuxx hilft M&auml;nnern nicht nur bei der Diagnose, sondern auch bei der Behandlung von Erektionsst&ouml;rungen. Das Gespr&auml;ch mit dem behandelnden Arzt ist schnell und unkompliziert organisiert. Der Mediziner wird Ihnen online ein in Deutschland zugelassenes Rezept ausstellen und innerhalb weniger Tage erhalten Sie Ihre Bestellung. Sie sparen sich Zeit, Stress und unn&ouml;tiges Warten auf ein Folgerezept mit dem sicheren und diskreten Service.</p>
+  </div>
+</div>
+
+<!-- Medical Review -->
+<div class="med-review">
+  <div class="med-review-img">
+    <img src="https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=800&q=80" alt="Dr. med. Experte" loading="lazy">
+  </div>
+  <div class="med-review-text">
+    <div class="med-review-doc">Dr. med. Experte</div>
+    <div class="med-review-role">Facharzt f&uuml;r Urologie</div>
+    <h3>Medizinisch-fachlich gepr&uuml;ft</h3>
+    <p>Die medizinischen Inhalte auf dieser Seite wurden in Zusammenarbeit mit einem unserer &Auml;rzte bzw. medizinischen Experten erstellt und von diesen &uuml;berpr&uuml;ft. Die Informationen stammen ausschlie&szlig;lich aus zuverl&auml;ssigen, vertrauensw&uuml;rdigen und &uuml;berpr&uuml;ften Quellen, Studien, Forschungen und Expertenmeinungen.</p>
+    <p>Die medizinischen Inhalte werden regelm&auml;&szlig;ig &uuml;berpr&uuml;ft, um maximale Genauigkeit und Zuverl&auml;ssigkeit zu gew&auml;hrleisten. Weitere Informationen zum redaktionellen Vorgehen finden Sie in unserem <a href="#" style="color:var(--ed-primary);">Redaktionsprozess</a>.</p>
+    <div class="update">Letzte Aktualisierung am {{ date('d/m/Y') }}</div>
+  </div>
+</div>
 
 <!-- Main Content -->
 <section class="py-5 bg-white">
