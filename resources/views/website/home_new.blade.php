@@ -23,7 +23,7 @@
     <!-- Custom CSS -->
     <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
-    <link href="{{asset('landing_styles.css')}}?v={{ time() }}" rel="stylesheet">
+    <link href="{{asset('css/landing_styles.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
