@@ -252,8 +252,73 @@
     </div>
 </div>
 
+@php
+// --- CMS Section Data (with defaults) ---
+$_cms     = $category->cms_sections ?? [];
+
+$cmsHero  = array_merge([
+    'enabled'              => true,
+    'cta_text'             => 'Zu den medizinischen Fragen',
+    'cta_color'            => '#3b6fd4',
+    'consultation_fee'     => '29',
+    'badge_enabled'        => true,
+    'badge_percentage'     => '85',
+    'badge_text'           => 'der Männer berichten von einer Besserung',
+    'badge_bg_color_start' => '#3b6fd4',
+    'badge_bg_color_end'   => '#1e3c8c',
+    'rating_enabled'       => true,
+    'rating_value'         => '4,79',
+    'rating_count'         => '14.082',
+], $_cms['hero'] ?? []);
+
+$cmsFb = array_merge([
+    'enabled'  => true,
+    'bg_color' => '#fafafa',
+    'features' => [
+        ['enabled' => true, 'title' => 'Das Rezept wird online ausgestellt.',      'subtitle' => 'Ein Klinikbesuch ist nicht erforderlich.'],
+        ['enabled' => true, 'title' => 'Lieferung innerhalb von 1–2 Werktagen.',   'subtitle' => 'Schnelle, zuverlässige Lieferung.'],
+        ['enabled' => true, 'title' => 'Originalmedizin und Generika.',            'subtitle' => 'Aus zertifizierten Apotheken.'],
+        ['enabled' => true, 'title' => 'Beratung über Online-Fragebogen.',         'subtitle' => 'Schnelle medizinische Beratung'],
+    ],
+], $_cms['features_bar'] ?? []);
+
+$_fbIcons = [
+    '<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+    '<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+    '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+    '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+];
+
+$cmsSteps = array_merge([
+    'enabled'          => true,
+    'section_title'    => '3 einfache Schritte',
+    'section_subtitle' => '100 % online',
+    'subtitle_color'   => '#3b6fd4',
+    'step_number_bg'   => '#3b6fd4',
+    'steps' => [
+        ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null],
+        ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null],
+        ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null],
+    ],
+], $_cms['steps'] ?? []);
+
+$_stepFallbackImgs = [
+    'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=400&q=80',
+];
+$_stepAltTexts = ['Fragebogen', 'Arzt', 'Lieferung'];
+
+$cmsPay = array_merge([
+    'enabled'  => true,
+    'label'    => 'Akzeptierte Zahlungsmethoden:',
+    'bg_color' => '#1a1a1a',
+    'methods'  => ['klarna' => true, 'visa' => true, 'maestro' => true, 'gpay' => true, 'apple_pay' => true, 'paypal' => true],
+], $_cms['payment_bar'] ?? []);
+@endphp
+
 <!-- Hero Section -->
-<!-- Hero Section -->
+@if($cmsHero['enabled'])
 <section class="ed-hero">
     @if(isset($category->image) && file_exists(public_path('images/upload/'.$category->image)))
         <img class="ed-hero-bg" src="{{ asset('images/upload/'.$category->image) }}" alt="{{ $category->name }}">
@@ -265,126 +330,112 @@
       <div class="ed-hero-text">
         <h1>{{ $category->name }}</h1>
         <p>{{ $category->description ? Str::limit($category->description, 150) : 'Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktage geliefert.' }}</p>
-        
+
         @if($hasQuestionnaire)
-            <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" class="hero-cta">
-                Zu den medizinischen Fragen
+            <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}"
+               class="hero-cta"
+               style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
+                {{ $cmsHero['cta_text'] }}
             </a>
         @else
-            <a href="{{ route('categories') }}" class="hero-cta">
+            <a href="{{ route('categories') }}" class="hero-cta"
+               style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
                 Browse treatments
             </a>
         @endif
-        
+
         <div class="hero-pricing">
-            Behandlungsgebühr 29 &euro; +<br>
-            Medikament ab 
+            Behandlungsgebühr {{ $cmsHero['consultation_fee'] }} &euro; +<br>
+            Medikament ab
             @if(isset($category->price) && $category->price)
                 {{ number_format($category->price, 2) }} &euro;
             @else
                 41,58 &euro;
             @endif
         </div>
+        @if($cmsHero['rating_enabled'])
         <div class="hero-rating">
           <span class="stars">★★★★★</span>
-          <strong>4,79</strong> Hervorragend
-          <span style="color:var(--ed-text-muted)">14.082 Bewertungen</span>
+          <strong>{{ $cmsHero['rating_value'] }}</strong> Hervorragend
+          <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} Bewertungen</span>
         </div>
+        @endif
       </div>
     </div>
-    <div class="ed-hero-badge">
-      <div class="badge-big">85<span>%</span></div>
-      <div class="badge-sub">der Männer<br>berichten von<br>einer Besserung</div>
+    @if($cmsHero['badge_enabled'])
+    <div class="ed-hero-badge"
+         style="background:linear-gradient(135deg, {{ $cmsHero['badge_bg_color_start'] }}e6, {{ $cmsHero['badge_bg_color_end'] }}f2); box-shadow:0 8px 30px {{ $cmsHero['badge_bg_color_start'] }}4d;">
+      <div class="badge-big">{{ $cmsHero['badge_percentage'] }}<span>%</span></div>
+      <div class="badge-sub">{{ $cmsHero['badge_text'] }}</div>
     </div>
+    @endif
 </section>
+@endif
 
 <!-- Features Bar -->
-<section class="features-bar">
+@if($cmsFb['enabled'])
+<section class="features-bar" style="background:{{ $cmsFb['bg_color'] }};">
     <div class="features-bar-inner">
+        @foreach($cmsFb['features'] as $i => $feat)
+        @if($feat['enabled'] ?? true)
         <div class="fb-item">
-            <div class="fb-icon">
-                <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-            </div>
+            <div class="fb-icon">{!! $_fbIcons[$i] !!}</div>
             <div class="fb-text">
-                <strong>Das Rezept wird online ausgestellt.</strong>
-                <span>Ein Klinikbesuch ist nicht erforderlich.</span>
+                <strong>{{ $feat['title'] }}</strong>
+                <span>{{ $feat['subtitle'] }}</span>
             </div>
         </div>
-        <div class="fb-item">
-            <div class="fb-icon">
-                <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-            </div>
-            <div class="fb-text">
-                <strong>Lieferung innerhalb von 1&ndash;2 Werktagen.</strong>
-                <span>Schnelle, zuverl&auml;ssige Lieferung.</span>
-            </div>
-        </div>
-        <div class="fb-item">
-            <div class="fb-icon">
-                <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-            </div>
-            <div class="fb-text">
-                <strong>Originalmedizin und Generika.</strong>
-                <span>Aus zertifizierten Apotheken.</span>
-            </div>
-        </div>
-        <div class="fb-item">
-            <div class="fb-icon">
-                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-            </div>
-            <div class="fb-text">
-                <strong>Beratung &uuml;ber Online-Fragebogen.</strong>
-                <span>Schnelle medizinische Beratung</span>
-            </div>
-        </div>
+        @endif
+        @endforeach
     </div>
 </section>
+@endif
 
 <!-- 3 Steps -->
+@if($cmsSteps['enabled'])
 <section class="steps-section">
-    <h2 class="steps-title">3 einfache Schritte<br><span>100 % online</span></h2>
+    <h2 class="steps-title">
+        {{ $cmsSteps['section_title'] }}<br>
+        <span style="color:{{ $cmsSteps['subtitle_color'] }};">{{ $cmsSteps['section_subtitle'] }}</span>
+    </h2>
     <div class="steps-grid">
+      @foreach($cmsSteps['steps'] as $i => $step)
+      @php
+          $stepImg = !empty($step['image']) && file_exists(public_path('images/upload/'.$step['image']))
+              ? asset('images/upload/'.$step['image'])
+              : ($_stepFallbackImgs[$i] ?? null);
+      @endphp
       <div class="step-card">
-        <div class="step-num">1</div>
+        <div class="step-num" style="background:{{ $cmsSteps['step_number_bg'] }}; box-shadow:0 4px 12px {{ $cmsSteps['step_number_bg'] }}66;">{{ $i + 1 }}</div>
         <div class="step-card-inner">
-            <h3>Füllen Sie den <span>medizinischen Fragebogen aus</span></h3>
-            <p>Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.</p>
-            <img src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80" alt="Fragebogen" loading="lazy">
+            <h3>{{ $step['title_plain'] }} <span style="color:{{ $step['highlight_color'] ?? $cmsSteps['subtitle_color'] }};">{{ $step['title_highlighted'] }}</span></h3>
+            <p>{{ $step['description'] }}</p>
+            @if($stepImg)
+            <img src="{{ $stepImg }}" alt="{{ $_stepAltTexts[$i] ?? '' }}" loading="lazy">
+            @endif
         </div>
       </div>
-      <div class="step-card">
-        <div class="step-num">2</div>
-        <div class="step-card-inner">
-            <h3>Wählen Sie die <span>gewünschte Behandlung</span></h3>
-            <p>Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.</p>
-            <img src="https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=400&q=80" alt="Arzt" loading="lazy">
-        </div>
-      </div>
-      <div class="step-card">
-        <div class="step-num">3</div>
-        <div class="step-card-inner">
-            <h3>Lieferung in <span>1&ndash;2 Werktagen</span></h3>
-            <p>Sie erhalten Ihre Medikamente diskret und sicher.</p>
-            <img src="https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=400&q=80" alt="Lieferung" loading="lazy">
-        </div>
-      </div>
+      @endforeach
     </div>
 </section>
+@endif
 
 <!-- Payment Methods -->
-<section class="payment-bar">
+@if($cmsPay['enabled'])
+<section class="payment-bar" style="background:{{ $cmsPay['bg_color'] }};">
   <div class="payment-bar-inner">
-    <span>Akzeptierte Zahlungsmethoden:</span>
+    <span>{{ $cmsPay['label'] }}</span>
     <div class="payment-logos">
-      <span class="pay-logo">Klarna.</span>
-      <span class="pay-logo">VISA</span>
-      <span class="pay-logo">Maestro</span>
-      <span class="pay-logo">G Pay</span>
-      <span class="pay-logo">Apple Pay</span>
-      <span class="pay-logo">PayPal</span>
+      @if($cmsPay['methods']['klarna'] ?? true)<span class="pay-logo">Klarna.</span>@endif
+      @if($cmsPay['methods']['visa'] ?? true)<span class="pay-logo">VISA</span>@endif
+      @if($cmsPay['methods']['maestro'] ?? true)<span class="pay-logo">Maestro</span>@endif
+      @if($cmsPay['methods']['gpay'] ?? true)<span class="pay-logo">G Pay</span>@endif
+      @if($cmsPay['methods']['apple_pay'] ?? true)<span class="pay-logo">Apple Pay</span>@endif
+      @if($cmsPay['methods']['paypal'] ?? true)<span class="pay-logo">PayPal</span>@endif
     </div>
   </div>
 </section>
+@endif
 
 <!-- Main Content -->
 <section class="py-5 bg-white">

@@ -11,13 +11,14 @@ class Category extends Model
 
     protected $table = 'category';
 
-    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'price', 'status', 'is_cannaleo_only'];
+    protected $fillable = ['name', 'description', 'image', 'treatment_id', 'price', 'status', 'is_cannaleo_only', 'cms_sections'];
 
     protected $appends = ['fullImage'];
 
     protected $casts = [
         'price' => 'decimal:2',
         'is_cannaleo_only' => 'boolean',
+        'cms_sections' => 'array',
     ];
 
     protected function getFullImageAttribute()

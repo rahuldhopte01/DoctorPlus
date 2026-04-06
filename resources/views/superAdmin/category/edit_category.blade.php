@@ -41,7 +41,7 @@
                         <div class="col-lg-10 col-md-6">
                             <div class="form-group">
                                 <label class="col-form-label">{{__('Name')}}</label>
-                                <input type="text" value="{{ $category->name }}" name="name" class="form-control @error('name') is-invalid @enderror">
+                                <input type="text" value="{{ old('name', $category->name) }}" name="name" class="form-control @error('name') is-invalid @enderror">
                                 @error('name')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -88,7 +88,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-right">
+
+                    @include('superAdmin.category.partials.cms_sections', ['cms' => $category->cms_sections ?? []])
+
+                    <div class="text-right mt-3">
                         <button type="submit" class="btn btn-primary">{{__('Submit')}}</button>
                     </div>
                 </div>
