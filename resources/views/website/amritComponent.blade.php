@@ -219,7 +219,52 @@
         .med-review-text p { font-size: 0.88rem; color: #555; line-height: 1.7; margin-bottom: 12px; }
         .med-review-text .update { font-size: 0.78rem; color: var(--ed-primary); margin-top: 16px; }
 
+        /* TESTOSTERON SECTION */
+        .testo-section { padding: 72px 24px; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+        .testo-content h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 24px; line-height: 1.25; }
+        .testo-content p { font-size: 0.95rem; color: #555; line-height: 1.7; margin-bottom: 20px; }
+        .testo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .testo-card { background-color: #fdf3f3; border-radius: 12px; padding: 28px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; }
+        .testo-icon-wrap { width: 44px; height: 44px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+        .testo-icon-wrap i { color: #f05050; font-size: 1.3rem; }
+        .testo-card h4 { font-size: 0.95rem; font-weight: 800; color: var(--ed-dark); margin: 0 0 8px; line-height: 1.3; }
+        .testo-card p { font-size: 0.8rem; color: #666; margin: 0; line-height: 1.45; }
+
+        /* TESTOSTERON TREATMENTS SECTION */
+        .testo-treat-section { background-color: #fdf5f5; padding: 80px 24px; text-align: center; }
+        .testo-treat-header h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 12px; line-height: 1.2; }
+        .testo-treat-header p { font-size: 0.95rem; color: #666; max-width: 600px; margin: 0 auto 48px; line-height: 1.6; }
+        .testo-treat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 1000px; margin: 0 auto; text-align: left; }
+        .testo-treat-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
+        .testo-treat-img { width: 100%; height: 280px; background: #fafafa; object-fit: contain; }
+        .testo-treat-content { padding: 32px; display: flex; flex-direction: column; flex-grow: 1; justify-content: flex-start; }
+        .testo-treat-content h3 { font-size: 1.25rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 12px; }
+        .testo-treat-content p { font-size: 0.85rem; color: #555; line-height: 1.6; margin-bottom: 24px; }
+        .testo-treat-btn { background: #8b5cf6; color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; transition: background 0.3s; margin-top: auto; }
+        .testo-treat-btn:hover { background: #7c3aed; color: #fff; }
+
+        /* SECURITY SECTION */
+        .security-section { background-color: #fdf5f5; padding: 0 24px 80px; text-align: center; } 
+        .security-header h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 12px; line-height: 1.25; }
+        .security-header p { font-size: 0.95rem; color: #555; max-width: 600px; margin: 0 auto 48px; line-height: 1.6; }
+        .security-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1040px; margin: 0 auto; text-align: center; }
+        .security-card { background: #fff; border-radius: 16px; padding: 40px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; }
+        .security-icon { width: 64px; height: 64px; background: #fdf0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        .security-icon i { color: #f05050; font-size: 1.6rem; }
+        .security-card h3 { font-size: 1.05rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 16px; line-height: 1.3; }
+        .security-card p { font-size: 0.85rem; color: #666; line-height: 1.6; margin: 0; }
+
+        @media (max-width: 992px) {
+            .security-grid { grid-template-columns: 1fr 1fr; }
+            .security-grid .security-card:nth-child(3) { grid-column: span 2; max-width: 50%; margin: 0 auto; }
+        }
+
         @media (max-width: 768px) {
+            .testo-treat-grid { grid-template-columns: 1fr; max-width: 500px; }
+            .testo-treat-img { height: 240px; }
+            .testo-treat-section { padding: 48px 24px; }
+            .testo-section { grid-template-columns: 1fr; gap: 40px; padding: 48px 24px; }
+            .testo-grid { grid-template-columns: 1fr; }
             .payment-bar-inner { gap: 16px; }
             .payment-logos { gap: 10px; }
             .pay-logo { padding: 6px 10px; font-size: 0.75rem; }
@@ -553,6 +598,91 @@
     <div class="update">Letzte Aktualisierung am {{ date('d/m/Y') }}</div>
   </div>
 </div>
+
+<!-- Testosteron Section -->
+<section class="bg-white">
+  <div class="testo-section">
+    <div class="testo-content">
+      <h2>Was ist eine Testosteron-<br>Injektion?</h2>
+      <p>Testosteron ist das wichtigste m&auml;nnliche Sexualhormon und spielt eine zentrale Rolle f&uuml;r Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken &mdash; oft mit sp&uuml;rbaren Auswirkungen auf K&ouml;rper und Wohlbefinden.</p>
+      <p>Unsere fertige Testosteron-Injektion wurde speziell f&uuml;r die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist &auml;rztlich dosiert, qualit&auml;tsgepr&uuml;ft und sofort einsatzbereit. Ideal f&uuml;r M&auml;nner, die ihren Testosteronspiegel effektiv und unkompliziert anheben m&ouml;chten.</p>
+      <p>Die Behandlung erfolgt unter &auml;rztlicher Aufsicht: Ein zugelassener Arzt pr&uuml;ft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.</p>
+    </div>
+    <div class="testo-grid">
+      <div class="testo-card">
+        <div class="testo-icon-wrap"><i class="bi bi-activity"></i></div>
+        <h4>Fertige Injektion</h4>
+        <p>Sofort einsatzbereit, keine<br>Vorbereitung</p>
+      </div>
+      <div class="testo-card">
+        <div class="testo-icon-wrap"><i class="bi bi-check-circle"></i></div>
+        <h4>Keine Vorbereitung n&ouml;tig</h4>
+        <p>Kein Mischen, kein Dosieren</p>
+      </div>
+      <div class="testo-card">
+        <div class="testo-icon-wrap"><i class="bi bi-person"></i></div>
+        <h4>&Auml;rztlich dosiert</h4>
+        <p>Individuell gepr&uuml;ft und<br>verschrieben</p>
+      </div>
+      <div class="testo-card">
+        <div class="testo-icon-wrap"><i class="bi bi-truck"></i></div>
+        <h4>Express-Lieferung</h4>
+        <p>Diskret in 1-2 Werktagen bei<br>Ihnen</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testosteron Treatments Section -->
+<section class="testo-treat-section">
+  <div class="testo-treat-header">
+    <h2>Unsere Testosteron-Behandlungen</h2>
+    <p>W&auml;hlen Sie die passende Behandlung &mdash; &auml;rztlich gepr&uuml;ft und fertig zur Anwendung.</p>
+  </div>
+  <div class="testo-treat-grid">
+    <div class="testo-treat-card">
+      <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80" alt="Energie und Antrieb zurückgewinnen" class="testo-treat-img" loading="lazy">
+      <div class="testo-treat-content">
+        <h3>Energie und Antrieb zur&uuml;ckgewinnen</h3>
+        <p>Sp&uuml;ren Sie wieder mehr Vitalit&auml;t, Leistungsf&auml;higkeit und Lebensfreude. Unsere Testosteron-Injektion unterst&uuml;tzt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.</p>
+        <a href="#" class="testo-treat-btn">Behandlung starten</a>
+      </div>
+    </div>
+    <div class="testo-treat-card">
+      <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80" alt="Fertige Injektion" class="testo-treat-img" style="object-fit: cover;" loading="lazy">
+      <div class="testo-treat-content">
+        <h3>Fertige Injektion &mdash; einfach und sicher</h3>
+        <p>Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist &auml;rztlich dosiert und sofort anwendbar &mdash; f&uuml;r maximale Sicherheit und Komfort.</p>
+        <a href="#" class="testo-treat-btn">Jetzt anfragen</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Security Section -->
+<section class="security-section">
+  <div class="security-header">
+    <h2>Ihre Sicherheit ist unsere Priorit&auml;t</h2>
+    <p>Vertrauen, Datenschutz und medizinische Qualit&auml;t &mdash; darauf k&ouml;nnen Sie sich bei dr.fuxx verlassen.</p>
+  </div>
+  <div class="security-grid">
+    <div class="security-card">
+      <div class="security-icon"><i class="bi bi-shield"></i></div>
+      <h3>100% DSGVO-konform</h3>
+      <p>Ihre pers&ouml;nlichen und medizinischen Daten werden nach h&ouml;chsten deutschen Datenschutzstandards verschl&uuml;sselt und gesch&uuml;tzt.</p>
+    </div>
+    <div class="security-card">
+      <div class="security-icon"><i class="bi bi-person"></i></div>
+      <h3>Deutsche &Auml;rzte</h3>
+      <p>Alle Rezepte werden von in Deutschland zugelassenen &Auml;rzten ausgestellt. Qualit&auml;t und Sicherheit stehen bei uns an erster Stelle.</p>
+    </div>
+    <div class="security-card">
+      <div class="security-icon"><i class="bi bi-lock"></i></div>
+      <h3>Diskret &amp; vertraulich</h3>
+      <p>Neutrale Verpackung, verschl&uuml;sselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.</p>
+    </div>
+  </div>
+</section>
 
 <!-- Main Content -->
 <section class="py-5 bg-white">
