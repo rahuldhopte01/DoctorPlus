@@ -256,12 +256,16 @@
                                                                 @endif
                                                             </td>
                                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-left align-middle">
-                                                                @if(in_array($prescription->status, ['active', 'approved', 'approved_pending_payment']) && $prescription->isValid())
-                                                                    <a href="{{ url('downloadPDF/' . $prescription->id) }}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A3AFF]">
+                                                                 @if(in_array($prescription->status, ['active', 'approved', 'approved_pending_payment']) && $prescription->isValid())
+                                                                    <a href="{{ url('viewPDF/' . $prescription->id) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A3AFF]">
+                                                                        <i class="fas fa-eye mr-1.5"></i>
+                                                                        {{ __('View') }}
+                                                                    </a>
+                                                                    <a href="{{ url('downloadPDF/' . $prescription->id) }}" class="inline-flex items-center px-3 py-1.5 ml-1 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A3AFF]">
                                                                         <i class="fas fa-download mr-1.5"></i>
                                                                         {{ __('Download') }}
                                                                     </a>
-                                                                    <a href="{{ url('downloadPDF/' . $prescription->id) }}?regenerate=1" class="inline-flex items-center px-3 py-1.5 ml-1 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-600 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400" title="{{ __('Regenerate and download PDF with current layout') }}">
+                                                                    <a href="{{ url('viewPDF/' . $prescription->id) }}?regenerate=1" target="_blank" class="inline-flex items-center px-3 py-1.5 ml-1 border border-gray-300 text-xs font-medium rounded shadow-sm text-gray-600 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400" title="{{ __('Regenerate and view PDF with current layout') }}">
                                                                         <i class="fas fa-sync-alt mr-1.5"></i>
                                                                         {{ __('Regenerate') }}
                                                                     </a>
