@@ -15,7 +15,7 @@
     @endif
     <div class="section_body">
         <div class="card">
-            <form action="{{ url('category') }}" method="post" enctype="multipart/form-data" class="myform">
+            <form action="{{ url('category') }}" method="post" enctype="multipart/form-data" class="myform" id="createCategoryForm">
                 @csrf
                 <div class="card-body">
                     <div class="row">
@@ -87,7 +87,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-right">
+                    @include('superAdmin.category.partials.cms_sections', ['cms' => []])
+                    <div class="text-right mt-3">
                         <button type="submit" class="btn btn-primary">{{__('Submit')}}</button>
                     </div>
                 </div>
