@@ -255,11 +255,133 @@ class CategoryController extends Controller
             ],
         ];
 
+        // --- Medical Content ---
+        $mcInput    = $s['medical_content'] ?? [];
+        $tocItems   = [];
+        foreach ($mcInput['toc_items'] ?? [] as $ti) {
+            $label = trim($ti['label'] ?? '');
+            if ($label !== '') {
+                $tocItems[] = ['label' => $label, 'url' => $ti['url'] ?? '#'];
+            }
+        }
+        $articles = [];
+        foreach ($mcInput['articles'] ?? [] as $article) {
+            $heading = trim($article['heading'] ?? '');
+            if ($heading === '') continue;
+            $blocks = [];
+            foreach ($article['blocks'] ?? [] as $block) {
+                $type = $block['type'] ?? '';
+                switch ($type) {
+                    case 'text':
+                        $content = trim($block['content'] ?? '');
+                        if ($content !== '') $blocks[] = ['type' => 'text', 'content' => $content];
+                        break;
+                    case 'subheading':
+                        $text = trim($block['text'] ?? '');
+                        if ($text !== '') $blocks[] = ['type' => 'subheading', 'level' => in_array($block['level'] ?? '', ['h3','h4']) ? $block['level'] : 'h3', 'text' => $text];
+                        break;
+                    case 'table':
+                        $headers = array_values(array_filter(array_map('trim', $block['headers'] ?? []), fn($h) => $h !== ''));
+                        $rows = [];
+                        foreach ($block['rows'] ?? [] as $row) {
+                            $rows[] = array_map('trim', array_values($row));
+                        }
+                        if (!empty($headers)) {
+                            $blocks[] = [
+                                'type'              => 'table',
+                                'heading'           => trim($block['heading'] ?? ''),
+                                'header_bg'         => $block['header_bg'] ?? '#3b6fd4',
+                                'header_text_color' => $block['header_text_color'] ?? '#ffffff',
+                                'alt_row_bg'        => $block['alt_row_bg'] ?? '#f8f9fa',
+                                'border_color'      => $block['border_color'] ?? '#dee2e6',
+                                'headers'           => $headers,
+                                'rows'              => $rows,
+                            ];
+                        }
+                        break;
+                    case 'list':
+                        $items = [];
+                        foreach ($block['items'] ?? [] as $item) {
+                            $text = trim($item['text'] ?? '');
+                            if ($text !== '') $items[] = ['label' => trim($item['label'] ?? ''), 'text' => $text];
+                        }
+                        if (!empty($items)) $blocks[] = ['type' => 'list', 'items' => $items];
+                        break;
+                    case 'callout':
+                        $content = trim($block['content'] ?? '');
+                        if ($content !== '') {
+                            $blocks[] = [
+                                'type'         => 'callout',
+                                'bg_color'     => $block['bg_color'] ?? '#eff3fb',
+                                'border_color' => $block['border_color'] ?? '#3b6fd4',
+                                'heading'      => trim($block['heading'] ?? ''),
+                                'content'      => $content,
+                            ];
+                        }
+                        break;
+                }
+            }
+            $articles[] = [
+                'anchor_id' => trim($article['anchor_id'] ?? \Str::slug($heading)),
+                'heading'   => $heading,
+                'blocks'    => $blocks,
+            ];
+        }
+        $medicalContent = [
+            'enabled'       => isset($mcInput['enabled']),
+            'section_title' => $mcInput['section_title'] ?? 'Behandlungen bei',
+            'toc_enabled'   => isset($mcInput['toc_enabled']),
+            'toc_title'     => $mcInput['toc_title'] ?? 'Themenliste',
+            'toc_items'     => $tocItems,
+            'articles'      => $articles,
+        ];
+
+        // --- Doctor Review ---
+        $drInput        = $s['doctor_review'] ?? [];
+        $existingDrImage = $existing['doctor_review']['image'] ?? null;
+        $drImage = $existingDrImage;
+        if ($request->hasFile('sections.doctor_review.image')) {
+            $drImage = (new CustomController)->imageUpload($request->file('sections.doctor_review.image'));
+        }
+        $drParagraphs = [];
+        foreach ($drInput['paragraphs'] ?? [] as $p) {
+            $p = trim($p);
+            if ($p !== '') $drParagraphs[] = $p;
+        }
+        $doctorReview = [
+            'enabled'           => isset($drInput['enabled']),
+            'image'             => $drImage,
+            'name'              => $drInput['name'] ?? 'Dr. med. Experte',
+            'role'              => $drInput['role'] ?? 'Facharzt für Urologie',
+            'title'             => $drInput['title'] ?? 'Medizinisch-fachlich geprüft',
+            'paragraphs'        => $drParagraphs,
+            'link_text'         => $drInput['link_text'] ?? 'Redaktionsprozess',
+            'link_url'          => $drInput['link_url'] ?? '#',
+            'show_last_updated' => isset($drInput['show_last_updated']),
+        ];
+
+        // --- FAQ ---
+        $faqInput = $s['faq'] ?? [];
+        $faqItems = [];
+        foreach ($faqInput['items'] ?? [] as $item) {
+            $q = trim($item['question'] ?? '');
+            $a = trim($item['answer'] ?? '');
+            if ($q !== '' && $a !== '') $faqItems[] = ['question' => $q, 'answer' => $a];
+        }
+        $faq = [
+            'enabled' => isset($faqInput['enabled']),
+            'title'   => $faqInput['title'] ?? 'Frequently asked questions',
+            'items'   => $faqItems,
+        ];
+
         return [
-            'hero'         => $hero,
-            'features_bar' => $featuresBar,
-            'steps'        => $stepsSection,
-            'payment_bar'  => $paymentBar,
+            'hero'            => $hero,
+            'features_bar'    => $featuresBar,
+            'steps'           => $stepsSection,
+            'payment_bar'     => $paymentBar,
+            'medical_content' => $medicalContent,
+            'doctor_review'   => $doctorReview,
+            'faq'             => $faq,
         ];
     }
 }
