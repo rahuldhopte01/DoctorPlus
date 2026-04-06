@@ -14,8 +14,13 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- Custom CSS -->
     <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
+    <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -42,52 +47,8 @@
 </head>
 <body>
     @include('layout.partials.skeleton_loader')
-<!-- changes -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top border-bottom">
-    <div class="container"> 
-        <a class="navbar-brand" href="{{ url('/') }}">
-            @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
-                <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}">
-            @else
-                <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}">
-            @endif
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto me-3">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('categories') }}">Treatments</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/') }}#how-it-works">How it works</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/about-us') }}">About us</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/') }}#faq">Help</a>
-                </li>
-            </ul>
-            
-            <div class="d-flex gap-2">
-                @if(auth()->check())
-                    <a href="{{ url('user_profile') }}" class="btn btn-link text-dark text-decoration-none">
-                        <i class="bi bi-person"></i> {{ auth()->user()->name }}
-                    </a>
-                @else
-                    <a href="{{ url('patient-login') }}" class="btn btn-link text-dark text-decoration-none">
-                        <i class="bi bi-person"></i> Sign in
-                    </a>
-                @endif
-                <a href="{{ route('categories') }}" class="btn btn-primary">Start treatment</a>
-            </div>
-        </div>
-    </div>
-</nav>
+<!-- Navigation -->
+@include('layout.partials.navbar_website')
 
 <!-- Breadcrumb -->
 <div class="bg-light border-bottom">
@@ -504,86 +465,7 @@
 </section>
 
 <!-- Footer -->
-<footer class="footer-dark text-light py-5">
-    <div class="container">
-        <div class="row g-4 mb-4">
-            <!-- Company Info -->
-            <div class="col-md-6 col-lg-3">
-                @if($setting->company_logo && file_exists(public_path('images/upload/'.$setting->company_logo)))
-                    <img src="{{ $setting->logo }}" alt="{{ $setting->business_name }}" class="footer-logo mb-3">
-                @else
-                    <img src="{{ url('/images/upload_empty/fuxxlogo.png') }}" alt="{{ $setting->business_name }}" class="footer-logo mb-3">
-                @endif
-                <p class="small mb-3">Your trusted online medical practice for discreet and secure medical consultation.</p>
-                <div class="d-flex gap-3">
-                    @if($setting->facebook_link)
-                        <a href="{{ $setting->facebook_link }}" class="text-light" target="_blank"><i class="bi bi-facebook"></i></a>
-                    @endif
-                    @if($setting->twitter_link)
-                        <a href="{{ $setting->twitter_link }}" class="text-light" target="_blank"><i class="bi bi-twitter"></i></a>
-                    @endif
-                    @if($setting->instagram_link)
-                        <a href="{{ $setting->instagram_link }}" class="text-light" target="_blank"><i class="bi bi-instagram"></i></a>
-                    @endif
-                    @if($setting->linkedin_link)
-                        <a href="{{ $setting->linkedin_link }}" class="text-light" target="_blank"><i class="bi bi-linkedin"></i></a>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Treatments -->
-            <div class="col-md-6 col-lg-3">
-                <h5 class="text-white mb-3">Treatments</h5>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ route('categories') }}" class="text-light text-decoration-none">All treatments</a></li>
-                    @foreach($treatments->take(5) as $treatmentItem)
-                        <li class="mb-2">
-                            <a href="{{ route('categories', ['treatment' => $treatmentItem->id]) }}" class="text-light text-decoration-none">
-                                {{ $treatmentItem->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-
-            <!-- Company -->
-            <div class="col-md-6 col-lg-3">
-                <h5 class="text-white mb-3">Company</h5>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="{{ url('/about-us') }}" class="text-light text-decoration-none">About us</a></li>
-                    <li class="mb-2"><a href="{{ url('/') }}#how-it-works" class="text-light text-decoration-none">How it works</a></li>
-                    <li class="mb-2"><a href="{{ url('show-doctors') }}" class="text-light text-decoration-none">Our doctors</a></li>
-                    <li class="mb-2"><a href="{{ url('our_blogs') }}" class="text-light text-decoration-none">Blog</a></li>
-                </ul>
-            </div>
-
-            <!-- Support -->
-            <div class="col-md-6 col-lg-3">
-                <h5 class="text-white mb-3">Support</h5>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Help center</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Contact</a></li>
-                    <li class="mb-2"><a href="{{ url('/') }}#faq" class="text-light text-decoration-none">FAQ</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Shipping & delivery</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="border-top border-secondary pt-4">
-            <div class="row align-items-center">
-                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    <p class="small mb-0">© {{ date('Y') }} {{ $setting->business_name }} All rights reserved.</p>
-                </div>
-                <div class="col-md-6">
-                    <div class="d-flex flex-wrap justify-content-center justify-content-md-end gap-3 small">
-                        <a href="{{ url('/privacy-policy') }}" class="text-light text-decoration-none">Privacy</a>
-                        <a href="#" class="text-light text-decoration-none">Terms</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+@include('layout.partials.footer')
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
