@@ -181,6 +181,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('/profile-setting', [WebsiteController::class, 'profileSetting']);
         Route::get('/change-password', [WebsiteController::class, 'changePassword']);
         Route::get('downloadPDF/{id}', [WebsiteController::class, 'downloadPDF']);
+        Route::get('viewPDF/{id}', [WebsiteController::class, 'viewPDF']);
         Route::get('download_report/{id}', [WebsiteController::class, 'download_report']);
         Route::get('single_report/{id}', [WebsiteController::class, 'single_report']);
         Route::post('/update_user_profile', [WebsiteController::class, 'update_user_profile']);

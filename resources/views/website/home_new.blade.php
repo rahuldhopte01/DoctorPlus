@@ -23,7 +23,7 @@
     <!-- Custom CSS -->
     <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
-    <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
+    <link href="{{asset('css/landing_styles.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -493,6 +493,13 @@
         .hiw-sub-item-label { font-weight: 700; font-size: 0.82rem; color: #111; }
         .hiw-sub-item-desc  { font-size: 0.74rem; color: #777; }
         .hiw-card-photo { display: block; width: 100%; margin-top: 14px; object-fit: contain; max-height: 190px; }
+
+        /* Mobile: stack cards vertically instead of overflowing */
+        @media (max-width: 767px) {
+            .hiw-deck { flex-direction: column !important; align-items: center !important; gap: 16px !important; padding: 24px 16px 20px !important; }
+            .step-card-tilted { transform: none !important; margin: 0 !important; width: 100% !important; max-width: 360px !important; min-height: auto !important; }
+            .step-card-tilted.hiw-active { transform: none !important; }
+        }
     </style>
 
     <div class="container text-center position-relative" style="z-index:2;">
@@ -609,13 +616,8 @@
 
         <!-- Center hero image with buttons overlaid -->
         <div class="cbs-hero-img-wrap">
-            @if(!empty($relief['image']))
-                <img src="{{ url('images/upload/'.$relief['image']) }}" alt="" class="cbs-hero-img">
-            @else
-                <!-- Placeholder if no image set so layout doesn't break -->
-                <div style="height: 350px;"></div>
-            @endif
-            
+            <img src="{{ !empty($relief['image']) ? url('images/upload/'.$relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img">
+
             <div class="cbs-btns-overlay">
                 @if(!empty($relief['btn1_text']))
                     <a href="{{ $relief['btn1_url'] ?? '#' }}" class="cbs-btn cbs-btn-outline">{{ $relief['btn1_text'] }}</a>
@@ -630,19 +632,21 @@
     <!-- Two info cards -->
     <div class="cbs-cards">
         @foreach($relief['cards'] as $card)
+        @if(!empty($card['title']))
         <div class="cbs-card">
-            <div class="cbs-card-text">
+            <div class="cbs-card-text" @if(empty($card['icon'])) style="width:100%;padding-right:0;" @endif>
                 <h3>{{ $card['title'] }}</h3>
                 @if(!empty($card['btn_text']))
                     <a href="{{ $card['btn_url'] ?? '#' }}" class="cbs-card-btn">{{ $card['btn_text'] }}</a>
                 @endif
             </div>
+            @if(!empty($card['icon']))
             <div class="cbs-card-img-wrap">
-                @if(!empty($card['icon']))
-                    <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
-                @endif
+                <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
             </div>
+            @endif
         </div>
+        @endif
         @endforeach
     </div>
 </section>
@@ -917,7 +921,11 @@
                 @if(!empty($slot['name']) || !empty($slot['image']))
                     <div class="advisor-card">
                         <div class="advisor-img-wrap">
-                            <img src="{{ !empty($slot['image']) ? url('images/upload/'.$slot['image']) : url('images/upload/default.png') }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
+                            @if(!empty($slot['image']))
+                                <img src="{{ url('images/upload/'.$slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
+                            @else
+                                <div class="advisor-img advisor-img-placeholder"></div>
+                            @endif
                         </div>
                         <div class="advisor-name">
                             {!! !empty($slot['name']) ? str_replace('|', '<br>', $slot['name']) : '' !!}

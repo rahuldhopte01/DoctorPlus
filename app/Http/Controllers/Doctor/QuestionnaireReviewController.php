@@ -1014,12 +1014,12 @@ class QuestionnaireReviewController extends Controller
 
         if ($isCannaleoPrescription) {
             $request->validate([
-                'cannaleo_medicine_ids' => 'required|array|min:1',
+                'cannaleo_medicine_ids' => 'required|array|min:1|max:5',
                 'cannaleo_medicine_ids.*' => 'required|exists:cannaleo_medicine,id',
             ]);
         } else {
             $request->validate([
-                'medicines' => 'required|array|min:1',
+                'medicines' => 'required|array|min:1|max:5',
                 'medicines.*' => 'required|exists:medicine,id',
                 'strength' => 'required|array',
                 'strength.*' => 'nullable|string|max:100',
@@ -1708,6 +1708,5 @@ class QuestionnaireReviewController extends Controller
         }
     }
 }
-
 
 

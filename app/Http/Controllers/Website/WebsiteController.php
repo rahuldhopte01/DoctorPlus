@@ -516,7 +516,7 @@ class WebsiteController extends Controller
         // Force regenerate PDF when ?regenerate=1 (useful to test new layout for already-downloaded prescriptions)
         $forceRegenerate = $request->boolean('regenerate');
         $pathToFile = $prescription->pdf && !$forceRegenerate
-            ? public_path('prescription/upload/' . $prescription->pdf)
+            ? $this->resolvePrescriptionPdfPath($prescription->pdf)
             : null;
 
         if ($forceRegenerate || !$prescription->pdf || !$pathToFile || !file_exists($pathToFile)) {
@@ -536,7 +536,7 @@ class WebsiteController extends Controller
                 return redirect(url('/user_profile'))->with('error', $message);
             }
 
-            $pathToFile = public_path('prescription/upload/' . $prescription->pdf);
+            $pathToFile = $this->resolvePrescriptionPdfPath($prescription->pdf);
             if (!file_exists($pathToFile)) {
                 return redirect(url('/user_profile'))->with('error', __('Prescription PDF file was not saved. Please try again.'));
             }
@@ -548,12 +548,65 @@ class WebsiteController extends Controller
         return response()->download($pathToFile, $name, $headers);
     }
 
+    public function viewPDF($id, Request $request)
+    {
+        $prescription = Prescription::find($id);
+
+        if (!$prescription) {
+            return redirect(url('/user_profile'))->with('error', __('Prescription not found.'));
+        }
+
+        // Check if prescription belongs to authenticated user
+        if ($prescription->user_id != auth()->user()->id) {
+            abort(403, 'Unauthorized');
+        }
+        
+        // Allow view for active, approved, or legacy approved_pending_payment (no payment required)
+        if (!in_array($prescription->status, ['active', 'approved', 'approved_pending_payment']) || !$prescription->isValid()) {
+            return redirect(url('/user_profile'))->with('error', __('Prescription is not available for viewing.'));
+        }
+
+        // Force regenerate PDF when ?regenerate=1
+        $forceRegenerate = $request->boolean('regenerate');
+        $pathToFile = $prescription->pdf && !$forceRegenerate
+            ? $this->resolvePrescriptionPdfPath($prescription->pdf)
+            : null;
+
+        if ($forceRegenerate || !$prescription->pdf || !$pathToFile || !file_exists($pathToFile)) {
+            $result = $this->generatePrescriptionPdf($prescription);
+            $generated = $result === true;
+            
+            if (!$generated) {
+                return redirect(url('/user_profile'))->with('error', __('Prescription PDF could not be generated.'));
+            }
+
+            $pathToFile = $this->resolvePrescriptionPdfPath($prescription->pdf);
+        }
+
+        $headers = [
+            'Content-Type: application/pdf',
+            'Content-Disposition: inline; filename="' . $prescription->pdf . '"'
+        ];
+
+        return response()->file($pathToFile, $headers);
+    }
+
     /**
      * Generate prescription PDF. Returns true on success, or an error message string on failure.
      */
     protected function generatePrescriptionPdf(Prescription $prescription)
     {
         return app(\App\Services\PrescriptionPdfService::class)->generate($prescription);
+    }
+
+    protected function resolvePrescriptionPdfPath(string $fileName): string
+    {
+        $storagePath = storage_path('prescription-upload/' . $fileName);
+        if (file_exists($storagePath)) {
+            return $storagePath;
+        }
+
+        return public_path('prescription/upload/' . $fileName);
     }
 
     public function pharmacyDetails($id, $name)
@@ -1834,7 +1887,7 @@ class WebsiteController extends Controller
 
         $setting = Setting::first();
 
-        // Use new design treatment detail page
+        //Use new design treatment detail page
         return view('website.amritComponent', compact('category', 'treatment', 'hasQuestionnaire', 'setting', 'medicines', 'treatments'));
     }
 }
