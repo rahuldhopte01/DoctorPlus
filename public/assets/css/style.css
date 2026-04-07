@@ -155,6 +155,17 @@
     opacity: .65;
 }
 
+.logout-icon {
+    color: var(--site_color);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.logout-icon:hover {
+    color: #c0392b;
+}
+
 .cart p{
     top: -7px;
     right: -10px;
