@@ -12,7 +12,7 @@ class Hospital extends Model
 
     protected $table = 'hospital';
 
-    protected $fillable = ['name', 'phone', 'address', 'lat', 'lng', 'facility', 'status'];
+    protected $fillable = ['name', 'phone', 'address', 'city', 'lat', 'lng', 'facility', 'status'];
 
     public function doctor()
     {

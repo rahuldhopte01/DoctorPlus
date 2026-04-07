@@ -50,21 +50,36 @@ class CuroboPrescriptionPayloadBuilder
 
         $firstAddress = UserAddress::where('user_id', $customer->id)->first();
         $homeStreet = $firstAddress && $firstAddress->address ? $firstAddress->address : '';
+        // postal_code and city were added to user_address table; fall back to delivery address data
+        $homePostalCode = ($firstAddress && $firstAddress->postal_code)
+            ? (string) $firstAddress->postal_code
+            : (string) ($submission->delivery_postcode ?? '');
+        $homeCity = ($firstAddress && $firstAddress->city)
+            ? (string) $firstAddress->city
+            : (string) ($submission->delivery_city ?? '');
+        // Curobo requires postalCode to match ^[0-9]{5}$ — keep only if valid, else empty
+        $homePostalCode = preg_match('/^[0-9]{5}$/', $homePostalCode) ? $homePostalCode : '';
+        $homeCity = mb_strlen($homeCity) >= 2 ? $homeCity : '';
         $homeAddress = [
             'streetName' => $homeStreet,
             'houseNr' => '',
             'addressAddition' => '',
-            'postalCode' => '',
-            'city' => '',
+            'postalCode' => $homePostalCode,
+            'city' => $homeCity,
         ];
 
         $deliveryStreet = $submission->delivery_address ?? '';
+        $deliveryPostalCode = (string) ($submission->delivery_postcode ?? '');
+        $deliveryCity = (string) ($submission->delivery_city ?? '');
+        // Curobo requires postalCode to match ^[0-9]{5}$ — keep only if valid, else empty
+        $deliveryPostalCode = preg_match('/^[0-9]{5}$/', $deliveryPostalCode) ? $deliveryPostalCode : '';
+        $deliveryCity = mb_strlen($deliveryCity) >= 2 ? $deliveryCity : '';
         $deliveryAddress = [
             'streetName' => $deliveryStreet,
             'houseNr' => '',
             'addressAddition' => (string) ($submission->delivery_state ?? ''),
-            'postalCode' => (string) ($submission->delivery_postcode ?? ''),
-            'city' => (string) ($submission->delivery_city ?? ''),
+            'postalCode' => $deliveryPostalCode,
+            'city' => $deliveryCity,
             'salutation' => $salutation,
             'firstname' => $nameParts['firstname'],
             'lastname' => $nameParts['lastname'],
@@ -82,31 +97,40 @@ class CuroboPrescriptionPayloadBuilder
         ];
 
         $apiProducts = [];
-        $totalGross = 0;
+        $totalGrossFloat = 0;
         foreach ($products as $med) {
             $qty = 1;
-            $price = (float) $med->price;
+            $priceFloat = (float) $med->price;
             $apiProducts[] = [
                 'id' => (string) $med->external_id,
                 'name' => $med->name ?? '',
-                'price' => $price,
+                'price' => (int) round($priceFloat * 100), // API expects integer cents
                 'category' => $med->category ?? 'flower',
                 'quantity' => $qty,
             ];
-            $totalGross += $price * $qty;
+            $totalGrossFloat += $priceFloat * $qty;
         }
 
         // Cannaleo: use customer's selected delivery option; otherwise fallback to pickup vs delivery
-        $shipping = 'delivery';
+        // Curobo API accepts: 'standard', 'express', 'pickup'
+        $shipping = 'standard';
         if (! empty($submission->cannaleo_delivery_option)) {
-            $shipping = $submission->cannaleo_delivery_option;
+            $rawOption = $submission->cannaleo_delivery_option;
+            // Map known aliases to valid Curobo API values
+            $shippingMap = [
+                'delivery' => 'standard',
+                'standard' => 'standard',
+                'express'  => 'express',
+                'pickup'   => 'pickup',
+            ];
+            $shipping = $shippingMap[$rawOption] ?? 'standard';
         } elseif ($submission->delivery_type === 'pickup') {
             $shipping = 'pickup';
         }
 
-        $pickupBranchId = 0;
+        $pickupBranchId = null;
         if ($shipping === 'pickup' && $pharmacy->external_id !== null && $pharmacy->external_id !== '') {
-            $pickupBranchId = is_numeric($pharmacy->external_id) ? (int) $pharmacy->external_id : 0;
+            $pickupBranchId = is_numeric($pharmacy->external_id) ? (int) $pharmacy->external_id : null;
         }
 
         $doctorPayload = [
@@ -116,10 +140,7 @@ class CuroboPrescriptionPayloadBuilder
             'cityOfSignature' => $cityOfSignature,
             'dateOfSignature' => $dateOfSignature,
         ];
-        $staticSignature = (string) config('cannaleo.static_doctor_signature', '');
-        $doctorPayload['signature'] = $staticSignature !== ''
-            ? $staticSignature
-            : self::TEST_DUMMY_DOCTOR_SIGNATURE;
+        $doctorPayload['signature'] = self::resolveDoctorSignature($doctor);
 
         $payload = [
             'prescriptionURL' => $prescriptionUrl,
@@ -130,26 +151,57 @@ class CuroboPrescriptionPayloadBuilder
             'products' => $apiProducts,
             'prepaid' => 0,
             'shipping' => $shipping,
-            'pickup_branch_id' => $pickupBranchId,
-            'totalGross' => round($totalGross, 2),
+            'pickup_branch_id' => $pickupBranchId, // null for delivery, int for pickup
+            'totalGross' => (int) round($totalGrossFloat * 100), // API expects integer cents
             'callbackUrl' => config('cannaleo.prescription_callback_url', ''),
         ];
 
         return $payload;
     }
 
+    /**
+     * Resolve the doctor's signature for the Curobo API.
+     * Priority: uploaded signature file (as base64 data URL) → static config value → dummy.
+     */
+    protected static function resolveDoctorSignature(Doctor $doctor): string
+    {
+        // 1. Use the doctor's uploaded scanned signature
+        if (! empty($doctor->signature)) {
+            $path = storage_path('app/doctor-signatures/' . $doctor->signature);
+            if (file_exists($path)) {
+                $mimeType = mime_content_type($path) ?: 'image/png';
+                $base64 = base64_encode(file_get_contents($path));
+                return 'data:' . $mimeType . ';base64,' . $base64;
+            }
+        }
+        // 2. Static signature from config (set CUROBO_STATIC_DOCTOR_SIGNATURE in .env)
+        $staticSignature = (string) config('cannaleo.static_doctor_signature', '');
+        if ($staticSignature !== '') {
+            return $staticSignature;
+        }
+        // 3. Fallback dummy (API will likely reject this; doctor should upload a signature)
+        return self::TEST_DUMMY_DOCTOR_SIGNATURE;
+    }
+
     protected static function doctorCityOfSignature(Doctor $doctor): string
     {
-        if ($doctor->hospital && $doctor->hospital->city) {
+        // 1. Use the dedicated city column added to the hospital table
+        if ($doctor->hospital && ! empty($doctor->hospital->city)) {
             return (string) $doctor->hospital->city;
         }
+        // 2. Fall back to config default (set CUROBO_DEFAULT_SIGNATURE_CITY in .env)
         $default = config('cannaleo.default_signature_city', '');
         if ($default !== '') {
             return $default;
         }
+        // 3. Last resort: try to parse city from the end of the hospital address string
         if ($doctor->hospital && $doctor->hospital->address) {
-            $parts = preg_split('/\s+/', trim($doctor->hospital->address), -1, PREG_SPLIT_NO_EMPTY);
-            return $parts ? (string) end($parts) : '';
+            // Try to extract last word that is at least 2 chars (likely a city name)
+            $parts = preg_split('/[\s,]+/', trim($doctor->hospital->address), -1, PREG_SPLIT_NO_EMPTY);
+            $parts = array_filter($parts, fn ($p) => mb_strlen($p) >= 2);
+            if ($parts) {
+                return (string) end($parts);
+            }
         }
         return '';
     }

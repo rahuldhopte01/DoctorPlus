@@ -43,6 +43,15 @@
                         </div>
                         @enderror
                     </div>
+                    <div class="form-group mt-3">
+                        <label class="col-form-label">{{ __('City') }}</label>
+                        <input type="text" name="city" class="form-control @error('city') is-invalid @enderror"
+                               value="{{ $hospital->city }}" placeholder="{{ __('e.g. Berlin') }}">
+                        <small class="text-muted">{{ __('Used as city of signature on prescriptions sent to Cannaleo.') }}</small>
+                        @error('city')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <div class="row mt-4">
                         <div class="pac-card col-md-12 mb-3" id="pac-card">
                             <label for="col-form-label pac-input">{{__('Location based on latitude/longitude')}}</label>

@@ -419,5 +419,52 @@
             </div>
         </div>
     </form>
+
+    {{-- Doctor Signature Upload (separate form — not part of the profile update) --}}
+    <div class="card mt-4">
+        <div class="card-header text-primary">
+            {{ __('Prescription Signature') }}
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                {{ __('Upload your scanned signature. It will be attached to prescriptions sent to the Cannaleo pharmacy partner.') }}
+            </p>
+
+            @if ($doctor->signature && file_exists(storage_path('app/doctor-signatures/' . $doctor->signature)))
+                <div class="mb-3">
+                    <label class="col-form-label d-block">{{ __('Current Signature') }}</label>
+                    <img src="{{ route('doctor.signature.preview') }}"
+                         alt="Doctor Signature"
+                         style="max-height:80px; border:1px solid #ddd; padding:4px; background:#fff; border-radius:4px;">
+                    <form action="{{ route('doctor.signature.remove') }}" method="POST" class="d-inline ml-3"
+                          onsubmit="return confirm('{{ __('Remove your signature?') }}')">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="far fa-trash-alt"></i> {{ __('Remove') }}
+                        </button>
+                    </form>
+                </div>
+            @else
+                <div class="mb-3">
+                    <span class="badge badge-warning">{{ __('No signature uploaded yet') }}</span>
+                </div>
+            @endif
+
+            <form action="{{ route('doctor.signature.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label class="col-form-label">{{ __('Upload Signature (JPG / PNG, max 2 MB)') }}</label>
+                    <input type="file" name="signature" class="form-control-file @error('signature') is-invalid @enderror"
+                           accept=".jpg,.jpeg,.png">
+                    @error('signature')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    {{ __('Upload Signature') }}
+                </button>
+            </form>
+        </div>
+    </div>
 </section>
 @endsection
