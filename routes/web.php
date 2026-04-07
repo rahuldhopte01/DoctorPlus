@@ -52,6 +52,17 @@ use Illuminate\Support\Facades\Route;
 */
 Auth::routes();
 
+Route::get('/auth-check', function () {
+    return response()->json(['authenticated' => auth()->check()]);
+});
+
+Route::get('/logout-get', function () {
+    auth()->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect('/');
+});
+
 // Route::get('installer',[AdminController::class,'installer']);
 Route::any('installer', [AdminController::class, 'installer']);
 

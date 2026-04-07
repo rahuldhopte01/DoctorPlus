@@ -64,6 +64,15 @@
             </a>
             @endif
 
+            @if(auth()->check())
+            <a href="javascript:void(0)" class="header-icon" onclick="document.getElementById('website-logout-form').submit();" title="{{ __('Logout') }}" style="color:inherit;">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
+            <form id="website-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
+            @endif
+
             @if($setting->website_header_hamburger)
             <div class="header-icon" id="hamburgerMenu">
                 <i class="bi bi-list"></i>

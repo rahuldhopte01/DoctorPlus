@@ -71,7 +71,7 @@
                         @csrf
                     </form>
                     <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit();" class="ms-2 logout-icon" title="{{ __('Logout') }}">
-                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <i class="bx bx-log-out"></i>
                     </a>
                 @else
                     <ul class="navbar-nav menubar  align-items-xl-center flex-grow-1 ">
