@@ -9,13 +9,61 @@
         color: #ffffff !important;
         background-color: var(--primary-color, #4A3AFF) !important;
         border-color: var(--primary-color, #4A3AFF) !important;
+        box-shadow: 0 4px 12px rgba(74, 58, 255, 0.15) !important;
     }
     
-    /* Custom Dropdown UI */
+    /* Modern Progress Bar */
+    .progress-container {
+        position: relative;
+        padding-top: 25px;
+    }
+    .progress-badge {
+        position: absolute;
+        top: 0;
+        transform: translateX(-50%);
+        background: var(--primary-color);
+        color: white;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        transition: left 0.5s ease-in-out;
+        z-index: 5;
+    }
+    .progress-badge::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid var(--primary-color);
+    }
+    .premium-progress {
+        height: 10px !important;
+        background: #f1f5f9 !important;
+        border-radius: 20px !important;
+        overflow: visible !important;
+    }
+    .premium-progress-bar {
+        background: var(--primary-color) !important;
+        border-radius: 20px !important;
+    }
+
+    /* Custom Dropdown UI Enhancement */
+    .custom-dropdown-container {
+        position: relative;
+        z-index: 10;
+    }
+    .custom-dropdown-container.open {
+        z-index: 100;
+    }
     .custom-dropdown-container.open .custom-select-options {
         opacity: 1 !important;
         pointer-events: auto !important;
         transform: translateY(0) scale(1) !important;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15) !important;
     }
     .custom-dropdown-container.open .dropdown-icon {
         transform: rotate(180deg);
@@ -24,69 +72,96 @@
         border-color: var(--primary-color, #4A3AFF);
         background-color: #f8f9fa;
     }
-    .custom-select-trigger:focus {
-        border-color: var(--primary-color, #4A3AFF);
-        box-shadow: 0 0 0 4px rgba(74, 58, 255, 0.1);
+    .custom-select-trigger {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .custom-select-trigger:hover {
+        border-color: var(--primary-color);
+        background-color: #fcfcff;
     }
     .custom-select-options {
         transform: translateY(-10px) scale(0.98);
         transform-origin: top center;
         scrollbar-width: thin;
         scrollbar-color: var(--primary-color, #4A3AFF) #f8f9fa;
+        border: 2px solid var(--purple-light) !important;
     }
-    .custom-select-options::-webkit-scrollbar {
-        width: 6px;
+    
+    /* Modern Question Wrapper */
+    .question-wrapper {
+        padding: 1.5rem 2rem;
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem !important;
     }
-    .custom-select-options::-webkit-scrollbar-track {
-        background: #f8f9fa;
-        border-radius: 8px;
+    
+    /* Modern Checkbox Style */
+    .modern-check-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1.25rem;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
-    .custom-select-options::-webkit-scrollbar-thumb {
-        background-color: var(--primary-color, #4A3AFF);
-        border-radius: 8px;
+    .modern-check-label:hover {
+        border-color: var(--primary-color);
+        background: #f8fafc;
     }
+    input[type="checkbox"]:checked + .modern-check-label {
+        border-color: var(--primary-color);
+        background: #f0edff; /* Clearly filled appearance */
+    }
+    input[type="checkbox"]:checked + .modern-check-label .check-icon-box {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+    input[type="checkbox"]:checked + .modern-check-label .check-icon-box i {
+        opacity: 1 !important;
+    }
+
 </style>
 @endsection
 
 @section('content')
-{{-- Hero Banner Section --}}
-<div class="relative w-full bg-bloomwell-dark flex items-center justify-center border-0" 
-     style="min-height: 250px;">
-    <div class="z-10 text-center px-4 w-full max-w-4xl mx-auto mt-4">
-        <h1 class="text-3xl md:text-5xl font-bold text-white font-heading mb-4">{{ $questionnaire->name }}</h1>
+<section class="relative w-full overflow-hidden" style="background: var(--primary-color); padding-top: 40px; padding-bottom: 60px;">
+    
+    <div class="relative z-10 px-4 w-full max-w-4xl mx-auto text-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-white font-heading mb-2">{{ $questionnaire->name }}</h1>
         <nav class="flex justify-center" aria-label="Breadcrumb">
-            <ol class="flex items-center space-x-2 text-sm text-white opacity-90 font-body">
-                <li><a href="{{ url('/') }}" class="text-white hover:text-primary transition-colors opacity-75 hover:opacity-100">{{ __('Home') }}</a></li>
+            <ol class="flex items-center flex-wrap space-x-2 text-sm text-white font-body justify-center">
+                <li><a href="{{ url('/') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ __('Home') }}</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li><a href="{{ route('categories') }}" class="text-white hover:text-primary transition-colors opacity-75 hover:opacity-100">{{ __('Categories') }}</a></li>
+                <li><a href="{{ route('categories') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ __('Categories') }}</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-white hover:text-primary transition-colors opacity-75 hover:opacity-100">{{ $category->name }}</a></li>
+                <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ $category->name }}</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li class="text-white font-medium opacity-100">{{ __('Questionnaire') }}</li>
+                <li class="text-white font-semibold opacity-100">{{ __('Questionnaire') }}</li>
             </ol>
         </nav>
     </div>
-</div>
+</section>
 
-<div class="w-full py-12" style="background-color: #f2efea !important;">
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
+<div class="py-12">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 -mt-16">
     <!-- Questionnaire Card -->
-    <div class="bg-white rounded-4 shadow-bloomwell border-0 overflow-hidden font-body">
-        <div class="p-8 border-b border-gray-100">
-             <div class="flex items-center gap-4 mb-2">
-                 <div class="w-14 h-14 bg-purple-light rounded-full flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-clipboard-list text-2xl text-primary"></i>
+    <div class="bg-white font-body shadow-sm border border-gray-200" style="border-radius: 12px; overflow: visible; position: relative;">
+        <div class="p-6 border-b border-gray-100 bg-gray-50/50" style="border-radius: 12px 12px 0 0;">
+             <div class="flex items-center gap-4">
+                 <div class="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <i class="fas fa-clipboard-list text-xl text-primary"></i>
                  </div>
                  <div>
-                    <h2 class="text-2xl font-bold text-gray-900 font-heading mb-1">{{ $questionnaire->name }}</h2>
+                    <h2 class="text-xl font-bold text-gray-900 font-heading mb-0">{{ $questionnaire->name }}</h2>
                     @if($treatment)
-                    <p class="font-body text-gray-500 text-sm mb-0">{{ $treatment->name }}</p>
+                    <p class="font-body text-gray-500 text-xs mt-0.5 mb-0">{{ $treatment->name }}</p>
                     @endif
                  </div>
             </div>
-            @if($questionnaire->description)
-            <p class="text-muted mt-4 leading-relaxed font-body mb-0">{{ $questionnaire->description }}</p>
-            @endif
         </div>
 
         <form id="questionnaireForm" method="POST" action="#" enctype="multipart/form-data">
@@ -96,14 +171,14 @@
             <input type="hidden" name="submission_flow" id="submissionFlow" value="with_medicine">
 
             <div class="p-6 sm:p-10">
-                <!-- Progress Indicator -->
-                <div class="mb-5 pb-5 border-b border-gray-100">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="font-body text-sm font-medium text-gray-500 uppercase tracking-wider">{{ __('Progress') }}</span>
-                        <span class="font-body text-sm font-bold text-primary" id="progressText">0%</span>
+                <!-- Modern Progress Indicator -->
+                <div class="mb-6 pb-6 border-b border-gray-100">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-body text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Questionnaire Progress') }}</span>
+                        <span class="font-heading text-lg font-bold text-primary" id="progressText">0%</span>
                     </div>
-                    <div class="w-full bg-gray-100 rounded-full h-2">
-                        <div class="bg-primary h-2 rounded-full transition-all duration-500 ease-in-out" id="progressBar" style="width: 0%"></div>
+                    <div class="progress h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="bg-primary h-full rounded-full transition-all duration-700 ease-out" id="progressBar" style="width: 0%"></div>
                     </div>
                 </div>
 
@@ -117,22 +192,24 @@
 
                 <!-- Sections -->
                 @foreach($questionnaire->sections as $sectionIndex => $section)
-                <div class="questionnaire-section mb-12" data-section="{{ $sectionIndex }}">
-                    <div class="mb-6">
-                        <h4 class="font-heading font-semibold text-xl text-gray-900 flex items-center mb-0">
-                            <span class="flex items-center justify-center bg-primary text-white rounded-circle flex-shrink-0 w-10 h-10 text-base font-bold mr-3 shadow-sm">{{ $sectionIndex + 1 }}</span>
-                            {{ $section->name }}
-                        </h4>
-                        @if($section->description)
-                        <p class="font-body text-muted text-sm mt-3 ml-[3.25rem]">{{ $section->description }}</p>
-                        @endif
+                <div class="questionnaire-section mb-10" data-section="{{ $sectionIndex }}">
+                    <div class="mb-6 p-4 bg-gray-50 rounded-lg border-l-4 border-primary shadow-sm">
+                        <div class="flex items-center">
+                            <span class="flex items-center justify-center bg-primary text-white rounded-lg flex-shrink-0 w-10 h-10 text-base font-bold mr-4">{{ $sectionIndex + 1 }}</span>
+                            <div>
+                                <h4 class="font-heading font-bold text-xl text-gray-900 mb-0">{{ $section->name }}</h4>
+                                @if($section->description)
+                                <p class="font-body text-gray-500 text-xs mt-0.5 mb-0">{{ $section->description }}</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
 
                     @foreach($section->questions as $question)
                     @php $savedSubAnswers = $savedAnswers['sub_answers'][$question->id] ?? []; @endphp
-                    <div class="question-wrapper mb-8 ml-[3.25rem]" data-question-id="{{ $question->id }}"
+                    <div class="question-wrapper mb-10" data-question-id="{{ $question->id }}"
                          data-behaviors='@json($question->option_behaviors ?? [])'>
-                        <label class="block font-body font-semibold text-gray-800 mb-3 text-[1.05rem]">
+                        <label class="block font-heading font-bold text-gray-900 mb-6 text-2xl leading-tight">
                             {{ $question->question_text }}
                             @if($question->required)
                             <span class="text-danger ml-1">*</span>
@@ -147,7 +224,7 @@
                                 @endphp
                                 <input type="text" 
                                     name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-3 bg-[#f8f9fa] border border-gray-200 rounded-3 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 font-body question-input placeholder-gray-400 text-gray-800"
+                                    class="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                     data-question-id="{{ $question->id }}"
                                     value="{{ $savedValue }}"
                                     placeholder="{{ __('Type your answer here...') }}"
@@ -165,7 +242,7 @@
                                 @endphp
                                 <textarea 
                                     name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-3 bg-[#f8f9fa] border border-gray-200 rounded-3 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 font-body question-input placeholder-gray-400 text-gray-800"
+                                    class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                     data-question-id="{{ $question->id }}"
                                     rows="4"
                                     placeholder="{{ __('Type your detailed answer here...') }}"
@@ -179,7 +256,7 @@
                                 @endphp
                                 <input type="number" 
                                     name="answers[{{ $question->id }}]" 
-                                    class="w-full px-4 py-3 bg-[#f8f9fa] border border-gray-200 rounded-3 focus:bg-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 font-body question-input placeholder-gray-400 text-gray-800"
+                                    class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                     data-question-id="{{ $question->id }}"
                                     value="{{ $savedValue }}"
                                     placeholder="0"
@@ -211,7 +288,7 @@
                                         @endforeach
                                     </select>
                                     
-                                    <div class="custom-select-trigger w-full px-4 py-3 bg-[#f8f9fa] border border-gray-200 rounded-3 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 transition-all duration-300 font-body text-gray-800 flex justify-between items-center cursor-pointer hover:bg-white hover:border-primary shadow-sm group" tabindex="0">
+                                    <div class="custom-select-trigger w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/10 transition-all font-body text-gray-800 flex justify-between items-center cursor-pointer hover:border-primary shadow-sm group text-base" tabindex="0">
                                         <span class="selected-text truncate font-medium align-middle {{ $savedValue !== null && $savedValue !== '' ? 'text-gray-900' : 'text-gray-500' }}">
                                             {{ $savedValue !== null && $savedValue !== '' ? $savedValue : __('Select an option') }}
                                         </span>
@@ -220,13 +297,13 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="custom-select-options absolute w-full mt-2 bg-white border border-gray-100 rounded-4 shadow-bloomwell opacity-0 pointer-events-none transition-all duration-300 font-body overflow-hidden p-2" style="z-index: 1000; top: 100%; left: 0; max-height: 280px; overflow-y: auto;">
-                                        <div class="option-item flex items-center justify-between px-4 py-2.5 mb-1 rounded-3 cursor-pointer transition-all duration-200 {{ $savedValue === null || $savedValue === '' ? 'bg-purple-light text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-primary' }}" data-value="">
+                                    <div class="custom-select-options absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 pointer-events-none transition-all duration-300 font-body overflow-hidden p-1 text-base" style="z-index: 1000; top: 100%; left: 0; max-height: 250px; overflow-y: auto;">
+                                        <div class="option-item flex items-center justify-between px-4 py-2 mb-1 rounded-md cursor-pointer transition-all duration-200 {{ $savedValue === null || $savedValue === '' ? 'bg-purple-light text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-primary' }}" data-value="">
                                             <span>{{ __('Select an option') }}</span>
                                             <i class="fas fa-check text-primary {{ $savedValue === null || $savedValue === '' ? 'opacity-100' : 'opacity-0' }} transition-opacity"></i>
                                         </div>
                                         @foreach($question->options ?? [] as $option)
-                                        <div class="option-item flex items-center justify-between px-4 py-2.5 mb-1 last:mb-0 rounded-3 cursor-pointer transition-all duration-200 {{ $savedValue !== null && $savedValue == $option ? 'bg-purple-light text-primary font-semibold' : 'text-gray-700 hover:bg-gray-50 hover:text-primary' }}" data-value="{{ $option }}">
+                                        <div class="option-item flex items-center justify-between px-4 py-2 mb-1 last:mb-0 rounded-md cursor-pointer transition-all duration-200 {{ $savedValue !== null && $savedValue == $option ? 'bg-purple-light text-primary font-semibold' : 'text-gray-700 hover:bg-gray-50 hover:text-primary' }}" data-value="{{ $option }}">
                                             <span>{{ $option }}</span>
                                             <i class="fas fa-check text-primary {{ $savedValue !== null && $savedValue == $option ? 'opacity-100' : 'opacity-0' }} transition-opacity"></i>
                                         </div>
@@ -240,7 +317,7 @@
                                     $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
                                     $savedValue = is_array($savedValue) ? null : $savedValue;
                                 @endphp
-                                <div class="flex flex-wrap gap-4">
+                                <div class="flex flex-wrap gap-2">
                                     @foreach($question->options ?? [] as $optionIndex => $option)
                                     <div class="relative">
                                         <input type="radio" 
@@ -252,7 +329,7 @@
                                             {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                             @if($question->required) required @endif>
                                     <label for="q{{ $question->id }}_opt{{ $optionIndex }}" 
-                                        class="flex items-center justify-center min-w-[120px] px-5 py-3 text-sm font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-3 cursor-pointer hover:bg-purple-light hover:border-primary peer-checked:bg-primary peer-checked:!text-white peer-checked:border-primary peer-focus:ring-4 peer-focus:ring-primary/20 transition-all duration-300 font-body shadow-sm text-center">
+                                        class="flex items-center justify-center min-w-[80px] px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:bg-primary peer-checked:!text-white peer-checked:border-primary transition-all font-body text-center">
                                         {{ $option }}
                                     </label>
                                     </div>
@@ -261,7 +338,7 @@
                                 @break
 
                             @case('checkbox')
-                                <div class="space-y-3">
+                                <div class="space-y-4">
                                     @php
                                         $savedCheckboxes = isset($savedAnswers['answers'][$question->id]) 
                                             ? (is_array($savedAnswers['answers'][$question->id]) 
@@ -270,21 +347,23 @@
                                             : [];
                                     @endphp
                                     @foreach($question->options ?? [] as $optionIndex => $option)
-                                    <label class="flex items-center justify-between p-4 bg-white border-2 border-gray-200 rounded-3 cursor-pointer transition-all duration-300 hover:border-primary hover:bg-purple-light group mb-3 shadow-sm hover-lift">
-                                        <span class="font-body text-gray-800 font-medium group-hover:text-primary transition-colors">
-                                            {{ $option }}
-                                        </span>
-                                        
-                                        <div class="relative flex items-center">
-                                            <input type="checkbox" 
-                                                id="q{{ $question->id }}_opt{{ $optionIndex }}"
-                                                name="answers[{{ $question->id }}][]" 
-                                                value="{{ $option }}"
-                                                class="w-6 h-6 text-primary bg-white border-2 border-gray-300 rounded focus:ring-primary focus:ring-offset-2 question-input cursor-pointer transition-colors"
-                                                data-question-id="{{ $question->id }}"
-                                                {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
-                                        </div>
-                                    </label>
+                                    <div class="relative">
+                                        <input type="checkbox" 
+                                            id="q{{ $question->id }}_opt{{ $optionIndex }}"
+                                            name="answers[{{ $question->id }}][]" 
+                                            value="{{ $option }}"
+                                            class="question-input sr-only"
+                                            data-question-id="{{ $question->id }}"
+                                            {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
+                                        <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="modern-check-label">
+                                            <span class="font-body text-gray-800 font-semibold text-lg">
+                                                {{ $option }}
+                                            </span>
+                                            <div class="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center transition-all bg-white check-icon-box">
+                                                <i class="bi bi-check-lg text-white text-base opacity-0 transition-opacity"></i>
+                                            </div>
+                                        </label>
+                                    </div>
                                     @endforeach
                                 </div>
                                 @break
@@ -373,38 +452,35 @@
                 </div>
             </div>
 
-            <div class="bg-light border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10">
+            <div class="bg-light border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10" style="border-radius: 0 0 20px 20px;">
                 <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-body text-gray-500 hover:text-primary transition-colors duration-200 no-underline hover:no-underline font-medium">
                     <i class="bi bi-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
                 <div class="flex items-center gap-3">
                     @if(empty($category->is_cannaleo_only))
-                    <button type="submit" class="btn btn-outline-secondary font-body font-medium px-5 py-2.5 rounded-pill shadow-sm hover-lift" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
+                    <button type="submit" class="btn border font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
+                        style="border-radius: 6px; background: white; color: var(--primary-color); border-color: var(--primary-color);"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
                             {{ __('Under Review') }}
-                            <i class="bi bi-lock-fill ml-2"></i>
                         @else
                             {{ __('Prescription Only') }}
-                            <i class="bi bi-file-medical ml-2"></i>
                         @endif
                     </button>
                     @endif
-                    <button type="submit" class="btn btn-primary font-body font-medium px-5 py-2.5 rounded-pill shadow-sm hover-lift" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
+                    <button type="submit" class="btn font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
+                        style="border-radius: 6px; background: var(--primary-color); color: #fff;"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
                             {{ __('Under Review') }}
-                            <i class="bi bi-lock-fill ml-2"></i>
                         @else
                             {{ __('With Medicine') }}
-                            <i class="bi bi-check2 ml-2 text-lg"></i>
                         @endif
                     </button>
                 </div>
             </div>
         </form>
     </div>
-</div>
 </div>
 @endsection
 
@@ -573,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, SAVE_DELAY);
     }
 
-    // Update progress bar
+    // Modernized Update progress bar
     function updateProgress() {
         const questions = document.querySelectorAll('.question-wrapper:not(.hidden)');
         let answeredCount = 0;
@@ -596,8 +672,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         const progress = questions.length > 0 ? Math.round((answeredCount / questions.length) * 100) : 0;
-        progressBar.style.width = progress + '%';
-        progressText.textContent = progress + '%';
+        const clampedProgress = Math.min(100, Math.max(0, progress));
+        
+        if (progressBar) progressBar.style.width = clampedProgress + '%';
+        if (progressText) progressText.textContent = clampedProgress + '%';
+        
+        const badge = document.getElementById('progressBadge');
+        if (badge) {
+            badge.style.left = clampedProgress + '%';
+            badge.textContent = clampedProgress + '%';
+        }
     }
 
     // ── Behavior Engine ───────────────────────────────────────────────────────
@@ -767,21 +851,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     attachInputListeners(document);
 
-    // Custom Dropdown Logic
+    // Refined Custom Dropdown Logic
     function initCustomDropdowns() {
         document.querySelectorAll('.custom-dropdown-container').forEach(container => {
             const trigger = container.querySelector('.custom-select-trigger');
-            const optionsDiv = container.querySelector('.custom-select-options');
             const hiddenSelect = container.querySelector('select');
             const selectedText = container.querySelector('.selected-text');
             const optionItems = container.querySelectorAll('.option-item');
 
-            // Close when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!container.contains(e.target)) {
-                    container.classList.remove('open');
-                }
-            });
+            if (!trigger || !hiddenSelect) return;
 
             // Toggle dropdown
             trigger.addEventListener('click', function(e) {
@@ -802,15 +880,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Handle hidden select value changes (e.g., from localStorage)
-            hiddenSelect.addEventListener('change', function(e) {
-                // If it's a programmatic change or our own dispatch, sync UI
-                const value = this.value;
-                const opt = Array.from(optionItems).find(o => o.getAttribute('data-value') === value);
-                
-                if (opt) {
-                    const text = opt.querySelector('span').textContent.trim();
+            // Handle user selection
+            optionItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const value = this.getAttribute('data-value');
+                    const text = this.querySelector('span').textContent.trim();
+                    
+                    hiddenSelect.value = value;
                     selectedText.textContent = text;
+                    
                     if(value === '') {
                         selectedText.classList.remove('text-gray-900');
                         selectedText.classList.add('text-gray-500');
@@ -818,40 +897,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         selectedText.classList.remove('text-gray-500');
                         selectedText.classList.add('text-gray-900');
                     }
+
+                    // Update option active states and icons
                     optionItems.forEach(o => {
-                        const optValue = o.getAttribute('data-value');
                         const checkIcon = o.querySelector('.fa-check');
-                        if(optValue === value) {
-                            o.className = 'option-item flex items-center justify-between px-4 py-2.5 mb-1 last:mb-0 rounded-3 cursor-pointer transition-all duration-200 bg-purple-light text-primary font-semibold';
+                        if(o === item) {
+                            o.classList.add('bg-purple-light', 'text-primary', 'font-semibold');
                             if(checkIcon) {
                                 checkIcon.classList.remove('opacity-0');
                                 checkIcon.classList.add('opacity-100');
                             }
                         } else {
-                            o.className = 'option-item flex items-center justify-between px-4 py-2.5 mb-1 last:mb-0 rounded-3 cursor-pointer transition-all duration-200 text-gray-700 hover:bg-gray-50 hover:text-primary';
+                            o.classList.remove('bg-purple-light', 'text-primary', 'font-semibold');
                             if(checkIcon) {
                                 checkIcon.classList.remove('opacity-100');
                                 checkIcon.classList.add('opacity-0');
                             }
                         }
                     });
-                }
-            });
-
-            // Handle user selection
-            optionItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const value = this.getAttribute('data-value');
                     
-                    if(hiddenSelect.value !== value) {
-                        hiddenSelect.value = value;
-                        hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                    
-                    // Close dropdown
                     container.classList.remove('open');
+                    hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
                 });
+            });
+        });
+
+        // Global click listener to close dropdowns
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.custom-dropdown-container.open').forEach(openContainer => {
+                openContainer.classList.remove('open');
             });
         });
     }

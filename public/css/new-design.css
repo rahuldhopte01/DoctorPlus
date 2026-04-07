@@ -1,7 +1,7 @@
 /* Bold Differentiation – Brand Color Palette */
 :root {
     /* Primary Brand Colors */
-    --primary-color: #4A3AFF;
+    --primary-color: #8a48ff;
     /* Electric Violet - Primary, differentiation */
     --secondary-color: #00167A;
     /* Twilight Navy - Secondary, trust anchor */
@@ -15,7 +15,7 @@
     /* Near-Black - Dark mode background */
 
     /* Hover states */
-    --primary-hover: #3828E0;
+    --primary-hover: #7a35fa;
     /* Darker Electric Violet */
     --cta-hover: #E55A3A;
     /* Darker Warm Coral */
@@ -1258,5 +1258,180 @@ input[type="submit"].bg-primary:hover {
 
     .treatment-controls-right {
         justify-content: flex-end;
+    }
+}.footer-v2 {
+    background: var(--dark-bg, #0D0D12);
+    color: #fff;
+    padding: 80px 0 40px;
+    font-family: var(--font-body);
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-inner-v2 {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 50px;
+    position: relative;
+    z-index: 1;
+}
+
+.footer-brand-v2 .footer-logo {
+    display: block;
+    margin-bottom: 25px;
+}
+
+.footer-brand-v2 p {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 30px;
+    max-width: 320px;
+}
+
+.footer-social-v2 {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.soc-icon-v2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff !important;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+}
+
+.soc-icon-v2:hover {
+    background: var(--primary-color);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(74, 58, 255, 0.3);
+}
+
+.footer-contact-v2 {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.6;
+}
+
+.footer-contact-v2 a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-contact-v2 a:hover {
+    color: var(--primary-color);
+}
+
+.footer-col-v2 h4 {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 22px;
+    letter-spacing: 0.5px;
+}
+
+.footer-col-v2 ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-col-v2 ul li {
+    margin-bottom: 12px;
+}
+
+.footer-col-v2 ul li a {
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.footer-col-v2 ul li a:hover {
+    color: var(--primary-color);
+    padding-left: 8px;
+}
+
+/* Ticker Bar */
+.ticker-bar-v2 {
+    background: var(--dark-bg, #0D0D12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 16px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.ticker-inner-v2 {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ticker-item-v2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+.ticker-item-v2 i {
+    color: var(--accent-color);
+    font-size: 1.1rem;
+}
+
+/* Bottom Disclaimer */
+.footer-bottom-v2 {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.footer-disclaimer-v2 {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.35);
+    max-width: 900px;
+    margin: 0 auto 15px;
+    line-height: 1.6;
+}
+
+.footer-copyright-v2 {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 992px) {
+    .footer-inner-v2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-inner-v2 {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+    .ticker-inner-v2 {
+        gap: 20px;
     }
 }
