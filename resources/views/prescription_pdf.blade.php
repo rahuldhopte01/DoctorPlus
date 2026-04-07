@@ -43,7 +43,6 @@
 
         .text,
         .stamp,
-        .aut-idem,
         .mask {
             position: absolute;
             z-index: 1;
@@ -255,18 +254,6 @@
             left: 59.9mm;
             font-size: 6.1pt;
         }
-
-        .aut-idem {
-            width: 5mm;
-            height: 5mm;
-            border: 0.25mm solid #5f91b6;
-            background: #fff;
-            color: #5f91b6;
-            font-size: 4.1pt;
-            line-height: 1.05;
-            text-align: center;
-            padding-top: 0.3mm;
-        }
     </style>
 </head>
 <body>
@@ -362,7 +349,6 @@
                 : 'Dosierung: nach Anweisung, verdampfen und inhalieren';
             $top = $rowLayouts['tops'][$index] ?? end($rowLayouts['tops']);
         @endphp
-        <!-- <div class="aut-idem" style="top: {{ $top + 0.1 }}mm; left: 4.9mm;">aut<br>idem</div> -->
         <div class="rx-row" style="top: {{ $top }}mm;">
             <div class="rx-name" style="font-size: {{ $rowLayouts['name'] }}pt;">Cannabisbluten: "{{ implode(', ', $nameParts) }}"</div>
             <div class="rx-dose" style="font-size: {{ $rowLayouts['dose'] }}pt;">{{ $doseLine }}</div>
