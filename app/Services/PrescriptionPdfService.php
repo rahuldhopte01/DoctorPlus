@@ -147,7 +147,7 @@ class PrescriptionPdfService
 
         $pdf->SetTextColor($text[0], $text[1], $text[2]);
         $this->drawText($pdf, $this->pxX(20), $this->pxY(16), $createdDate, 8.0, 'B');
-        $this->drawText($pdf, $this->pxX(64), $this->pxY(108), $patientName, 8.3, 'B');
+        $this->drawText($pdf, $this->pxX(64), $this->pxY(120), $patientName, 8.3, 'B');
 
         $patientLines = array_values(array_filter([
             $patientAddress,
@@ -157,7 +157,7 @@ class PrescriptionPdfService
         $this->drawMultiline(
             $pdf,
             $this->pxX(64),
-            $this->pxY(136),
+            $this->pxY(146),
             $patientLines,
             7.2,
             '',
@@ -174,7 +174,7 @@ class PrescriptionPdfService
             $this->drawCenteredText($pdf, $this->pxX(230), $this->pxY(250), $this->pxW(110), $doctorLanr, 6.8, '');
         }
 
-        $this->drawCenteredText($pdf, $this->pxX(359), $this->pxY(257), $this->pxW(130), $createdDate, 8.3, 'B');
+        $this->drawCenteredText($pdf, $this->pxX(359), $this->pxY(297), $this->pxW(130), $createdDate, 8.3, 'B');
 
         $medicineLayout = $this->getMedicineLayout(count($medicines));
         foreach ($medicines as $index => $item) {
