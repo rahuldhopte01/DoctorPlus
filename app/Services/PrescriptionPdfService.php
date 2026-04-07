@@ -146,8 +146,9 @@ class PrescriptionPdfService
         $text = [0, 0, 0];
 
         $pdf->SetTextColor($text[0], $text[1], $text[2]);
-        $this->drawText($pdf, $this->pxX(20), $this->pxY(16), $createdDate, 8.0, 'B');
-        $this->drawText($pdf, $this->pxX(64), $this->pxY(120), $patientName, 8.3, 'B');
+        $this->drawText($pdf, $this->pxX(20), $this->pxY(16), $createdDate, 8.4, '');
+        $this->drawText($pdf, $this->pxX(64), $this->pxY(74), 'Privat', 8.8, '');
+        $this->drawText($pdf, $this->pxX(64), $this->pxY(116), $patientName, 9.2, '');
 
         $patientLines = array_values(array_filter([
             $patientAddress,
@@ -159,22 +160,22 @@ class PrescriptionPdfService
             $this->pxX(64),
             $this->pxY(146),
             $patientLines,
-            7.2,
+            8.2,
             '',
-            $this->pxH(26),
+            $this->pxH(28),
             $this->pxW(278),
             'L'
         );
 
         if ($patientDob) {
-            $this->drawCenteredText($pdf, $this->pxX(344), $this->pxY(140), $this->pxW(140), $patientDob, 8.0, '');
+            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(182), $this->pxW(120), $patientDob, 9.0, '');
         }
 
         if ($doctorLanr !== '') {
             $this->drawCenteredText($pdf, $this->pxX(230), $this->pxY(250), $this->pxW(110), $doctorLanr, 6.8, '');
         }
 
-        $this->drawCenteredText($pdf, $this->pxX(359), $this->pxY(297), $this->pxW(130), $createdDate, 8.3, 'B');
+        $this->drawCenteredText($pdf, $this->pxX(372), $this->pxY(284), $this->pxW(128), $createdDate, 9.0, '');
 
         $medicineLayout = $this->getMedicineLayout(count($medicines));
         foreach ($medicines as $index => $item) {
@@ -200,7 +201,7 @@ class PrescriptionPdfService
                 ? 'Dosierung: ' . implode(', ', $doseParts) . ', verdampfen und inhalieren'
                 : 'Dosierung: nach Anweisung, verdampfen und inhalieren';
 
-            $title = $this->fitTextToWidth($pdf, $title, $medicineLayout['titleFont'], 'B', $this->pxW(505));
+            $title = $this->fitTextToWidth($pdf, $title, $medicineLayout['titleFont'], '', $this->pxW(505));
             $dose = $this->fitTextToWidth($pdf, $dose, $medicineLayout['doseFont'], '', $this->pxW(505));
 
             $this->drawAutIdemBox(
@@ -211,24 +212,29 @@ class PrescriptionPdfService
                 $medicineLayout['boxHeight'],
                 $line
             );
-            $this->drawText($pdf, $this->pxX(53), $rowY, $title, $medicineLayout['titleFont'], 'B');
+            $this->drawText($pdf, $this->pxX(53), $rowY, $title, $medicineLayout['titleFont'], '');
             $this->drawText($pdf, $this->pxX(53), $rowY + $medicineLayout['doseOffset'], $dose, $medicineLayout['doseFont'], '');
         }
 
-        $this->drawCenteredText($pdf, $this->pxX(635), $this->pxY(359), $this->pxW(185), $doctorName, 7.7, '');
-        $this->drawCenteredText($pdf, $this->pxX(680), $this->pxY(387), $this->pxW(90), $doctorTitle, 5.2, '');
-        $this->drawDoctorStamp($pdf, $this->pxX(713), $this->pxY(421), $this->pxW(32), $line);
+        $this->drawCenteredText($pdf, $this->pxX(635), $this->pxY(359), $this->pxW(185), $doctorName, 8.6, '');
+        $this->drawCenteredText($pdf, $this->pxX(680), $this->pxY(387), $this->pxW(90), $doctorTitle, 5.8, '');
+        $signaturePath = base_path('signature.png');
+        if (file_exists($signaturePath)) {
+            $pdf->Image($signaturePath, $this->pxX(675), $this->pxY(378), $this->pxW(95));
+        } else {
+            $this->drawDoctorStamp($pdf, $this->pxX(713), $this->pxY(421), $this->pxW(32), $line);
+        }
         $this->drawMultiline($pdf, $this->pxX(655), $this->pxY(425), array_values(array_filter([
             $doctorAddress,
             $doctorPhone !== '' ? 'Telefon: ' . $doctorPhone : '',
             $doctorLanr !== '' ? 'LANR: ' . $doctorLanr : '',
-        ])), 4.7, '', $this->pxH(18), $this->pxW(150), 'C');
+        ])), 5.4, '', $this->pxH(20), $this->pxW(150), 'C');
 
-        $this->drawText($pdf, $this->pxX(46), $this->pxY(488), 'PKVH', 11.8, '');
+        $this->drawText($pdf, $this->pxX(46), $this->pxY(500), 'PKVH', 12.8, '');
         if ($validUntil) {
-            $this->drawText($pdf, $this->pxX(127), $this->pxY(503), 'Gultig bis ' . $validUntil, 5.8, '');
+            $this->drawText($pdf, $this->pxX(127), $this->pxY(503), 'Gultig bis ' . $validUntil, 6.3, '');
         }
-        $this->drawText($pdf, $this->pxX(356), $this->pxY(503), 'RezeptNr: ' . $receiptNr, 5.8, '');
+        $this->drawText($pdf, $this->pxX(356), $this->pxY(503), 'RezeptNr: ' . $receiptNr, 6.3, '');
 
         $pdf->Output('F', $outputPath);
     }
@@ -237,8 +243,6 @@ class PrescriptionPdfService
     {
         $pdf->SetDrawColor($line[0], $line[1], $line[2]);
         $pdf->Rect($x, $y, $w, $h);
-        $this->drawCenteredText($pdf, $x, $y + $this->pxH(3), $w, 'aut', 3.3, '');
-        $this->drawCenteredText($pdf, $x, $y + $this->pxH(14), $w, 'idem', 3.3, '');
     }
 
     protected function drawDoctorStamp(Fpdi $pdf, float $x, float $y, float $r, array $rgb): void
@@ -331,10 +335,10 @@ class PrescriptionPdfService
         if ($count >= 5) {
             return [
                 'startY' => $this->pxY(354),
-                'rowHeight' => $this->pxH(50),
-                'titleFont' => 4.55,
-                'doseFont' => 4.0,
-                'doseOffset' => $this->pxH(17),
+                'rowHeight' => $this->pxH(49),
+                'titleFont' => 5.55,
+                'doseFont' => 4.95,
+                'doseOffset' => $this->pxH(19),
                 'boxHeight' => $this->pxH(30),
             ];
         }
@@ -342,20 +346,20 @@ class PrescriptionPdfService
         if ($count === 4) {
             return [
                 'startY' => $this->pxY(354),
-                'rowHeight' => $this->pxH(58),
-                'titleFont' => 4.8,
-                'doseFont' => 4.15,
-                'doseOffset' => $this->pxH(17),
+                'rowHeight' => $this->pxH(55),
+                'titleFont' => 5.8,
+                'doseFont' => 5.1,
+                'doseOffset' => $this->pxH(20),
                 'boxHeight' => $this->pxH(30),
             ];
         }
 
         return [
             'startY' => $this->pxY(354),
-            'rowHeight' => $this->pxH(51),
-            'titleFont' => 5.0,
-            'doseFont' => 4.35,
-            'doseOffset' => $this->pxH(17),
+            'rowHeight' => $this->pxH(50),
+            'titleFont' => 6.0,
+            'doseFont' => 5.25,
+            'doseOffset' => $this->pxH(20),
             'boxHeight' => $this->pxH(30),
         ];
     }
