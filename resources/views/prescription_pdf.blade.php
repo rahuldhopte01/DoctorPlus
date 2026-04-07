@@ -362,7 +362,7 @@
                 : 'Dosierung: nach Anweisung, verdampfen und inhalieren';
             $top = $rowLayouts['tops'][$index] ?? end($rowLayouts['tops']);
         @endphp
-        <div class="aut-idem" style="top: {{ $top + 0.1 }}mm; left: 4.9mm;">aut<br>idem</div>
+        <!-- <div class="aut-idem" style="top: {{ $top + 0.1 }}mm; left: 4.9mm;">aut<br>idem</div> -->
         <div class="rx-row" style="top: {{ $top }}mm;">
             <div class="rx-name" style="font-size: {{ $rowLayouts['name'] }}pt;">Cannabisbluten: "{{ implode(', ', $nameParts) }}"</div>
             <div class="rx-dose" style="font-size: {{ $rowLayouts['dose'] }}pt;">{{ $doseLine }}</div>
