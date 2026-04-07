@@ -18,9 +18,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Custom CSS -->
-    <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
+    <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
-    <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
+    <link href="{{asset('css/landing_styles.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -29,14 +29,13 @@
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #faf8ff; }
+        body { font-family: 'Inter', sans-serif; background-color: #fafafe; }
         h1, h2, h3, h4, h5, h6, .display-4, .display-5 { font-family: 'Clash Display', sans-serif; }
         h1 span, h2 span, h3 span, h4 span, h5 span, h6 span, .display-4 span, .display-5 span { font-family: inherit; }
         
         .hero-fuxx {
             background: linear-gradient(135deg, #f3ecff 0%, #ffffff 100%) !important;
         }
-        
         .btn-hero-premium {
             background-color: #8a48ff !important;
             border-color: #8a48ff !important;
@@ -44,47 +43,153 @@
             transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
             position: relative;
             overflow: hidden;
-            border-radius: 50px !important;
         }
-        
         .btn-hero-premium:hover {
             transform: translateY(-4px) !important;
             background-color: #7a35fa !important;
             border-color: #7a35fa !important;
-            box-shadow: 0 10px 20px rgba(138, 72, 255, 0.3) !important;
+            color: #ffffff !important;
+        }
+        .search-input-premium {
+            border-radius: 50px 0 0 50px !important;
+            padding-left: 30px;
+            border: 1px solid #e0e0e0;
+            border-right: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            font-size: 1.1rem;
+        }
+        .search-input-premium:focus {
+            border-color: #8a48ff;
+            box-shadow: 0 10px 30px rgba(138, 72, 255, 0.1);
+            outline: none;
+        }
+        .search-btn-premium {
+            border-radius: 0 50px 50px 0 !important;
+            padding: 0 40px;
+        }
+        
+        .filter-btn {
+            border-radius: 50px !important;
+            padding: 10px 28px;
+            font-weight: 600;
+            border: 1px solid #eaeaea !important;
+            background: #fff !important;
+            color: #555 !important;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02) !important;
+            white-space: nowrap;
+        }
+        .filter-btn:hover {
+            border-color: #8a48ff !important;
+            background-color: #8a48ff !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(138, 72, 255, 0.1);
+        }
+        .filter-btn.active {
+            background: #8a48ff !important;
+            border-color: #8a48ff !important;
+            color: #fff !important;
+            box-shadow: 0 6px 15px rgba(138, 72, 255, 0.25);
         }
 
-        .category-filter .filter-btn { border-radius: 50px !important; padding: 10px 24px; font-weight: 600; border: 1px solid #dee2e6; background: #fff; color: #4a4a4a; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .category-filter .filter-btn:hover { border-color: #8a48ff; color: #8a48ff; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-        .category-filter .filter-btn.active { background: #8a48ff !important; color: #fff !important; border-color: #8a48ff !important; box-shadow: 0 6px 15px rgba(138,72,255,0.25) !important; transform: translateY(-2px); }
+        .treatment-group .category-icon {
+            width: 55px;
+            height: 55px;
+            font-size: 1.6rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+            background-color: #f4effe !important;
+            color: #8a48ff !important;
+        }
         
-        .search-container {
+        .cta-gradient {
+            background: linear-gradient(175deg, #f3ecff 0%, #e9e4ff 40%, #ffffff 100%);
+        }
+        
+        /* Ensure hide scrollbar on filter categories wrapper so it looks neat */
+        .category-filter-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+        /* Box / Card Enhancements - Brand New Premium Look */
+        .premium-box-card {
+            background-color: #ffffff !important;
+            border-radius: 20px;
+            padding: 24px 24px 20px;
+            border: 1px solid rgba(138, 72, 255, 0.04); /* Subtle purple tint border */
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.02);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
             display: flex;
-            align-items: stretch;
-            background: #fff;
-            padding: 4px;
-            border-radius: 60px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            border: 1px solid #f0f0f0;
+            flex-direction: column;
+            height: 100%;
+            cursor: pointer;
+            text-align: left;
+            overflow: hidden;
+            width: 320px; /* For carousel items */
+            flex-shrink: 0;
+            margin-bottom: 5px; /* For hover lift space */
         }
-        .search-container input {
-            border-radius: 50px 0 0 50px !important;
-            border: none;
-            padding: 15px 25px;
-            height: 55px;
-            box-shadow: none !important;
-            background: transparent;
+        .premium-box-card a {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            text-decoration: none;
         }
-        .search-container input:focus {
-            outline: none;
-            box-shadow: none !important;
+        .premium-box-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 45px rgba(138, 72, 255, 0.22);
+            background-color: #ffffff;
         }
-        .search-container button {
-            border-radius: 50px !important;
-            padding: 0 35px;
-            font-weight: 600;
-            height: 55px;
-            margin-left: -5px;
+        .premium-box-card .treatment-card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-family: 'Clash Display', sans-serif;
+            transition: color 0.3s ease;
+            line-height: 1.35;
+        }
+        .premium-box-card:hover .treatment-card-title {
+            color: #8a48ff;
+        }
+        .premium-box-card .treatment-card-sub {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        .premium-box-card .treatment-tag {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-right: 6px;
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .premium-box-card .treatment-tag-type {
+            background: #f4effe;
+            color: #8a48ff;
+        }
+        .premium-box-card .treatment-tag-info {
+            background: #eefaed;
+            color: #22c55e;
+        }
+        .premium-box-card .treatment-card-cta {
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #8a48ff;
+            transition: gap 0.3s ease;
+            margin-top: auto;
+        }
+        .premium-box-card:hover .treatment-card-cta {
+            gap: 12px;
         }
     </style>
 </head>
@@ -94,28 +199,36 @@
 @include('layout.partials.navbar_website')
 
 <!-- Hero Section -->
-<section class="hero-fuxx text-center" style="padding-top: 80px; padding-bottom: 80px; position: relative;">
-    <div class="container position-relative" style="z-index: 2;">
-        <div class="row justify-content-center">
+<section class="hero-fuxx position-relative overflow-hidden" style="padding-top: 80px; padding-bottom: 80px;">
+    <!-- Wavy background line SVG -->
+    <svg class="position-absolute w-100" style="bottom: 0px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#7b42f6" stroke-width="3" fill="none"/>
+    </svg>
+
+    <div class="container position-relative" style="z-index: 3;">
+        <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <!-- Decorative Badge -->
                 <div class="text-uppercase fw-bold mb-3 d-inline-block px-3 py-1" style="color: #8a48ff; background-color: #f4effe; border-radius: 20px; letter-spacing: 1.5px; font-size: 0.85rem;">
-                    <span>Find Your Treatment</span>
+                    Alle Behandlungen
                 </div>
                 
-                <h1 class="display-4 fw-bold mb-4" style="color: #1a1a1a; letter-spacing: -1px;">All Treatments</h1>
+                <h1 class="display-4 fw-bold mb-4" style="color: #1a1a1a; letter-spacing: -1px;">
+                    Finden Sie Ihre passende <span style="color: #8a48ff;">Behandlung</span>
+                </h1>
+                
                 <p class="lead mb-5 mx-auto" style="color: #4a4a4a; max-width: 650px; font-size: 1.15rem; line-height: 1.7;">
-                    Browse our comprehensive range of medical treatments. All prescriptions are issued by certified doctors 
-                    and delivered discreetly to your door.
+                    Durchsuchen Sie unser umfassendes Angebot an medizinischen Behandlungen. Alle Rezepte werden von zertifizierten Ärzten ausgestellt und diskret nach Hause geliefert.
                 </p>
                 
                 <!-- Search -->
-                <form method="GET" action="{{ route('categories') }}" class="mb-4">
-                    <div class="search-container mx-auto" style="max-width: 600px;">
-                        <input type="text" id="searchInput" name="search" class="form-control" 
-                               placeholder="Search for a treatment or condition..." 
+                <form method="GET" action="{{ route('categories') }}" class="mb-4 position-relative mx-auto" style="max-width: 650px;">
+                    <div class="input-group input-group-lg bg-white" style="border-radius: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+                        <input type="text" id="searchInput" name="search" class="form-control search-input-premium" 
+                               placeholder="Suchen Sie nach einer Behandlung oder Beschwerde..." 
                                value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-hero-premium">Search</button>
+                        <button type="submit" class="btn btn-hero-premium search-btn-premium fs-5">
+                            <i class="bi bi-search me-2"></i> Suchen
+                        </button>
                     </div>
                 </form>
             </div>
@@ -124,35 +237,37 @@
 </section>
 
 <!-- Filter Categories -->
-<div class="border-bottom sticky-top py-3" style="top: 56px; z-index: 1020; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
-    <div class="container">
-        <div class="category-filter d-flex flex-wrap gap-3 justify-content-center">
-            <button class="filter-btn {{ !request('treatment') ? 'active' : '' }}" 
-                    onclick="filterByTreatment('')">
-                All Treatments
-            </button>
-            @foreach($treatments as $treatment)
-                <button class="filter-btn {{ request('treatment') == $treatment->id ? 'active' : '' }}" 
-                        onclick="filterByTreatment({{ $treatment->id }})">
-                    {{ $treatment->name }}
+<div class="bg-white border-bottom sticky-top" style="top: 86px; z-index: 1020; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+    <div class="container py-3">
+        <div class="category-filter-wrapper">
+            <div class="category-filter d-flex gap-3 align-items-center pb-2">
+                <button class="filter-btn {{ !request('treatment') ? 'active' : '' }}" 
+                        onclick="filterByTreatment('')">
+                    Alle Behandlungen
                 </button>
-            @endforeach
+                @foreach($treatments as $treatment)
+                    <button class="filter-btn {{ request('treatment') == $treatment->id ? 'active' : '' }}" 
+                            onclick="filterByTreatment({{ $treatment->id }})">
+                        {{ $treatment->name }}
+                    </button>
+                @endforeach
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Treatments List -->
-<section class="py-5" style="background: linear-gradient(175deg, #ffffff 0%, #faf8ff 100%); min-height: 50vh;">
+<section class="py-5" style="background-color: transparent;">
     <div class="container" id="treatmentsContainer">
         @php
-            // Icon and color mapping (same as landing page for card consistency)
+            // Icon and color mapping (all purple-themed for brand consistency)
             $iconMap = [
-                "Men's Health" => ['icon' => 'bi-heart-pulse', 'color' => 'blue', 'badge' => 'Popular'],
-                "Women's Health" => ['icon' => 'bi-person', 'color' => 'pink', 'badge' => null],
-                "General Medicine" => ['icon' => 'bi-capsule', 'color' => 'teal', 'badge' => null],
-                "Weight Management" => ['icon' => 'bi-activity', 'color' => 'green', 'badge' => 'New'],
+                "Men's Health" => ['icon' => 'bi-heart-pulse', 'color' => 'purple', 'badge' => 'Popular'],
+                "Women's Health" => ['icon' => 'bi-person', 'color' => 'purple', 'badge' => null],
+                "General Medicine" => ['icon' => 'bi-capsule', 'color' => 'purple', 'badge' => null],
+                "Weight Management" => ['icon' => 'bi-activity', 'color' => 'purple', 'badge' => 'New'],
                 "Travel Medicine" => ['icon' => 'bi-shield-check', 'color' => 'purple', 'badge' => null],
-                "Skin Health" => ['icon' => 'bi-stars', 'color' => 'orange', 'badge' => null],
+                "Skin Health" => ['icon' => 'bi-stars', 'color' => 'purple', 'badge' => null],
             ];
             
             // Group categories by treatment
@@ -172,7 +287,7 @@
             
             <div class="mb-5 treatment-group" data-treatment-id="{{ $treatmentId ?? 'none' }}">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                    <div class="category-icon bg-{{ $iconData['color'] }}-light text-{{ $iconData['color'] }} rounded-3 d-flex align-items-center justify-content-center">
+                    <div class="category-icon rounded-3 d-flex align-items-center justify-content-center">
                         <i class="bi {{ $iconData['icon'] }}"></i>
                     </div>
                     <div>
@@ -186,9 +301,9 @@
                     <div class="treatment-areas-viewport" id="treatment-viewport-{{ $carouselId }}" data-carousel-id="{{ $carouselId }}">
                         <div class="treatment-areas-track" id="treatment-track-{{ $carouselId }}">
                             @foreach($categoryGroup as $category)
-                                <div class="treatment-area-card">
+                                <div class="premium-box-card">
                                     <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-decoration-none text-dark">
-                                        <div class="treatment-card-body">
+                                        <div class="treatment-card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
                                             <h3 class="treatment-card-title">{{ $category->name }}</h3>
                                             <div class="treatment-card-tags">
                                                 <span class="treatment-tag treatment-tag-type">{{ $treatmentName }}</span>
@@ -196,8 +311,8 @@
                                                     <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0) }} €</span>
                                                 @endif
                                             </div>
-                                            <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professional medical consultation and treatment' }}</p>
-                                            <span class="treatment-card-cta">Learn more <i class="bi bi-arrow-right"></i></span>
+                                            <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professionelle medizinische Beratung und Behandlung' }}</p>
+                                            <span class="treatment-card-cta" style="color: #8a48ff;">Mehr erfahren <i class="bi bi-arrow-right"></i></span>
                                         </div>
                                     </a>
                                 </div>
@@ -222,9 +337,9 @@
                     <div class="row g-4">
                         @foreach($categoryGroup as $category)
                             <div class="col-md-6 col-lg-4">
-                                <div class="treatment-area-card" style="min-width: auto; max-width: none; width: 100%;" onclick="window.location.href='{{ route('category.detail', ['id' => $category->id]) }}'">
+                                <div class="premium-box-card" style="width: 100%; max-width: none;" onclick="window.location.href='{{ route('category.detail', ['id' => $category->id]) }}'">
                                     <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-decoration-none text-dark">
-                                        <div class="treatment-card-body">
+                                        <div class="treatment-card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
                                             <h3 class="treatment-card-title">{{ $category->name }}</h3>
                                             <div class="treatment-card-tags">
                                                 <span class="treatment-tag treatment-tag-type">{{ $treatmentName }}</span>
@@ -232,8 +347,8 @@
                                                     <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0) }} €</span>
                                                 @endif
                                             </div>
-                                            <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professional medical consultation and treatment' }}</p>
-                                            <span class="treatment-card-cta">Learn more <i class="bi bi-arrow-right"></i></span>
+                                            <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professionelle medizinische Beratung und Behandlung' }}</p>
+                                            <span class="treatment-card-cta" style="color: #8a48ff;">Mehr erfahren <i class="bi bi-arrow-right"></i></span>
                                         </div>
                                     </a>
                                 </div>
@@ -253,19 +368,17 @@
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); text-align: center; margin-top: 40px; padding-top: 80px !important; padding-bottom: 80px !important;">
-    <!-- Wavy background line SVG -->
-    <svg class="position-absolute w-100" style="bottom: 20px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
-        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#7b42f6" stroke-width="3" fill="none"/>
-    </svg>
-    <div class="container position-relative" style="z-index: 2;">
-        <div class="row justify-content-center">
+<section class="cta-gradient py-5 mt-4">
+    <div class="container py-4">
+        <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <h2 class="display-5 fw-bold mb-3" style="color: #111; letter-spacing: -0.5px;">Can't find what you're looking for?</h2>
-                <p class="lead mb-4 mx-auto" style="color: #555; max-width: 600px;">
-                    Contact our medical team right away for personalized advice on other treatments and conditions.
+                <h2 class="display-5 fw-bold mb-4" style="color: #1a1a1a;">Sie finden nicht,<br> wonach Sie suchen?</h2>
+                <p class="lead mb-5 mx-auto" style="color: #4a4a4a; max-width: 600px; font-size: 1.15rem; line-height: 1.7;">
+                    Kontaktieren Sie unser medizinisches Team für Beratung zu anderen Behandlungen und Erkrankungen.
                 </p>
-                <a href="#" class="btn btn-hero-premium btn-lg px-5 py-3 fs-5">Contact us</a>
+                <a href="{{ url('/#contact') }}" class="btn btn-hero-premium btn-lg rounded-pill px-5 py-3 fs-5 fw-bold shadow-sm">
+                    Kontaktieren Sie uns
+                </a>
             </div>
         </div>
     </div>
@@ -289,7 +402,7 @@
         var prevBtn = document.getElementById('treatment-prev-btn-' + carouselId);
         var nextBtn = document.getElementById('treatment-next-btn-' + carouselId);
         if (!track || !viewport) return;
-        var cards = track.querySelectorAll('.treatment-area-card');
+        var cards = track.querySelectorAll('.premium-box-card');
         if (cards.length === 0) return;
 
         var index = 0;
@@ -417,7 +530,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         var searchQuery = '{{ request('search') }}';
         if (searchQuery) {
-            var treatmentCards = document.querySelectorAll('.treatment-area-card');
+            var treatmentCards = document.querySelectorAll('.premium-box-card');
             treatmentCards.forEach(function(card) {
                 var text = card.textContent.toLowerCase();
                 if (text.indexOf(searchQuery.toLowerCase()) !== -1) {

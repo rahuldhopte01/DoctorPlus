@@ -75,6 +75,7 @@
         transform: translateY(-4px) !important;
         background-color: #7a35fa !important;
         border-color: #7a35fa !important;
+        color: #ffffff !important;
     }
 
     /* Quick Link Cards Interactive Styles */

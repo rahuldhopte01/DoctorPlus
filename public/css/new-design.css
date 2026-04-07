@@ -953,9 +953,9 @@ button.bg-primary,
 a.bg-primary,
 input[type="submit"].bg-primary {
     background-color: transparent !important;
-    color: #00bda6 !important;
-    border: 1px solid #00bda6 !important;
-    border-radius: 8px !important;
+    color: var(--primary-color) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 50px !important;
     transition: all 0.3s ease;
 }
 
@@ -972,9 +972,9 @@ input[type="submit"].bg-primary {
 button.bg-primary:hover,
 a.bg-primary:hover,
 input[type="submit"].bg-primary:hover {
-    background-color: #00bda6 !important;
+    background-color: var(--primary-color) !important;
     color: #ffffff !important;
-    border-color: #00bda6 !important;
+    border-color: var(--primary-color) !important;
 }
 
 /* Specific buttons that are solid by default and transparent on hover */
