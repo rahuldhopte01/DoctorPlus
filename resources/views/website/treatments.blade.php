@@ -29,9 +29,63 @@
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #faf8ff; }
         h1, h2, h3, h4, h5, h6, .display-4, .display-5 { font-family: 'Clash Display', sans-serif; }
         h1 span, h2 span, h3 span, h4 span, h5 span, h6 span, .display-4 span, .display-5 span { font-family: inherit; }
+        
+        .hero-fuxx {
+            background: linear-gradient(135deg, #f3ecff 0%, #ffffff 100%) !important;
+        }
+        
+        .btn-hero-premium {
+            background-color: #8a48ff !important;
+            border-color: #8a48ff !important;
+            color: #ffffff !important;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+            position: relative;
+            overflow: hidden;
+            border-radius: 50px !important;
+        }
+        
+        .btn-hero-premium:hover {
+            transform: translateY(-4px) !important;
+            background-color: #7a35fa !important;
+            border-color: #7a35fa !important;
+            box-shadow: 0 10px 20px rgba(138, 72, 255, 0.3) !important;
+        }
+
+        .category-filter .filter-btn { border-radius: 50px !important; padding: 10px 24px; font-weight: 600; border: 1px solid #dee2e6; background: #fff; color: #4a4a4a; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .category-filter .filter-btn:hover { border-color: #8a48ff; color: #8a48ff; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .category-filter .filter-btn.active { background: #8a48ff !important; color: #fff !important; border-color: #8a48ff !important; box-shadow: 0 6px 15px rgba(138,72,255,0.25) !important; transform: translateY(-2px); }
+        
+        .search-container {
+            display: flex;
+            align-items: stretch;
+            background: #fff;
+            padding: 4px;
+            border-radius: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            border: 1px solid #f0f0f0;
+        }
+        .search-container input {
+            border-radius: 50px 0 0 50px !important;
+            border: none;
+            padding: 15px 25px;
+            height: 55px;
+            box-shadow: none !important;
+            background: transparent;
+        }
+        .search-container input:focus {
+            outline: none;
+            box-shadow: none !important;
+        }
+        .search-container button {
+            border-radius: 50px !important;
+            padding: 0 35px;
+            font-weight: 600;
+            height: 55px;
+            margin-left: -5px;
+        }
     </style>
 </head>
 <body>
@@ -40,23 +94,28 @@
 @include('layout.partials.navbar_website')
 
 <!-- Hero Section -->
-<section class="hero-section">
-    <div class="container py-5">
-        <div class="row justify-content-center text-center">
+<section class="hero-fuxx text-center" style="padding-top: 80px; padding-bottom: 80px; position: relative;">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h1 class="display-4 fw-bold mb-4">All Treatments</h1>
-                <p class="lead text-muted mb-4">
+                <!-- Decorative Badge -->
+                <div class="text-uppercase fw-bold mb-3 d-inline-block px-3 py-1" style="color: #8a48ff; background-color: #f4effe; border-radius: 20px; letter-spacing: 1.5px; font-size: 0.85rem;">
+                    <span>Find Your Treatment</span>
+                </div>
+                
+                <h1 class="display-4 fw-bold mb-4" style="color: #1a1a1a; letter-spacing: -1px;">All Treatments</h1>
+                <p class="lead mb-5 mx-auto" style="color: #4a4a4a; max-width: 650px; font-size: 1.15rem; line-height: 1.7;">
                     Browse our comprehensive range of medical treatments. All prescriptions are issued by certified doctors 
                     and delivered discreetly to your door.
                 </p>
                 
                 <!-- Search -->
                 <form method="GET" action="{{ route('categories') }}" class="mb-4">
-                    <div class="input-group input-group-lg">
+                    <div class="search-container mx-auto" style="max-width: 600px;">
                         <input type="text" id="searchInput" name="search" class="form-control" 
                                placeholder="Search for a treatment or condition..." 
                                value="{{ request('search') }}">
-                        <button type="submit" class="btn btn-primary px-4">Search</button>
+                        <button type="submit" class="btn btn-hero-premium">Search</button>
                     </div>
                 </form>
             </div>
@@ -65,9 +124,9 @@
 </section>
 
 <!-- Filter Categories -->
-<div class="bg-white border-bottom sticky-top" style="top: 56px; z-index: 1020;">
-    <div class="container py-3">
-        <div class="category-filter d-flex gap-2">
+<div class="border-bottom sticky-top py-3" style="top: 56px; z-index: 1020; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+    <div class="container">
+        <div class="category-filter d-flex flex-wrap gap-3 justify-content-center">
             <button class="filter-btn {{ !request('treatment') ? 'active' : '' }}" 
                     onclick="filterByTreatment('')">
                 All Treatments
@@ -83,7 +142,7 @@
 </div>
 
 <!-- Treatments List -->
-<section class="py-5 bg-light">
+<section class="py-5" style="background: linear-gradient(175deg, #ffffff 0%, #faf8ff 100%); min-height: 50vh;">
     <div class="container" id="treatmentsContainer">
         @php
             // Icon and color mapping (same as landing page for card consistency)
@@ -194,15 +253,19 @@
 </section>
 
 <!-- CTA Section -->
-<section class="hero-section py-5">
-    <div class="container">
-        <div class="row justify-content-center text-center">
+<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); text-align: center; margin-top: 40px; padding-top: 80px !important; padding-bottom: 80px !important;">
+    <!-- Wavy background line SVG -->
+    <svg class="position-absolute w-100" style="bottom: 20px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#7b42f6" stroke-width="3" fill="none"/>
+    </svg>
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row justify-content-center">
             <div class="col-lg-8">
-                <h2 class="display-6 fw-bold mb-3">Can't find what you're looking for?</h2>
-                <p class="lead text-muted mb-4">
-                    Contact our medical team for advice on other treatments and conditions
+                <h2 class="display-5 fw-bold mb-3" style="color: #111; letter-spacing: -0.5px;">Can't find what you're looking for?</h2>
+                <p class="lead mb-4 mx-auto" style="color: #555; max-width: 600px;">
+                    Contact our medical team right away for personalized advice on other treatments and conditions.
                 </p>
-                <a href="#" class="btn btn-primary btn-lg">Contact us</a>
+                <a href="#" class="btn btn-hero-premium btn-lg px-5 py-3 fs-5">Contact us</a>
             </div>
         </div>
     </div>
