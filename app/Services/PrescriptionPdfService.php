@@ -6,12 +6,12 @@ use App\Models\Prescription;
 use App\Models\UserAddress;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\View;
+use setasign\Fpdi\Fpdi;
 
 class PrescriptionPdfService
 {
     /**
-     * Generate prescription PDF and save to public_path('prescription/upload/...').
+     * Generate prescription PDF and save to storage_path('prescription-upload/...').
      * Sets prescription.pdf and saves the model on success.
      *
      * @return true on success, or error message string on failure.
@@ -21,7 +21,7 @@ class PrescriptionPdfService
         try {
             $prescription->load(['doctor.user', 'doctor.hospital', 'user']);
 
-            $medicines = json_decode($prescription->medicines, true) ?? [];
+            $medicines = array_slice(json_decode($prescription->medicines, true) ?? [], 0, 5);
             $doctor = $prescription->doctor;
             $doctorName = $doctor && $doctor->user && $doctor->user->name
                 ? $doctor->user->name
@@ -34,7 +34,7 @@ class PrescriptionPdfService
             if ($prescription->user) {
                 $firstAddress = UserAddress::where('user_id', $prescription->user_id)->first();
                 if ($firstAddress) {
-                    $patientAddress = $firstAddress->address ?? '';
+                    $patientAddress = trim((string) ($firstAddress->address ?? ''));
                 }
                 if (! empty($prescription->user->dob)) {
                     try {
@@ -50,24 +50,16 @@ class PrescriptionPdfService
             $doctorLanr = '';
             $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
 
-            $validFrom = now()->format('d.m.Y');
             $validUntil = null;
-            if ($prescription->valid_from) {
-                try {
-                    $validFrom = $prescription->valid_from->format('d.m.Y');
-                } catch (\Exception $e) {
-                    // keep default
-                }
-            }
             if ($prescription->valid_until) {
                 try {
                     $validUntil = $prescription->valid_until->format('d.m.Y');
                 } catch (\Exception $e) {
-                    // keep null
+                    $validUntil = null;
                 }
             }
 
-            $directory = public_path('prescription/upload');
+            $directory = storage_path('prescription-upload');
             if (! is_dir($directory)) {
                 mkdir($directory, 0755, true);
             }
@@ -75,31 +67,23 @@ class PrescriptionPdfService
             $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
             $path = $directory . DIRECTORY_SEPARATOR . $fileName;
 
-            if (View::exists('prescription_pdf')) {
-                $pdf = \PDF::loadView('prescription_pdf', [
-                    'prescription' => $prescription,
-                    'medicines' => $medicines,
-                    'doctor_name' => $doctorName,
-                    'patient_name' => $patientName,
-                    'patient_address' => $patientAddress,
-                    'patient_city' => $patientCity,
-                    'patient_country' => 'Deutschland',
-                    'patient_dob' => $patientDob,
-                    'doctor_phone' => $doctorPhone,
-                    'doctor_address' => $doctorAddress,
-                    'doctor_lanr' => $doctorLanr,
-                    'doctor_title' => 'Arzt/Ärztin',
-                    'receipt_nr' => $receiptNr,
-                    'valid_from' => $validFrom,
-                    'valid_until' => $validUntil,
-                ]);
-                $pdf->setPaper('A6', 'portrait');
-            } else {
-                $medicineName = $this->buildTempMedicineJson($medicines);
-                $pdf = \PDF::loadView('temp', ['medicineName' => $medicineName]);
-            }
-
-            $pdf->save($path);
+            $this->generateCustomTemplate(
+                outputPath: $path,
+                createdDate: $prescription->created_at ? $prescription->created_at->format('d.m.Y') : now()->format('d.m.Y'),
+                patientName: $patientName,
+                patientAddress: $patientAddress,
+                patientCity: $patientCity,
+                patientCountry: 'Deutschland',
+                patientDob: $patientDob,
+                doctorName: $doctorName,
+                doctorTitle: 'Arztin',
+                doctorAddress: $doctorAddress,
+                doctorPhone: $doctorPhone,
+                doctorLanr: $doctorLanr,
+                medicines: $medicines,
+                validUntil: $validUntil,
+                receiptNr: $receiptNr
+            );
 
             if (! file_exists($path)) {
                 Log::error('Prescription PDF save reported success but file missing', ['path' => $path]);
@@ -122,19 +106,310 @@ class PrescriptionPdfService
         }
     }
 
-    protected function buildTempMedicineJson(array $medicines): string
+    protected function generateCustomTemplate(
+        string $outputPath,
+        string $createdDate,
+        string $patientName,
+        string $patientAddress,
+        string $patientCity,
+        string $patientCountry,
+        ?string $patientDob,
+        string $doctorName,
+        string $doctorTitle,
+        string $doctorAddress,
+        string $doctorPhone,
+        string $doctorLanr,
+        array $medicines,
+        ?string $validUntil,
+        string $receiptNr
+    ): void {
+        $templatePath = base_path('prescription-pdf.pdf');
+        if (! file_exists($templatePath)) {
+            throw new \RuntimeException('Prescription template PDF not found: ' . $templatePath);
+        }
+
+        $pdf = new Fpdi('L', 'mm', [148, 105]);
+        $pdf->SetMargins(0, 0, 0);
+        $pdf->SetAutoPageBreak(false);
+        $pdf->AddPage();
+
+        $pageCount = $pdf->setSourceFile($templatePath);
+        if ($pageCount < 1) {
+            throw new \RuntimeException('Prescription template PDF is empty.');
+        }
+
+        $tpl = $pdf->importPage(1);
+        $size = $pdf->getTemplateSize($tpl);
+        $pdf->useTemplate($tpl, 0, 0, $size['width'], $size['height']);
+
+        $line = [78, 128, 170];
+        $text = [0, 0, 0];
+
+        $pdf->SetTextColor($text[0], $text[1], $text[2]);
+        $this->drawText($pdf, $this->pxX(20), $this->pxY(16), $createdDate, 8.0, 'B');
+        $this->drawText($pdf, $this->pxX(64), $this->pxY(108), $patientName, 8.3, 'B');
+
+        $patientLines = array_values(array_filter([
+            $patientAddress,
+            $patientCity,
+            $patientCountry,
+        ], fn ($lineText) => trim((string) $lineText) !== ''));
+        $this->drawMultiline(
+            $pdf,
+            $this->pxX(64),
+            $this->pxY(136),
+            $patientLines,
+            7.2,
+            '',
+            $this->pxH(26),
+            $this->pxW(278),
+            'L'
+        );
+
+        if ($patientDob) {
+            $this->drawCenteredText($pdf, $this->pxX(344), $this->pxY(140), $this->pxW(140), $patientDob, 8.0, '');
+        }
+
+        if ($doctorLanr !== '') {
+            $this->drawCenteredText($pdf, $this->pxX(230), $this->pxY(250), $this->pxW(110), $doctorLanr, 6.8, '');
+        }
+
+        $this->drawCenteredText($pdf, $this->pxX(359), $this->pxY(257), $this->pxW(130), $createdDate, 8.3, 'B');
+
+        $medicineLayout = $this->getMedicineLayout(count($medicines));
+        foreach ($medicines as $index => $item) {
+            $rowY = $medicineLayout['startY'] + ($index * $medicineLayout['rowHeight']);
+
+            $name = trim((string) data_get($item, 'medicine', ''));
+            $strength = trim((string) data_get($item, 'strength', ''));
+            $qty = trim((string) data_get($item, 'qty', ''));
+            $ed = trim((string) data_get($item, 'ed', ''));
+            $td = trim((string) data_get($item, 'td_freq', ''));
+
+            $nameParts = array_values(array_filter([$name, $strength, $qty]));
+            $title = 'Cannabisbluten: "' . implode(', ', $nameParts) . '", Unzerkleinert';
+
+            $doseParts = [];
+            if ($ed !== '') {
+                $doseParts[] = 'ED: ' . $ed;
+            }
+            if ($td !== '') {
+                $doseParts[] = 'TD: Bis zu ' . $td;
+            }
+            $dose = count($doseParts)
+                ? 'Dosierung: ' . implode(', ', $doseParts) . ', verdampfen und inhalieren'
+                : 'Dosierung: nach Anweisung, verdampfen und inhalieren';
+
+            $title = $this->fitTextToWidth($pdf, $title, $medicineLayout['titleFont'], 'B', $this->pxW(505));
+            $dose = $this->fitTextToWidth($pdf, $dose, $medicineLayout['doseFont'], '', $this->pxW(505));
+
+            $this->drawAutIdemBox(
+                $pdf,
+                $this->pxX(19),
+                $rowY - $this->pxH(2),
+                $this->pxW(29),
+                $medicineLayout['boxHeight'],
+                $line
+            );
+            $this->drawText($pdf, $this->pxX(53), $rowY, $title, $medicineLayout['titleFont'], 'B');
+            $this->drawText($pdf, $this->pxX(53), $rowY + $medicineLayout['doseOffset'], $dose, $medicineLayout['doseFont'], '');
+        }
+
+        $this->drawCenteredText($pdf, $this->pxX(635), $this->pxY(359), $this->pxW(185), $doctorName, 7.7, '');
+        $this->drawCenteredText($pdf, $this->pxX(680), $this->pxY(387), $this->pxW(90), $doctorTitle, 5.2, '');
+        $this->drawDoctorStamp($pdf, $this->pxX(713), $this->pxY(421), $this->pxW(32), $line);
+        $this->drawMultiline($pdf, $this->pxX(655), $this->pxY(425), array_values(array_filter([
+            $doctorAddress,
+            $doctorPhone !== '' ? 'Telefon: ' . $doctorPhone : '',
+            $doctorLanr !== '' ? 'LANR: ' . $doctorLanr : '',
+        ])), 4.7, '', $this->pxH(18), $this->pxW(150), 'C');
+
+        $this->drawText($pdf, $this->pxX(46), $this->pxY(488), 'PKVH', 11.8, '');
+        if ($validUntil) {
+            $this->drawText($pdf, $this->pxX(127), $this->pxY(503), 'Gultig bis ' . $validUntil, 5.8, '');
+        }
+        $this->drawText($pdf, $this->pxX(356), $this->pxY(503), 'RezeptNr: ' . $receiptNr, 5.8, '');
+
+        $pdf->Output('F', $outputPath);
+    }
+
+    protected function drawAutIdemBox(Fpdi $pdf, float $x, float $y, float $w, float $h, array $line): void
     {
-        $rows = [];
-        foreach ($medicines as $item) {
-            $rows[] = [
-                'medicine' => data_get($item, 'medicine', ''),
-                'days' => data_get($item, 'days', ''),
-                'morning' => (int) (data_get($item, 'morning', 0) ? 1 : 0),
-                'afternoon' => (int) (data_get($item, 'afternoon', 0) ? 1 : 0),
-                'night' => (int) (data_get($item, 'night', 0) ? 1 : 0),
+        $pdf->SetDrawColor($line[0], $line[1], $line[2]);
+        $pdf->Rect($x, $y, $w, $h);
+        $this->drawCenteredText($pdf, $x, $y + $this->pxH(3), $w, 'aut', 3.3, '');
+        $this->drawCenteredText($pdf, $x, $y + $this->pxH(14), $w, 'idem', 3.3, '');
+    }
+
+    protected function drawDoctorStamp(Fpdi $pdf, float $x, float $y, float $r, array $rgb): void
+    {
+        $pdf->SetDrawColor($rgb[0], $rgb[1], $rgb[2]);
+        $this->drawEllipse($pdf, $x, $y, $r, $r);
+        $pdf->SetTextColor($rgb[0], $rgb[1], $rgb[2]);
+        $this->drawCenteredText($pdf, $x - 3.0, $y - 1.6, 6.0, 'R', 14.0, 'I', 'Times');
+        $pdf->SetTextColor(0, 0, 0);
+    }
+
+    protected function drawEllipse(Fpdi $pdf, float $cx, float $cy, float $rx, float $ry): void
+    {
+        $segments = 24;
+        $step = (2 * M_PI) / $segments;
+        $points = [];
+        for ($i = 0; $i <= $segments; $i++) {
+            $angle = $i * $step;
+            $points[] = [
+                $cx + ($rx * cos($angle)),
+                $cy + ($ry * sin($angle)),
             ];
         }
 
-        return json_encode($rows);
+        for ($i = 1; $i < count($points); $i++) {
+            $pdf->Line($points[$i - 1][0], $points[$i - 1][1], $points[$i][0], $points[$i][1]);
+        }
+    }
+
+    protected function drawTriangle(Fpdi $pdf, float $x, float $y, array $line): void
+    {
+        $w = $this->pxW(9);
+        $h = $this->pxH(8);
+        $pdf->Line($x, $y, $x + ($w / 2), $y - $h);
+        $pdf->Line($x + ($w / 2), $y - $h, $x + $w, $y);
+        $pdf->Line($x, $y, $x + $w, $y);
+    }
+
+    protected function drawText(
+        Fpdi $pdf,
+        float $x,
+        float $y,
+        string $text,
+        float $size,
+        string $style = '',
+        string $font = 'Arial'
+    ): void {
+        $pdf->SetFont($font, $style, $size);
+        $pdf->SetXY($x, $y);
+        $pdf->Cell(0, 0, $this->encode($text), 0, 0, 'L');
+    }
+
+    protected function drawCenteredText(
+        Fpdi $pdf,
+        float $x,
+        float $y,
+        float $w,
+        string $text,
+        float $size,
+        string $style = '',
+        string $font = 'Arial'
+    ): void {
+        $pdf->SetFont($font, $style, $size);
+        $pdf->SetXY($x, $y);
+        $pdf->Cell($w, 0, $this->encode($text), 0, 0, 'C');
+    }
+
+    protected function drawMultiline(
+        Fpdi $pdf,
+        float $x,
+        float $y,
+        array $lines,
+        float $size,
+        string $style = '',
+        float $lineHeight = 3.2,
+        float $width = 40.0,
+        string $align = 'L'
+    ): void {
+        $pdf->SetFont('Arial', $style, $size);
+        $currentY = $y;
+        foreach ($lines as $line) {
+            $pdf->SetXY($x, $currentY);
+            $pdf->Cell($width, 0, $this->encode((string) $line), 0, 0, $align);
+            $currentY += $lineHeight;
+        }
+    }
+
+    protected function getMedicineLayout(int $count): array
+    {
+        if ($count >= 5) {
+            return [
+                'startY' => $this->pxY(354),
+                'rowHeight' => $this->pxH(50),
+                'titleFont' => 4.55,
+                'doseFont' => 4.0,
+                'doseOffset' => $this->pxH(17),
+                'boxHeight' => $this->pxH(30),
+            ];
+        }
+
+        if ($count === 4) {
+            return [
+                'startY' => $this->pxY(354),
+                'rowHeight' => $this->pxH(58),
+                'titleFont' => 4.8,
+                'doseFont' => 4.15,
+                'doseOffset' => $this->pxH(17),
+                'boxHeight' => $this->pxH(30),
+            ];
+        }
+
+        return [
+            'startY' => $this->pxY(354),
+            'rowHeight' => $this->pxH(51),
+            'titleFont' => 5.0,
+            'doseFont' => 4.35,
+            'doseOffset' => $this->pxH(17),
+            'boxHeight' => $this->pxH(30),
+        ];
+    }
+
+    protected function pxX(float $x): float
+    {
+        return ($x * 148) / 875;
+    }
+
+    protected function pxY(float $y): float
+    {
+        return ($y * 105) / 621;
+    }
+
+    protected function pxW(float $w): float
+    {
+        return ($w * 148) / 875;
+    }
+
+    protected function pxH(float $h): float
+    {
+        return ($h * 105) / 621;
+    }
+
+    protected function fitTextToWidth(
+        Fpdi $pdf,
+        string $text,
+        float $size,
+        string $style,
+        float $width,
+        string $font = 'Arial'
+    ): string {
+        $pdf->SetFont($font, $style, $size);
+        $encoded = $this->encode($text);
+        if ($pdf->GetStringWidth($encoded) <= $width) {
+            return $text;
+        }
+
+        $ellipsis = '...';
+        $plain = $text;
+        while ($plain !== '') {
+            $plain = rtrim(substr($plain, 0, -1));
+            $candidate = $plain . $ellipsis;
+            if ($pdf->GetStringWidth($this->encode($candidate)) <= $width) {
+                return $candidate;
+            }
+        }
+
+        return $ellipsis;
+    }
+
+    protected function encode(string $text): string
+    {
+        $converted = @iconv('UTF-8', 'windows-1252//TRANSLIT', $text);
+        return $converted !== false ? $converted : $text;
     }
 }
