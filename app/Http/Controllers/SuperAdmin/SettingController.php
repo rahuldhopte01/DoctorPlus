@@ -23,7 +23,7 @@ class SettingController extends Controller
         $timezones = Timezone::get();
         $currencies = Currency::get();
         $languages = Language::whereStatus(1)->get();
-        $categories = App\Models\Category::whereStatus(1)->orderBy('name', 'ASC')->get();
+        $categories = \App\Models\Category::whereStatus(1)->orderBy('name', 'ASC')->get();
 
         return view('superAdmin.setting.setting', compact('setting', 'timezones', 'currencies', 'languages', 'categories'));
     }
