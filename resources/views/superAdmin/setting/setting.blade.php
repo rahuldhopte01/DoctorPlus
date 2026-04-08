@@ -1847,13 +1847,32 @@
                                             $footer = json_decode($setting->website_footer_settings, true) ?: [];
                                         @endphp
                                         <div class="row">
-                                            <div class="col-md-12 form-group">
-                                                <label>{{__('Brand Description')}}</label>
-                                                <textarea name="footer_desc" class="form-control" rows="3" placeholder="Deutschlands moderne Telemedizin-Plattform...">{{ $footer['desc'] ?? '' }}</textarea>
+                                            <div class="col-md-4">
+                                                <label>{{__('Footer Logo (Optional)')}}</label>
+                                                <div class="avatar-upload avatar-box">
+                                                    <div class="avatar-edit">
+                                                        <input type='file' id="footer_logo" name="footer_logo" accept=".png, .jpg, .jpeg" />
+                                                        <label for="footer_logo"></label>
+                                                    </div>
+                                                    <div class="avatar-preview">
+                                                        <div id="footer_logo_Preview" style="background-image: url('{{ !empty($footer['logo']) ? url('images/upload/'.$footer['logo']) : (!empty($setting->company_white_logo) ? url('images/upload/'.$setting->company_white_logo) : url('images/upload/default.png')) }}');"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label>{{__('Brand Description')}}</label>
+                                                    <textarea name="footer_desc" class="form-control" rows="3" placeholder="Deutschlands moderne Telemedizin-Plattform...">{{ $footer['desc'] ?? '' }}</textarea>
+                                                </div>
                                             </div>
                                             <div class="col-md-6 form-group">
                                                 <label>{{__('Office Address')}}</label>
                                                 <textarea name="footer_address" class="form-control" rows="2" placeholder="dr.fuxx GmbH · Berlin, Deutschland">{{ $footer['address'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Footer Contact Email')}}</label>
+                                                <input type="email" name="footer_email" value="{{ $footer['email'] ?? '' }}" class="form-control" placeholder="info@drfuxx.de">
+                                                <small class="text-muted">Falls leer, wird die System-E-Mail verwendet.</small>
                                             </div>
                                             <div class="col-md-6 form-group">
                                                 <label>{{__('Copyright Text')}}</label>
@@ -1862,6 +1881,10 @@
                                             <div class="col-md-12 form-group">
                                                 <label>{{__('Footer Disclaimer (Small print at bottom)')}}</label>
                                                 <textarea name="footer_disclaimer" class="form-control" rows="2" placeholder="dr.fuxx ist eine Vermittlungsplattform...">{{ $footer['disclaimer'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Footer Bottom Info Line (Below Disclaimer)')}}</label>
+                                                <input type="text" name="footer_bottom_info" value="{{ $footer['bottom_info'] ?? '' }}" class="form-control" placeholder="dr.fuxx GmbH · Berlin, Deutschland info@drfuxx.de">
                                             </div>
                                         </div>
 

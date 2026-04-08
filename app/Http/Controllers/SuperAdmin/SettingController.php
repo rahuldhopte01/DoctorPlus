@@ -724,12 +724,22 @@ class SettingController extends Controller
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings (Multi-column Premium)
-        if ($request->has('footer_copy') || $request->has('footer_desc') || $request->has('footer_col_title') || $request->has('footer_trust_text')) {
-            $footer_sett = [];
+        if ($request->has('footer_copy') || $request->has('footer_desc') || $request->has('footer_col_title') || $request->has('footer_trust_text') || $request->hasFile('footer_logo')) {
+            $footer_sett = json_decode($setting->website_footer_settings, true) ?: [];
             $footer_sett['copy'] = $request->footer_copy;
             $footer_sett['desc'] = $request->footer_desc;
             $footer_sett['address'] = $request->footer_address;
+            $footer_sett['email'] = $request->footer_email;
             $footer_sett['disclaimer'] = $request->footer_disclaimer;
+            $footer_sett['bottom_info'] = $request->footer_bottom_info;
+
+            if ($request->hasFile('footer_logo')) {
+                $image = $request->file('footer_logo');
+                $name = 'footer_logo_' . time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('/images/upload');
+                $image->move($destinationPath, $name);
+                $footer_sett['logo'] = $name;
+            }
 
             // Update individual social columns as well
             $data['facebook_url'] = $request->facebook_url;

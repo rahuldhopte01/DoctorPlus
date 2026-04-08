@@ -10,12 +10,14 @@
     
     $brandDesc = $footerSettings['desc'] ?? 'Deutschlands moderne Telemedizin-Plattform. Zertifizierte Medikamente, deutsche Ärzte, diskret zu Ihnen nach Hause.';
     $brandAddr = $footerSettings['address'] ?? 'dr.fuxx GmbH · Berlin, Deutschland';
+    $brandEmail = !empty($footerSettings['email']) ? $footerSettings['email'] : ($setting->email ?? 'info@drfuxx.de');
     $cols = $footerSettings['columns'] ?? [
         ['title' => 'Behandlungen', 'links' => [['name' => 'Med. Cannabis', 'url' => '#'], ['name' => 'Erektionsstörungen', 'url' => '#']]],
         ['title' => 'Service', 'links' => [['name' => 'FAQ (Hilfe)', 'url' => '#'], ['name' => 'Versand', 'url' => '#']]],
         ['title' => 'Rechtliches', 'links' => [['name' => 'AGB', 'url' => '#'], ['name' => 'Datenschutz', 'url' => '#']]]
     ];
     $disclaimer = $footerSettings['disclaimer'] ?? 'dr.fuxx ist eine Vermittlungsplattform – keine Internetapotheke und kein Ersatz für ärztliche Beratung.';
+    $bottomInfo = $footerSettings['bottom_info'] ?? 'dr.fuxx GmbH · Berlin, Deutschland info@drfuxx.de';
 @endphp
 
 <!-- Top Ticker Bar (Footer Trust Bar) -->
@@ -46,7 +48,9 @@
         <!-- Brand Column -->
         <div class="footer-brand-v2">
             <a href="{{ url('/') }}" class="footer-logo">
-                @if($setting->company_white_logo && file_exists(public_path('images/upload/'.$setting->company_white_logo)))
+                @if(!empty($footerSettings['logo']) && file_exists(public_path('images/upload/'.$footerSettings['logo'])))
+                    <img src="{{ url('images/upload/'.$footerSettings['logo']) }}" width="140" alt="Logo">
+                @elseif($setting->company_white_logo && file_exists(public_path('images/upload/'.$setting->company_white_logo)))
                     <img src="{{ url('images/upload/'.$setting->company_white_logo) }}" width="140" alt="Logo">
                 @else
                     <img src="{{ url('/images/upload_empty/logo_white.png') }}" width="140" alt="Logo">
@@ -71,7 +75,7 @@
 
             <div class="footer-contact-v2">
                 {!! nl2br(e($brandAddr)) !!}<br>
-                <a href="mailto:{{ $setting->email }}">{{ $setting->email }}</a>
+                <a href="mailto:{{ $brandEmail }}">{{ $brandEmail }}</a>
             </div>
         </div>
 
@@ -92,6 +96,9 @@
     <div class="footer-bottom-v2">
         <div class="footer-disclaimer-v2">
             {{ $disclaimer }}
+        </div>
+        <div class="footer-bottom-info-v2" style="font-size: 0.78rem; color: rgba(255, 255, 255, 0.4); margin-bottom: 10px;">
+            {{ $bottomInfo }}
         </div>
         <div class="footer-copyright-v2">
             @if(!empty($footerSettings['copy']))
