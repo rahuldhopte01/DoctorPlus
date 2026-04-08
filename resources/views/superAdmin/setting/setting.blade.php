@@ -846,6 +846,7 @@
                                             $statsSec = $home['stats_section'] ?? [];
                                             $compSec = $home['comparison_section'] ?? [];
                                             $faqSec = $home['faq_section'] ?? [];
+                                            $intermission = $home['intermission_banner'] ?? [];
                                         @endphp
 
                                         <h5 class="mb-4">{{__('Hero Section')}}</h5>
@@ -1023,29 +1024,93 @@
                                                     <div class="row align-items-end">
                                                         <div class="col-md-3">
                                                             <label>{{__('Step Icon')}}</label>
-                                                            <input type="file" name="step_icon[]" class="form-control mb-1">
-                                                            <input type="hidden" name="step_icon_current[]" value="{{ $step['icon'] ?? '' }}">
+                                                            <input type="file" name="step_icon[{{ $index }}]" class="form-control mb-1">
+                                                            <input type="hidden" name="step_icon_current[{{ $index }}]" value="{{ $step['icon'] ?? '' }}">
                                                             @if(!empty($step['icon']))
                                                                 <img src="{{ url('images/upload/'.$step['icon']) }}" style="height: 30px;">
                                                             @endif
                                                         </div>
                                                         <div class="col-md-3">
                                                             <label>{{__('Title')}}</label>
-                                                            <input type="text" name="step_title[]" value="{{ $step['title'] ?? '' }}" class="form-control">
+                                                            <input type="text" name="step_title[{{ $index }}]" value="{{ $step['title'] ?? '' }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-4">
                                                             <label>{{__('Description')}}</label>
-                                                            <input type="text" name="step_text[]" value="{{ $step['text'] ?? '' }}" class="form-control">
+                                                            <input type="text" name="step_text[{{ $index }}]" value="{{ $step['text'] ?? '' }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-2">
                                                             <button type="button" class="btn btn-danger btn-sm remove-step"><i class="fas fa-trash"></i></button>
                                                         </div>
+                                                    </div>
+                                                    
+                                                    {{-- Nested Sub-items (Cards) --}}
+                                                    <div class="mt-4 p-3 rounded" style="background-color: #f6faff; border: 1px dashed #ced4da;">
+                                                        <label class="font-weight-bold small text-uppercase text-primary">{{__('Sub-cards / Options (Optional)')}}</label>
+                                                        <div class="sub-items-container-{{ $index }}">
+                                                            @foreach($step['sub_items'] ?? [] as $subIndex => $sub)
+                                                            <div class="row mb-2 sub-item-row align-items-center">
+                                                                <div class="col-md-3">
+                                                                    <input type="text" name="step_sub_icon[{{ $index }}][{{ $subIndex }}]" value="{{ $sub['icon'] ?? '' }}" class="form-control form-control-sm" placeholder="Icon (e.g. bi-box)">
+                                                                </div>
+                                                                <div class="col-md-3">
+                                                                    <input type="text" name="step_sub_label[{{ $index }}][{{ $subIndex }}]" value="{{ $sub['label'] ?? '' }}" class="form-control form-control-sm" placeholder="Label">
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <input type="text" name="step_sub_desc[{{ $index }}][{{ $subIndex }}]" value="{{ $sub['desc'] ?? '' }}" class="form-control form-control-sm" placeholder="Short Desc">
+                                                                </div>
+                                                                <div class="col-md-1">
+                                                                    <button type="button" class="btn btn-outline-danger btn-xs remove-sub-item"><i class="fas fa-times"></i></button>
+                                                                </div>
+                                                            </div>
+                                                            @endforeach
+                                                        </div>
+                                                        <button type="button" class="btn btn-link btn-xs add-sub-item mt-1" data-step-idx="{{ $index }}"><i class="fas fa-plus"></i> {{__('Add Sub-point Card')}}</button>
                                                     </div>
                                                 </div>
                                             </div>
                                             @endforeach
                                         </div>
                                         <button type="button" id="add-step" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Step')}}</button>
+                                        
+                                        <hr>
+                                        <h5 class="my-4">{{__('Hero Bottom Marquee (Sliding Items)')}}</h5>
+                                        <p class="text-muted small mb-3">Add items that will slide continuously at the bottom of the hero section.</p>
+                                        <div id="hero-marquee-container">
+                                            @foreach($how['hero_marquee'] ?? [] as $index => $item)
+                                            <div class="row hero-marquee-item mb-3 align-items-end">
+                                                <div class="col-md-5">
+                                                    <label>{{__('Text')}}</label>
+                                                    <input type="text" name="hero_marquee_text[{{ $index }}]" value="{{ $item['text'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label>{{__('URL')}}</label>
+                                                    <input type="text" name="hero_marquee_url[{{ $index }}]" value="{{ $item['url'] ?? '' }}" class="form-control">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-hero-marquee"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-hero-marquee" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Marquee Item')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Intermission Banner')}}</h5>
+                                        <p class="text-muted small mb-3">This banner appears between the "How It Works" and "Natural Relief" sections.</p>
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Banner Text')}}</label>
+                                                <textarea name="intermission_banner_text" class="form-control" rows="2" placeholder="e.g. Deutschlands größte Online Klinik ...">{{ $intermission['text'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Background Color')}}</label>
+                                                <input type="color" name="intermission_banner_bg_color" value="{{ $intermission['bg_color'] ?? '#8a48ff' }}" class="form-control" style="height: 40px;">
+                                            </div>
+                                            <div class="col-md-3 form-group">
+                                                <label>{{__('Text Color')}}</label>
+                                                <input type="color" name="intermission_banner_text_color" value="{{ $intermission['text_color'] ?? '#ffffff' }}" class="form-control" style="height: 40px;">
+                                            </div>
+                                        </div>
 
                                         <hr>
                                         <h5 class="my-4">{{__('Natural Relief Section')}}</h5>
@@ -1091,23 +1156,23 @@
                                                     <div class="row align-items-end">
                                                         <div class="col-md-3">
                                                             <label>{{__('Card Main Image')}}</label>
-                                                            <input type="file" name="relief_card_icon[]" class="form-control mb-1">
-                                                            <input type="hidden" name="relief_card_icon_current[]" value="{{ $rcard['icon'] ?? '' }}">
+                                                            <input type="file" name="relief_card_icon[{{ $index }}]" class="form-control mb-1">
+                                                            <input type="hidden" name="relief_card_icon_current[{{ $index }}]" value="{{ $rcard['icon'] ?? '' }}">
                                                             @if(!empty($rcard['icon']))
                                                                 <img src="{{ url('images/upload/'.$rcard['icon']) }}" style="height: 30px;">
                                                             @endif
                                                         </div>
                                                         <div class="col-md-3">
                                                             <label>{{__('Card Title')}}</label>
-                                                            <input type="text" name="relief_card_title[]" value="{{ $rcard['title'] ?? '' }}" class="form-control">
+                                                            <input type="text" name="relief_card_title[{{ $index }}]" value="{{ $rcard['title'] ?? '' }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-3">
                                                             <label>{{__('Button Text')}}</label>
-                                                            <input type="text" name="relief_card_btn_text[]" value="{{ $rcard['btn_text'] ?? '' }}" class="form-control">
+                                                            <input type="text" name="relief_card_btn_text[{{ $index }}]" value="{{ $rcard['btn_text'] ?? '' }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-2">
                                                             <label>{{__('Button URL')}}</label>
-                                                            <input type="text" name="relief_card_btn_url[]" value="{{ $rcard['btn_url'] ?? '' }}" class="form-control">
+                                                            <input type="text" name="relief_card_btn_url[{{ $index }}]" value="{{ $rcard['btn_url'] ?? '' }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-1">
                                                             <button type="button" class="btn btn-danger btn-sm remove-relief-card"><i class="fas fa-trash"></i></button>
@@ -1814,6 +1879,28 @@
                                         </div>
 
                                         <hr>
+                                        <h5 class="my-4">{{__('Footer Trust Bar (Top Dark Bar)')}}</h5>
+                                        <p class="text-muted small mb-3">Manage the points that appear in the dark bar just above the main footer (e.g. 100% DSGVO-konform).</p>
+                                        <div id="footer-trust-container">
+                                            @foreach($footer['trust_bar'] ?? [] as $index => $point)
+                                            <div class="row footer-trust-item mb-2 align-items-end">
+                                                <div class="col-md-4">
+                                                    <label>{{__('Icon Class')}}</label>
+                                                    <input type="text" name="footer_trust_icon[]" value="{{ $point['icon'] ?? '' }}" class="form-control" placeholder="bi-shield-check">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label>{{__('Label Text')}}</label>
+                                                    <input type="text" name="footer_trust_text[]" value="{{ $point['text'] ?? '' }}" class="form-control" placeholder="100% DSGVO-konform">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-trust-item"><i class="fas fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                        <button type="button" id="add-trust-item" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Trust Point')}}</button>
+
+                                        <hr>
                                         <h5 class="my-4">{{__('Footer Columns (Links)')}}</h5>
                                         <div id="footer-cols-container">
                                             @foreach($footer['columns'] ?? [] as $col)
@@ -2156,141 +2243,325 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-        $("#website_header_logo").change(function() {
-            readHeaderLogo(this);
-        });
+        
+        // --- Index Counters (initialized from current item counts to avoid collisions) ---
+        let qlink_idx  = $('.quick-link-item').length;
+        let step_idx   = $('.step-item').length;
+        let relief_idx = $('.relief-card-item').length;
+        let trust_idx  = $('.trust-item').length;
+        let menu_idx   = $('.menu-item').length;
+        let marquee_idx = $('.marquee-item').length;
+        let feature_idx = $('.feature-item').length;
+        let subcat_idx = $('.subcat-item').length;
+        let doctor_idx = $('.doctor-item').length;
+        let stat_idx   = $('.stat-item').length;
+        let compare_idx = $('.compare-item').length;
+        let faq_idx    = $('.faq-item').length;
+        let press_idx  = $('.press-item').length;
+        let footer_idx = $('.footer-col-item').length;
+        let h_marquee_idx = $('.hero-marquee-item').length;
 
-        // Marquee Repeater
-        $('#add-marquee').click(function() {
-            var html = `<div class="row marquee-item mb-3 align-items-end">
-                            <div class="col-md-5">
-                                <label>{{__('Text')}}</label>
-                                <input type="text" name="marquee_text[]" class="form-control">
-                            </div>
-                            <div class="col-md-5">
-                                <label>{{__('Icon Name')}}</label>
-                                <input type="text" name="marquee_icon[]" class="form-control" placeholder="e.g. bi bi-truck">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>`;
-            $('#marquee-container').append(html);
-        });
-        $(document).on('click', '.remove-marquee', function() {
-            $(this).closest('.marquee-item').remove();
-        });
-
-        // Menu Repeater
-        $('#add-menu').click(function() {
-            var html = `<div class="row menu-item mb-3 align-items-end">
-                            <div class="col-md-3">
-                                <label>{{__('Type')}}</label>
-                                <select name="menu_type[]" class="form-control">
-                                    <option value="link">{{__('Link')}}</option>
-                                    <option value="section">{{__('Section Header')}}</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label>{{__('Label')}}</label>
-                                <input type="text" name="menu_label[]" class="form-control">
-                            </div>
-                            <div class="col-md-3">
-                                <label>{{__('URL')}}</label>
-                                <input type="text" name="menu_url[]" class="form-control">
-                            </div>
-                            <div class="col-md-2">
-                                <label>{{__('Badge')}}</label>
-                                <input type="text" name="menu_badge[]" class="form-control">
-                            </div>
-                            <div class="col-md-1">
-                                <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </div>`;
-            $('#menu-container').append(html);
-        });
-
-        // Add Trust Item
-        $(document).on('click', '#add-trust', function() {
-            var html = '<div class="row mb-2 trust-item align-items-end"><div class="col-md-4"><label>{{__("Icon Class or Badge (e.g. bi-shield-check or DE)")}}</label><input type="text" name="hero_trust_icon_class[]" class="form-control"></div><div class="col-md-6"><label>{{__("Text")}}</label><input type="text" name="hero_trust_text[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-trust"><i class="fas fa-trash"></i></button></div></div>';
-            $('#hero-trust-container').append(html);
-        });
-        $(document).on('click', '.remove-trust', function() {
-            $(this).closest('.trust-item').remove();
-        });
+        // --- Repeated Items Handlers ---
 
         // Add Quick Link Card
         $(document).on('click', '#add-quick-link', function() {
-            var idx = $('.quick-link-item').length;
-            var html = '<div class="card mb-3 quick-link-item"><div class="card-body"><div class="row align-items-end"><div class="col-md-3"><label>{{__("Background Image")}}</label><input type="file" name="hero_quick_link_image['+idx+']" class="form-control mb-1"><input type="hidden" name="hero_quick_link_image_current['+idx+']" value=""></div><div class="col-md-3"><label>{{__("Title")}}</label><input type="text" name="hero_quick_link_title['+idx+']" class="form-control"></div><div class="col-md-2"><label>{{__("Subtitle")}}</label><input type="text" name="hero_quick_link_subtitle['+idx+']" class="form-control"></div><div class="col-md-2"><label>{{__("Badge (e.g. NEU)")}}</label><input type="text" name="hero_quick_link_badge['+idx+']" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-quick-link"><i class="fas fa-trash"></i></button></div><div class="col-md-4 mt-2"><label>{{__("URL")}}</label><input type="text" name="hero_quick_link_url['+idx+']" class="form-control"></div><div class="col-md-4 mt-2"><label>{{__("Small Icon Class")}}</label><input type="text" name="hero_quick_link_icon_class['+idx+']" class="form-control"></div></div></div></div>';
+            var html = `<div class="card mb-3 quick-link-item">
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label>{{__("Background Image")}}</label>
+                            <input type="file" name="hero_quick_link_image[${qlink_idx}]" class="form-control mb-1">
+                            <input type="hidden" name="hero_quick_link_image_current[${qlink_idx}]" value="">
+                        </div>
+                        <div class="col-md-3">
+                            <label>{{__("Title")}}</label>
+                            <input type="text" name="hero_quick_link_title[${qlink_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label>{{__("Subtitle")}}</label>
+                            <input type="text" name="hero_quick_link_subtitle[${qlink_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label>{{__("Badge (e.g. NEU)")}}</label>
+                            <input type="text" name="hero_quick_link_badge[${qlink_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger btn-sm remove-quick-link"><i class="fas fa-trash"></i></button>
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label>{{__("URL")}}</label>
+                            <input type="text" name="hero_quick_link_url[${qlink_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-4 mt-2">
+                            <label>{{__("Small Icon Class")}}</label>
+                            <input type="text" name="hero_quick_link_icon_class[${qlink_idx}]" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>`;
             $('#hero-quick-link-container').append(html);
+            qlink_idx++;
         });
-        $(document).on('click', '.remove-quick-link', function() {
-            $(this).closest('.quick-link-item').remove();
-        });
+        $(document).on('click', '.remove-quick-link', function() { $(this).closest('.quick-link-item').remove(); });
 
         // Add Step
         $(document).on('click', '#add-step', function() {
-            var html = '<div class="card mb-3 step-item"><div class="card-body"><div class="row align-items-end"><div class="col-md-3"><label>{{__("Step Icon")}}</label><input type="file" name="step_icon[]" class="form-control"><input type="hidden" name="step_icon_current[]" value=""></div><div class="col-md-3"><label>{{__("Title")}}</label><input type="text" name="step_title[]" class="form-control"></div><div class="col-md-4"><label>{{__("Description")}}</label><input type="text" name="step_text[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-step"><i class="fas fa-trash"></i></button></div></div></div></div>';
+            var html = `<div class="card mb-3 step-item">
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label>{{__("Step Icon")}}</label>
+                            <input type="file" name="step_icon[${step_idx}]" class="form-control mb-1">
+                            <input type="hidden" name="step_icon_current[${step_idx}]" value="">
+                        </div>
+                        <div class="col-md-3">
+                            <label>{{__("Title")}}</label>
+                            <input type="text" name="step_title[${step_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label>{{__("Description")}}</label>
+                            <input type="text" name="step_text[${step_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger btn-sm remove-step"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 rounded" style="background-color: #f6faff; border: 1px dashed #ced4da;">
+                        <label class="font-weight-bold small text-uppercase text-primary">{{__("Sub-cards / Options (Optional)")}}</label>
+                        <div class="sub-items-container-${step_idx}"></div>
+                        <button type="button" class="btn btn-link btn-xs add-sub-item mt-1" data-step-idx="${step_idx}"><i class="fas fa-plus"></i> {{__("Add Sub-point Card")}}</button>
+                    </div>
+                </div>
+            </div>`;
             $('#steps-container').append(html);
+            step_idx++;
         });
-        $(document).on('click', '.remove-step', function() {
-            $(this).closest('.step-item').remove();
+        $(document).on('click', '.remove-step', function() { $(this).closest('.step-item').remove(); });
+        
+        // Add Sub-item to Step
+        $(document).on('click', '.add-sub-item', function() {
+            var sIdx = $(this).data('step-idx');
+            var container = $(`.sub-items-container-${sIdx}`);
+            var subIdx = container.find('.sub-item-row').length;
+            
+            var html = `<div class="row mb-2 sub-item-row align-items-center">
+                <div class="col-md-3">
+                    <input type="text" name="step_sub_icon[${sIdx}][${subIdx}]" class="form-control form-control-sm" placeholder="Icon (e.g. bi-box)">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="step_sub_label[${sIdx}][${subIdx}]" class="form-control form-control-sm" placeholder="Label">
+                </div>
+                <div class="col-md-5">
+                    <input type="text" name="step_sub_desc[${sIdx}][${subIdx}]" class="form-control form-control-sm" placeholder="Short Desc">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-outline-danger btn-xs remove-sub-item"><i class="fas fa-times"></i></button>
+                </div>
+            </div>`;
+            container.append(html);
         });
-
-        // Add Feature
-        $(document).on('click', '#add-feature', function() {
-            var html = '<div class="row mb-2 feature-item"><div class="col-md-10"><input type="text" name="about_features[]" class="form-control"></div><div class="col-md-2"><button type="button" class="btn btn-danger btn-sm remove-feature"><i class="fas fa-trash"></i></button></div></div>';
-            $('#about-features-container').append(html);
-        });
-        $(document).on('click', '.remove-feature', function() {
-            $(this).closest('.feature-item').remove();
-        });
+        $(document).on('click', '.remove-sub-item', function() { $(this).closest('.sub-item-row').remove(); });
 
         // Add Relief Card
         $(document).on('click', '#add-relief-card', function() {
-            var html = '<div class="card mb-3 relief-card-item"><div class="card-body"><div class="row align-items-end"><div class="col-md-3"><label>{{__("Card Main Image")}}</label><input type="file" name="relief_card_icon[]" class="form-control mb-1"><input type="hidden" name="relief_card_icon_current[]" value=""></div><div class="col-md-3"><label>{{__("Card Title")}}</label><input type="text" name="relief_card_title[]" class="form-control"></div><div class="col-md-3"><label>{{__("Button Text")}}</label><input type="text" name="relief_card_btn_text[]" class="form-control"></div><div class="col-md-2"><label>{{__("Button URL")}}</label><input type="text" name="relief_card_btn_url[]" class="form-control"></div><div class="col-md-1"><button type="button" class="btn btn-danger btn-sm remove-relief-card"><i class="fas fa-trash"></i></button></div></div></div></div>';
+            var html = `<div class="card mb-3 relief-card-item">
+                <div class="card-body">
+                    <div class="row align-items-end">
+                        <div class="col-md-3">
+                            <label>{{__("Card Main Image")}}</label>
+                            <input type="file" name="relief_card_icon[${relief_idx}]" class="form-control mb-1">
+                            <input type="hidden" name="relief_card_icon_current[${relief_idx}]" value="">
+                        </div>
+                        <div class="col-md-3">
+                            <label>{{__("Card Title")}}</label>
+                            <input type="text" name="relief_card_title[${relief_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>{{__("Button Text")}}</label>
+                            <input type="text" name="relief_card_btn_text[${relief_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label>{{__("Button URL")}}</label>
+                            <input type="text" name="relief_card_btn_url[${relief_idx}]" class="form-control">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-danger btn-sm remove-relief-card"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
             $('#relief-cards-container').append(html);
+            relief_idx++;
         });
-        $(document).on('click', '.remove-relief-card', function() {
-            $(this).closest('.relief-card-item').remove();
+        $(document).on('click', '.remove-relief-card', function() { $(this).closest('.relief-card-item').remove(); });
+
+        // Add Trust Item
+        $(document).on('click', '#add-trust', function() {
+            var html = `<div class="row mb-2 trust-item align-items-end">
+                <div class="col-md-4">
+                    <label>{{__("Icon Class or Badge")}}</label>
+                    <input type="text" name="hero_trust_icon_class[]" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>{{__("Text")}}</label>
+                    <input type="text" name="hero_trust_text[]" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-trust"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#hero-trust-container').append(html);
         });
+        $(document).on('click', '.remove-trust', function() { $(this).closest('.trust-item').remove(); });
+
+        // Add Top Marquee Item
+        $(document).on('click', '#add-marquee', function() {
+            var html = `<div class="row marquee-item mb-3 align-items-end">
+                <div class="col-md-5">
+                    <label>{{__('Text')}}</label>
+                    <input type="text" name="marquee_text[]" class="form-control">
+                </div>
+                <div class="col-md-5">
+                    <label>{{__('Icon Name')}}</label>
+                    <input type="text" name="marquee_icon[]" class="form-control" placeholder="e.g. bi bi-truck">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#marquee-container').append(html);
+        });
+        $(document).on('click', '.remove-marquee', function() { $(this).closest('.marquee-item').remove(); });
+        
+        // Add Hero Marquee Item
+        $(document).on('click', '#add-hero-marquee', function() {
+            var html = `<div class="row hero-marquee-item mb-3 align-items-end">
+                <div class="col-md-5">
+                    <label>{{__('Text')}}</label>
+                    <input type="text" name="hero_marquee_text[${h_marquee_idx}]" class="form-control">
+                </div>
+                <div class="col-md-5">
+                    <label>{{__('URL')}}</label>
+                    <input type="text" name="hero_marquee_url[${h_marquee_idx}]" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-hero-marquee"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#hero-marquee-container').append(html);
+            h_marquee_idx++;
+        });
+        $(document).on('click', '.remove-hero-marquee', function() { $(this).closest('.hero-marquee-item').remove(); });
+
+        // Add Menu Item
+        $(document).on('click', '#add-menu', function() {
+            var html = `<div class="row menu-item mb-3 align-items-end">
+                <div class="col-md-3">
+                    <label>{{__('Type')}}</label>
+                    <select name="menu_type[]" class="form-control">
+                        <option value="link">{{__('Link')}}</option>
+                        <option value="section">{{__('Section Header')}}</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>{{__('Label')}}</label>
+                    <input type="text" name="menu_label[]" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>{{__('URL')}}</label>
+                    <input type="text" name="menu_url[]" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label>{{__('Badge')}}</label>
+                    <input type="text" name="menu_badge[]" class="form-control">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#menu-container').append(html);
+        });
+        $(document).on('click', '.remove-menu', function() { $(this).closest('.menu-item').remove(); });
+
+        // Add Feature Item
+        $(document).on('click', '#add-feature', function() {
+            var html = `<div class="row mb-2 feature-item">
+                <div class="col-md-10">
+                    <input type="text" name="about_features[]" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-feature"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#about-features-container').append(html);
+        });
+        $(document).on('click', '.remove-feature', function() { $(this).closest('.feature-item').remove(); });
+
+        // Add Footer Trust Item
+        $(document).on('click', '#add-trust-item', function() {
+            var html = `<div class="row footer-trust-item mb-2 align-items-end">
+                <div class="col-md-4">
+                    <label>{{__('Icon Class')}}</label>
+                    <input type="text" name="footer_trust_icon[]" class="form-control" placeholder="bi-shield-check">
+                </div>
+                <div class="col-md-6">
+                    <label>{{__('Label Text')}}</label>
+                    <input type="text" name="footer_trust_text[]" class="form-control" placeholder="100% DSGVO-konform">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-trust-item"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#footer-trust-container').append(html);
+        });
+        $(document).on('click', '.remove-trust-item', function() { $(this).closest('.footer-trust-item').remove(); });
 
         // Add Footer Column
         $(document).on('click', '#add-footer-col', function() {
-            var html = '<div class="card mb-3 footer-col-item"><div class="card-body"><div class="row"><div class="col-md-4"><label>{{__("Column Title")}}</label><input type="text" name="footer_col_title[]" class="form-control"></div><div class="col-md-6"><label>{{__("Links (Format: Label|URL per line)")}}</label><textarea name="footer_col_links[]" class="form-control" rows="3"></textarea></div><div class="col-md-2 align-self-end"><button type="button" class="btn btn-danger btn-sm remove-footer-col"><i class="fas fa-trash"></i></button></div></div></div></div>';
+            var html = `<div class="card mb-3 footer-col-item">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>{{__("Column Title")}}</label>
+                            <input type="text" name="footer_col_title[]" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label>{{__("Links (Label|URL per line)")}}</label>
+                            <textarea name="footer_col_links[]" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <button type="button" class="btn btn-danger btn-sm remove-footer-col"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
             $('#footer-cols-container').append(html);
         });
-        $(document).on('click', '.remove-footer-col', function() {
-            $(this).closest('.footer-col-item').remove();
-        });
+        $(document).on('click', '.remove-footer-col', function() { $(this).closest('.footer-col-item').remove(); });
 
-        // Image Previews
+        // --- Image Previews ---
         function readURL(input, previewId) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
-                    $('#' + previewId).css('background-image', 'url(' + e.target.result + ')');
+                    $('#' + previewId).css('background-image', 'url(' + e.target.result + ')').hide().fadeIn(300);
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
         $("#hero_image").change(function() { readURL(this, 'heroImagePreview'); });
+        $("#hero_bg_image").change(function() { readURL(this, 'heroBgImagePreview'); });
         $("#about_image").change(function() { readURL(this, 'aboutImagePreview'); });
-        $(document).on('click', '.remove-menu', function() {
-            $(this).closest('.menu-item').remove();
-        });
+        $("#website_header_logo").change(function() { readURL(this, 'websiteHeaderLogoPreview'); });
+
+        // --- Zoom Settings Toggle ---
         $('#zoom_switch').change(function() {
-            if($(this).is(':checked')) {
-                $('#zoom_client_id').attr('required', true);
-                $('#zoom_client_secret').attr('required', true);
-                $('#zoom_redirect_url').attr('required', true);
-            } else {
-                $('#zoom_client_id').removeAttr('required');
-                $('#zoom_client_secret').removeAttr('required');
-                $('#zoom_redirect_url').removeAttr('required');
-            }
+            const isChecked = $(this).is(':checked');
+            $('#zoom_client_id, #zoom_client_secret, #zoom_redirect_url').attr('required', isChecked);
         });
+
+        // --- Stripe Test ---
         $('#test-stripe-btn').on('click', function() {
             var btn = $(this);
             var result = $('#test-stripe-result');
@@ -2314,153 +2585,18 @@
                 complete: function() { btn.prop('disabled', false); }
             });
         });
+
+        // --- Generic Clone Fallback (if any sections were missed) ---
+        window.cloneFirstRow = function(container, itemClass) {
+            var $first = container.find('.' + itemClass + ':first').clone(true);
+            $first.find('input[type=text], input[type=url], input[type=hidden]').val('');
+            $first.find('input[type=file]').val('');
+            $first.find('textarea').val('');
+            $first.find('img').remove();
+            container.append($first);
+        };
     });
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{App\Models\Setting::first()->map_key}}&callback=initAutocomplete&libraries=places&v=weekly" async></script>
 <script src="{{ url('assets_admin/js/hospital_map.js') }}"></script>
-<script>
-$(document).ready(function() {
-    // Generic cloneAndAdd helper
-    function cloneFirstRow(container, itemClass) {
-        var $first = container.find('.' + itemClass + ':first').clone(true);
-        $first.find('input[type=text], input[type=url], input[type=hidden]').val('');
-        $first.find('input[type=file]').val('');
-        $first.find('textarea').val('');
-        $first.find('img').remove();
-        container.append($first);
-    }
-
-    // Marquee
-    $('#add-marquee').on('click', function() {
-        cloneFirstRow($('#marquee-container'), 'marquee-item');
-    });
-    $(document).on('click', '.remove-marquee', function() {
-        if ($('.marquee-item').length > 1) $(this).closest('.marquee-item').remove();
-    });
-
-    // Menu
-    $(document).on('click', '.remove-menu', function() {
-        if ($('.menu-item').length > 1) $(this).closest('.menu-item').remove();
-    });
-
-    // Trust items
-    $('#add-trust').on('click', function() {
-        cloneFirstRow($('#hero-trust-container'), 'trust-item');
-    });
-    $(document).on('click', '.remove-trust', function() {
-        $(this).closest('.trust-item').remove();
-    });
-
-    // Quick links
-    $('#add-quick-link').on('click', function() {
-        cloneFirstRow($('#hero-quick-link-container'), 'quick-link-item');
-    });
-    $(document).on('click', '.remove-quick-link', function() {
-        $(this).closest('.quick-link-item').remove();
-    });
-
-    // Steps
-    $('#add-step').on('click', function() {
-        cloneFirstRow($('#steps-container'), 'step-item');
-    });
-    $(document).on('click', '.remove-step', function() {
-        $(this).closest('.step-item').remove();
-    });
-
-    // About features
-    $('#add-feature').on('click', function() {
-        cloneFirstRow($('#about-features-container'), 'feature-item');
-    });
-    $(document).on('click', '.remove-feature', function() {
-        if ($('.feature-item').length > 1) $(this).closest('.feature-item').remove();
-    });
-
-    // Sub-categories
-    $('#add-subcat').on('click', function() {
-        cloneFirstRow($('#subcat-container'), 'subcat-item');
-    });
-    $(document).on('click', '.remove-subcat', function() {
-        if ($('.subcat-item').length > 1) $(this).closest('.subcat-item').remove();
-    });
-
-    // Doctors
-    $('#add-doctor').on('click', function() {
-        cloneFirstRow($('#doctor-container'), 'doctor-item');
-    });
-    $(document).on('click', '.remove-doctor', function() {
-        if ($('.doctor-item').length > 1) $(this).closest('.doctor-item').remove();
-    });
-
-    // Stats
-    $('#add-stat').on('click', function() {
-        cloneFirstRow($('#stats-container'), 'stat-item');
-    });
-    $(document).on('click', '.remove-stat', function() {
-        if ($('.stat-item').length > 1) $(this).closest('.stat-item').remove();
-    });
-
-    // Comparison rows
-    $('#add-compare').on('click', function() {
-        cloneFirstRow($('#compare-container'), 'compare-item');
-    });
-    $(document).on('click', '.remove-compare', function() {
-        if ($('.compare-item').length > 1) $(this).closest('.compare-item').remove();
-    });
-
-    // FAQ items
-    $('#add-faq').on('click', function() {
-        cloneFirstRow($('#faq-container'), 'faq-item');
-    });
-    $(document).on('click', '.remove-faq', function() {
-        if ($('.faq-item').length > 1) $(this).closest('.faq-item').remove();
-    });
-
-    // Press logos
-    $('#add-press').on('click', function() {
-        cloneFirstRow($('#press-container'), 'press-item');
-    });
-    $(document).on('click', '.remove-press', function() {
-        if ($('.press-item').length > 1) $(this).closest('.press-item').remove();
-    });
-
-    // Footer columns
-    $('#add-footer-col').on('click', function() {
-        cloneFirstRow($('#footer-cols-container'), 'footer-col-item');
-    });
-    $(document).on('click', '.remove-footer-col', function() {
-        if ($('.footer-col-item').length > 1) $(this).closest('.footer-col-item').remove();
-    });
-
-    // Header logo preview
-    $('#website_header_logo').change(function() {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#websiteHeaderLogoPreview').css('background-image', 'url(' + e.target.result + ')');
-            };
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
-
-    // Hero image previews
-    $('#hero_image').change(function() {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#heroImagePreview').css('background-image', 'url(' + e.target.result + ')');
-            };
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
-    $('#hero_bg_image').change(function() {
-        if (this.files && this.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $('#heroBgImagePreview').css('background-image', 'url(' + e.target.result + ')');
-            };
-            reader.readAsDataURL(this.files[0]);
-        }
-    });
-});
-</script>
 @endsection

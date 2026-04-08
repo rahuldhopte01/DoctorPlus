@@ -31,6 +31,10 @@
     <!-- Bold Differentiation typography -->
     <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Slick Carousel CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
         h1, h2, h3, h4, h5, h6, .display-4, .display-5 { font-family: 'Clash Display', sans-serif; }
@@ -97,13 +101,65 @@
         padding: 2px 6px;
         border: 1px solid #dee2e6;
         border-radius: 4px;
-        font-weight: 700;
         font-size: 0.75rem;
         background: #fff;
     }
+
+    /* Categories Marquee */
+    .categories-marquee-wrapper {
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        z-index: 10;
+        mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+    }
+    .categories-marquee-container {
+        display: flex;
+        width: 100%;
+    }
+    .categories-marquee-content {
+        display: flex;
+        gap: 15px;
+        animation: marquee-scroll 100s linear infinite;
+        padding: 10px 0;
+        width: max-content;
+    }
+    @keyframes marquee-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .category-pill {
+        background: #ffffff;
+        border: 1px solid rgba(138, 72, 255, 0.1);
+        border-radius: 50px;
+        padding: 10px 24px;
+        color: #1a1a1a;
+        font-weight: 600;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: inline-block;
+    }
+    .category-pill-link:hover .category-pill {
+        background-color: #8a48ff;
+        color: #ffffff;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(138, 72, 255, 0.25);
+        border-color: #8a48ff;
+    }
+    .category-pill-link {
+        text-decoration: none !important;
+    }
+
+    /* Pause animation on hover */
+    .categories-marquee-wrapper:hover .categories-marquee-content {
+        animation-play-state: paused;
+    }
 </style>
 
-<section class="hero-fuxx position-relative overflow-hidden" style="min-height: 80vh; padding-top: 50px; padding-bottom: 80px;">
+<section class="hero-fuxx position-relative overflow-hidden" style="min-height: 80vh; padding-top: 50px; padding-bottom: 0;">
     
     <!-- Center Foreground Product Image -->
     @if(!empty($hero['image']))
@@ -132,8 +188,7 @@
                 margin: 0 auto;
             }
             .quick-link-card {
-                flex: 1 1 300px;
-                max-width: 350px;
+                padding: 10px; /* Space for box-shadow on hover during slide */
                 perspective: 1000px;
             }
             .quick-link-card .card {
@@ -236,7 +291,8 @@
                 vertical-align: middle;
             }
         </style>
-        <div class="hero-quick-links-container d-flex flex-wrap justify-content-center gap-4 mb-5 px-3">
+        <div class="hero-quick-links-container mb-5 px-3">
+            <div id="quickLinksSlider" class="hero-quick-links-slider">
             @foreach($hero['quick_links'] as $qlink)
             <a href="{{ $qlink['url'] ?? '#' }}" class="quick-link-card text-decoration-none">
                 <div class="card position-relative">
@@ -261,6 +317,7 @@
                 </div>
             </a>
             @endforeach
+            </div>
         </div>
         @endif
 
@@ -418,7 +475,40 @@
             @endif
         </div>
     </div>
+
+    <!-- Categories Marquee -->
+    @php
+        $marqueeItems = $how['hero_marquee'] ?? [];
+        // If empty, fallback to categories for a good first impression 
+        // but the user can now override this completely in settings.
+        if (empty($marqueeItems) && isset($categories)) {
+            foreach($categories as $cat) {
+                $marqueeItems[] = ['text' => $cat->name, 'url' => route('category.detail', $cat->id)];
+            }
+        }
+    @endphp
+
+    @if(!empty($marqueeItems))
+    <div class="categories-marquee-wrapper pt-4 pb-2 mt-auto">
+        <div class="categories-marquee-container">
+            <div class="categories-marquee-content">
+                @foreach($marqueeItems as $item)
+                    <a href="{{ $item['url'] ?? '#' }}" class="category-pill-link">
+                        <span class="category-pill">{{ $item['text'] }}</span>
+                    </a>
+                @endforeach
+                {{-- Duplicate for seamless loop --}}
+                @foreach($marqueeItems as $item)
+                    <a href="{{ $item['url'] ?? '#' }}" class="category-pill-link">
+                        <span class="category-pill">{{ $item['text'] }}</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
 </section>
+
 
 @php
     $how = $homeSettings['how_it_works'] ?? [];
@@ -431,14 +521,14 @@
             ['title' => 'Füll den|medizinischen Fragebogen aus', 'text' => '', 'icon' => ''],
             ['title' => 'Wähle die|gewünschte Behandlung',        'text' => '', 'icon' => ''],
             ['title' => 'Lieferung|flexibel wählen',
-             'text' => ">Online Express: Lieferung in 1–2 Werktagen\n>Apotheke vor Ort: Selbstabholung möglich",
+             'text' => ">bi-box-seam:Online Express:1–2 Werktage\n>bi-house:Apotheke vor Ort:Abholung in Partnerapotheken",
              'icon' => ''],
         ];
     }
 @endphp
 
 <!-- How It Works Section -->
-<section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); min-height: 560px;">
+<section class="pb-5 pt-3 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); min-height: 560px;">
 
     <!-- Wavy background line SVG -->
     <svg class="position-absolute w-100" style="bottom: 60px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
@@ -487,13 +577,35 @@
         .step-card-tilted h3 { font-size: 1.2rem; font-weight: 600; color: #1a1a1a; line-height: 1.35; margin-bottom: 6px; }
         .step-card-tilted h3 span { color: #7b42f6; display: block; }
         .step-card-tilted > p { color: #666; font-size: 0.82rem; line-height: 1.5; margin-bottom: 16px; }
-        .hiw-sub-items { margin-top: 12px; }
-        .hiw-sub-item  { display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
-            border: 1px solid #ebe8f8; border-radius: 12px; margin-bottom: 8px; background: #fff; }
-        .hiw-sub-item i { color: #7b42f6; font-size: 1rem; margin-top: 2px; flex-shrink: 0; }
-        .hiw-sub-item-label { font-weight: 700; font-size: 0.82rem; color: #111; }
-        .hiw-sub-item-desc  { font-size: 0.74rem; color: #777; }
-        .hiw-card-photo { display: block; width: 100%; margin-top: 14px; object-fit: contain; max-height: 190px; }
+        .hiw-sub-items { 
+            margin-top: 16px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            justify-content: center; 
+        }
+        .hiw-sub-item  { 
+            flex: 1; 
+            min-width: 100px;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+            padding: 16px 8px;
+            border: 1px solid #f0f0f0; 
+            border-radius: 16px; 
+            margin-bottom: 0px; 
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: transform 0.2s ease;
+        }
+        .hiw-sub-item:hover { transform: translateY(-3px); border-color: #8a48ff; }
+        .hiw-sub-item i { font-size: 1.5rem; margin-bottom: 10px; flex-shrink: 0; }
+        .hiw-sub-item i.bi-box-seam { color: #8a48ff; }
+        .hiw-sub-item i.bi-house { color: #dc3545; }
+        .hiw-sub-item-label { font-weight: 700; font-size: 0.78rem; color: #111; line-height: 1.2; margin-bottom: 4px; }
+        .hiw-sub-item-desc  { font-size: 0.65rem; color: #777; line-height: 1.3; }
+        .hiw-card-photo { display: block; width: 100%; margin-top: 20px; object-fit: contain; max-height: 190px; }
 
         /* Mobile: stack cards vertically instead of overflowing */
         @media (max-width: 767px) {
@@ -521,16 +633,22 @@
                 $titleParts = explode('|', $step['title'] ?? '', 2);
                 $titleNormal = trim($titleParts[0]);
                 $titlePurple = isset($titleParts[1]) ? trim($titleParts[1]) : '';
-                // Parse sub-items from 'text' if they contain lines starting with ">"
-                $subItems = [];
-                $plainText = '';
-                foreach(explode("\n", $step['text'] ?? '') as $line) {
-                    $line = trim($line);
-                    if(str_starts_with($line, '>')) {
-                        $parts = explode(':', ltrim($line, '>'), 2);
-                        $subItems[] = ['label' => trim($parts[0]), 'desc' => isset($parts[1]) ? trim($parts[1]) : ''];
-                    } elseif($line) {
-                        $plainText .= $line . ' ';
+                
+                // Use pre-processed sub_items from controller
+                $subItems = $step['sub_items'] ?? [];
+                
+                // Fallback: If sub_items is empty, check if we can parse it from 'text' (legacy support)
+                if (empty($subItems) && !empty($step['text'])) {
+                    foreach(explode("\n", $step['text']) as $line) {
+                        $line = trim($line);
+                        if(str_starts_with($line, '>')) {
+                            $parts = explode(':', ltrim($line, '>'), 3);
+                            if (count($parts) === 3) {
+                                $subItems[] = ['icon' => trim($parts[0]), 'label' => trim($parts[1]), 'desc' => trim($parts[2])];
+                            } else {
+                                $subItems[] = ['icon' => 'bi-check2-circle', 'label' => trim($parts[0]), 'desc' => isset($parts[1]) ? trim($parts[1]) : ''];
+                            }
+                        }
                     }
                 }
             @endphp
@@ -538,21 +656,23 @@
                 <div class="step-num-tilted">{{ $i + 1 }}</div>
                 <h3>{{ $titleNormal }}@if($titlePurple)<span>{{ $titlePurple }}</span>@endif
                 </h3>
-                @if($subItems)
+                
+                @if(!empty($subItems))
                 <div class="hiw-sub-items">
                     @foreach($subItems as $sub)
                     <div class="hiw-sub-item">
-                        <i class="bi bi-check2-circle"></i>
+                        <i class="bi {{ $sub['icon'] ?? 'bi-check2-circle' }}"></i>
                         <div>
-                            <div class="hiw-sub-item-label">{{ $sub['label'] }}</div>
-                            @if($sub['desc'])<div class="hiw-sub-item-desc">{{ $sub['desc'] }}</div>@endif
+                            <div class="hiw-sub-item-label">{{ $sub['label'] ?? '' }}</div>
+                            @if(!empty($sub['desc']))<div class="hiw-sub-item-desc">{{ $sub['desc'] }}</div>@endif
                         </div>
                     </div>
                     @endforeach
                 </div>
-                @elseif(trim($plainText))
-                    <p class="mt-2" style="font-size:0.83rem;color:#666;">{{ trim($plainText) }}</p>
+                @elseif(!empty($step['text']) && strpos($step['text'], '>') === false)
+                    <p class="mt-2" style="font-size:0.83rem;color:#666;">{{ trim($step['text']) }}</p>
                 @endif
+                
                 @if(!empty($step['icon']))
                     <img src="{{ url('images/upload/'.$step['icon']) }}" class="hiw-card-photo" alt="">
                 @endif
@@ -572,6 +692,21 @@
         });
     });
     </script>
+</section>
+
+<!-- Intermission Banner -->
+@php
+    $inter = $homeSettings['intermission_banner'] ?? [];
+    $bannerText = $inter['text'] ?? 'Deutschlands größte Online Klinik – mit echten deutschen Ärzten, rund um die Uhr für dich da';
+    $bannerBg = $inter['bg_color'] ?? '#8a48ff';
+    $bannerTextCol = $inter['text_color'] ?? '#ffffff';
+@endphp
+<section class="py-5" style="background-color: {{ $bannerBg }}; color: {{ $bannerTextCol }};">
+    <div class="container text-center py-4">
+        <h2 class="fw-bold mb-0" style="font-size: clamp(1.4rem, 4vw, 2rem); line-height: 1.4; color: inherit;">
+            {{ $bannerText }}
+        </h2>
+    </div>
 </section>
 
 @php
@@ -1340,8 +1475,46 @@
 
 @include('layout.partials.footer')
 
+<!-- jQuery (Required for Slick) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Slick Carousel JS -->
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $('#quickLinksSlider').slick({
+            infinite: true,
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 1000,
+            dots: false,
+            arrows: false,
+            responsive: [
+                {
+                    breakpoint: 1200,
+                    settings: {
+                        slidesToShow: 3,
+                    }
+                },
+                {
+                    breakpoint: 992,
+                    settings: {
+                        slidesToShow: 2,
+                    }
+                },
+                {
+                    breakpoint: 576,
+                    settings: {
+                        slidesToShow: 1,
+                    }
+                }
+            ]
+        });
+    });
+</script>
 <!-- Treatment Areas Carousel -->
 <script>
 (function() {

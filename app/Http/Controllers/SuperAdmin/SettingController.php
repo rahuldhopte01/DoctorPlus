@@ -322,17 +322,71 @@ class SettingController extends Controller
                     if ($icon) (new CustomController)->deleteFile($icon);
                     $icon = (new CustomController)->imageUpload($request->file("step_icon.$index"));
                 }
+                
+                // Process Nested Sub-items
+                $subItems = [];
+                if (isset($request->step_sub_label[$index])) {
+                    foreach ($request->step_sub_label[$index] as $subIndex => $subLabel) {
+                        if (!empty($subLabel)) {
+                            $subItems[] = [
+                                'icon' => $request->step_sub_icon[$index][$subIndex] ?? 'bi-check2-circle',
+                                'label' => $subLabel,
+                                'desc' => $request->step_sub_desc[$index][$subIndex] ?? '',
+                            ];
+                        }
+                    }
+                }
+
+                $text = $request->step_text[$index] ?? '';
+                // Fallback for old magic string format if no structured items provided
+                if (empty($subItems) && strpos($text, '>') !== false) {
+                    foreach(explode("\n", $text) as $line) {
+                        $line = trim($line);
+                        if(str_starts_with($line, '>')) {
+                            $parts = explode(':', ltrim($line, '>'), 3);
+                            if (count($parts) === 3) {
+                                $subItems[] = ['icon' => trim($parts[0]), 'label' => trim($parts[1]), 'desc' => trim($parts[2])];
+                            } else {
+                                $subItems[] = ['icon' => 'bi-check2-circle', 'label' => trim($parts[0]), 'desc' => isset($parts[1]) ? trim($parts[1]) : ''];
+                            }
+                        }
+                    }
+                }
+
                 $steps[] = [
                     'title' => $title,
-                    'text' => $request->step_text[$index] ?? '',
-                    'icon' => $icon
+                    'text' => $text,
+                    'icon' => $icon,
+                    'sub_items' => $subItems
                 ];
             }
+
+            // Hero Bottom Marquee
+            $marqueeItems = [];
+            if ($request->has('hero_marquee_text')) {
+                foreach ($request->hero_marquee_text as $index => $text) {
+                    if (!empty($text)) {
+                        $marqueeItems[] = [
+                            'text' => $text,
+                            'url' => $request->hero_marquee_url[$index] ?? '#',
+                        ];
+                    }
+                }
+            }
+
             $home_settings['how_it_works'] = [
                 'title' => $request->how_it_works_title,
                 'subtitle' => $request->how_it_works_subtitle,
                 'badge' => $request->how_it_works_badge,
-                'steps' => $steps
+                'steps' => $steps,
+                'hero_marquee' => $marqueeItems
+            ];
+
+            // Intermission Banner
+            $home_settings['intermission_banner'] = [
+                'text' => $request->intermission_banner_text,
+                'bg_color' => $request->intermission_banner_bg_color,
+                'text_color' => $request->intermission_banner_text_color,
             ];
         }
 
@@ -683,7 +737,7 @@ class SettingController extends Controller
             $data['instagram_url'] = $request->instagram_url;
             $data['linkdin_url'] = $request->linkdin_url;
 
-            // Ticker Bar
+            // Ticker Bar (Legacy Support)
             $footer_sett['ticker'] = [];
             for($i=1; $i<=4; $i++) {
                 if ($request->filled("footer_ticker_$i")) {
@@ -691,30 +745,44 @@ class SettingController extends Controller
                 }
             }
 
-            // Columns (2, 3, 4)
-            $footer_sett['columns'] = [];
-            for($i=1; $i<=3; $i++) {
-                $colTitle = $request->input("footer_col_title_$i");
-                $colLinksRaw = $request->input("footer_col_links_$i");
-                
-                $links = [];
-                if (!empty($colLinksRaw)) {
-                    $lLines = explode("\n", str_replace("\r", "", $colLinksRaw));
-                    foreach($lLines as $lLine) {
-                        $parts = explode("|", $lLine);
-                        if (count($parts) >= 2) {
-                            $links[] = [
-                                'name' => trim($parts[0]),
-                                'label' => trim($parts[0]), // Keep both for safety
-                                'url' => trim($parts[1])
-                            ];
-                        }
+            // Trust Bar (New Premium Feature)
+            $footer_sett['trust_bar'] = [];
+            if ($request->has('footer_trust_text')) {
+                foreach ($request->footer_trust_text as $index => $text) {
+                    if (!empty($text)) {
+                        $footer_sett['trust_bar'][] = [
+                            'icon' => $request->footer_trust_icon[$index] ?? 'bi-shield-check',
+                            'text' => $text
+                        ];
                     }
                 }
-                $footer_sett['columns'][] = [
-                    'title' => $colTitle,
-                    'links' => $links
-                ];
+            }
+
+            // Columns (Infinite Repeater Support)
+            $footer_sett['columns'] = [];
+            if ($request->has('footer_col_title')) {
+                foreach ($request->footer_col_title as $index => $colTitle) {
+                    if (!empty($colTitle)) {
+                        $colLinksRaw = $request->footer_col_links[$index] ?? '';
+                        $links = [];
+                        if (!empty($colLinksRaw)) {
+                            $lLines = explode("\n", str_replace("\r", "", $colLinksRaw));
+                            foreach($lLines as $lLine) {
+                                $parts = explode("|", $lLine);
+                                if (count($parts) >= 2) {
+                                    $links[] = [
+                                        'label' => trim($parts[0]),
+                                        'url' => trim($parts[1])
+                                    ];
+                                }
+                            }
+                        }
+                        $footer_sett['columns'][] = [
+                            'title' => $colTitle,
+                            'links' => $links
+                        ];
+                    }
+                }
             }
             $data['website_footer_settings'] = json_encode($footer_sett);
         }

@@ -1,6 +1,13 @@
 @php
     $footerSettings = json_decode($setting->website_footer_settings, true) ?: [];
+    
+    // New Trust Bar dynamic points
+    $trustBar = $footerSettings['trust_bar'] ?? [];
+    
+    // Legacy fallback
     $tickerItems = $footerSettings['ticker'] ?? ['100% DSGVO-konform', 'Deutsche Server', 'Deutsche Ärzte', 'Express in 1-2 Tagen'];
+    $tickerIcons = ['fa-shield-halved', 'fa-server', 'fa-user-doctor', 'fa-truck-fast'];
+    
     $brandDesc = $footerSettings['desc'] ?? 'Deutschlands moderne Telemedizin-Plattform. Zertifizierte Medikamente, deutsche Ärzte, diskret zu Ihnen nach Hause.';
     $brandAddr = $footerSettings['address'] ?? 'dr.fuxx GmbH · Berlin, Deutschland';
     $cols = $footerSettings['columns'] ?? [
@@ -11,20 +18,26 @@
     $disclaimer = $footerSettings['disclaimer'] ?? 'dr.fuxx ist eine Vermittlungsplattform – keine Internetapotheke und kein Ersatz für ärztliche Beratung.';
 @endphp
 
-<!-- Top Ticker Bar -->
+<!-- Top Ticker Bar (Footer Trust Bar) -->
 <div class="ticker-bar-v2">
     <div class="ticker-inner-v2">
-        @php
-            $tickerIcons = ['fa-shield-halved', 'fa-server', 'fa-user-doctor', 'fa-truck-fast'];
-        @endphp
-        @foreach($tickerItems as $index => $item)
-            @if(!empty($item))
-            <div class="ticker-item-v2">
-                <i class="fa-solid {{ $tickerIcons[$index] ?? 'fa-check-circle' }}"></i>
-                <span>{{ $item }}</span>
-            </div>
-            @endif
-        @endforeach
+        @if(!empty($trustBar))
+            @foreach($trustBar as $point)
+                <div class="ticker-item-v2">
+                    <i class="{{ strpos($point['icon'], 'fa-') === false ? 'bi ' . $point['icon'] : 'fa-solid ' . $point['icon'] }}"></i>
+                    <span>{{ $point['text'] }}</span>
+                </div>
+            @endforeach
+        @else
+            @foreach($tickerItems as $index => $item)
+                @if(!empty($item))
+                <div class="ticker-item-v2">
+                    <i class="fa-solid {{ $tickerIcons[$index] ?? 'fa-check-circle' }}"></i>
+                    <span>{{ $item }}</span>
+                </div>
+                @endif
+            @endforeach
+        @endif
     </div>
 </div>
 
