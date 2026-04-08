@@ -8,16 +8,22 @@
 <!-- Top Header Marquee -->
 @if(count($marquees) > 0)
 <div class="top-header-marquee">
-    <div class="marquee-content">
-        @foreach(array_merge($marquees, $marquees) as $item) <!-- Repeated for seamless animation -->
+    @for ($i = 0; $i < 2; $i++)
+    <div class="marquee-content" {!! $i > 0 ? 'aria-hidden="true"' : '' !!}>
+        @foreach($marquees as $item)
             <div class="marquee-item">
-                @if($item['icon'])
-                    <img src="{{ url('images/upload/'.$item['icon']) }}" alt="">
+                @if(!empty($item['icon']))
+                    @if(strpos($item['icon'], '.') !== false || strpos($item['icon'], '/') !== false)
+                        <img src="{{ url('images/upload/'.$item['icon']) }}" alt="">
+                    @else
+                        <i class="{{ $item['icon'] }}"></i>
+                    @endif
                 @endif
                 <span>{{ $item['text'] }}</span>
             </div>
         @endforeach
     </div>
+    @endfor
 </div>
 @endif
 

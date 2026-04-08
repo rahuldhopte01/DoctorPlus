@@ -212,14 +212,9 @@ class SettingController extends Controller
             $marquees = [];
             foreach ($request->marquee_text as $index => $text) {
                 if (!empty($text)) {
-                    $icon = $request->marquee_icon_current[$index] ?? null;
-                    if ($request->hasFile("marquee_icon.$index")) {
-                        if ($icon) (new CustomController)->deleteFile($icon);
-                        $icon = (new CustomController)->imageUpload($request->file("marquee_icon.$index"));
-                    }
                     $marquees[] = [
                         'text' => $text,
-                        'icon' => $icon
+                        'icon' => $request->marquee_icon[$index] ?? ($request->marquee_icon_current[$index] ?? null)
                     ];
                 }
             }

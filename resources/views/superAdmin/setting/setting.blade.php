@@ -680,12 +680,8 @@
                                                             <input type="text" name="marquee_text[]" value="{{ $marquee['text'] }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-5">
-                                                            <label>{{__('Icon')}}</label>
-                                                            <input type="file" name="marquee_icon[]" class="form-control mb-1">
-                                                            <input type="hidden" name="marquee_icon_current[]" value="{{ $marquee['icon'] }}">
-                                                            @if($marquee['icon'])
-                                                                <img src="{{ url('images/upload/'.$marquee['icon']) }}" style="height: 20px;">
-                                                            @endif
+                                                            <label>{{__('Icon Name')}}</label>
+                                                            <input type="text" name="marquee_icon[]" value="{{ $marquee['icon'] }}" class="form-control" placeholder="e.g. bi bi-truck">
                                                         </div>
                                                         <div class="col-md-2">
                                                             <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
@@ -699,9 +695,8 @@
                                                         <input type="text" name="marquee_text[]" class="form-control">
                                                     </div>
                                                     <div class="col-md-5">
-                                                        <label>{{__('Icon')}}</label>
-                                                        <input type="file" name="marquee_icon[]" class="form-control">
-                                                        <input type="hidden" name="marquee_icon_current[]" value="">
+                                                        <label>{{__('Icon Name')}}</label>
+                                                        <input type="text" name="marquee_icon[]" class="form-control" placeholder="e.g. bi bi-truck">
                                                     </div>
                                                     <div class="col-md-2">
                                                         <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
@@ -2173,9 +2168,8 @@
                                 <input type="text" name="marquee_text[]" class="form-control">
                             </div>
                             <div class="col-md-5">
-                                <label>{{__('Icon')}}</label>
-                                <input type="file" name="marquee_icon[]" class="form-control">
-                                <input type="hidden" name="marquee_icon_current[]" value="">
+                                <label>{{__('Icon Name')}}</label>
+                                <input type="text" name="marquee_icon[]" class="form-control" placeholder="e.g. bi bi-truck">
                             </div>
                             <div class="col-md-2">
                                 <button type="button" class="btn btn-danger btn-sm remove-marquee"><i class="fas fa-trash"></i></button>
