@@ -66,6 +66,7 @@ class Setting extends Model
         'website_sidebar_categories',
         'website_sidebar_entdecken',
         'website_sidebar_lernen',
+        'website_badge_settings',
     ];
 
     protected $appends = ['companyWhite', 'logo', 'favicon'];

@@ -69,48 +69,6 @@
                 <a href="javascript:void(0)" class="header-icon" id="profileDropdownToggle">
                     <i class="bi bi-person"></i>
                 </a>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="dropdown-header">
-                        <div class="dropdown-close" id="profileDropdownClose">
-                            <i class="bi bi-x"></i>
-                        </div>
-                        <div class="dropdown-avatar">
-                            @if(auth()->check() && auth()->user()->image)
-                                <img src="{{ url('images/upload/'.auth()->user()->image) }}" alt="">
-                            @else
-                                <i class="bi bi-person-fill"></i>
-                            @endif
-                        </div>
-                        @if(auth()->check())
-                            <p class="dropdown-header-text">Hallo, {{ auth()->user()->name }}</p>
-                        @else
-                            <p class="dropdown-header-text">Bitte einloggen/registrieren um Mein Konto zu sehen</p>
-                        @endif
-                    </div>
-                    <div class="dropdown-body">
-                        @if(auth()->check())
-                            <ul class="profile-links">
-                                <li><a href="{{ url('user_profile') }}"><i class="bi bi-person-circle"></i> {{ __('Mein Profil') }}</a></li>
-                                {{-- <li><a href="{{ url('user_orders') }}"><i class="bi bi-box-seam"></i> {{ __('Meine Bestellungen') }}</a></li> --}}
-                            </ul>
-                            <button class="dropdown-btn-logout" onclick="document.getElementById('website-logout-form').submit();">
-                                <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
-                            </button>
-                            <form id="website-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        @else
-                            <a href="{{ url('patient-login') }}" class="dropdown-btn-green">
-                                <i class="bi bi-person"></i> {{ __('Anmelden') }}
-                            </a>
-                        @endif
-                    </div>
-                    @if(!auth()->check())
-                    <div class="dropdown-footer">
-                        <a href="{{ url('patient-register') }}" class="dropdown-footer-link">{{ __('Sie haben kein Konto? Hier registrieren') }}</a>
-                    </div>
-                    @endif
-                </div>
             </div>
             @endif
 
@@ -575,8 +533,76 @@
     </div>
 </div>
 
+{{-- Moved Profile Dropdown to Global Scope --}}
+@if($setting->website_header_user)
+<div class="profile-dropdown" id="profileDropdown">
+    <div class="dropdown-header">
+        <div class="dropdown-close" id="profileDropdownClose">
+            <i class="bi bi-x"></i>
+        </div>
+        <div class="dropdown-avatar">
+            @if(auth()->check() && auth()->user()->image)
+                <img src="{{ url('images/upload/'.auth()->user()->image) }}" alt="">
+            @else
+                <i class="bi bi-person-fill"></i>
+            @endif
+        </div>
+        @if(auth()->check())
+            <p class="dropdown-header-text">Hallo, {{ auth()->user()->name }}</p>
+        @else
+            <p class="dropdown-header-text">Bitte einloggen/registrieren um Mein Konto zu sehen</p>
+        @endif
+    </div>
+    <div class="dropdown-body">
+        @if(auth()->check())
+            <ul class="profile-links">
+                <li><a href="{{ url('user_profile') }}"><i class="bi bi-person-circle"></i> {{ __('Mein Profil') }}</a></li>
+                {{-- <li><a href="{{ url('user_orders') }}"><i class="bi bi-box-seam"></i> {{ __('Meine Bestellungen') }}</a></li> --}}
+            </ul>
+            <button class="dropdown-btn-logout" onclick="document.getElementById('website-logout-form').submit();">
+                <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
+            </button>
+            <form id="website-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                @csrf
+            </form>
+        @else
+            <a href="{{ url('patient-login') }}" class="dropdown-btn-green">
+                <i class="bi bi-person"></i> {{ __('Anmelden') }}
+            </a>
+        @endif
+    </div>
+    @if(!auth()->check())
+    <div class="dropdown-footer">
+        <a href="{{ url('patient-register') }}" class="dropdown-footer-link">{{ __('Sie haben kein Konto? Hier registrieren') }}</a>
+    </div>
+    @endif
+</div>
+@endif
+
 <!-- Bottom Fixed Overlay for Mobile/Sidebar -->
 <div class="fuxx-global-overlay" id="globalOverlay"></div>
+
+@php
+    $badgeSett = isset($setting->website_badge_settings) ? json_decode($setting->website_badge_settings, true) : [];
+@endphp
+
+@if((Request::is('/') || Request::is('home_new')) && !empty($badgeSett['title']))
+<div class="made-in-germany-badge" id="stickyBadgeInst">
+    <div class="badge-content">
+        <img src="{{ url('images/germany-flag.svg') }}" alt="DE" class="badge-flag" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg';">
+        <span>{{ $badgeSett['title'] }}</span>
+    </div>
+    @if(!empty($badgeSett['points']))
+    <ul class="badge-points">
+        @foreach($badgeSett['points'] as $point)
+            @if(!empty($point))
+            <li><i class="bi bi-check2"></i> {{ $point }}</li>
+            @endif
+        @endforeach
+    </ul>
+    @endif
+</div>
+@endif
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

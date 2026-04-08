@@ -109,6 +109,7 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('sidebar_lernen_items', $sidebar_lernen_items);
                 $view->with('categories', $categories);
                 $view->with('sidebar_footer_cols', $footer_cols);
+                $view->with('setting', $setting);
                 
                 // Deprecated (keeping for compatibility during transition if needed)
                 $view->with('sidebar_treatments', collect()); 

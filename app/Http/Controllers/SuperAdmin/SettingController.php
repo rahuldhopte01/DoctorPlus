@@ -848,6 +848,20 @@ class SettingController extends Controller
             $data['website_footer_settings'] = json_encode($footer_sett);
         }
 
+        // Handle Fixed Badge Settings (JSON)
+        if ($request->has('badge_title')) {
+            $badgeInfo = [
+                'title' => $request->badge_title,
+                'points' => []
+            ];
+            for ($i = 0; $i < 4; $i++) {
+                if ($request->filled("badge_point_$i")) {
+                    $badgeInfo['points'][] = $request->input("badge_point_$i");
+                }
+            }
+            $data['website_badge_settings'] = json_encode($badgeInfo);
+        }
+
         // abort(403, json_encode($data)); // DEBUG
         $setting->landing_popup_switch = $request->has('landing_popup_switch') ? 1 : 0;
         $setting->update($data);

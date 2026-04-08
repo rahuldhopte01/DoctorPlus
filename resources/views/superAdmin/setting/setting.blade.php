@@ -937,6 +937,27 @@
                                             @endif
                                         </div>
                                         <button type="button" id="add-lernen-link" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Link')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Sticky "Made in Germany" Badge Settings')}}</h5>
+                                        <p class="text-muted small mb-3">Manage the text and bullet points displayed in the fixed badge at the bottom-right corner (Home Page Only).</p>
+                                        @php
+                                            $badgeSett = json_decode($setting->website_badge_settings, true) ?: [];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Badge Main Title')}}</label>
+                                                <input type="text" name="badge_title" value="{{ $badgeSett['title'] ?? 'Made in Germany' }}" class="form-control" placeholder="E.g. Made in Germany">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            @for ($i = 0; $i < 4; $i++)
+                                                <div class="col-md-6 form-group">
+                                                    <label>{{__('Sub-point ' . ($i + 1))}}</label>
+                                                    <input type="text" name="badge_point_{{$i}}" value="{{ $badgeSett['points'][$i] ?? '' }}" class="form-control" placeholder="{{ $i == 0 ? '100% Sicher' : 'Punkt '.($i+1) }}">
+                                                </div>
+                                            @endfor
+                                        </div>
                                     </div>
 
                                      <!-- Home Page Settings -->
