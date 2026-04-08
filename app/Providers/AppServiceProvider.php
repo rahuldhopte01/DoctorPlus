@@ -68,49 +68,58 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layout.partials.navbar_website', function ($view) {
             try {
                 $setting = \App\Models\Setting::first();
-                $sidebarCatsJson = json_decode($setting->website_sidebar_categories, true) ?: [];
                 
+                // 1. TOP-KATEGORIEN
+                $sidebarCatsJson = json_decode($setting->website_sidebar_categories, true) ?: [];
+                $sidebar_top_items = collect();
                 if (count($sidebarCatsJson) > 0) {
-                    $catIds = array_column($sidebarCatsJson, 'id');
-                    $isNewMap = array_column($sidebarCatsJson, 'is_new', 'id');
-                    
-                    // Fetch categories and map the 'is_new' status
-                    $selectedCategories = \App\Models\Category::with('treatment')
-                        ->whereStatus(1)
-                        ->whereIn('id', $catIds)
-                        ->get()
-                        ->each(function($cat) use ($isNewMap) {
-                            $cat->is_sidebar_new = $isNewMap[$cat->id] ?? 0;
-                        });
-
-                    // Group by Treatment to maintain hierarchy
-                    $grouped = $selectedCategories->groupBy('treatment_id');
-                    $sidebar_treatments = collect();
-                    
-                    foreach ($grouped as $treatmentId => $cats) {
-                        // We need the Treatment model as a container
-                        $treatment = \App\Models\Treatments::find($treatmentId);
-                        if ($treatment && $treatment->status == 1) {
-                            $treatment->setRelation('category', $cats);
-                            $sidebar_treatments->push($treatment);
+                    foreach ($sidebarCatsJson as $item) {
+                        $cat = \App\Models\Category::with('treatment')->whereStatus(1)->find($item['id']);
+                        if ($cat) {
+                            $cat->sidebar_custom_title = !empty($item['custom_title']) ? $item['custom_title'] : ($cat->treatment->name ?? $cat->name);
+                            $cat->is_sidebar_new = $item['is_new'] ?? 0;
+                            $sidebar_top_items->push($cat);
                         }
                     }
-                } else {
-                    $sidebar_treatments = collect();
                 }
+
+                // 2. ENTDECKEN
+                $entdeckenJson = json_decode($setting->website_sidebar_entdecken, true) ?: [];
+                $sidebar_entdecken_items = collect();
+                if (count($entdeckenJson) > 0) {
+                    foreach ($entdeckenJson as $item) {
+                        $cat = \App\Models\Category::with('treatment')->whereStatus(1)->find($item['id']);
+                        if ($cat) {
+                            $cat->sidebar_custom_title = !empty($item['custom_title']) ? $item['custom_title'] : ($cat->treatment->name ?? $cat->name);
+                            $cat->is_sidebar_new = $item['is_new'] ?? 0;
+                            $sidebar_entdecken_items->push($cat);
+                        }
+                    }
+                }
+
+                // 3. LERNEN SIE DR.FUXX KENNEN
+                $sidebar_lernen_items = json_decode($setting->website_sidebar_lernen, true) ?: [];
                 
                 $categories = \App\Models\Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
-                
                 $footerSettings = json_decode($setting->website_footer_settings, true) ?: [];
                 $footer_cols = $footerSettings['columns'] ?? [];
 
-                $view->with('sidebar_treatments', $sidebar_treatments);
+                $view->with('sidebar_top_items', $sidebar_top_items);
+                $view->with('sidebar_entdecken_items', $sidebar_entdecken_items);
+                $view->with('sidebar_lernen_items', $sidebar_lernen_items);
                 $view->with('categories', $categories);
                 $view->with('sidebar_footer_cols', $footer_cols);
+                
+                // Deprecated (keeping for compatibility during transition if needed)
+                $view->with('sidebar_treatments', collect()); 
             } catch (\Exception $e) {
-                $view->with('sidebar_treatments', collect());
+                \Log::error("Sidebar view composer error: " . $e->getMessage());
+                $view->with('sidebar_top_items', collect());
+                $view->with('sidebar_entdecken_items', collect());
+                $view->with('sidebar_lernen_items', []);
                 $view->with('categories', collect());
                 $view->with('sidebar_footer_cols', []);
+                $view->with('sidebar_treatments', collect());
             }
         });
     }

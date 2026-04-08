@@ -245,13 +245,47 @@ class SettingController extends Controller
                 if (!empty($catId)) {
                     $sidebarCategories[] = [
                         'id' => $catId,
-                        'is_new' => isset($request->sidebar_category_is_new[$index]) ? 1 : 0
+                        'is_new' => isset($request->sidebar_category_is_new[$index]) ? 1 : 0,
+                        'custom_title' => $request->sidebar_category_title[$index] ?? ''
                     ];
                 }
             }
             $data['website_sidebar_categories'] = json_encode($sidebarCategories);
         } else {
             $data['website_sidebar_categories'] = json_encode([]);
+        }
+
+        // Handle ENTDECKEN Categories (JSON)
+        if ($request->has('entdecken_category_id')) {
+            $entdeckenCategories = [];
+            foreach ($request->entdecken_category_id as $index => $catId) {
+                if (!empty($catId)) {
+                    $entdeckenCategories[] = [
+                        'id' => $catId,
+                        'is_new' => isset($request->entdecken_category_is_new[$index]) ? 1 : 0,
+                        'custom_title' => $request->entdecken_category_title[$index] ?? ''
+                    ];
+                }
+            }
+            $data['website_sidebar_entdecken'] = json_encode($entdeckenCategories);
+        } else {
+            $data['website_sidebar_entdecken'] = json_encode([]);
+        }
+
+        // Handle LERNEN SIE DR.FUXX KENNEN (JSON)
+        if ($request->has('lernen_label')) {
+            $lernenLinks = [];
+            foreach ($request->lernen_label as $index => $label) {
+                if (!empty($label)) {
+                    $lernenLinks[] = [
+                        'label' => $label,
+                        'url' => $request->lernen_url[$index] ?? '#'
+                    ];
+                }
+            }
+            $data['website_sidebar_lernen'] = json_encode($lernenLinks);
+        } else {
+            $data['website_sidebar_lernen'] = json_encode([]);
         }
 
         // Handle Promo Bar (JSON)

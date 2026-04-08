@@ -512,108 +512,66 @@
 
     <div class="sidebar-content">
         <ul class="sidebar-menu">
-            <!-- 1. Database Hierarchical Categories (Top-Kategorien) -->
-            @if(count($sidebar_treatments) > 0)
+            <!-- 1. TOP-KATEGORIEN -->
+            @if(count($sidebar_top_items) > 0)
                 <li class="menu-section-header">{{ __('TOP-KATEGORIEN') }}</li>
-                @foreach($sidebar_treatments as $treatment)
-                    @php
-                        $hasNew = $treatment->category->contains('is_sidebar_new', 1);
-                    @endphp
-                    @if(count($treatment->category) > 1)
-                        <li>
-                            <a href="javascript:void(0)" class="has-submenu">
-                                <span class="menu-label-wrapper">
-                                    {{ $treatment->name }}
-                                    @if($hasNew)
-                                        <span class="badge-neu">{{ __('NEU') }}</span>
-                                    @endif
-                                </span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                            <ul class="sidebar-submenu">
-                                @foreach($treatment->category as $subcat)
-                                    <li>
-                                        <a href="{{ route('category.detail', $subcat->id) }}">
-                                            {{ $subcat->name }}
-                                            @if($subcat->is_sidebar_new)
-                                                <span class="badge-neu" style="margin-left:8px; font-size: 0.5rem;">{{ __('NEU') }}</span>
-                                            @endif
-                                        </a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </li>
-                    @elseif(count($treatment->category) == 1)
-                        @php $subcat = $treatment->category->first(); @endphp
-                        <li>
-                            <a href="{{ route('category.detail', $subcat->id) }}">
-                                <span class="menu-label-wrapper">
-                                    {{ $treatment->name }}
-                                    @if($subcat->is_sidebar_new)
-                                        <span class="badge-neu">{{ __('NEU') }}</span>
-                                    @endif
-                                </span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                        </li>
-                    @else
-                        <li>
-                            <a href="{{ route('categories', ['treatment' => $treatment->id]) }}">
-                                <span class="menu-label-wrapper">{{ $treatment->name }}</span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                        </li>
-                    @endif
+                @foreach($sidebar_top_items as $item)
+                    <li>
+                        <a href="{{ route('category.detail', $item->id) }}">
+                            <span class="menu-label-wrapper">
+                                {{ $item->sidebar_custom_title }}
+                                @if($item->is_sidebar_new)
+                                    <span class="badge-neu">{{ __('NEU') }}</span>
+                                @endif
+                            </span>
+                            <i class="bi bi-chevron-right menu-arrow"></i>
+                        </a>
+                    </li>
                 @endforeach
             @endif
 
-            <!-- 2. Dynamic Pages (Manual Sidebar Menus & Footer Links) -->
-            <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
-            
-            <!-- Manual Sidebar Menus from Settings -->
-            @if(count($menus) > 0)
-                @foreach($menus as $menu)
-                    @if(($menu['type'] ?? 'link') == 'section')
-                        {{-- Skip manual sections in the bottom to keep it clean --}}
-                    @else
-                        <li>
-                            <a href="{{ $menu['url'] }}">
-                                <span class="menu-label-wrapper">
-                                    {{ $menu['label'] }}
-                                    @if(!empty($menu['badge']))
-                                        <span class="badge-neu">{{ $menu['badge'] }}</span>
-                                    @endif
-                                </span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                        </li>
-                    @endif
+            <!-- 2. ENTDECKEN -->
+            @if(count($sidebar_entdecken_items) > 0)
+                <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
+                @foreach($sidebar_entdecken_items as $item)
+                    <li>
+                        <a href="{{ route('category.detail', $item->id) }}">
+                            <span class="menu-label-wrapper">
+                                {{ $item->sidebar_custom_title }}
+                                @if($item->is_sidebar_new)
+                                    <span class="badge-neu">{{ __('NEU') }}</span>
+                                @endif
+                            </span>
+                            <i class="bi bi-chevron-right menu-arrow"></i>
+                        </a>
+                    </li>
                 @endforeach
             @endif
 
-            <!-- Footer Dynamic Pages (Service, Legal, etc.) -->
-            @foreach($sidebar_footer_cols as $index => $col)
-                @if($index > 0) {{-- Skip the first column if it's "Behandlungen" to avoid duplication --}}
-                    @foreach($col['links'] ?? [] as $link)
-                        <li>
-                            <a href="{{ $link['url'] ?? '#' }}">
-                                <span class="menu-label-wrapper">{{ $link['name'] ?? $link['label'] ?? '' }}</span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                        </li>
-                    @endforeach
-                @endif
-            @endforeach
+            <!-- 3. LERNEN SIE DR.FUXX KENNEN -->
+            @if(count($sidebar_lernen_items) > 0)
+                <li class="menu-section-header">{{ __('LERNEN SIE DR.FUXX KENNEN') }}</li>
+                @foreach($sidebar_lernen_items as $item)
+                    <li>
+                        <a href="{{ $item['url'] ?? '#' }}">
+                            <span class="menu-label-wrapper">{{ $item['label'] ?? '' }}</span>
+                            <i class="bi bi-chevron-right menu-arrow"></i>
+                        </a>
+                    </li>
+                @endforeach
+            @endif
 
             {{-- Fallback --}}
-            @if(count($menus) == 0 && count($sidebar_treatments) == 0 && count($sidebar_footer_cols) == 0)
+            @if(count($sidebar_top_items) == 0 && count($sidebar_entdecken_items) == 0 && count($sidebar_lernen_items) == 0)
                 <li><a href="{{ route('categories') }}"><span class="menu-label-wrapper">{{ __('Behandlungen') }}</span> <i class="bi bi-chevron-right menu-arrow"></i></a></li>
                 <li><a href="{{ url('/about-us') }}"><span class="menu-label-wrapper">{{ __('Über uns') }}</span> <i class="bi bi-chevron-right menu-arrow"></i></a></li>
-                <li><a href="{{ url('/#faq') }}"><span class="menu-label-wrapper">{{ __('Hilfe') }}</span> <i class="bi bi-chevron-right menu-arrow"></i></a></li>
             @endif
         </ul>
     </div>
 </div>
+
+<!-- Bottom Fixed Overlay for Mobile/Sidebar -->
+<div class="fuxx-global-overlay" id="globalOverlay"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -622,19 +580,69 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidebarClose = document.getElementById('sidebarClose');
     const searchToggle = document.getElementById('searchToggle');
     const headerSearch = document.getElementById('headerSearch');
+    const globalOverlay = document.getElementById('globalOverlay');
+    
+    // Toggle Profile Dropdown
+    const profileToggle = document.getElementById('profileDropdownToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileClose = document.getElementById('profileDropdownClose');
+
+    const toggleOverlay = (show) => {
+        if (show) {
+            globalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            globalOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
+
+    const closeAllMenus = () => {
+        if (sidebar) sidebar.classList.remove('active');
+        if (profileDropdown) profileDropdown.classList.remove('active');
+        toggleOverlay(false);
+    };
 
     if (hamburger && sidebar) {
         hamburger.addEventListener('click', () => {
+            closeAllMenus(); // Close profile if open
             sidebar.classList.add('active');
-            document.body.style.overflow = 'hidden';
+            toggleOverlay(true);
         });
     }
 
-    if (sidebarClose && sidebar) {
-        sidebarClose.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            document.body.style.overflow = '';
+    if (sidebarClose || globalOverlay) {
+        const closers = [sidebarClose, globalOverlay];
+        closers.forEach(closer => {
+            if (closer) {
+                closer.addEventListener('click', () => {
+                    closeAllMenus();
+                });
+            }
         });
+    }
+
+    if (profileToggle && profileDropdown) {
+        profileToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (window.innerWidth <= 768) {
+                if (!profileDropdown.classList.contains('active')) {
+                    closeAllMenus(); // Close sidebar if open
+                    profileDropdown.classList.add('active');
+                    toggleOverlay(true);
+                } else {
+                    closeAllMenus();
+                }
+            } else {
+                profileDropdown.classList.toggle('active');
+            }
+        });
+
+        if (profileClose) {
+            profileClose.addEventListener('click', function() {
+                closeAllMenus();
+            });
+        }
     }
 
     // Toggle search bar expansion
@@ -654,7 +662,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
     // Sidebar Toggles
     const toggleBtns = document.querySelectorAll('.toggle-btn');
     if (toggleBtns) {
@@ -671,14 +678,6 @@ document.addEventListener('DOMContentLoaded', function() {
     submenuTriggers.forEach(trigger => {
         trigger.addEventListener('click', function(e) {
             e.preventDefault();
-            const parent = this.parentElement;
-            const isOpen = this.classList.contains('open');
-            
-            // Close other open submenus at same level
-            // parent.parentElement.querySelectorAll('.has-submenu.open').forEach(opened => {
-            //     if (opened !== this) opened.classList.remove('open');
-            // });
-
             this.classList.toggle('open');
         });
     });
@@ -718,42 +717,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
 
-        // Close on escape
         searchInput.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 suggestionsContainer.classList.remove('active');
             }
         });
 
-        // Close when clicking outside
         document.addEventListener('click', function(e) {
             if (!searchWrapper.contains(e.target) && !suggestionsContainer.contains(e.target)) {
                 suggestionsContainer.classList.remove('active');
-            }
-        });
-    }
-
-    // --- Profile Dropdown Logic ---
-    const profileToggle = document.getElementById('profileDropdownToggle');
-    const profileDropdown = document.getElementById('profileDropdown');
-    const profileClose = document.getElementById('profileDropdownClose');
-
-    if (profileToggle && profileDropdown) {
-        profileToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            profileDropdown.classList.toggle('active');
-        });
-
-        if (profileClose) {
-            profileClose.addEventListener('click', function() {
-                profileDropdown.classList.remove('active');
-            });
-        }
-
-        // Close when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!profileDropdown.contains(e.target) && !profileToggle.contains(e.target)) {
-                profileDropdown.classList.remove('active');
             }
         });
     }
