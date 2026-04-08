@@ -644,6 +644,256 @@
                 </div>
             </div>
 
+            {{-- ============================
+                 8. TESTOSTERONE INFO
+            ============================ --}}
+            @php
+                $ti = $cms['testo_info'] ?? [];
+                $defaultTestoCards = [
+                    ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
+                    ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
+                    ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
+                    ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
+                ];
+                $tiCards = $ti['cards'] ?? $defaultTestoCards;
+            @endphp
+            <div class="card mb-0 border-0 border-bottom rounded-0">
+                <div class="card-header cms-panel-header" id="headingTestoInfo" style="background:#f8f9fa;">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button"
+                                data-toggle="collapse" data-target="#collapseTestoInfo"
+                                aria-expanded="false" aria-controls="collapseTestoInfo">
+                            <i class="fas fa-syringe mr-2" style="color:#e63946;"></i> Section 8 — Testosterone Info
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseTestoInfo" class="collapse" data-parent="#cmsSectionsAccordion">
+                    <div class="card-body">
+                        <label class="cms-toggle-label mb-3">
+                            <input type="checkbox" name="sections[testo_info][enabled]" value="1"
+                                   {{ ($ti['enabled'] ?? true) ? 'checked' : '' }}>
+                            Show Testosterone Info Section
+                        </label>
+                        <div class="form-group">
+                            <label>Section Heading</label>
+                            <input type="text" class="form-control" name="sections[testo_info][heading]"
+                                   value="{{ $ti['heading'] ?? 'Was ist eine Testosteron-Injektion?' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraph 1</label>
+                            <textarea class="form-control" rows="3"
+                                      name="sections[testo_info][paragraph_1]">{{ $ti['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.' }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraph 2</label>
+                            <textarea class="form-control" rows="3"
+                                      name="sections[testo_info][paragraph_2]">{{ $ti['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.' }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Paragraph 3</label>
+                            <textarea class="form-control" rows="3"
+                                      name="sections[testo_info][paragraph_3]">{{ $ti['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.' }}</textarea>
+                        </div>
+
+                        <label class="font-weight-bold d-block mt-3 mb-2">Info Cards (4 fixed)</label>
+                        @foreach($defaultTestoCards as $i => $default)
+                        @php $tiCard = $tiCards[$i] ?? $default; @endphp
+                        <div class="card card-body mb-3" style="background:#f8f9fa;">
+                            <h6 class="font-weight-bold mb-3 text-primary">Card {{ $i + 1 }}</h6>
+                            <div class="row">
+                                <div class="col-md-3 form-group mb-0">
+                                    <label class="text-muted" style="font-size:0.8rem;">Bootstrap Icon Class</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           name="sections[testo_info][cards][{{ $i }}][icon]"
+                                           value="{{ $tiCard['icon'] ?? $default['icon'] }}"
+                                           placeholder="e.g. bi-activity">
+                                </div>
+                                <div class="col-md-4 form-group mb-0">
+                                    <label class="text-muted" style="font-size:0.8rem;">Title</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           name="sections[testo_info][cards][{{ $i }}][title]"
+                                           value="{{ $tiCard['title'] ?? $default['title'] }}">
+                                </div>
+                                <div class="col-md-5 form-group mb-0">
+                                    <label class="text-muted" style="font-size:0.8rem;">Subtitle</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           name="sections[testo_info][cards][{{ $i }}][subtitle]"
+                                           value="{{ $tiCard['subtitle'] ?? $default['subtitle'] }}">
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- ============================
+                 9. TESTOSTERONE TREATMENTS
+            ============================ --}}
+            @php
+                $tt = $cms['testo_treatments'] ?? [];
+                $defaultTreatCards = [
+                    ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',     'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
+                    ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher', 'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
+                ];
+                $ttCards = $tt['cards'] ?? $defaultTreatCards;
+            @endphp
+            <div class="card mb-0 border-0 border-bottom rounded-0">
+                <div class="card-header cms-panel-header" id="headingTestoTreat" style="background:#f8f9fa;">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button"
+                                data-toggle="collapse" data-target="#collapseTestoTreat"
+                                aria-expanded="false" aria-controls="collapseTestoTreat">
+                            <i class="fas fa-flask mr-2" style="color:#8b5cf6;"></i> Section 9 — Testosterone Treatments
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseTestoTreat" class="collapse" data-parent="#cmsSectionsAccordion">
+                    <div class="card-body">
+                        <label class="cms-toggle-label mb-3">
+                            <input type="checkbox" name="sections[testo_treatments][enabled]" value="1"
+                                   {{ ($tt['enabled'] ?? true) ? 'checked' : '' }}>
+                            Show Testosterone Treatments Section
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Section Heading</label>
+                                <input type="text" class="form-control" name="sections[testo_treatments][heading]"
+                                       value="{{ $tt['heading'] ?? 'Unsere Testosteron-Behandlungen' }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Section Subheading</label>
+                                <input type="text" class="form-control" name="sections[testo_treatments][subheading]"
+                                       value="{{ $tt['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.' }}">
+                            </div>
+                        </div>
+
+                        <label class="font-weight-bold d-block mt-2 mb-2">Treatment Cards (2 fixed)</label>
+                        @foreach($defaultTreatCards as $i => $default)
+                        @php $ttCard = $ttCards[$i] ?? $default; @endphp
+                        <div class="card card-body mb-3" style="background:#f8f9fa;">
+                            <h6 class="font-weight-bold mb-3 text-primary">Card {{ $i + 1 }}</h6>
+                            <div class="row">
+                                <div class="col-md-3 form-group">
+                                    <label class="text-muted" style="font-size:0.8rem;">Card Image</label>
+                                    @if(!empty($ttCard['image']))
+                                        <div class="mb-1">
+                                            <img src="{{ asset('images/upload/' . $ttCard['image']) }}"
+                                                 style="height:48px; border-radius:6px; object-fit:cover; border:1px solid #ddd;">
+                                        </div>
+                                        <small class="text-muted d-block mb-1">Upload to replace</small>
+                                    @endif
+                                    <input type="file" class="form-control-file"
+                                           name="sections[testo_treatments][cards][{{ $i }}][image]"
+                                           accept=".jpg,.jpeg,.png,.webp">
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="row">
+                                        <div class="col-12 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Title</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[testo_treatments][cards][{{ $i }}][title]"
+                                                   value="{{ $ttCard['title'] ?? $default['title'] }}">
+                                        </div>
+                                        <div class="col-12 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Description</label>
+                                            <textarea class="form-control form-control-sm" rows="2"
+                                                      name="sections[testo_treatments][cards][{{ $i }}][description]">{{ $ttCard['description'] ?? $default['description'] }}</textarea>
+                                        </div>
+                                        <div class="col-md-6 form-group mb-0">
+                                            <label class="text-muted" style="font-size:0.8rem;">Button Text</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[testo_treatments][cards][{{ $i }}][button_text]"
+                                                   value="{{ $ttCard['button_text'] ?? $default['button_text'] }}">
+                                        </div>
+                                        <div class="col-md-6 form-group mb-0">
+                                            <label class="text-muted" style="font-size:0.8rem;">Button URL</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[testo_treatments][cards][{{ $i }}][button_url]"
+                                                   value="{{ $ttCard['button_url'] ?? $default['button_url'] }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- ============================
+                 10. SECURITY / TRUST
+            ============================ --}}
+            @php
+                $sec = $cms['security'] ?? [];
+                $defaultSecCards = [
+                    ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
+                    ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
+                    ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
+                ];
+                $secCards = $sec['cards'] ?? $defaultSecCards;
+            @endphp
+            <div class="card mb-0 border-0 rounded-0">
+                <div class="card-header cms-panel-header" id="headingSecurity" style="background:#f8f9fa;">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button"
+                                data-toggle="collapse" data-target="#collapseSecurity"
+                                aria-expanded="false" aria-controls="collapseSecurity">
+                            <i class="fas fa-shield-alt mr-2" style="color:#e63946;"></i> Section 10 — Security / Trust
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseSecurity" class="collapse" data-parent="#cmsSectionsAccordion">
+                    <div class="card-body">
+                        <label class="cms-toggle-label mb-3">
+                            <input type="checkbox" name="sections[security][enabled]" value="1"
+                                   {{ ($sec['enabled'] ?? true) ? 'checked' : '' }}>
+                            Show Security Section
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Section Heading</label>
+                                <input type="text" class="form-control" name="sections[security][heading]"
+                                       value="{{ $sec['heading'] ?? 'Ihre Sicherheit ist unsere Priorität' }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Section Subheading</label>
+                                <input type="text" class="form-control" name="sections[security][subheading]"
+                                       value="{{ $sec['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.' }}">
+                            </div>
+                        </div>
+
+                        <label class="font-weight-bold d-block mt-2 mb-2">Security Cards (3 fixed)</label>
+                        @foreach($defaultSecCards as $i => $default)
+                        @php $secCard = $secCards[$i] ?? $default; @endphp
+                        <div class="card card-body mb-3" style="background:#f8f9fa;">
+                            <h6 class="font-weight-bold mb-3 text-primary">Card {{ $i + 1 }}</h6>
+                            <div class="row">
+                                <div class="col-md-3 form-group mb-0">
+                                    <label class="text-muted" style="font-size:0.8rem;">Bootstrap Icon Class</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           name="sections[security][cards][{{ $i }}][icon]"
+                                           value="{{ $secCard['icon'] ?? $default['icon'] }}"
+                                           placeholder="e.g. bi-shield">
+                                </div>
+                                <div class="col-md-4 form-group mb-0">
+                                    <label class="text-muted" style="font-size:0.8rem;">Title</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           name="sections[security][cards][{{ $i }}][title]"
+                                           value="{{ $secCard['title'] ?? $default['title'] }}">
+                                </div>
+                                <div class="col-md-5 form-group mb-0">
+                                    <label class="text-muted" style="font-size:0.8rem;">Description</label>
+                                    <textarea class="form-control form-control-sm" rows="2"
+                                              name="sections[security][cards][{{ $i }}][description]">{{ $secCard['description'] ?? $default['description'] }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
         </div>{{-- end accordion --}}
     </div>
 </div>

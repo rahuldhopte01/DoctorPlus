@@ -374,14 +374,96 @@ class CategoryController extends Controller
             'items'   => $faqItems,
         ];
 
+        // --- Testosterone Info (Section 8) ---
+        $tiInput = $s['testo_info'] ?? [];
+        $defaultTestoCards = [
+            ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
+            ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
+            ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
+            ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
+        ];
+        $testoCards = [];
+        foreach ($defaultTestoCards as $i => $default) {
+            $card = $tiInput['cards'][$i] ?? [];
+            $testoCards[] = [
+                'icon'     => $card['icon']     ?? $default['icon'],
+                'title'    => $card['title']    ?? $default['title'],
+                'subtitle' => $card['subtitle'] ?? $default['subtitle'],
+            ];
+        }
+        $testoInfo = [
+            'enabled'     => isset($tiInput['enabled']),
+            'heading'     => $tiInput['heading']     ?? 'Was ist eine Testosteron-Injektion?',
+            'paragraph_1' => $tiInput['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
+            'paragraph_2' => $tiInput['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
+            'paragraph_3' => $tiInput['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+            'cards'       => $testoCards,
+        ];
+
+        // --- Testosterone Treatments (Section 9) ---
+        $ttInput  = $s['testo_treatments'] ?? [];
+        $existingTt = $existing['testo_treatments'] ?? [];
+        $defaultTreatCards = [
+            ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
+            ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
+        ];
+        $treatCards = [];
+        foreach ($defaultTreatCards as $i => $default) {
+            $card            = $ttInput['cards'][$i] ?? [];
+            $existingImg     = $existingTt['cards'][$i]['image'] ?? null;
+            $uploadedImg     = null;
+            if ($request->hasFile("sections.testo_treatments.cards.{$i}.image")) {
+                $uploadedImg = (new CustomController)->imageUpload($request->file("sections.testo_treatments.cards.{$i}.image"));
+            }
+            $treatCards[] = [
+                'image'       => $uploadedImg ?? $existingImg,
+                'title'       => $card['title']       ?? $default['title'],
+                'description' => $card['description'] ?? $default['description'],
+                'button_text' => $card['button_text'] ?? $default['button_text'],
+                'button_url'  => $card['button_url']  ?? $default['button_url'],
+            ];
+        }
+        $testoTreatments = [
+            'enabled'    => isset($ttInput['enabled']),
+            'heading'    => $ttInput['heading']    ?? 'Unsere Testosteron-Behandlungen',
+            'subheading' => $ttInput['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+            'cards'      => $treatCards,
+        ];
+
+        // --- Security / Trust (Section 10) ---
+        $secInput = $s['security'] ?? [];
+        $defaultSecCards = [
+            ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
+            ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
+            ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
+        ];
+        $secCards = [];
+        foreach ($defaultSecCards as $i => $default) {
+            $card = $secInput['cards'][$i] ?? [];
+            $secCards[] = [
+                'icon'        => $card['icon']        ?? $default['icon'],
+                'title'       => $card['title']       ?? $default['title'],
+                'description' => $card['description'] ?? $default['description'],
+            ];
+        }
+        $security = [
+            'enabled'    => isset($secInput['enabled']),
+            'heading'    => $secInput['heading']    ?? 'Ihre Sicherheit ist unsere Priorität',
+            'subheading' => $secInput['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+            'cards'      => $secCards,
+        ];
+
         return [
-            'hero'            => $hero,
-            'features_bar'    => $featuresBar,
-            'steps'           => $stepsSection,
-            'payment_bar'     => $paymentBar,
-            'medical_content' => $medicalContent,
-            'doctor_review'   => $doctorReview,
-            'faq'             => $faq,
+            'hero'             => $hero,
+            'features_bar'     => $featuresBar,
+            'steps'            => $stepsSection,
+            'payment_bar'      => $paymentBar,
+            'medical_content'  => $medicalContent,
+            'doctor_review'    => $doctorReview,
+            'faq'              => $faq,
+            'testo_info'       => $testoInfo,
+            'testo_treatments' => $testoTreatments,
+            'security'         => $security,
         ];
     }
 }
