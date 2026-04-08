@@ -59,18 +59,53 @@
             @endif
 
             @if($setting->website_header_user)
-            <a href="{{ auth()->check() ? url('user_profile') : url('patient-login') }}" class="header-icon">
-                <i class="bi bi-person"></i>
-            </a>
-            @endif
-
-            @if(auth()->check())
-            <a href="javascript:void(0)" class="header-icon" onclick="document.getElementById('website-logout-form').submit();" title="{{ __('Logout') }}" style="color:inherit;">
-                <i class="bi bi-box-arrow-right"></i>
-            </a>
-            <form id="website-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
+            <div class="profile-dropdown-container">
+                <a href="javascript:void(0)" class="header-icon" id="profileDropdownToggle">
+                    <i class="bi bi-person"></i>
+                </a>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-close" id="profileDropdownClose">
+                            <i class="bi bi-x"></i>
+                        </div>
+                        <div class="dropdown-avatar">
+                            @if(auth()->check() && auth()->user()->image)
+                                <img src="{{ url('images/upload/'.auth()->user()->image) }}" alt="">
+                            @else
+                                <i class="bi bi-person-fill"></i>
+                            @endif
+                        </div>
+                        @if(auth()->check())
+                            <p class="dropdown-header-text">Hallo, {{ auth()->user()->name }}</p>
+                        @else
+                            <p class="dropdown-header-text">Bitte einloggen/registrieren um Mein Konto zu sehen</p>
+                        @endif
+                    </div>
+                    <div class="dropdown-body">
+                        @if(auth()->check())
+                            <ul class="profile-links">
+                                <li><a href="{{ url('user_profile') }}"><i class="bi bi-person-circle"></i> {{ __('Mein Profil') }}</a></li>
+                                {{-- <li><a href="{{ url('user_orders') }}"><i class="bi bi-box-seam"></i> {{ __('Meine Bestellungen') }}</a></li> --}}
+                            </ul>
+                            <button class="dropdown-btn-logout" onclick="document.getElementById('website-logout-form').submit();">
+                                <i class="bi bi-box-arrow-right"></i> {{ __('Logout') }}
+                            </button>
+                            <form id="website-logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
+                        @else
+                            <a href="{{ url('patient-login') }}" class="dropdown-btn-green">
+                                <i class="bi bi-person"></i> {{ __('Anmelden') }}
+                            </a>
+                        @endif
+                    </div>
+                    @if(!auth()->check())
+                    <div class="dropdown-footer">
+                        <a href="{{ url('patient-register') }}" class="dropdown-footer-link">{{ __('Sie haben kein Konto? Hier registrieren') }}</a>
+                    </div>
+                    @endif
+                </div>
+            </div>
             @endif
 
             @if($setting->website_header_hamburger)
@@ -666,6 +701,31 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function(e) {
             if (!searchWrapper.contains(e.target) && !suggestionsContainer.contains(e.target)) {
                 suggestionsContainer.classList.remove('active');
+            }
+        });
+    }
+
+    // --- Profile Dropdown Logic ---
+    const profileToggle = document.getElementById('profileDropdownToggle');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileClose = document.getElementById('profileDropdownClose');
+
+    if (profileToggle && profileDropdown) {
+        profileToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
+
+        if (profileClose) {
+            profileClose.addEventListener('click', function() {
+                profileDropdown.classList.remove('active');
+            });
+        }
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!profileDropdown.contains(e.target) && !profileToggle.contains(e.target)) {
+                profileDropdown.classList.remove('active');
             }
         });
     }
