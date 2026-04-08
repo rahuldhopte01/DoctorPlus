@@ -46,13 +46,17 @@ class PrescriptionPdfService
             }
 
             $doctorPhone = ($doctor && $doctor->user && $doctor->user->phone) ? $doctor->user->phone : '';
-            $doctorAddressParts = array_filter([
-                $doctor->street ?? '',
-                trim(($doctor->postcode ?? '') . ' ' . ($doctor->city ?? '')),
-                $doctor->state ?? '',
-                $doctor->country ?? '',
-            ], fn ($p) => trim((string) $p) !== '');
-            $doctorAddress = implode(', ', $doctorAddressParts);
+            if ($doctor) {
+                $doctorAddressParts = array_filter([
+                    $doctor->street ?? '',
+                    trim(($doctor->postcode ?? '') . ' ' . ($doctor->city ?? '')),
+                    $doctor->state ?? '',
+                    $doctor->country ?? '',
+                ], fn ($p) => trim((string) $p) !== '');
+                $doctorAddress = implode(', ', $doctorAddressParts);
+            } else {
+                $doctorAddress = '';
+            }
             $doctorLanr = '';
             $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
 
