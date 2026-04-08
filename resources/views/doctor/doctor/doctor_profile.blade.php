@@ -431,12 +431,28 @@
             </p>
 
             @if ($doctor->signature && file_exists(storage_path('app/doctor-signatures/' . $doctor->signature)))
+                @php $sigExt = strtolower(pathinfo($doctor->signature, PATHINFO_EXTENSION)); @endphp
                 <div class="mb-3">
                     <label class="col-form-label d-block">{{ __('Current Signature') }}</label>
-                    <img src="{{ route('doctor.signature.preview') }}"
-                         alt="Doctor Signature"
-                         style="max-height:80px; border:1px solid #ddd; padding:4px; background:#fff; border-radius:4px;">
-                    <form action="{{ route('doctor.signature.remove') }}" method="POST" class="d-inline ml-3"
+
+                    @if ($sigExt === 'pdf')
+                        {{-- PDF: show an embedded viewer + download link --}}
+                        <div style="border:1px solid #ddd; border-radius:4px; overflow:hidden; max-width:500px;">
+                            <embed src="{{ route('doctor.signature.preview') }}"
+                                   type="application/pdf"
+                                   width="100%" height="180px">
+                        </div>
+                        <a href="{{ route('doctor.signature.preview') }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-1">
+                            <i class="fas fa-file-pdf"></i> {{ __('Open PDF') }}
+                        </a>
+                    @else
+                        {{-- Image: show inline preview --}}
+                        <img src="{{ route('doctor.signature.preview') }}"
+                             alt="Doctor Signature"
+                             style="max-height:100px; border:1px solid #ddd; padding:4px; background:#fff; border-radius:4px; display:block; margin-bottom:6px;">
+                    @endif
+
+                    <form action="{{ route('doctor.signature.remove') }}" method="POST" class="d-inline mt-2"
                           onsubmit="return confirm('{{ __('Remove your signature?') }}')">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-danger">
@@ -453,9 +469,10 @@
             <form action="{{ route('doctor.signature.upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group">
-                    <label class="col-form-label">{{ __('Upload Signature (JPG / PNG, max 2 MB)') }}</label>
+                    <label class="col-form-label">{{ __('Upload Signature') }}</label>
                     <input type="file" name="signature" class="form-control-file @error('signature') is-invalid @enderror"
-                           accept=".jpg,.jpeg,.png">
+                           accept=".jpg,.jpeg,.png,.pdf">
+                    <small class="text-muted">{{ __('Accepted formats: JPG, PNG, PDF — max 5 MB') }}</small>
                     @error('signature')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror

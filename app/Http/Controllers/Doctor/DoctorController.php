@@ -337,10 +337,10 @@ class DoctorController extends Controller
     public function uploadSignature(Request $request)
     {
         $request->validate([
-            'signature' => 'required|file|mimes:jpeg,jpg,png|max:2048',
+            'signature' => 'required|file|mimes:jpeg,jpg,png,pdf|max:5120',
         ], [
-            'signature.max' => 'Signature image may not be larger than 2 MB.',
-            'signature.mimes' => 'Signature must be a JPG or PNG image.',
+            'signature.max'   => 'Signature file may not be larger than 5 MB.',
+            'signature.mimes' => 'Signature must be a JPG, PNG, or PDF file.',
         ]);
 
         $doctor = Doctor::where('user_id', auth()->user()->id)->firstOrFail();
@@ -392,8 +392,11 @@ class DoctorController extends Controller
             abort(404);
         }
 
-        $mimeType = mime_content_type($path) ?: 'image/png';
-        return response()->file($path, ['Content-Type' => $mimeType]);
+        $mimeType = mime_content_type($path) ?: 'application/octet-stream';
+        return response()->file($path, [
+            'Content-Type'        => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
+        ]);
     }
 
     public function changeLanguage()

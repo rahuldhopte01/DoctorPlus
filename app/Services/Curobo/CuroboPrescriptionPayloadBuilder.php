@@ -165,11 +165,14 @@ class CuroboPrescriptionPayloadBuilder
      */
     protected static function resolveDoctorSignature(Doctor $doctor): string
     {
-        // 1. Use the doctor's uploaded scanned signature
+        // 1. Use the doctor's uploaded scanned signature (image or PDF)
         if (! empty($doctor->signature)) {
             $path = storage_path('app/doctor-signatures/' . $doctor->signature);
             if (file_exists($path)) {
-                $mimeType = mime_content_type($path) ?: 'image/png';
+                $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+                $mimeType = $ext === 'pdf'
+                    ? 'application/pdf'
+                    : (mime_content_type($path) ?: 'image/png');
                 $base64 = base64_encode(file_get_contents($path));
                 return 'data:' . $mimeType . ';base64,' . $base64;
             }
