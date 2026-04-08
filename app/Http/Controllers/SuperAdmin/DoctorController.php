@@ -99,6 +99,7 @@ class DoctorController extends Controller
             'custom_timeslot' => 'bail|nullable',
             'commission_amount' => 'bail|nullable',
             'password' => 'sometimes|nullable|min:6',
+            'lanr' => 'bail|nullable|string|max:100',
         ]);
         $data = $request->all();
         if (isset($data['password']) && ($data['password'] != '' || $data['password'] != null)) {
@@ -367,6 +368,7 @@ class DoctorController extends Controller
             'custom_timeslot' => 'bail|nullable',
             'commission_amount' => 'bail|nullable',
             'password' => 'sometimes|nullable|min:6',
+            'lanr' => 'bail|nullable|string|max:100',
         ],
             [
                 'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',

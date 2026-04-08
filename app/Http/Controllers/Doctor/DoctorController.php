@@ -263,6 +263,7 @@ class DoctorController extends Controller
                 'experience' => 'bail|nullable|numeric',
                 'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
                 'custom_timeslot' => 'bail|nullable',
+                'lanr' => 'bail|nullable|string|max:100',
             ],
             [
                 'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',

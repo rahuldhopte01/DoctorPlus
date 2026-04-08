@@ -472,6 +472,17 @@
                             <input type="text" name="country" value="{{ old('country', $doctor->country) }}" class="form-control @error('country') is-invalid @enderror">
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">LANR</label>
+                            <input type="text" name="lanr" value="{{ old('lanr', $doctor->lanr) }}" class="form-control @error('lanr') is-invalid @enderror">
+                            @error('lanr')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -523,4 +534,3 @@
 </section>
 
 @endsection
-

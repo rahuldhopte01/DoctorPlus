@@ -57,7 +57,15 @@ class PrescriptionPdfService
             } else {
                 $doctorAddress = '';
             }
-            $doctorLanr = '';
+            $doctorLanr = trim((string) (
+                data_get($doctor, 'lanr')
+                ?? data_get($doctor, 'LANR')
+                ?? data_get($doctor, 'user.lanr')
+                ?? data_get($doctor, 'user.LANR')
+                ?? data_get($doctor, 'hospital.lanr')
+                ?? data_get($doctor, 'hospital.LANR')
+                ?? ''
+            ));
             $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
 
             $validUntil = null;
@@ -66,6 +74,16 @@ class PrescriptionPdfService
                     $validUntil = $prescription->valid_until->format('d.m.Y');
                 } catch (\Exception $e) {
                     $validUntil = null;
+                }
+            }
+            if (! $validUntil) {
+                try {
+                    $invoiceDate = $prescription->created_at
+                        ? Carbon::parse($prescription->created_at)
+                        : now();
+                    $validUntil = $invoiceDate->copy()->addDays(90)->format('d.m.Y');
+                } catch (\Exception $e) {
+                    $validUntil = now()->addDays(90)->format('d.m.Y');
                 }
             }
 
