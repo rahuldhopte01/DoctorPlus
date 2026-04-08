@@ -646,6 +646,120 @@ $cmsFaq = array_merge([
 </section>
 @endif
 
+@php
+// --- CMS: Sections 8, 9, 10 ---
+$cmsTestoInfo = array_merge([
+    'enabled'     => true,
+    'heading'     => 'Was ist eine Testosteron-Injektion?',
+    'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
+    'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
+    'paragraph_3' => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+    'cards' => [
+        ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
+        ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
+        ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
+        ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
+    ],
+], $_cms['testo_info'] ?? []);
+
+$cmsTestoTreatments = array_merge([
+    'enabled'    => true,
+    'heading'    => 'Unsere Testosteron-Behandlungen',
+    'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+    'cards' => [
+        ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
+        ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
+    ],
+], $_cms['testo_treatments'] ?? []);
+
+$_testoTreatFallbackImgs = [
+    'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80',
+];
+
+$cmsSecurity = array_merge([
+    'enabled'    => true,
+    'heading'    => 'Ihre Sicherheit ist unsere Priorität',
+    'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+    'cards' => [
+        ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
+        ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
+        ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
+    ],
+], $_cms['security'] ?? []);
+@endphp
+
+<!-- Section 8: Testosterone Info -->
+@if($cmsTestoInfo['enabled'])
+<section class="bg-white">
+  <div class="testo-section">
+    <div class="testo-content">
+      <h2>{{ $cmsTestoInfo['heading'] }}</h2>
+      <p>{{ $cmsTestoInfo['paragraph_1'] }}</p>
+      <p>{{ $cmsTestoInfo['paragraph_2'] }}</p>
+      <p>{{ $cmsTestoInfo['paragraph_3'] }}</p>
+    </div>
+    <div class="testo-grid">
+      @foreach($cmsTestoInfo['cards'] as $card)
+      <div class="testo-card">
+        <div class="testo-icon-wrap"><i class="bi {{ $card['icon'] }}"></i></div>
+        <h4>{{ $card['title'] }}</h4>
+        <p>{{ $card['subtitle'] }}</p>
+      </div>
+      @endforeach
+    </div>
+  </div>
+</section>
+@endif
+
+<!-- Section 9: Testosterone Treatments -->
+@if($cmsTestoTreatments['enabled'])
+<section class="testo-treat-section">
+  <div class="testo-treat-header">
+    <h2>{{ $cmsTestoTreatments['heading'] }}</h2>
+    <p>{{ $cmsTestoTreatments['subheading'] }}</p>
+  </div>
+  <div class="testo-treat-grid">
+    @foreach($cmsTestoTreatments['cards'] as $i => $card)
+    @php
+      $_treatImg = (!empty($card['image']) && file_exists(public_path('images/upload/'.$card['image'])))
+          ? asset('images/upload/'.$card['image'])
+          : ($_testoTreatFallbackImgs[$i] ?? null);
+    @endphp
+    <div class="testo-treat-card">
+      @if($_treatImg)
+      <img src="{{ $_treatImg }}" alt="{{ $card['title'] }}" class="testo-treat-img" loading="lazy">
+      @endif
+      <div class="testo-treat-content">
+        <h3>{{ $card['title'] }}</h3>
+        <p>{{ $card['description'] }}</p>
+        <a href="{{ $card['button_url'] }}" class="testo-treat-btn">{{ $card['button_text'] }}</a>
+      </div>
+    </div>
+    @endforeach
+  </div>
+</section>
+@endif
+
+<!-- Section 10: Security / Trust -->
+@if($cmsSecurity['enabled'])
+<section class="security-section">
+  <div class="security-header">
+    <h2>{{ $cmsSecurity['heading'] }}</h2>
+    <p>{{ $cmsSecurity['subheading'] }}</p>
+  </div>
+  <div class="security-grid">
+    @foreach($cmsSecurity['cards'] as $card)
+    <div class="security-card">
+      <div class="security-icon"><i class="bi {{ $card['icon'] }}"></i></div>
+      <h3>{{ $card['title'] }}</h3>
+      <p>{{ $card['description'] }}</p>
+    </div>
+    @endforeach
+  </div>
+</section>
+@endif
+
 <!-- Footer -->
 @include('layout.partials.footer')
 
