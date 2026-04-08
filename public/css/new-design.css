@@ -1390,7 +1390,7 @@ input[type="submit"].bg-primary:hover {
 }
 
 .ticker-item-v2 i {
-    color: var(--accent-color);
+    color: #c4b5fd;
     font-size: 1.1rem;
 }
 
