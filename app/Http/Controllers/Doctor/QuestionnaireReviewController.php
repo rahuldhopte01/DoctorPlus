@@ -1223,6 +1223,11 @@ class QuestionnaireReviewController extends Controller
                     $totalMedicineCost += $price * $qty;
                 }
                 $prescriptionFee = (float) $prescription->payment_amount;
+                // Strip the base64-encoded signature before logging to avoid exceeding max_allowed_packet
+                $loggablePayload = $payload;
+                if (isset($loggablePayload['doctor']['signature'])) {
+                    $loggablePayload['doctor']['signature'] = '[redacted]';
+                }
                 try {
                     $api = new CuroboPrescriptionApi();
                     $response = $api->submitPrescription($payload);
@@ -1230,7 +1235,7 @@ class QuestionnaireReviewController extends Controller
                         'prescription_id' => $prescription->id,
                         'questionnaire_submission_id' => $submission->id,
                         'called_at' => now(),
-                        'request_payload' => $payload,
+                        'request_payload' => $loggablePayload,
                         'response_status' => 200,
                         'response_body' => is_array($response) ? json_encode($response) : (string) $response,
                         'external_order_id' => $response['order_id'] ?? $response['id'] ?? null,
@@ -1245,7 +1250,7 @@ class QuestionnaireReviewController extends Controller
                         'prescription_id' => $prescription->id,
                         'questionnaire_submission_id' => $submission->id,
                         'called_at' => now(),
-                        'request_payload' => $payload,
+                        'request_payload' => $loggablePayload,
                         'response_status' => null,
                         'response_body' => $e->getMessage(),
                         'external_order_id' => null,

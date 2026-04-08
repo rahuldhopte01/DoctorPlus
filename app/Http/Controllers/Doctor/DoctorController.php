@@ -334,6 +334,71 @@ class DoctorController extends Controller
         return redirect('/doctor_home')->withStatus(__('Doctor updated successfully..!!'));
     }
 
+    public function uploadSignature(Request $request)
+    {
+        $request->validate([
+            'signature' => 'required|file|mimes:jpeg,jpg,png,pdf|max:5120',
+        ], [
+            'signature.max'   => 'Signature file may not be larger than 5 MB.',
+            'signature.mimes' => 'Signature must be a JPG, PNG, or PDF file.',
+        ]);
+
+        $doctor = Doctor::where('user_id', auth()->user()->id)->firstOrFail();
+
+        $directory = storage_path('app/doctor-signatures');
+        if (! is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        // Delete old signature file if present
+        if ($doctor->signature && file_exists($directory . '/' . $doctor->signature)) {
+            @unlink($directory . '/' . $doctor->signature);
+        }
+
+        $file = $request->file('signature');
+        $filename = 'doctor_' . $doctor->id . '_sig_' . time() . '.' . $file->getClientOriginalExtension();
+        $file->move($directory, $filename);
+
+        $doctor->update(['signature' => $filename]);
+
+        return redirect()->back()->withStatus(__('Signature uploaded successfully.'));
+    }
+
+    public function removeSignature(Request $request)
+    {
+        $doctor = Doctor::where('user_id', auth()->user()->id)->firstOrFail();
+
+        if ($doctor->signature) {
+            $path = storage_path('app/doctor-signatures/' . $doctor->signature);
+            if (file_exists($path)) {
+                @unlink($path);
+            }
+            $doctor->update(['signature' => null]);
+        }
+
+        return redirect()->back()->withStatus(__('Signature removed successfully.'));
+    }
+
+    public function previewSignature()
+    {
+        $doctor = Doctor::where('user_id', auth()->user()->id)->firstOrFail();
+
+        if (empty($doctor->signature)) {
+            abort(404);
+        }
+
+        $path = storage_path('app/doctor-signatures/' . $doctor->signature);
+        if (! file_exists($path)) {
+            abort(404);
+        }
+
+        $mimeType = mime_content_type($path) ?: 'application/octet-stream';
+        return response()->file($path, [
+            'Content-Type'        => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
+        ]);
+    }
+
     public function changeLanguage()
     {
         $doctor = Doctor::where('user_id', auth()->user()->id)->first();

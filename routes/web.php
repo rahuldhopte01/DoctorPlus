@@ -406,6 +406,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // doctor profile
         Route::get('/doctor_profile', [App\Http\Controllers\Doctor\DoctorController::class, 'doctor_profile']);
         Route::post('/update_doctor_profile', [App\Http\Controllers\Doctor\DoctorController::class, 'update_doctor_profile']);
+        Route::post('/doctor/signature/upload', [App\Http\Controllers\Doctor\DoctorController::class, 'uploadSignature'])->name('doctor.signature.upload');
+        Route::post('/doctor/signature/remove', [App\Http\Controllers\Doctor\DoctorController::class, 'removeSignature'])->name('doctor.signature.remove');
+        Route::get('/doctor/signature/preview', [App\Http\Controllers\Doctor\DoctorController::class, 'previewSignature'])->name('doctor.signature.preview');
         Route::get('/changePassword', [App\Http\Controllers\Doctor\DoctorController::class, 'changePassword']);
 
         // change subscriptiom payment status changePaymentStatus
