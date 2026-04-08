@@ -268,7 +268,7 @@ class PrescriptionPdfService
             $doctorLanr !== '' ? 'LANR: ' . $doctorLanr : '',
         ])), 5.4, '', $this->pxH(20), $this->pxW(150), 'C');
 
-        $this->drawText($pdf, $this->pxX(46), $this->pxY(500), 'PKVH', 12.8, '');
+        $this->drawSpacedText($pdf, $this->pxX(46), $this->pxY(500), 'PKVH', 10.8, 3.6);
         if ($validUntil) {
             $this->drawText($pdf, $this->pxX(127), $this->pxY(503), 'Gultig bis ' . $validUntil, 6.3, '');
         }
@@ -331,6 +331,24 @@ class PrescriptionPdfService
         $pdf->SetFont($font, $style, $size);
         $pdf->SetXY($x, $y);
         $pdf->Cell(0, 0, $this->encode($text), 0, 0, 'L');
+    }
+
+    protected function drawSpacedText(
+        Fpdi $pdf,
+        float $x,
+        float $y,
+        string $text,
+        float $size,
+        float $step,
+        string $style = '',
+        string $font = 'Arial'
+    ): void {
+        $letters = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $currentX = $x;
+        foreach ($letters as $letter) {
+            $this->drawText($pdf, $currentX, $y, $letter, $size, $style, $font);
+            $currentX += $step;
+        }
     }
 
     protected function drawCenteredText(
