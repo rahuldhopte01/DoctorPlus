@@ -588,19 +588,22 @@
 
 @if((Request::is('/') || Request::is('home_new')) && !empty($badgeSett['title']))
 <div class="made-in-germany-badge" id="stickyBadgeInst">
-    <div class="badge-content">
-        <img src="{{ url('images/germany-flag.svg') }}" alt="DE" class="badge-flag" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg';">
-        <span>{{ $badgeSett['title'] }}</span>
+    <img src="{{ url('images/germany-flag.svg') }}" alt="DE" class="badge-flag" onerror="this.src='https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg';">
+    <div class="badge-text-group">
+        <div class="badge-title">{{ $badgeSett['title'] }}</div>
+        @if(!empty($badgeSett['points']))
+        <div class="badge-points-horizontal">
+            @php $pCount = 0; @endphp
+            @foreach($badgeSett['points'] as $point)
+                @if(!empty($point))
+                    @if($pCount > 0) <span class="point-sep">•</span> @endif
+                    <span class="badge-point">{{ $point }}</span>
+                    @php $pCount++; @endphp
+                @endif
+            @endforeach
+        </div>
+        @endif
     </div>
-    @if(!empty($badgeSett['points']))
-    <ul class="badge-points">
-        @foreach($badgeSett['points'] as $point)
-            @if(!empty($point))
-            <li><i class="bi bi-check2"></i> {{ $point }}</li>
-            @endif
-        @endforeach
-    </ul>
-    @endif
 </div>
 @endif
 

@@ -446,23 +446,23 @@
 /* Sticky "Made in Germany" Badge */
 .made-in-germany-badge {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
+    bottom: 25px;
+    right: 30px;
     z-index: 2000;
     width: auto;
     cursor: pointer;
     background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: 1px solid #eee;
-    padding: 12px 16px;
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 10px 24px 10px 14px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: 'Inter', sans-serif;
-    max-width: 200px;
     text-decoration: none;
+    pointer-events: auto;
 }
 
 .made-in-germany-badge:hover {
@@ -470,52 +470,66 @@
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 }
 
-.badge-content {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    color: #1a1a1a;
-    font-size: 0.95rem;
-}
-
 .badge-flag {
-    width: 24px;
-    height: auto;
-    border-radius: 2px;
+    width: 44px;
+    height: 30px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex-shrink: 0;
 }
 
-.badge-points {
-    list-style: none;
-    padding: 0;
-    margin: 5px 0 0 0;
+.badge-text-group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    margin-left: 14px;
 }
 
-.badge-points li {
-    font-size: 0.8rem;
-    color: #666;
+.badge-title {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    line-height: 1.2;
+}
+
+.badge-points-horizontal {
     display: flex;
     align-items: center;
     gap: 6px;
+    color: #777;
+    font-size: 0.82rem;
     font-weight: 500;
+    margin-top: 1px;
+    white-space: nowrap;
 }
 
-.badge-points li i {
-    color: #27ae60;
+.point-sep {
+    color: #ccc;
+    font-weight: bold;
     font-size: 1rem;
+    line-height: 0;
+    position: relative;
+    top: -1px;
 }
 
 @media (max-width: 768px) {
     .made-in-germany-badge {
-        bottom: 15px;
+        bottom: 20px;
         right: 15px;
-        padding: 10px 12px;
-        max-width: 160px;
+        padding: 8px 18px 8px 10px;
     }
-    .badge-points {
-        display: none; /* Hide points on mobile to save space */
+    .badge-flag {
+        width: 36px;
+        height: 24px;
+    }
+    .badge-title {
+        font-size: 0.85rem;
+    }
+    .badge-points-horizontal {
+        font-size: 0.75rem;
+        gap: 4px;
+    }
+    .badge-text-group {
+        margin-left: 10px;
     }
 }
