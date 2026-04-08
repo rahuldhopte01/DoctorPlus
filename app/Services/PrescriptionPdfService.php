@@ -202,7 +202,7 @@ class PrescriptionPdfService
         );
 
         if ($patientDob) {
-            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(182), $this->pxW(120), $patientDob, 9.0, '');
+            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(166), $this->pxW(120), $patientDob, 9.0, '');
         }
 
         if ($doctorLanr !== '') {
