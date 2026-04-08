@@ -64,6 +64,8 @@ class Setting extends Model
         'website_home_settings',
         'website_footer_settings',
         'website_sidebar_categories',
+        'website_sidebar_entdecken',
+        'website_sidebar_lernen',
     ];
 
     protected $appends = ['companyWhite', 'logo', 'favicon'];
