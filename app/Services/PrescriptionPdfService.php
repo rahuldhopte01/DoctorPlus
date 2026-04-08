@@ -268,7 +268,6 @@ class PrescriptionPdfService
             $doctorLanr !== '' ? 'LANR: ' . $doctorLanr : '',
         ])), 5.4, '', $this->pxH(20), $this->pxW(150), 'C');
 
-        $this->drawSpacedText($pdf, $this->pxX(46), $this->pxY(500), 'PKVH', 10.8, 3.6);
         if ($validUntil) {
             $this->drawText($pdf, $this->pxX(127), $this->pxY(503), 'Gultig bis ' . $validUntil, 6.3, '');
         }

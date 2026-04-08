@@ -236,13 +236,6 @@
             color: rgba(93, 125, 170, 0.78);
         }
 
-        .pkvh {
-            top: 81.8mm;
-            left: 8.5mm;
-            font-size: 15pt;
-            letter-spacing: 0.4pt;
-        }
-
         .valid-until {
             top: 85.9mm;
             left: 19.8mm;
@@ -377,7 +370,6 @@
 
     <div class="stamp"><span>R</span></div>
 
-    <div class="text pkvh">PKVH</div>
     @if($validUntilFormatted !== '')
         <div class="text valid-until">Gultig bis {{ $validUntilFormatted }}</div>
     @endif
