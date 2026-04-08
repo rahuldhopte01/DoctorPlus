@@ -1890,4 +1890,56 @@ class WebsiteController extends Controller
         //Use new design treatment detail page
         return view('website.amritComponent', compact('category', 'treatment', 'hasQuestionnaire', 'setting', 'medicines', 'treatments'));
     }
+
+    /**
+     * Get search suggestions for categories and medicines (Phase 2)
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $q = $request->get('q');
+        if (empty($q) || strlen($q) < 2) {
+            return response()->json([]);
+        }
+
+        $results = [];
+
+        // 1. Search Categories
+        $categories = \App\Models\Category::where('status', 1)
+            ->where('name', 'like', '%' . $q . '%')
+            ->limit(5)
+            ->get(['id', 'name']);
+        
+        foreach ($categories as $cat) {
+            $results[] = [
+                'label' => $cat->name,
+                'url' => route('category.detail', $cat->id),
+                'type' => 'category'
+            ];
+        }
+
+        // 2. Search Medicines (Products)
+        $medicines = \App\Models\Medicine::where('status', 1)
+            ->where(function($query) use ($q) {
+                $query->where('name', 'like', '%' . $q . '%')
+                      ->orWhere('strength', 'like', '%' . $q . '%')
+                      ->orWhere('description', 'like', '%' . $q . '%');
+            })
+            ->limit(10)
+            ->get(['id', 'name', 'strength']);
+
+        foreach ($medicines as $med) {
+            $label = $med->name;
+            if ($med->strength) {
+                $label .= ' ' . $med->strength;
+            }
+            
+            $results[] = [
+                'label' => $label,
+                'url' => route('categories', ['search' => $med->name]),
+                'type' => 'medicine'
+            ];
+        }
+
+        return response()->json($results);
+    }
 }

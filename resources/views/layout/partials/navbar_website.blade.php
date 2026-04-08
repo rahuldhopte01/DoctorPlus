@@ -90,7 +90,7 @@
         color: white;
         font-family: 'Inter', sans-serif;
         position: relative;
-        z-index: 1040;
+        z-index: 2;
     }
     .fuxx-promo-bar .decor-icon {
         position: absolute;
@@ -210,6 +210,81 @@
     }
     .sidebar-overlay.active {
         right: 0;
+    }
+
+    /* Search Suggestions Styles */
+    .header-search {
+        position: relative;
+    }
+    .search-suggestions-container {
+        position: absolute;
+        top: calc(100% + 14px);
+        right: 0;
+        left: auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+        max-height: 400px;
+        overflow-y: auto;
+        z-index: 2000;
+        display: none;
+        padding: 14px;
+        width: 300px; /* Matches .header-search.active .search-form width */
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+    @media (max-width: 768px) {
+        .search-suggestions-container {
+            width: calc(100vw - 30px);
+            right: 15px;
+            top: 60px;
+            position: fixed;
+        }
+    }
+    .search-suggestions-container.active {
+        display: block;
+    }
+    .suggestion-item {
+        display: block;
+        padding: 9px 15px;
+        color: #1a1a1a;
+        text-decoration: none;
+        transition: all 0.2s ease-out;
+        border-radius: 30px;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        background: #f9f9f9;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
+        border: 1px solid #f0f0f0;
+    }
+    .suggestion-item:last-child {
+        margin-bottom: 0;
+    }
+    .suggestion-item:hover {
+        background: #fff;
+        color: #7b42f6;
+        border-color: #7b42f6;
+        box-shadow: 0 4px 15px rgba(123, 66, 246, 0.1);
+        transform: translateY(-2px);
+    }
+    .suggestion-item mark {
+        background: none;
+        color: #10b981; /* Green highlight like in reference */
+        padding: 0;
+        font-weight: 700;
+    }
+    .suggestion-type-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #bbb;
+        margin: 15px 0 8px 14px;
+        font-weight: 800;
+    }
+    .suggestion-type-label:first-child {
+        margin-top: 5px;
     }
     .sidebar-header {
         display: flex;
@@ -544,5 +619,95 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.toggle('open');
         });
     });
+
+    // --- Search Suggestions Logic ---
+    const searchWrapper = document.getElementById('headerSearch');
+    if (searchWrapper) {
+        const searchInput = searchWrapper.querySelector('input');
+        const suggestionsContainer = document.createElement('div');
+        suggestionsContainer.id = 'searchSuggestions';
+        suggestionsContainer.className = 'search-suggestions-container';
+        searchWrapper.appendChild(suggestionsContainer);
+
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                suggestionsContainer.classList.remove('active');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`{{ route('search.suggestions') }}?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            renderSuggestions(data, query, suggestionsContainer);
+                            suggestionsContainer.classList.add('active');
+                        } else {
+                            suggestionsContainer.classList.remove('active');
+                        }
+                    })
+                    .catch(err => console.error('Search error:', err));
+            }, 300);
+        });
+
+        // Close on escape
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                suggestionsContainer.classList.remove('active');
+            }
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchWrapper.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.classList.remove('active');
+            }
+        });
+    }
+
+    function renderSuggestions(data, query, container) {
+        container.innerHTML = '';
+        
+        const categories = data.filter(i => i.type === 'category');
+        const medicines = data.filter(i => i.type === 'medicine');
+
+        if (categories.length > 0) {
+            const label = document.createElement('div');
+            label.className = 'suggestion-type-label';
+            label.textContent = 'Kategorien';
+            container.appendChild(label);
+            categories.forEach(item => addItem(item, query, container));
+        }
+
+        if (medicines.length > 0) {
+            const label = document.createElement('div');
+            label.className = 'suggestion-type-label';
+            label.textContent = 'Produkte';
+            container.appendChild(label);
+            medicines.forEach(item => addItem(item, query, container));
+        }
+    }
+
+    function addItem(item, query, container) {
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.className = 'suggestion-item';
+        
+        // Highlight logic (case-insensitive)
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        const highlighted = item.label.replace(regex, '<mark>$1</mark>');
+        a.innerHTML = highlighted;
+        
+        container.appendChild(a);
+    }
+
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
 });
 </script>
