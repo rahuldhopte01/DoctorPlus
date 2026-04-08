@@ -127,18 +127,21 @@
 @if(!empty($promo['status']) && $promo['status'] == 1)
 <style>
     .fuxx-promo-bar {
-        background-color: #3b5ef8;
-        color: white;
+        background-color: #ffffff;
+        color: var(--site_color, #7b42f6);
         font-family: 'Inter', sans-serif;
         position: relative;
         z-index: 2;
+        border-bottom: 1px solid rgba(123, 66, 246, 0.05);
     }
     .fuxx-promo-bar .decor-icon {
         position: absolute;
-        opacity: 0.15;
+        opacity: 0.08;
+        color: var(--site_color, #7b42f6);
     }
     .promo-countdown-box {
-        background-color: #2441d1 !important;
+        background-color: var(--site_color, #7b42f6) !important;
+        color: #ffffff !important;
         border-radius: 4px;
         min-width: 32px;
         text-align: center;
@@ -152,6 +155,8 @@
         font-weight: 800;
         text-transform: uppercase;
         margin-top: 2px;
+        color: var(--site_color, #7b42f6);
+        opacity: 0.8;
     }
 </style>
 <div class="fuxx-promo-bar d-flex justify-content-center align-items-center py-2 px-3 overflow-hidden position-relative">
