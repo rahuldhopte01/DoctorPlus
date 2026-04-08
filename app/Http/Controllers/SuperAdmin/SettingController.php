@@ -23,8 +23,9 @@ class SettingController extends Controller
         $timezones = Timezone::get();
         $currencies = Currency::get();
         $languages = Language::whereStatus(1)->get();
+        $categories = App\Models\Category::whereStatus(1)->orderBy('name', 'ASC')->get();
 
-        return view('superAdmin.setting.setting', compact('setting', 'timezones', 'currencies', 'languages'));
+        return view('superAdmin.setting.setting', compact('setting', 'timezones', 'currencies', 'languages', 'categories'));
     }
 
     public function update_general_setting(Request $request)
@@ -235,6 +236,22 @@ class SettingController extends Controller
                 }
             }
             $data['website_header_sidebar_menu'] = json_encode($menu);
+        }
+
+        // Handle Sidebar Categories (JSON)
+        if ($request->has('sidebar_category_id')) {
+            $sidebarCategories = [];
+            foreach ($request->sidebar_category_id as $index => $catId) {
+                if (!empty($catId)) {
+                    $sidebarCategories[] = [
+                        'id' => $catId,
+                        'is_new' => isset($request->sidebar_category_is_new[$index]) ? 1 : 0
+                    ];
+                }
+            }
+            $data['website_sidebar_categories'] = json_encode($sidebarCategories);
+        } else {
+            $data['website_sidebar_categories'] = json_encode([]);
         }
 
         // Handle Promo Bar (JSON)

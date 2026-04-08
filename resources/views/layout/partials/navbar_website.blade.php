@@ -516,11 +516,17 @@
             @if(count($sidebar_treatments) > 0)
                 <li class="menu-section-header">{{ __('TOP-KATEGORIEN') }}</li>
                 @foreach($sidebar_treatments as $treatment)
-                    @if(count($treatment->category) > 0)
+                    @php
+                        $hasNew = $treatment->category->contains('is_sidebar_new', 1);
+                    @endphp
+                    @if(count($treatment->category) > 1)
                         <li>
                             <a href="javascript:void(0)" class="has-submenu">
                                 <span class="menu-label-wrapper">
                                     {{ $treatment->name }}
+                                    @if($hasNew)
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
                                 </span>
                                 <i class="bi bi-chevron-right menu-arrow"></i>
                             </a>
@@ -529,10 +535,26 @@
                                     <li>
                                         <a href="{{ route('category.detail', $subcat->id) }}">
                                             {{ $subcat->name }}
+                                            @if($subcat->is_sidebar_new)
+                                                <span class="badge-neu" style="margin-left:8px; font-size: 0.5rem;">{{ __('NEU') }}</span>
+                                            @endif
                                         </a>
                                     </li>
                                 @endforeach
                             </ul>
+                        </li>
+                    @elseif(count($treatment->category) == 1)
+                        @php $subcat = $treatment->category->first(); @endphp
+                        <li>
+                            <a href="{{ route('category.detail', $subcat->id) }}">
+                                <span class="menu-label-wrapper">
+                                    {{ $treatment->name }}
+                                    @if($subcat->is_sidebar_new)
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
                         </li>
                     @else
                         <li>

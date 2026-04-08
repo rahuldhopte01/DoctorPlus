@@ -68,9 +68,36 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layout.partials.navbar_website', function ($view) {
             try {
                 $setting = \App\Models\Setting::first();
-                $sidebar_treatments = \App\Models\Treatments::with(['category' => function($q) {
-                    $q->where('status', 1);
-                }])->where('status', 1)->get();
+                $sidebarCatsJson = json_decode($setting->website_sidebar_categories, true) ?: [];
+                
+                if (count($sidebarCatsJson) > 0) {
+                    $catIds = array_column($sidebarCatsJson, 'id');
+                    $isNewMap = array_column($sidebarCatsJson, 'is_new', 'id');
+                    
+                    // Fetch categories and map the 'is_new' status
+                    $selectedCategories = \App\Models\Category::with('treatment')
+                        ->whereStatus(1)
+                        ->whereIn('id', $catIds)
+                        ->get()
+                        ->each(function($cat) use ($isNewMap) {
+                            $cat->is_sidebar_new = $isNewMap[$cat->id] ?? 0;
+                        });
+
+                    // Group by Treatment to maintain hierarchy
+                    $grouped = $selectedCategories->groupBy('treatment_id');
+                    $sidebar_treatments = collect();
+                    
+                    foreach ($grouped as $treatmentId => $cats) {
+                        // We need the Treatment model as a container
+                        $treatment = \App\Models\Treatments::find($treatmentId);
+                        if ($treatment && $treatment->status == 1) {
+                            $treatment->setRelation('category', $cats);
+                            $sidebar_treatments->push($treatment);
+                        }
+                    }
+                } else {
+                    $sidebar_treatments = collect();
+                }
                 
                 $categories = \App\Models\Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
                 
