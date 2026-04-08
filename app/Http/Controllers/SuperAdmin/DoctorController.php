@@ -168,6 +168,17 @@ class DoctorController extends Controller
         
         $doctor = Doctor::create($data);
         
+        if ($request->hasFile('signature')) {
+            $directory = storage_path('app/doctor-signatures');
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            $file = $request->file('signature');
+            $filename = 'doctor_' . $doctor->id . '_sig_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($directory, $filename);
+            $doctor->update(['signature' => $filename]);
+        }
+        
         // Sync treatments and categories (only if arrays are not empty)
         if (!empty($treatmentIds)) {
             $doctor->treatments()->sync($treatmentIds);
@@ -369,6 +380,30 @@ class DoctorController extends Controller
             (new CustomController)->deleteFile($doctor->image);
             $data['image'] = (new CustomController)->imageUpload($request->image);
         }
+
+        if ($request->remove_signature) {
+            if ($doctor->signature) {
+                $path = storage_path('app/doctor-signatures/' . $doctor->signature);
+                if (file_exists($path)) {
+                    @unlink($path);
+                }
+                $data['signature'] = null;
+            }
+        }
+
+        if ($request->hasFile('signature')) {
+            $directory = storage_path('app/doctor-signatures');
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+            if ($doctor->signature && file_exists($directory . '/' . $doctor->signature)) {
+                @unlink($directory . '/' . $doctor->signature);
+            }
+            $file = $request->file('signature');
+            $filename = 'doctor_' . $doctor->id . '_sig_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move($directory, $filename);
+            $data['signature'] = $filename;
+        }
         $education = [];
         for ($i = 0; $i < count($data['degree']); $i++) {
             $temp['degree'] = $data['degree'][$i];
@@ -485,6 +520,26 @@ class DoctorController extends Controller
         $work->update($data);
 
         return redirect()->back();
+    }
+
+    public function previewSignature($id)
+    {
+        $doctor = Doctor::findOrFail($id);
+
+        if (empty($doctor->signature)) {
+            abort(404);
+        }
+
+        $path = storage_path('app/doctor-signatures/' . $doctor->signature);
+        if (! file_exists($path)) {
+            abort(404);
+        }
+
+        $mimeType = mime_content_type($path) ?: 'application/octet-stream';
+        return response()->file($path, [
+            'Content-Type'        => $mimeType,
+            'Content-Disposition' => 'inline; filename="' . basename($path) . '"',
+        ]);
     }
 
     public function change_password(Request $request)

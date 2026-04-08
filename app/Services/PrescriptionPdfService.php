@@ -46,7 +46,13 @@ class PrescriptionPdfService
             }
 
             $doctorPhone = ($doctor && $doctor->user && $doctor->user->phone) ? $doctor->user->phone : '';
-            $doctorAddress = ($doctor && $doctor->hospital && $doctor->hospital->address) ? $doctor->hospital->address : '';
+            $doctorAddressParts = array_filter([
+                $doctor->street ?? '',
+                trim(($doctor->postcode ?? '') . ' ' . ($doctor->city ?? '')),
+                $doctor->state ?? '',
+                $doctor->country ?? '',
+            ], fn ($p) => trim((string) $p) !== '');
+            $doctorAddress = implode(', ', $doctorAddressParts);
             $doctorLanr = '';
             $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
 
@@ -67,6 +73,10 @@ class PrescriptionPdfService
             $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
             $path = $directory . DIRECTORY_SEPARATOR . $fileName;
 
+            $signaturePath = ($doctor && $doctor->signature)
+                ? storage_path('app/doctor-signatures/' . $doctor->signature)
+                : null;
+
             $this->generateCustomTemplate(
                 outputPath: $path,
                 createdDate: $prescription->created_at ? $prescription->created_at->format('d.m.Y') : now()->format('d.m.Y'),
@@ -82,7 +92,8 @@ class PrescriptionPdfService
                 doctorLanr: $doctorLanr,
                 medicines: $medicines,
                 validUntil: $validUntil,
-                receiptNr: $receiptNr
+                receiptNr: $receiptNr,
+                signaturePath: $signaturePath
             );
 
             if (! file_exists($path)) {
@@ -121,7 +132,8 @@ class PrescriptionPdfService
         string $doctorLanr,
         array $medicines,
         ?string $validUntil,
-        string $receiptNr
+        string $receiptNr,
+        ?string $signaturePath = null
     ): void {
         $templatePath = base_path('prescription-pdf.pdf');
         if (! file_exists($templatePath)) {
@@ -218,8 +230,7 @@ class PrescriptionPdfService
 
         $this->drawCenteredText($pdf, $this->pxX(635), $this->pxY(359), $this->pxW(185), $doctorName, 8.6, '');
         $this->drawCenteredText($pdf, $this->pxX(680), $this->pxY(387), $this->pxW(90), $doctorTitle, 5.8, '');
-        $signaturePath = base_path('signature.png');
-        if (file_exists($signaturePath)) {
+        if ($signaturePath && file_exists($signaturePath)) {
             $pdf->Image($signaturePath, $this->pxX(675), $this->pxY(378), $this->pxW(95));
         } else {
             $this->drawDoctorStamp($pdf, $this->pxX(713), $this->pxY(421), $this->pxW(32), $line);

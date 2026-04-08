@@ -281,6 +281,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('/edit_timeslot/{id}', [DoctorController::class, 'edit_timeslot']);
         Route::post('/update_timeslot', [DoctorController::class, 'update_timeslot']);
         Route::post('/doctor/doc_change_password', [DoctorController::class, 'change_password']);
+        Route::get('/doctor/signature/preview/{id}', [DoctorController::class, 'previewSignature'])->name('admin.doctor.signature.preview');
         Route::resource('doctor', DoctorController::class)->except([
             'show',
         ]);

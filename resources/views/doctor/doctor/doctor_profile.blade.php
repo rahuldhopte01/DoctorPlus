@@ -414,6 +414,40 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header text-primary">
+                {{__('Address Information')}}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        <label class="col-form-label">{{__('Street Address')}}</label>
+                        <input type="text" name="street" value="{{ $doctor->street }}" class="form-control @error('street') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('City')}}</label>
+                        <input type="text" name="city" value="{{ $doctor->city }}" class="form-control @error('city') is-invalid @enderror">
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('State / Province')}}</label>
+                        <input type="text" name="state" value="{{ $doctor->state }}" class="form-control @error('state') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('Postal Code')}}</label>
+                        <input type="text" name="postcode" value="{{ $doctor->postcode }}" class="form-control @error('postcode') is-invalid @enderror">
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('Country')}}</label>
+                        <input type="text" name="country" value="{{ $doctor->country }}" class="form-control @error('country') is-invalid @enderror">
+                    </div>
+                </div>
+            </div>
             <div class="text-right p-2">
                 <button type="submit" class="btn btn-primary">{{__('Submit')}}</button>
             </div>
