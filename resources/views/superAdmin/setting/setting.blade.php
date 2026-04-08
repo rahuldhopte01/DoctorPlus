@@ -1343,10 +1343,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                     </div>
-
-                                        <hr>
-                                        <h5 class="my-4">{{__('Testosterone Banner Section')}}</h5>
+                                     <hr>
+                                     <h5 class="my-4">{{__('Testosterone Banner Section')}}</h5>
                                         <div class="row">
                                             <div class="col-md-3 form-group">
                                                 <label>{{__('Badge Text')}}</label>
@@ -1552,10 +1550,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        </div>
-
-                                        <hr>
-                                        <h5 class="my-4">{{__('Medical Advisory Board Section')}}</h5>
+                                     <hr>
+                                     <h5 class="my-4">{{__('Medical Advisory Board Section')}}</h5>
                                         <div class="row">
                                             <div class="col-md-12 form-group">
                                                 <label>{{__('Section Heading')}}</label>
@@ -1584,10 +1580,8 @@
                                                 </div>
                                             @endfor
                                         </div>
-                                        </div>
-
-                                        <hr>
-                                        <h5 class="my-4">{{__('Statistics Showcase Section')}}</h5>
+                                     <hr>
+                                     <h5 class="my-4">{{__('Statistics Showcase Section')}}</h5>
                                         <div class="row">
                                             <div class="col-md-12 form-group">
                                                 <label>{{__('Section Heading')}}</label>
@@ -1628,10 +1622,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        </div>
-
-                                        <hr>
-                                        <h5 class="my-4">{{__('Comparison Section (Warum dr.fuxx?)')}}</h5>
+                                     <hr>
+                                     <h5 class="my-4">{{__('Comparison Section (Warum dr.fuxx?)')}}</h5>
                                         <div class="row">
                                             <div class="col-md-4 form-group">
                                                 <label>{{__('Top Pill Text')}}</label>
@@ -1781,6 +1773,7 @@
                                                 <label>{{__('Bottom Subtext')}}</label>
                                                 <input type="text" name="cta_subtext" value="{{ $ctaSec['subtext'] ?? 'Keine Kosten bis zur Rezeptausstellung – unverbindlich testen' }}" class="form-control">
                                             </div>
+                                        </div>
                                         <hr>
                                         <h5 class="my-4">{{__('Privacy Section (Datenschutz)')}}</h5>
                                         @php
@@ -1853,9 +1846,23 @@
                                         @php
                                             $footer = json_decode($setting->website_footer_settings, true) ?: [];
                                         @endphp
-                                        <div class="form-group">
-                                            <label>{{__('Copyright Text')}}</label>
-                                            <input type="text" name="footer_copy" value="{{ $footer['copy'] ?? '' }}" class="form-control">
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Brand Description')}}</label>
+                                                <textarea name="footer_desc" class="form-control" rows="3" placeholder="Deutschlands moderne Telemedizin-Plattform...">{{ $footer['desc'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Office Address')}}</label>
+                                                <textarea name="footer_address" class="form-control" rows="2" placeholder="dr.fuxx GmbH · Berlin, Deutschland">{{ $footer['address'] ?? '' }}</textarea>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>{{__('Copyright Text')}}</label>
+                                                <input type="text" name="footer_copy" value="{{ $footer['copy'] ?? '' }}" class="form-control" placeholder="© 2026 dr.fuxx. Alle Rechte vorbehalten.">
+                                            </div>
+                                            <div class="col-md-12 form-group">
+                                                <label>{{__('Footer Disclaimer (Small print at bottom)')}}</label>
+                                                <textarea name="footer_disclaimer" class="form-control" rows="2" placeholder="dr.fuxx ist eine Vermittlungsplattform...">{{ $footer['disclaimer'] ?? '' }}</textarea>
+                                            </div>
                                         </div>
 
                                         <h5 class="my-4">{{__('Social Links')}}</h5>

@@ -94,7 +94,11 @@
             {{ $disclaimer }}
         </div>
         <div class="footer-copyright-v2">
-            © {{ date('Y') }} {{ __($setting->business_name) }}. Alle Rechte vorbehalten.
+            @if(!empty($footerSettings['copy']))
+                {{ $footerSettings['copy'] }}
+            @else
+                © {{ date('Y') }} {{ __($setting->business_name) }}. Alle Rechte vorbehalten.
+            @endif
         </div>
     </div>
 </footer>

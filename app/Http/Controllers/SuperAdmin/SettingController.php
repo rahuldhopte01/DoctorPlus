@@ -724,7 +724,7 @@ class SettingController extends Controller
         $data['website_home_settings'] = json_encode($home_settings);
 
         // Handle Footer Settings (Multi-column Premium)
-        if ($request->has('footer_copy') || $request->has('footer_desc')) {
+        if ($request->has('footer_copy') || $request->has('footer_desc') || $request->has('footer_col_title') || $request->has('footer_trust_text')) {
             $footer_sett = [];
             $footer_sett['copy'] = $request->footer_copy;
             $footer_sett['desc'] = $request->footer_desc;
