@@ -19,14 +19,18 @@ class PrescriptionPdfService
     public function generate(Prescription $prescription): bool|string
     {
         try {
-            $prescription->load(['doctor.user', 'doctor.hospital', 'user']);
+            $prescription->load(['doctor.user', 'doctor.hospital', 'user', 'appointment']);
 
             $medicines = array_slice(json_decode($prescription->medicines, true) ?? [], 0, 5);
             $doctor = $prescription->doctor;
             $doctorName = $doctor && $doctor->user && $doctor->user->name
                 ? $doctor->user->name
                 : ($doctor && $doctor->name ? $doctor->name : 'Doctor');
-            $patientName = $prescription->user ? $prescription->user->name : 'Patient';
+            $patientName = trim((string) (
+                data_get($prescription, 'appointment.patient_name')
+                ?? data_get($prescription, 'user.name')
+                ?? 'Patient'
+            ));
 
             $patientAddress = '';
             $patientCity = '';
@@ -66,6 +70,11 @@ class PrescriptionPdfService
                 ?? data_get($doctor, 'hospital.LANR')
                 ?? ''
             ));
+            $doctorTitle = match (strtolower((string) ($doctor->gender ?? ''))) {
+                'male' => 'Arzt',
+                'female' => 'Arztin',
+                default => 'Arzt',
+            };
             $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
 
             $validUntil = null;
@@ -108,7 +117,7 @@ class PrescriptionPdfService
                 patientCountry: 'Deutschland',
                 patientDob: $patientDob,
                 doctorName: $doctorName,
-                doctorTitle: 'Arztin',
+                doctorTitle: $doctorTitle,
                 doctorAddress: $doctorAddress,
                 doctorPhone: $doctorPhone,
                 doctorLanr: $doctorLanr,
@@ -202,11 +211,7 @@ class PrescriptionPdfService
         );
 
         if ($patientDob) {
-            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(166), $this->pxW(120), $patientDob, 9.0, '');
-        }
-
-        if ($doctorLanr !== '') {
-            $this->drawCenteredText($pdf, $this->pxX(230), $this->pxY(250), $this->pxW(110), $doctorLanr, 6.8, '');
+            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(150), $this->pxW(120), $patientDob, 9.0, '');
         }
 
         $this->drawCenteredText($pdf, $this->pxX(372), $this->pxY(284), $this->pxW(128), $createdDate, 9.0, '');
