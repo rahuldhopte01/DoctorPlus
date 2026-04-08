@@ -782,30 +782,52 @@
                                             @if(count($menus) > 0)
                                                 @foreach($menus as $index => $item)
                                                     <div class="row menu-item mb-3 align-items-end">
-                                                        <div class="col-md-5">
+                                                        <div class="col-md-3">
+                                                            <label>{{__('Type')}}</label>
+                                                            <select name="menu_type[]" class="form-control">
+                                                                <option value="link" {{ ($item['type'] ?? '') == 'link' ? 'selected' : '' }}>{{__('Link')}}</option>
+                                                                <option value="section" {{ ($item['type'] ?? '') == 'section' ? 'selected' : '' }}>{{__('Section Header')}}</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-3">
                                                             <label>{{__('Label')}}</label>
                                                             <input type="text" name="menu_label[]" value="{{ $item['label'] }}" class="form-control">
                                                         </div>
-                                                        <div class="col-md-5">
+                                                        <div class="col-md-3">
                                                             <label>{{__('URL')}}</label>
                                                             <input type="text" name="menu_url[]" value="{{ $item['url'] }}" class="form-control">
                                                         </div>
                                                         <div class="col-md-2">
+                                                            <label>{{__('Badge (e.g. NEU)')}}</label>
+                                                            <input type="text" name="menu_badge[]" value="{{ $item['badge'] ?? '' }}" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-1">
                                                             <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
                                                         </div>
                                                     </div>
                                                 @endforeach
                                             @else
                                                 <div class="row menu-item mb-3 align-items-end">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-3">
+                                                        <label>{{__('Type')}}</label>
+                                                        <select name="menu_type[]" class="form-control">
+                                                            <option value="link">{{__('Link')}}</option>
+                                                            <option value="section">{{__('Section Header')}}</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
                                                         <label>{{__('Label')}}</label>
                                                         <input type="text" name="menu_label[]" class="form-control">
                                                     </div>
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-3">
                                                         <label>{{__('URL')}}</label>
                                                         <input type="text" name="menu_url[]" class="form-control">
                                                     </div>
                                                     <div class="col-md-2">
+                                                        <label>{{__('Badge')}}</label>
+                                                        <input type="text" name="menu_badge[]" class="form-control">
+                                                    </div>
+                                                    <div class="col-md-1">
                                                         <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
                                                     </div>
                                                 </div>
@@ -2168,15 +2190,26 @@
         // Menu Repeater
         $('#add-menu').click(function() {
             var html = `<div class="row menu-item mb-3 align-items-end">
-                            <div class="col-md-5">
+                            <div class="col-md-3">
+                                <label>{{__('Type')}}</label>
+                                <select name="menu_type[]" class="form-control">
+                                    <option value="link">{{__('Link')}}</option>
+                                    <option value="section">{{__('Section Header')}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <label>{{__('Label')}}</label>
                                 <input type="text" name="menu_label[]" class="form-control">
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-3">
                                 <label>{{__('URL')}}</label>
                                 <input type="text" name="menu_url[]" class="form-control">
                             </div>
                             <div class="col-md-2">
+                                <label>{{__('Badge')}}</label>
+                                <input type="text" name="menu_badge[]" class="form-control">
+                            </div>
+                            <div class="col-md-1">
                                 <button type="button" class="btn btn-danger btn-sm remove-menu"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;
@@ -2312,9 +2345,6 @@ $(document).ready(function() {
     });
 
     // Menu
-    $('#add-menu').on('click', function() {
-        cloneFirstRow($('#menu-container'), 'menu-item');
-    });
     $(document).on('click', '.remove-menu', function() {
         if ($('.menu-item').length > 1) $(this).closest('.menu-item').remove();
     });

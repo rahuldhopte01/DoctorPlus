@@ -191,22 +191,290 @@
 @endif
 
 <!-- Sidebar Overlay Menu -->
+<style>
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        right: -400px;
+        width: 100%;
+        max-width: 400px;
+        height: 100%;
+        background: #fff;
+        z-index: 2000;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        padding: 24px;
+        font-family: 'Inter', sans-serif;
+    }
+    .sidebar-overlay.active {
+        right: 0;
+    }
+    .sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    .sidebar-header h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        margin: 0;
+    }
+    .sidebar-close {
+        width: 36px;
+        height: 36px;
+        background: #f3f0ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .sidebar-close:hover {
+        background: #e7e0ff;
+        transform: scale(1.05);
+    }
+    .sidebar-close i {
+        font-size: 1.5rem;
+        color: #1a1a1a;
+    }
+
+    /* Toggle Buttons */
+    .sidebar-toggles {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+    .toggle-btn {
+        flex: 1;
+        padding: 12px;
+        border-radius: 30px;
+        border: 1px solid #eee;
+        background: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
+    }
+    .toggle-btn.active {
+        background: #7b42f6;
+        color: #fff;
+        border-color: #7b42f6;
+        box-shadow: 0 4px 15px rgba(123, 66, 246, 0.2);
+    }
+
+    /* Menu List */
+    .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        margin-right: -10px;
+        padding-right: 10px;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .menu-section-header {
+        color: #999;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin: 24px 0 16px 0;
+        padding-left: 4px;
+    }
+    .sidebar-menu li {
+        margin-bottom: 8px;
+    }
+    .sidebar-menu a {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        color: #1a1a1a;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.05rem;
+        border-radius: 12px;
+        transition: all 0.2s;
+    }
+    .sidebar-menu a:hover {
+        background: #f8f6ff;
+        color: #7b42f6;
+    }
+    .menu-label-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .badge-neu {
+        background: #7b42f6;
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: 900;
+        padding: 2px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .menu-arrow {
+        color: #ccc;
+        font-size: 0.9rem;
+        transition: transform 0.2s;
+    }
+    .sidebar-menu a:hover .menu-arrow {
+        transform: translateX(4px);
+        color: #7b42f6;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 480px) {
+        .sidebar-overlay {
+            max-width: 100%;
+        }
+    }
+
+    /* Submenu Styles */
+    .has-submenu .menu-arrow {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .has-submenu.open .menu-arrow {
+        transform: rotate(90deg);
+        color: #7b42f6;
+    }
+    .sidebar-submenu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #f9f9ff;
+        border-radius: 0 0 12px 12px;
+        opacity: 0;
+    }
+    .has-submenu.open + .sidebar-submenu {
+        max-height: 2000px; /* Allow for many subcategories */
+        margin-bottom: 12px;
+        opacity: 1;
+        padding: 8px 0;
+    }
+    .sidebar-submenu li {
+        margin-bottom: 2px;
+    }
+    .sidebar-submenu li a {
+        padding: 10px 16px 10px 48px !important;
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        color: #666 !important;
+        background: transparent !important;
+    }
+    .sidebar-submenu li a:hover {
+        color: #7b42f6 !important;
+        background: #f1eeff !important;
+    }
+</style>
+
 <div class="sidebar-overlay" id="sidebarOverlay">
-    <div class="sidebar-close" id="sidebarClose">
-        <i class="bi bi-x"></i>
+    <div class="sidebar-header">
+        <h2>{{ __('Menu') }}</h2>
+        <div class="sidebar-close" id="sidebarClose">
+            <i class="bi bi-x"></i>
+        </div>
     </div>
-    <ul class="sidebar-menu">
-        @if(count($menus) > 0)
-            @foreach($menus as $menu)
-                <li><a href="{{ $menu['url'] }}">{{ $menu['label'] }}</a></li>
+
+    <div class="sidebar-toggles">
+        <div class="toggle-btn active" data-type="rezept">{{ __('Mit Rezept') }}</div>
+        <div class="toggle-btn" data-type="no-rezept">{{ __('Ohne Rezept') }}</div>
+    </div>
+
+    <div class="sidebar-content">
+        <ul class="sidebar-menu">
+            <!-- 1. Database Hierarchical Categories (Top-Kategorien) -->
+            @if(count($sidebar_treatments) > 0)
+                <li class="menu-section-header">{{ __('TOP-KATEGORIEN') }}</li>
+                @foreach($sidebar_treatments as $treatment)
+                    @if(count($treatment->category) > 0)
+                        <li>
+                            <a href="javascript:void(0)" class="has-submenu">
+                                <span class="menu-label-wrapper">
+                                    {{ $treatment->name }}
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                            <ul class="sidebar-submenu">
+                                @foreach($treatment->category as $subcat)
+                                    <li>
+                                        <a href="{{ route('category.detail', $subcat->id) }}">
+                                            {{ $subcat->name }}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </li>
+                    @else
+                        <li>
+                            <a href="{{ route('categories', ['treatment' => $treatment->id]) }}">
+                                <span class="menu-label-wrapper">{{ $treatment->name }}</span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
+            @endif
+
+            <!-- 2. Dynamic Pages (Manual Sidebar Menus & Footer Links) -->
+            <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
+            
+            <!-- Manual Sidebar Menus from Settings -->
+            @if(count($menus) > 0)
+                @foreach($menus as $menu)
+                    @if(($menu['type'] ?? 'link') == 'section')
+                        {{-- Skip manual sections in the bottom to keep it clean --}}
+                    @else
+                        <li>
+                            <a href="{{ $menu['url'] }}">
+                                <span class="menu-label-wrapper">
+                                    {{ $menu['label'] }}
+                                    @if(!empty($menu['badge']))
+                                        <span class="badge-neu">{{ $menu['badge'] }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                    @endif
+                @endforeach
+            @endif
+
+            <!-- Footer Dynamic Pages (Service, Legal, etc.) -->
+            @foreach($sidebar_footer_cols as $index => $col)
+                @if($index > 0) {{-- Skip the first column if it's "Behandlungen" to avoid duplication --}}
+                    @foreach($col['links'] ?? [] as $link)
+                        <li>
+                            <a href="{{ $link['url'] ?? '#' }}">
+                                <span class="menu-label-wrapper">{{ $link['name'] ?? $link['label'] ?? '' }}</span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                    @endforeach
+                @endif
             @endforeach
-        @else
-            <li><a href="{{ route('categories') }}">{{ __('Behandlungen') }}</a></li>
-            <li><a href="{{ url('/#how-it-works') }}">{{ __('Wie es funktioniert') }}</a></li>
-            <li><a href="{{ url('/about-us') }}">{{ __('Über uns') }}</a></li>
-            <li><a href="{{ url('/#faq') }}">{{ __('Hilfe') }}</a></li>
-        @endif
-    </ul>
+
+            {{-- Fallback --}}
+            @if(count($menus) == 0 && count($sidebar_treatments) == 0 && count($sidebar_footer_cols) == 0)
+                <li><a href="{{ route('categories') }}"><span class="menu-label-wrapper">{{ __('Behandlungen') }}</span> <i class="bi bi-chevron-right menu-arrow"></i></a></li>
+                <li><a href="{{ url('/about-us') }}"><span class="menu-label-wrapper">{{ __('Über uns') }}</span> <i class="bi bi-chevron-right menu-arrow"></i></a></li>
+                <li><a href="{{ url('/#faq') }}"><span class="menu-label-wrapper">{{ __('Hilfe') }}</span> <i class="bi bi-chevron-right menu-arrow"></i></a></li>
+            @endif
+        </ul>
+    </div>
 </div>
 
 <script>
@@ -248,5 +516,33 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Sidebar Toggles
+    const toggleBtns = document.querySelectorAll('.toggle-btn');
+    if (toggleBtns) {
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    }
+
+    // Submenu Toggles
+    const submenuTriggers = document.querySelectorAll('.has-submenu');
+    submenuTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            const parent = this.parentElement;
+            const isOpen = this.classList.contains('open');
+            
+            // Close other open submenus at same level
+            // parent.parentElement.querySelectorAll('.has-submenu.open').forEach(opened => {
+            //     if (opened !== this) opened.classList.remove('open');
+            // });
+
+            this.classList.toggle('open');
+        });
+    });
 });
 </script>

@@ -233,7 +233,9 @@ class SettingController extends Controller
                 if (!empty($label)) {
                     $menu[] = [
                         'label' => $label,
-                        'url' => $request->menu_url[$index] ?? '#'
+                        'url' => $request->menu_url[$index] ?? '#',
+                        'type' => $request->menu_type[$index] ?? 'link',
+                        'badge' => $request->menu_badge[$index] ?? ''
                     ];
                 }
             }

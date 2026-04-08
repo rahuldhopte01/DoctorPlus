@@ -67,10 +67,23 @@ class AppServiceProvider extends ServiceProvider
 
         view()->composer('layout.partials.navbar_website', function ($view) {
             try {
+                $setting = \App\Models\Setting::first();
+                $sidebar_treatments = \App\Models\Treatments::with(['category' => function($q) {
+                    $q->where('status', 1);
+                }])->where('status', 1)->get();
+                
                 $categories = \App\Models\Category::with('treatment')->whereStatus(1)->orderBy('name', 'ASC')->get();
+                
+                $footerSettings = json_decode($setting->website_footer_settings, true) ?: [];
+                $footer_cols = $footerSettings['columns'] ?? [];
+
+                $view->with('sidebar_treatments', $sidebar_treatments);
                 $view->with('categories', $categories);
+                $view->with('sidebar_footer_cols', $footer_cols);
             } catch (\Exception $e) {
-                $view->with('categories', collect()); // Fallback to empty collection
+                $view->with('sidebar_treatments', collect());
+                $view->with('categories', collect());
+                $view->with('sidebar_footer_cols', []);
             }
         });
     }
