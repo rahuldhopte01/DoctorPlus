@@ -829,6 +829,44 @@
                                             @endif
                                         </div>
                                         <button type="button" id="add-menu" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Menu Item')}}</button>
+
+                                        <hr>
+                                        <h5 class="my-4">{{__('Sidebar Categories (TOP-KATEGORIEN)')}}</h5>
+                                        <p class="text-muted small mb-3">Control which treatments appear at the top of the sidebar. You can also label them as "NEU".</p>
+                                        <div id="sidebar-categories-container">
+                                            @php
+                                                $sidebarCats = json_decode($setting->website_sidebar_categories, true) ?: [];
+                                            @endphp
+                                            @if(count($sidebarCats) > 0)
+                                                @foreach($sidebarCats as $index => $item)
+                                                    <div class="row sidebar-cat-item mb-3 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>{{__('Category')}}</label>
+                                                            <select name="sidebar_category_id[]" class="form-control">
+                                                                <option value="">{{__('Choose Category')}}</option>
+                                                                @foreach($categories as $cat)
+                                                                    <option value="{{ $cat->id }}" {{ $item['id'] == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-check mb-2">
+                                                                <input type="checkbox" name="sidebar_category_is_new[{{ $index }}]" class="form-check-input" id="is_new_{{ $index }}" {{ ($item['is_new'] ?? 0) == 1 ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="is_new_{{ $index }}">Show "NEU" Badge</label>
+                                                                <input type="hidden" name="sidebar_category_is_new_placeholder[]" value="1"> {{-- Helper for indexing --}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <button type="button" class="btn btn-danger btn-sm remove-sidebar-cat"><i class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" id="add-sidebar-cat" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Category Line')}}</button>
+                                            <button type="button" id="add-all-sidebar-cats" class="btn btn-outline-primary btn-sm mb-4 ml-2"><i class="fas fa-layer-group"></i> {{__('Add All Active Categories')}}</button>
+                                        </div>
                                     </div>
 
                                      <!-- Home Page Settings -->
@@ -2539,6 +2577,81 @@
             $('#footer-cols-container').append(html);
         });
         $(document).on('click', '.remove-footer-col', function() { $(this).closest('.footer-col-item').remove(); });
+
+        // Sidebar Categories Repeater
+        $(document).on('click', '#add-sidebar-cat', function() {
+            var idx = $('#sidebar-categories-container .sidebar-cat-item').length;
+            var html = `<div class="row sidebar-cat-item mb-3 align-items-end">
+                <div class="col-md-6">
+                    <label>{{__('Category')}}</label>
+                    <select name="sidebar_category_id[]" class="form-control">
+                        <option value="">{{__('Choose Category')}}</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="sidebar_category_is_new[${idx}]" class="form-check-input" id="is_new_${idx}">
+                        <label class="form-check-label" for="is_new_${idx}">Show "NEU" Badge</label>
+                        <input type="hidden" name="sidebar_category_is_new_placeholder[]" value="1">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-sidebar-cat"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>`;
+            $('#sidebar-categories-container').append(html);
+        });
+
+        $(document).on('click', '#add-all-sidebar-cats', function() {
+            const container = $('#sidebar-categories-container');
+            const categories = @json($categories);
+            
+            categories.forEach((cat, index) => {
+                // Check if already exists in container
+                let exists = false;
+                container.find('select[name="sidebar_category_id[]"]').each(function() {
+                    if ($(this).val() == cat.id) exists = true;
+                });
+                
+                if (!exists) {
+                    var idx = container.find('.sidebar-cat-item').length;
+                    var html = `<div class="row sidebar-cat-item mb-3 align-items-end">
+                        <div class="col-md-6">
+                            <label>{{__('Category')}}</label>
+                            <select name="sidebar_category_id[]" class="form-control">
+                                <option value="${cat.id}" selected>${cat.name}</option>
+                                @foreach($categories as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check mb-2">
+                                <input type="checkbox" name="sidebar_category_is_new[${idx}]" class="form-check-input" id="is_new_${idx}">
+                                <label class="form-check-label" for="is_new_${idx}">Show "NEU" Badge</label>
+                                <input type="hidden" name="sidebar_category_is_new_placeholder[]" value="1">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-danger btn-sm remove-sidebar-cat"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                    container.append(html);
+                }
+            });
+        });
+
+        $(document).on('click', '.remove-sidebar-cat', function() {
+            $(this).closest('.sidebar-cat-item').remove();
+            // Re-index checkboxes
+            $('#sidebar-categories-container .sidebar-cat-item').each(function(index) {
+                $(this).find('input[type="checkbox"]').attr('name', `sidebar_category_is_new[${index}]`).attr('id', `is_new_${index}`);
+                $(this).find('label.form-check-label').attr('for', `is_new_${index}`);
+            });
+        });
 
         // --- Image Previews ---
         function readURL(input, previewId) {
