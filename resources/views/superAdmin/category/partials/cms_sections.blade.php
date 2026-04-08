@@ -77,6 +77,21 @@
                             Show Hero Section
                         </label>
                         <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label>Background / Banner Image</label>
+                                <input type="file" class="form-control-file" name="hero_background_image"
+                                       accept="image/jpeg,image/png,image/jpg,image/webp">
+                                @if(!empty($hero['background_image']))
+                                    <div class="mt-2 d-flex align-items-center" style="gap:12px;">
+                                        <img src="{{ asset('images/upload/' . $hero['background_image']) }}"
+                                             alt="Hero Banner" style="height:80px;border-radius:4px;border:1px solid #dee2e6;object-fit:cover;">
+                                        <small class="text-muted">Current banner image. Upload a new file to replace it.</small>
+                                    </div>
+                                @endif
+                                <small class="text-muted">Accepted: jpeg, png, jpg, webp — max 2 MB. This image is used as the hero section background.</small>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>CTA Button Text</label>
                                 <input type="text" class="form-control" name="sections[hero][cta_text]"

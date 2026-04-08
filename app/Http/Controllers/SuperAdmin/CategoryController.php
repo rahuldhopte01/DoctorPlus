@@ -47,12 +47,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'bail|required|unique:category',
-            'price' => 'bail|required|numeric|min:0',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'name'                  => 'bail|required|unique:category',
+            'price'                 => 'bail|required|numeric|min:0',
+            'image'                 => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'hero_background_image' => 'bail|nullable|mimes:jpeg,png,jpg,webp|max:2048',
         ],
             [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'image.max'                 => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
         $data = $request->only(['name', 'description', 'price', 'treatment_id']);
         if ($request->hasFile('image')) {
@@ -60,9 +62,13 @@ class CategoryController extends Controller
         } else {
             $data['image'] = 'prod_default.png';
         }
+        $heroImage = null;
+        if ($request->hasFile('hero_background_image')) {
+            $heroImage = (new CustomController)->imageUpload($request->file('hero_background_image'));
+        }
         $data['status'] = $request->has('status') ? 1 : 0;
         $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
-        $data['cms_sections'] = $this->buildCmsSections($request, null);
+        $data['cms_sections'] = $this->buildCmsSections($request, null, $heroImage);
         Category::create($data);
 
         return redirect('category')->withStatus(__('Category created successfully..!'));
@@ -102,12 +108,14 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'bail|required|unique:category,name,'.$id.',id',
-            'price' => 'bail|required|numeric|min:0',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'name'                  => 'bail|required|unique:category,name,'.$id.',id',
+            'price'                 => 'bail|required|numeric|min:0',
+            'image'                 => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'hero_background_image' => 'bail|nullable|mimes:jpeg,png,jpg,webp|max:2048',
         ],
             [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'image.max'                 => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
         $data = $request->only(['name', 'description', 'price', 'treatment_id']);
         $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
@@ -116,7 +124,15 @@ class CategoryController extends Controller
             (new CustomController)->deleteFile($category->image);
             $data['image'] = (new CustomController)->imageUpload($request->image);
         }
-        $data['cms_sections'] = $this->buildCmsSections($request, $category->cms_sections);
+        $heroImage = null;
+        if ($request->hasFile('hero_background_image')) {
+            $existingHeroImage = $category->cms_sections['hero']['background_image'] ?? null;
+            if ($existingHeroImage) {
+                (new CustomController)->deleteFile($existingHeroImage);
+            }
+            $heroImage = (new CustomController)->imageUpload($request->file('hero_background_image'));
+        }
+        $data['cms_sections'] = $this->buildCmsSections($request, $category->cms_sections, $heroImage);
         $category->update($data);
 
         return redirect('category')->withStatus(__('Category updated successfully..!!'));
@@ -151,7 +167,7 @@ class CategoryController extends Controller
         return response(['success' => true]);
     }
 
-    private function buildCmsSections(Request $request, ?array $existing): array
+    private function buildCmsSections(Request $request, ?array $existing, ?string $heroImage = null): array
     {
         $s = $request->input('sections', []);
         $existing = $existing ?? [];
@@ -159,6 +175,7 @@ class CategoryController extends Controller
         // --- Hero ---
         $hero = array_merge([
             'enabled'              => true,
+            'background_image'     => null,
             'cta_text'             => 'Zu den medizinischen Fragen',
             'cta_color'            => '#3b6fd4',
             'consultation_fee'     => '29',
@@ -184,6 +201,10 @@ class CategoryController extends Controller
             'rating_value'         => $s['hero']['rating_value'] ?? '4,79',
             'rating_count'         => $s['hero']['rating_count'] ?? '14.082',
         ]);
+        // Overwrite background_image only when a new file was actually uploaded
+        if ($heroImage !== null) {
+            $hero['background_image'] = $heroImage;
+        }
 
         // --- Features Bar ---
         $defaultFeatures = [

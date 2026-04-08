@@ -304,6 +304,7 @@ $_cms     = $category->cms_sections ?? [];
 
 $cmsHero  = array_merge([
     'enabled'              => true,
+    'background_image'     => null,
     'cta_text'             => 'Zu den medizinischen Fragen',
     'cta_color'            => '#3b6fd4',
     'consultation_fee'     => '29',
@@ -366,8 +367,14 @@ $cmsPay = array_merge([
 <!-- Hero Section -->
 @if($cmsHero['enabled'])
 <section class="ed-hero">
-    @if(isset($category->image) && file_exists(public_path('images/upload/'.$category->image)))
-        <img class="ed-hero-bg" src="{{ asset('images/upload/'.$category->image) }}" alt="{{ $category->name }}">
+    @php
+        $_heroBannerFile = $cmsHero['background_image'] ?? null;
+        $_heroFallbackFile = $category->image ?? null;
+    @endphp
+    @if($_heroBannerFile && file_exists(public_path('images/upload/'.$_heroBannerFile)))
+        <img class="ed-hero-bg" src="{{ asset('images/upload/'.$_heroBannerFile) }}" alt="{{ $category->name }}">
+    @elseif($_heroFallbackFile && file_exists(public_path('images/upload/'.$_heroFallbackFile)))
+        <img class="ed-hero-bg" src="{{ asset('images/upload/'.$_heroFallbackFile) }}" alt="{{ $category->name }}">
     @else
         <img class="ed-hero-bg" src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1280&q=80" alt="{{ $category->name }}">
     @endif
