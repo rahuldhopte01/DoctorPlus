@@ -375,6 +375,67 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header text-primary">
+                    {{__('Address Information')}}
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12 form-group">
+                            <label class="col-form-label">{{__('Street Address')}}</label>
+                            <input type="text" name="street" value="{{ old('street') }}" class="form-control @error('street') is-invalid @enderror">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">{{__('City')}}</label>
+                            <input type="text" name="city" value="{{ old('city') }}" class="form-control @error('city') is-invalid @enderror">
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">{{__('State / Province')}}</label>
+                            <input type="text" name="state" value="{{ old('state') }}" class="form-control @error('state') is-invalid @enderror">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">{{__('Postal Code')}}</label>
+                            <input type="text" name="postcode" value="{{ old('postcode') }}" class="form-control @error('postcode') is-invalid @enderror">
+                        </div>
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">{{__('Country')}}</label>
+                            <input type="text" name="country" value="{{ old('country') }}" class="form-control @error('country') is-invalid @enderror">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-6 form-group">
+                            <label class="col-form-label">LANR</label>
+                            <input type="text" name="lanr" value="{{ old('lanr') }}" class="form-control @error('lanr') is-invalid @enderror">
+                            @error('lanr')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header text-primary">
+                    {{ __('Prescription Signature') }}
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="col-form-label">{{ __('Upload Signature') }}</label>
+                        <input type="file" name="signature" class="form-control-file @error('signature') is-invalid @enderror" accept=".jpg,.jpeg,.png,.pdf">
+                        <small class="text-muted">{{ __('Accepted formats: JPG, PNG, PDF — max 5 MB') }}</small>
+                        @error('signature')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
                 <div class="text-right p-2">
                     <button type="submit" class="btn btn-primary">{{__('Submit')}}</button>
                 </div>
@@ -384,4 +445,3 @@
 </section>
 
 @endsection
-

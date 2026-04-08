@@ -11,7 +11,7 @@ class Doctor extends Model
 
     protected $table = 'doctor';
 
-    protected $fillable = ['name', 'is_filled', 'custom_timeslot', 'dob', 'gender', 'expertise_id', 'timeslot', 'start_time', 'end_time', 'hospital_id', 'doctor_role', 'image', 'user_id', 'desc', 'education', 'certificate', 'appointment_fees', 'experience', 'since', 'status', 'based_on', 'commission_amount', 'is_popular', 'subscription_status', 'language'];
+    protected $fillable = ['name', 'is_filled', 'custom_timeslot', 'dob', 'gender', 'expertise_id', 'timeslot', 'start_time', 'end_time', 'hospital_id', 'doctor_role', 'image', 'signature', 'user_id', 'desc', 'education', 'certificate', 'appointment_fees', 'experience', 'since', 'status', 'based_on', 'commission_amount', 'is_popular', 'subscription_status', 'language', 'street', 'postcode', 'city', 'state', 'country', 'lanr'];
 
     protected $appends = ['fullImage', 'rate', 'review', 'treatment_id', 'category_id'];
 

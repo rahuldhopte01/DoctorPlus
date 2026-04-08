@@ -47,12 +47,14 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'bail|required|unique:category',
-            'price' => 'bail|required|numeric|min:0',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'name'                  => 'bail|required|unique:category',
+            'price'                 => 'bail|required|numeric|min:0',
+            'image'                 => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'hero_background_image' => 'bail|nullable|mimes:jpeg,png,jpg,webp|max:2048',
         ],
             [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'image.max'                 => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
         $data = $request->only(['name', 'description', 'price', 'treatment_id']);
         if ($request->hasFile('image')) {
@@ -60,9 +62,13 @@ class CategoryController extends Controller
         } else {
             $data['image'] = 'prod_default.png';
         }
+        $heroImage = null;
+        if ($request->hasFile('hero_background_image')) {
+            $heroImage = (new CustomController)->imageUpload($request->file('hero_background_image'));
+        }
         $data['status'] = $request->has('status') ? 1 : 0;
         $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
-        $data['cms_sections'] = $this->buildCmsSections($request, null);
+        $data['cms_sections'] = $this->buildCmsSections($request, null, $heroImage);
         Category::create($data);
 
         return redirect('category')->withStatus(__('Category created successfully..!'));
@@ -102,12 +108,14 @@ class CategoryController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'bail|required|unique:category,name,'.$id.',id',
-            'price' => 'bail|required|numeric|min:0',
-            'image' => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'name'                  => 'bail|required|unique:category,name,'.$id.',id',
+            'price'                 => 'bail|required|numeric|min:0',
+            'image'                 => 'bail|mimes:jpeg,png,jpg|max:1000',
+            'hero_background_image' => 'bail|nullable|mimes:jpeg,png,jpg,webp|max:2048',
         ],
             [
-                'image.max' => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'image.max'                 => 'The Image May Not Be Greater Than 1 MegaBytes.',
+                'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
         $data = $request->only(['name', 'description', 'price', 'treatment_id']);
         $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
@@ -116,7 +124,15 @@ class CategoryController extends Controller
             (new CustomController)->deleteFile($category->image);
             $data['image'] = (new CustomController)->imageUpload($request->image);
         }
-        $data['cms_sections'] = $this->buildCmsSections($request, $category->cms_sections);
+        $heroImage = null;
+        if ($request->hasFile('hero_background_image')) {
+            $existingHeroImage = $category->cms_sections['hero']['background_image'] ?? null;
+            if ($existingHeroImage) {
+                (new CustomController)->deleteFile($existingHeroImage);
+            }
+            $heroImage = (new CustomController)->imageUpload($request->file('hero_background_image'));
+        }
+        $data['cms_sections'] = $this->buildCmsSections($request, $category->cms_sections, $heroImage);
         $category->update($data);
 
         return redirect('category')->withStatus(__('Category updated successfully..!!'));
@@ -151,7 +167,7 @@ class CategoryController extends Controller
         return response(['success' => true]);
     }
 
-    private function buildCmsSections(Request $request, ?array $existing): array
+    private function buildCmsSections(Request $request, ?array $existing, ?string $heroImage = null): array
     {
         $s = $request->input('sections', []);
         $existing = $existing ?? [];
@@ -159,6 +175,7 @@ class CategoryController extends Controller
         // --- Hero ---
         $hero = array_merge([
             'enabled'              => true,
+            'background_image'     => null,
             'cta_text'             => 'Zu den medizinischen Fragen',
             'cta_color'            => '#3b6fd4',
             'consultation_fee'     => '29',
@@ -184,6 +201,10 @@ class CategoryController extends Controller
             'rating_value'         => $s['hero']['rating_value'] ?? '4,79',
             'rating_count'         => $s['hero']['rating_count'] ?? '14.082',
         ]);
+        // Overwrite background_image only when a new file was actually uploaded
+        if ($heroImage !== null) {
+            $hero['background_image'] = $heroImage;
+        }
 
         // --- Features Bar ---
         $defaultFeatures = [
@@ -374,14 +395,96 @@ class CategoryController extends Controller
             'items'   => $faqItems,
         ];
 
+        // --- Testosterone Info (Section 8) ---
+        $tiInput = $s['testo_info'] ?? [];
+        $defaultTestoCards = [
+            ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
+            ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
+            ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
+            ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
+        ];
+        $testoCards = [];
+        foreach ($defaultTestoCards as $i => $default) {
+            $card = $tiInput['cards'][$i] ?? [];
+            $testoCards[] = [
+                'icon'     => $card['icon']     ?? $default['icon'],
+                'title'    => $card['title']    ?? $default['title'],
+                'subtitle' => $card['subtitle'] ?? $default['subtitle'],
+            ];
+        }
+        $testoInfo = [
+            'enabled'     => isset($tiInput['enabled']),
+            'heading'     => $tiInput['heading']     ?? 'Was ist eine Testosteron-Injektion?',
+            'paragraph_1' => $tiInput['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
+            'paragraph_2' => $tiInput['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
+            'paragraph_3' => $tiInput['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+            'cards'       => $testoCards,
+        ];
+
+        // --- Testosterone Treatments (Section 9) ---
+        $ttInput  = $s['testo_treatments'] ?? [];
+        $existingTt = $existing['testo_treatments'] ?? [];
+        $defaultTreatCards = [
+            ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
+            ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
+        ];
+        $treatCards = [];
+        foreach ($defaultTreatCards as $i => $default) {
+            $card            = $ttInput['cards'][$i] ?? [];
+            $existingImg     = $existingTt['cards'][$i]['image'] ?? null;
+            $uploadedImg     = null;
+            if ($request->hasFile("sections.testo_treatments.cards.{$i}.image")) {
+                $uploadedImg = (new CustomController)->imageUpload($request->file("sections.testo_treatments.cards.{$i}.image"));
+            }
+            $treatCards[] = [
+                'image'       => $uploadedImg ?? $existingImg,
+                'title'       => $card['title']       ?? $default['title'],
+                'description' => $card['description'] ?? $default['description'],
+                'button_text' => $card['button_text'] ?? $default['button_text'],
+                'button_url'  => $card['button_url']  ?? $default['button_url'],
+            ];
+        }
+        $testoTreatments = [
+            'enabled'    => isset($ttInput['enabled']),
+            'heading'    => $ttInput['heading']    ?? 'Unsere Testosteron-Behandlungen',
+            'subheading' => $ttInput['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+            'cards'      => $treatCards,
+        ];
+
+        // --- Security / Trust (Section 10) ---
+        $secInput = $s['security'] ?? [];
+        $defaultSecCards = [
+            ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
+            ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
+            ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
+        ];
+        $secCards = [];
+        foreach ($defaultSecCards as $i => $default) {
+            $card = $secInput['cards'][$i] ?? [];
+            $secCards[] = [
+                'icon'        => $card['icon']        ?? $default['icon'],
+                'title'       => $card['title']       ?? $default['title'],
+                'description' => $card['description'] ?? $default['description'],
+            ];
+        }
+        $security = [
+            'enabled'    => isset($secInput['enabled']),
+            'heading'    => $secInput['heading']    ?? 'Ihre Sicherheit ist unsere Priorität',
+            'subheading' => $secInput['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+            'cards'      => $secCards,
+        ];
+
         return [
-            'hero'            => $hero,
-            'features_bar'    => $featuresBar,
-            'steps'           => $stepsSection,
-            'payment_bar'     => $paymentBar,
-            'medical_content' => $medicalContent,
-            'doctor_review'   => $doctorReview,
-            'faq'             => $faq,
+            'hero'             => $hero,
+            'features_bar'     => $featuresBar,
+            'steps'            => $stepsSection,
+            'payment_bar'      => $paymentBar,
+            'medical_content'  => $medicalContent,
+            'doctor_review'    => $doctorReview,
+            'faq'              => $faq,
+            'testo_info'       => $testoInfo,
+            'testo_treatments' => $testoTreatments,
+            'security'         => $security,
         ];
     }
 }

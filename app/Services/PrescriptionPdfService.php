@@ -19,14 +19,18 @@ class PrescriptionPdfService
     public function generate(Prescription $prescription): bool|string
     {
         try {
-            $prescription->load(['doctor.user', 'doctor.hospital', 'user']);
+            $prescription->load(['doctor.user', 'doctor.hospital', 'user', 'appointment']);
 
             $medicines = array_slice(json_decode($prescription->medicines, true) ?? [], 0, 5);
             $doctor = $prescription->doctor;
             $doctorName = $doctor && $doctor->user && $doctor->user->name
                 ? $doctor->user->name
                 : ($doctor && $doctor->name ? $doctor->name : 'Doctor');
-            $patientName = $prescription->user ? $prescription->user->name : 'Patient';
+            $patientName = trim((string) (
+                data_get($prescription, 'appointment.patient_name')
+                ?? data_get($prescription, 'user.name')
+                ?? 'Patient'
+            ));
 
             $patientAddress = '';
             $patientCity = '';
@@ -46,8 +50,31 @@ class PrescriptionPdfService
             }
 
             $doctorPhone = ($doctor && $doctor->user && $doctor->user->phone) ? $doctor->user->phone : '';
-            $doctorAddress = ($doctor && $doctor->hospital && $doctor->hospital->address) ? $doctor->hospital->address : '';
-            $doctorLanr = '';
+            if ($doctor) {
+                $doctorAddressParts = array_filter([
+                    $doctor->street ?? '',
+                    trim(($doctor->postcode ?? '') . ' ' . ($doctor->city ?? '')),
+                    $doctor->state ?? '',
+                    $doctor->country ?? '',
+                ], fn ($p) => trim((string) $p) !== '');
+                $doctorAddress = implode(', ', $doctorAddressParts);
+            } else {
+                $doctorAddress = '';
+            }
+            $doctorLanr = trim((string) (
+                data_get($doctor, 'lanr')
+                ?? data_get($doctor, 'LANR')
+                ?? data_get($doctor, 'user.lanr')
+                ?? data_get($doctor, 'user.LANR')
+                ?? data_get($doctor, 'hospital.lanr')
+                ?? data_get($doctor, 'hospital.LANR')
+                ?? ''
+            ));
+            $doctorTitle = match (strtolower((string) ($doctor->gender ?? ''))) {
+                'male' => 'Arzt',
+                'female' => 'Arztin',
+                default => 'Arzt',
+            };
             $receiptNr = 'RP' . str_pad((string) $prescription->id, 12, '0', STR_PAD_LEFT);
 
             $validUntil = null;
@@ -56,6 +83,16 @@ class PrescriptionPdfService
                     $validUntil = $prescription->valid_until->format('d.m.Y');
                 } catch (\Exception $e) {
                     $validUntil = null;
+                }
+            }
+            if (! $validUntil) {
+                try {
+                    $invoiceDate = $prescription->created_at
+                        ? Carbon::parse($prescription->created_at)
+                        : now();
+                    $validUntil = $invoiceDate->copy()->addDays(90)->format('d.m.Y');
+                } catch (\Exception $e) {
+                    $validUntil = now()->addDays(90)->format('d.m.Y');
                 }
             }
 
@@ -67,6 +104,10 @@ class PrescriptionPdfService
             $fileName = 'prescription_' . $prescription->id . '_' . time() . '.pdf';
             $path = $directory . DIRECTORY_SEPARATOR . $fileName;
 
+            $signaturePath = ($doctor && $doctor->signature)
+                ? storage_path('app/doctor-signatures/' . $doctor->signature)
+                : null;
+
             $this->generateCustomTemplate(
                 outputPath: $path,
                 createdDate: $prescription->created_at ? $prescription->created_at->format('d.m.Y') : now()->format('d.m.Y'),
@@ -76,13 +117,14 @@ class PrescriptionPdfService
                 patientCountry: 'Deutschland',
                 patientDob: $patientDob,
                 doctorName: $doctorName,
-                doctorTitle: 'Arztin',
+                doctorTitle: $doctorTitle,
                 doctorAddress: $doctorAddress,
                 doctorPhone: $doctorPhone,
                 doctorLanr: $doctorLanr,
                 medicines: $medicines,
                 validUntil: $validUntil,
-                receiptNr: $receiptNr
+                receiptNr: $receiptNr,
+                signaturePath: $signaturePath
             );
 
             if (! file_exists($path)) {
@@ -121,7 +163,8 @@ class PrescriptionPdfService
         string $doctorLanr,
         array $medicines,
         ?string $validUntil,
-        string $receiptNr
+        string $receiptNr,
+        ?string $signaturePath = null
     ): void {
         $templatePath = base_path('prescription-pdf.pdf');
         if (! file_exists($templatePath)) {
@@ -168,11 +211,7 @@ class PrescriptionPdfService
         );
 
         if ($patientDob) {
-            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(182), $this->pxW(120), $patientDob, 9.0, '');
-        }
-
-        if ($doctorLanr !== '') {
-            $this->drawCenteredText($pdf, $this->pxX(230), $this->pxY(250), $this->pxW(110), $doctorLanr, 6.8, '');
+            $this->drawCenteredText($pdf, $this->pxX(392), $this->pxY(150), $this->pxW(120), $patientDob, 9.0, '');
         }
 
         $this->drawCenteredText($pdf, $this->pxX(372), $this->pxY(284), $this->pxW(128), $createdDate, 9.0, '');
@@ -218,8 +257,7 @@ class PrescriptionPdfService
 
         $this->drawCenteredText($pdf, $this->pxX(635), $this->pxY(359), $this->pxW(185), $doctorName, 8.6, '');
         $this->drawCenteredText($pdf, $this->pxX(680), $this->pxY(387), $this->pxW(90), $doctorTitle, 5.8, '');
-        $signaturePath = base_path('signature.png');
-        if (file_exists($signaturePath)) {
+        if ($signaturePath && file_exists($signaturePath)) {
             $pdf->Image($signaturePath, $this->pxX(675), $this->pxY(378), $this->pxW(95));
         } else {
             $this->drawDoctorStamp($pdf, $this->pxX(713), $this->pxY(421), $this->pxW(32), $line);
@@ -230,7 +268,7 @@ class PrescriptionPdfService
             $doctorLanr !== '' ? 'LANR: ' . $doctorLanr : '',
         ])), 5.4, '', $this->pxH(20), $this->pxW(150), 'C');
 
-        $this->drawText($pdf, $this->pxX(46), $this->pxY(500), 'PKVH', 12.8, '');
+        $this->drawSpacedText($pdf, $this->pxX(46), $this->pxY(500), 'PKVH', 10.8, 3.6);
         if ($validUntil) {
             $this->drawText($pdf, $this->pxX(127), $this->pxY(503), 'Gultig bis ' . $validUntil, 6.3, '');
         }
@@ -293,6 +331,24 @@ class PrescriptionPdfService
         $pdf->SetFont($font, $style, $size);
         $pdf->SetXY($x, $y);
         $pdf->Cell(0, 0, $this->encode($text), 0, 0, 'L');
+    }
+
+    protected function drawSpacedText(
+        Fpdi $pdf,
+        float $x,
+        float $y,
+        string $text,
+        float $size,
+        float $step,
+        string $style = '',
+        string $font = 'Arial'
+    ): void {
+        $letters = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $currentX = $x;
+        foreach ($letters as $letter) {
+            $this->drawText($pdf, $currentX, $y, $letter, $size, $style, $font);
+            $currentX += $step;
+        }
     }
 
     protected function drawCenteredText(

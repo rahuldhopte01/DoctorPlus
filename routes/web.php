@@ -282,6 +282,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::get('/edit_timeslot/{id}', [DoctorController::class, 'edit_timeslot']);
         Route::post('/update_timeslot', [DoctorController::class, 'update_timeslot']);
         Route::post('/doctor/doc_change_password', [DoctorController::class, 'change_password']);
+        Route::get('/doctor/signature/preview/{id}', [DoctorController::class, 'previewSignature'])->name('admin.doctor.signature.preview');
         Route::resource('doctor', DoctorController::class)->except([
             'show',
         ]);
@@ -407,6 +408,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // doctor profile
         Route::get('/doctor_profile', [App\Http\Controllers\Doctor\DoctorController::class, 'doctor_profile']);
         Route::post('/update_doctor_profile', [App\Http\Controllers\Doctor\DoctorController::class, 'update_doctor_profile']);
+        Route::post('/doctor/signature/upload', [App\Http\Controllers\Doctor\DoctorController::class, 'uploadSignature'])->name('doctor.signature.upload');
+        Route::post('/doctor/signature/remove', [App\Http\Controllers\Doctor\DoctorController::class, 'removeSignature'])->name('doctor.signature.remove');
+        Route::get('/doctor/signature/preview', [App\Http\Controllers\Doctor\DoctorController::class, 'previewSignature'])->name('doctor.signature.preview');
         Route::get('/changePassword', [App\Http\Controllers\Doctor\DoctorController::class, 'changePassword']);
 
         // change subscriptiom payment status changePaymentStatus

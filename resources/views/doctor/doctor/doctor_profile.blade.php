@@ -414,10 +414,119 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header text-primary">
+                {{__('Address Information')}}
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 form-group">
+                        <label class="col-form-label">{{__('Street Address')}}</label>
+                        <input type="text" name="street" value="{{ $doctor->street }}" class="form-control @error('street') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('City')}}</label>
+                        <input type="text" name="city" value="{{ $doctor->city }}" class="form-control @error('city') is-invalid @enderror">
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('State / Province')}}</label>
+                        <input type="text" name="state" value="{{ $doctor->state }}" class="form-control @error('state') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('Postal Code')}}</label>
+                        <input type="text" name="postcode" value="{{ $doctor->postcode }}" class="form-control @error('postcode') is-invalid @enderror">
+                    </div>
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">{{__('Country')}}</label>
+                        <input type="text" name="country" value="{{ $doctor->country }}" class="form-control @error('country') is-invalid @enderror">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 form-group">
+                        <label class="col-form-label">LANR</label>
+                        <input type="text" name="lanr" value="{{ old('lanr', $doctor->lanr) }}" class="form-control @error('lanr') is-invalid @enderror">
+                        @error('lanr')
+                        <div class="invalid-feedback">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
             <div class="text-right p-2">
                 <button type="submit" class="btn btn-primary">{{__('Submit')}}</button>
             </div>
         </div>
     </form>
+
+    {{-- Doctor Signature Upload (separate form — not part of the profile update) --}}
+    <div class="card mt-4">
+        <div class="card-header text-primary">
+            {{ __('Prescription Signature') }}
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                {{ __('Upload your scanned signature. It will be attached to prescriptions sent to the Cannaleo pharmacy partner.') }}
+            </p>
+
+            @if ($doctor->signature && file_exists(storage_path('app/doctor-signatures/' . $doctor->signature)))
+                @php $sigExt = strtolower(pathinfo($doctor->signature, PATHINFO_EXTENSION)); @endphp
+                <div class="mb-3">
+                    <label class="col-form-label d-block">{{ __('Current Signature') }}</label>
+
+                    @if ($sigExt === 'pdf')
+                        {{-- PDF: show an embedded viewer + download link --}}
+                        <div style="border:1px solid #ddd; border-radius:4px; overflow:hidden; max-width:500px;">
+                            <embed src="{{ route('doctor.signature.preview') }}"
+                                   type="application/pdf"
+                                   width="100%" height="180px">
+                        </div>
+                        <a href="{{ route('doctor.signature.preview') }}" target="_blank" class="btn btn-sm btn-outline-secondary mt-1">
+                            <i class="fas fa-file-pdf"></i> {{ __('Open PDF') }}
+                        </a>
+                    @else
+                        {{-- Image: show inline preview --}}
+                        <img src="{{ route('doctor.signature.preview') }}"
+                             alt="Doctor Signature"
+                             style="max-height:100px; border:1px solid #ddd; padding:4px; background:#fff; border-radius:4px; display:block; margin-bottom:6px;">
+                    @endif
+
+                    <form action="{{ route('doctor.signature.remove') }}" method="POST" class="d-inline mt-2"
+                          onsubmit="return confirm('{{ __('Remove your signature?') }}')">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="far fa-trash-alt"></i> {{ __('Remove') }}
+                        </button>
+                    </form>
+                </div>
+            @else
+                <div class="mb-3">
+                    <span class="badge badge-warning">{{ __('No signature uploaded yet') }}</span>
+                </div>
+            @endif
+
+            <form action="{{ route('doctor.signature.upload') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="form-group">
+                    <label class="col-form-label">{{ __('Upload Signature') }}</label>
+                    <input type="file" name="signature" class="form-control-file @error('signature') is-invalid @enderror"
+                           accept=".jpg,.jpeg,.png,.pdf">
+                    <small class="text-muted">{{ __('Accepted formats: JPG, PNG, PDF — max 5 MB') }}</small>
+                    @error('signature')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    {{ __('Upload Signature') }}
+                </button>
+            </form>
+        </div>
+    </div>
 </section>
 @endsection
