@@ -10,13 +10,10 @@ use App\Models\QuestionnaireSubmission;
 use App\Models\User;
 use App\Models\UserAddress;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class CuroboPrescriptionPayloadBuilder
 {
-    /**
-     * Temporary dummy signature used for Cannaleo API testing.
-     */
-    protected const TEST_DUMMY_DOCTOR_SIGNATURE = 'DUMMY_DOCTOR_SIGNATURE_FOR_TESTING';
 
     /**
      * Build the exact JSON body expected by the Curobo prescription API.
@@ -161,7 +158,10 @@ class CuroboPrescriptionPayloadBuilder
 
     /**
      * Resolve the doctor's signature for the Curobo API.
-     * Priority: uploaded signature file (as base64 data URL) → static config value → dummy.
+     * Priority: uploaded signature file (as base64 data URL) → static config value.
+     * Throws if no signature is available — submission is blocked until the doctor uploads one.
+     *
+     * @throws \RuntimeException
      */
     protected static function resolveDoctorSignature(Doctor $doctor): string
     {
@@ -176,14 +176,22 @@ class CuroboPrescriptionPayloadBuilder
                 $base64 = base64_encode(file_get_contents($path));
                 return 'data:' . $mimeType . ';base64,' . $base64;
             }
+            Log::warning('Doctor signature file missing on disk', [
+                'doctor_id' => $doctor->id,
+                'expected_path' => $path,
+            ]);
         }
+
         // 2. Static signature from config (set CUROBO_STATIC_DOCTOR_SIGNATURE in .env)
         $staticSignature = (string) config('cannaleo.static_doctor_signature', '');
         if ($staticSignature !== '') {
             return $staticSignature;
         }
-        // 3. Fallback dummy (API will likely reject this; doctor should upload a signature)
-        return self::TEST_DUMMY_DOCTOR_SIGNATURE;
+
+        throw new \RuntimeException(
+            'Doctor (ID: ' . $doctor->id . ') has no signature uploaded. ' .
+            'Please upload a signature before approving Cannaleo prescriptions.'
+        );
     }
 
     protected static function doctorCityOfSignature(Doctor $doctor): string
