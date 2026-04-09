@@ -1978,7 +1978,7 @@
                                             </div>
                                             <div class="col-md-12 form-group">
                                                 <label>{{__('Background Image URL (Doctor image)')}}</label>
-                                                <input type="text" name="nl_bg_image" value="{{ $nlSec['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg' }}" class="form-control">
+                                                <input type="text" name="nl_bg_image" value="{{ $nlSec['bg_image'] ?? url('images/upload/69d60e2caf968.png') }}" class="form-control">
                                             </div>
                                         </div>
                                      </div>
