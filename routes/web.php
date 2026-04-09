@@ -121,6 +121,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
     // Categories and Questionnaire Routes (Public)
     Route::get('/categories', [WebsiteController::class, 'categories'])->name('categories');
     Route::get('/search-suggestions', [WebsiteController::class, 'searchSuggestions'])->name('search.suggestions');
+    Route::get('/erektionsstoerungen', [WebsiteController::class, 'erektionsstoerungen'])->name('erektionsstoerungen');
     Route::get('/category/{id}', [WebsiteController::class, 'categoryDetail'])->where('id', '[0-9]+')->name('category.detail');
 
     Route::middleware(['auth'])->group(function () {

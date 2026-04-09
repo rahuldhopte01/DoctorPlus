@@ -1891,6 +1891,25 @@ class WebsiteController extends Controller
         return view('website.amritComponent', compact('category', 'treatment', 'hasQuestionnaire', 'setting', 'medicines', 'treatments'));
     }
 
+    public function erektionsstoerungen()
+    {
+        $setting = Setting::first();
+        $category = Category::with('questionnaire')
+            ->whereStatus(1)
+            ->where('name', 'LIKE', 'Erektions%')
+            ->first();
+
+        $questionnaireUrl = $category
+            ? route('questionnaire.category', ['categoryId' => $category->id])
+            : route('categories');
+
+        $consultationUrl = auth()->check()
+            ? $questionnaireUrl
+            : url('/patient-login?redirect_to=' . urlencode($questionnaireUrl));
+
+        return view('website.erektionsstoerungen', compact('setting', 'category', 'consultationUrl'));
+    }
+
     /**
      * Get search suggestions for categories and medicines (Phase 2)
      */
