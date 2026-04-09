@@ -175,7 +175,11 @@ class CategoryController extends Controller
         $existing = $existing ?? [];
 
         // --- Hero ---
+        $existingHero = $existing['hero'] ?? [];
+        $heroInput = $s['hero'] ?? [];
+
         $hero = array_merge([
+            'type'                 => 'type1', // Default
             'enabled'              => true,
             'background_image'     => null,
             'cta_text'             => 'Zu den medizinischen Fragen',
@@ -189,23 +193,88 @@ class CategoryController extends Controller
             'rating_enabled'       => true,
             'rating_value'         => '4,79',
             'rating_count'         => '14.082',
-        ], $existing['hero'] ?? [], [
-            'enabled'              => isset($s['hero']['enabled']),
-            'cta_text'             => $s['hero']['cta_text'] ?? 'Zu den medizinischen Fragen',
-            'cta_color'            => $s['hero']['cta_color'] ?? '#3b6fd4',
-            'consultation_fee'     => $s['hero']['consultation_fee'] ?? '29',
-            'badge_enabled'        => isset($s['hero']['badge_enabled']),
-            'badge_percentage'     => $s['hero']['badge_percentage'] ?? '85',
-            'badge_text'           => $s['hero']['badge_text'] ?? 'der Männer berichten von einer Besserung',
-            'badge_bg_color_start' => $s['hero']['badge_bg_color_start'] ?? '#3b6fd4',
-            'badge_bg_color_end'   => $s['hero']['badge_bg_color_end'] ?? '#1e3c8c',
-            'rating_enabled'       => isset($s['hero']['rating_enabled']),
-            'rating_value'         => $s['hero']['rating_value'] ?? '4,79',
-            'rating_count'         => $s['hero']['rating_count'] ?? '14.082',
+
+            // Type 2 specific defaults
+            't2_heading'           => 'Therapie mit medizinischem Cannabis',
+            't2_description'       => 'Füllen Sie einen Online-Fragebogen aus und lassen Sie Ihre Angaben von einem zugelassenen Arzt überprüfen...',
+            't2_subtext'           => 'Ärztliche Beurteilung und Verordnung 14,9 € + Cannabis-Therapeutikum ab 3 €',
+            't2_main_image'        => null,
+            't2_info_1_val'        => '700+',
+            't2_info_1_lbl'        => 'ANGESCHLOSSENE APOTHEKEN',
+            't2_info_2_val'        => '1,5K+',
+            't2_info_2_lbl'        => 'CANNABIS BLÜTEN',
+
+            // Type 3 specific defaults
+            't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
+            't3_subheading'        => 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
+            't3_cta_1_text'        => 'Jetzt Beratung starten',
+            't3_cta_1_url'         => '#',
+            't3_cta_2_text'        => 'Mehr erfahren',
+            't3_cta_2_url'         => '#',
+            't3_bottom_items'      => [
+                ['icon' => 'bx bx-user', 'text' => 'Deutsche Ärzte'],
+                ['icon' => 'bx bx-shield-check', 'text' => '100% DSGVO-konform'],
+                ['icon' => 'bx bx-truck', 'text' => 'Expressversand'],
+            ],
+        ], $existingHero, [
+            'type'                 => $heroInput['type'] ?? 'type1',
+            'enabled'              => isset($heroInput['enabled']),
+            'cta_text'             => $heroInput['cta_text'] ?? 'Zu den medizinischen Fragen',
+            'cta_color'            => $heroInput['cta_color'] ?? '#3b6fd4',
+            'consultation_fee'     => $heroInput['consultation_fee'] ?? '29',
+            'badge_enabled'        => isset($heroInput['badge_enabled']),
+            'badge_percentage'     => $heroInput['badge_percentage'] ?? '85',
+            'badge_text'           => $heroInput['badge_text'] ?? 'der Männer berichten von einer Besserung',
+            'badge_bg_color_start' => $heroInput['badge_bg_color_start'] ?? '#3b6fd4',
+            'badge_bg_color_end'   => $heroInput['badge_bg_color_end'] ?? '#1e3c8c',
+            'rating_enabled'       => isset($heroInput['rating_enabled']),
+            'rating_value'         => $heroInput['rating_value'] ?? '4,79',
+            'rating_count'         => $heroInput['rating_count'] ?? '14.082',
+
+            // Type 2 inputs
+            't2_heading'           => $heroInput['t2_heading'] ?? 'Therapie mit medizinischem Cannabis',
+            't2_description'       => $heroInput['t2_description'] ?? 'Füllen Sie einen Online-Fragebogen aus und lassen Sie Ihre Angaben von einem zugelassenen Arzt überprüfen...',
+            't2_subtext'           => $heroInput['t2_subtext'] ?? 'Ärztliche Beurteilung und Verordnung 14,9 € + Cannabis-Therapeutikum ab 3 €',
+            't2_info_1_val'        => $heroInput['t2_info_1_val'] ?? '700+',
+            't2_info_1_lbl'        => $heroInput['t2_info_1_lbl'] ?? 'ANGESCHLOSSENE APOTHEKEN',
+            't2_info_2_val'        => $heroInput['t2_info_2_val'] ?? '1,5K+',
+            't2_info_2_lbl'        => $heroInput['t2_info_2_lbl'] ?? 'CANNABIS BLÜTEN',
+
+            // Type 3 inputs
+            't3_heading'           => $heroInput['t3_heading'] ?? 'Testosteron-Injektion — fertig zur Direktnutzung',
+            't3_subheading'        => $heroInput['t3_subheading'] ?? 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
+            't3_cta_1_text'        => $heroInput['t3_cta_1_text'] ?? 'Jetzt Beratung starten',
+            't3_cta_1_url'         => $heroInput['t3_cta_1_url'] ?? '#',
+            't3_cta_2_text'        => $heroInput['t3_cta_2_text'] ?? 'Mehr erfahren',
+            't3_cta_2_url'         => $heroInput['t3_cta_2_url'] ?? '#',
         ]);
-        // Overwrite background_image only when a new file was actually uploaded
+
+        // Process bottom items for Type 3
+        if (isset($heroInput['t3_bottom_items'])) {
+            $bottomItems = [];
+            foreach ($heroInput['t3_bottom_items'] as $item) {
+                if (!empty($item['text'])) {
+                    $bottomItems[] = [
+                        'icon' => $item['icon'] ?? 'bx bx-check-circle',
+                        'text' => $item['text'],
+                    ];
+                }
+            }
+            $hero['t3_bottom_items'] = $bottomItems;
+        }
+
+        // Overwrite background_image (Banner) only when a new file was actually uploaded
         if ($heroImage !== null) {
             $hero['background_image'] = $heroImage;
+        }
+
+        // Handle Type 2 Main Image
+        if ($request->hasFile('sections.hero.t2_main_image')) {
+            $existingT2Img = $existingHero['t2_main_image'] ?? null;
+            if ($existingT2Img) {
+                (new CustomController)->deleteFile($existingT2Img);
+            }
+            $hero['t2_main_image'] = (new CustomController)->imageUpload($request->file('sections.hero.t2_main_image'));
         }
 
         // --- Features Bar ---
@@ -232,9 +301,9 @@ class CategoryController extends Controller
 
         // --- Steps ---
         $defaultSteps = [
-            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',           'image' => null],
-            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.',          'image' => null],
-            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                             'image' => null],
+            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',           'image' => null, 'icon' => 'bx bx-file'],
+            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.',          'image' => null, 'icon' => 'bx bx-user'],
+            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                             'image' => null, 'icon' => 'bx bx-truck'],
         ];
         $stepsInput = $s['steps']['steps'] ?? [];
         $existingSteps = $existing['steps']['steps'] ?? [];
@@ -251,15 +320,22 @@ class CategoryController extends Controller
                 'highlight_color'   => $stepsInput[$i]['highlight_color'] ?? $default['highlight_color'],
                 'description'       => $stepsInput[$i]['description'] ?? $default['description'],
                 'image'             => $uploadedImage ?? $existingImage,
+                'icon'              => $stepsInput[$i]['icon'] ?? $default['icon'],
+                't2_title'          => $stepsInput[$i]['t2_title'] ?? ($i==0 ? 'Fragebogen ausfüllen' : ($i==1 ? 'Ärztliche Prüfung' : 'Lieferung in 1-2 Werktagen')),
             ];
         }
         $stepsSection = [
-            'enabled'         => isset($s['steps']['enabled']),
-            'section_title'   => $s['steps']['section_title'] ?? '3 einfache Schritte',
-            'section_subtitle'=> $s['steps']['section_subtitle'] ?? '100 % online',
-            'subtitle_color'  => $s['steps']['subtitle_color'] ?? '#3b6fd4',
-            'step_number_bg'  => $s['steps']['step_number_bg'] ?? '#3b6fd4',
-            'steps'           => $steps,
+            'enabled'            => isset($s['steps']['enabled']),
+            'type'               => $s['steps']['type'] ?? 'type1',
+            'section_title'      => $s['steps']['section_title'] ?? '3 einfache Schritte',
+            'section_subtitle'   => $s['steps']['section_subtitle'] ?? '100 % online',
+            'subtitle_color'     => $s['steps']['subtitle_color'] ?? '#3b6fd4',
+            'step_number_bg'     => $s['steps']['step_number_bg'] ?? '#3b6fd4',
+            't2_title'           => $s['steps']['t2_title'] ?? 'So einfach geht\'s',
+            't2_subtitle'        => $s['steps']['t2_subtitle'] ?? 'In 3 Schritten zur Behandlung',
+            't2_subtitle_italic' => $s['steps']['t2_subtitle_italic'] ?? 'In 3 Schritten zur Behandlung',
+            't2_desc'            => $s['steps']['t2_desc'] ?? 'Schnell, diskret und ärztlich betreut — Ihre Testosteron-Injektion in wenigen Schritten.',
+            'steps'              => $steps,
         ];
 
         // --- Payment Bar ---
