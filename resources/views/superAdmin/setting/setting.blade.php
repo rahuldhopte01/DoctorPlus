@@ -653,9 +653,21 @@
                                                 <label>{{__('Promo Text (Italic)')}}</label>
                                                 <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im März Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im März Ihre Gesundheit:">
                                             </div>
+                                                <div class="col-md-5">
+                                                <label>{{__('Promo Text (Bold)')}}</label>
+                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode' }}" class="form-control" placeholder="Mit dem Rabattcode ">
+                                            </div>
                                             <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
                                                 <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode M4RZ sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode M4RZ sparen Sie 10 €">
+                                            </div>
+                                                <div class="col-md-5">
+                                                <label>{{__('Promo Text (Bold)')}}</label>
+                                                <input type="text" name="promo_text_bold_black" value="{{ $promo['text_bold'] ?? 'M4RZ' }}" class="form-control" placeholder="M4RZ ">
+                                            </div>
+                                                <div class="col-md-5">
+                                                <label>{{__('Promo Text (Bold)')}}</label>
+                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'sparen Sie 10 €.' }}" class="form-control" placeholder="sparen Sie 10 €">
                                             </div>
                                         </div>
                                         <div class="row mb-5">
