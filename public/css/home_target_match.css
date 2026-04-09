@@ -112,8 +112,9 @@ body.home-target .header-icon:hover {
 }
 
 body.home-target .search-form {
-  top: calc(100% + 12px);
+  top: 50%;
   right: 0;
+  transform: translateY(-50%);
   width: 0;
   padding: 0;
   border-radius: 18px;
@@ -1772,6 +1773,7 @@ body.home-target .footer-inner-v2 {
     gap: 10px;
     padding: 0 0 16px;
     margin-top: 16px;
+    transform: none;
   }
 
   body.home-target .testo-btns {
@@ -2258,6 +2260,8 @@ body.home-target .home-story-cannabis .cbs-inner {
   max-width: 900px;
   margin: 0 auto;
   text-align: center;
+  position: relative;
+  z-index: 8;
 }
 
 body.home-target .home-story-cannabis .cbs-pill {
@@ -2288,10 +2292,12 @@ body.home-target .home-story-cannabis .cbs-green {
 }
 
 body.home-target .home-story-cannabis .cbs-hero-img-wrap {
+  --cbs-center-x: 50%;
   max-width: 380px;
   margin: 0 auto -2px;
   position: relative;
   z-index: 4;
+  text-align: center;
 }
 
 body.home-target .home-story-cannabis .cbs-hero-img-wrap::after {
@@ -2304,11 +2310,16 @@ body.home-target .home-story-cannabis .cbs-hero-img {
   max-height: 340px;
   object-fit: contain;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
+  display: block;
+  /* margin: 0 auto; */
+  position: relative;
+  left: var(--cbs-center-x);
+  transform: translateX(-50%);
 }
 
 body.home-target .home-story-cannabis .cbs-btns-overlay {
   position: absolute;
-  left: 50%;
+  left: var(--cbs-center-x);
   right: auto;
   bottom: -6px;
   transform: translateX(-50%);
@@ -2963,6 +2974,7 @@ body.home-target .home-story-newsletter .newsletter-hero {
     flex-wrap: wrap;
     padding: 0 16px;
     z-index: 5;
+    transform: none;
   }
 
   body.home-target .home-story-cannabis .cbs-btn {
