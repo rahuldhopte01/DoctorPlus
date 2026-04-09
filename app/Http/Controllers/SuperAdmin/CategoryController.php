@@ -561,6 +561,21 @@ class CategoryController extends Controller
             'cards'      => $secCards,
         ];
 
+        // Section order
+        $validSectionKeys = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security'];
+        $sectionOrderRaw  = $s['section_order'] ?? '';
+        $sectionOrder     = array_filter(array_map('trim', explode(',', $sectionOrderRaw)));
+        $sectionOrder     = array_values(array_intersect($sectionOrder, $validSectionKeys));
+        // Append any keys that were missing from the submitted order
+        foreach ($validSectionKeys as $k) {
+            if (!in_array($k, $sectionOrder)) {
+                $sectionOrder[] = $k;
+            }
+        }
+        if (empty($sectionOrderRaw)) {
+            $sectionOrder = $existing['section_order'] ?? $validSectionKeys;
+        }
+
         return [
             'hero'             => $hero,
             'features_bar'     => $featuresBar,
@@ -572,6 +587,7 @@ class CategoryController extends Controller
             'testo_info'       => $testoInfo,
             'testo_treatments' => $testoTreatments,
             'security'         => $security,
+            'section_order'    => $sectionOrder,
         ];
     }
 }

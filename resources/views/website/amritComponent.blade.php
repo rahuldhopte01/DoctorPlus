@@ -456,8 +456,96 @@ $cmsPay = array_merge([
     'bg_color' => '#1a1a1a',
     'methods'  => ['klarna' => true, 'visa' => true, 'maestro' => true, 'gpay' => true, 'apple_pay' => true, 'paypal' => true],
 ], $_cms['payment_bar'] ?? []);
+
+// --- CMS: Medical Content, Doctor Review, FAQ ---
+$cmsMedical = array_merge([
+    'enabled'       => true,
+    'section_title' => 'Behandlungen bei',
+    'toc_enabled'   => true,
+    'toc_title'     => 'Themenliste',
+    'toc_items'     => [],
+    'articles'      => [],
+], $_cms['medical_content'] ?? []);
+
+$cmsDr = array_merge([
+    'enabled'           => true,
+    'image'             => null,
+    'name'              => 'Dr. med. Experte',
+    'role'              => 'Facharzt für Urologie',
+    'title'             => 'Medizinisch-fachlich geprüft',
+    'paragraphs'        => [
+        'Die medizinischen Inhalte auf dieser Seite wurden in Zusammenarbeit mit einem unserer Ärzte bzw. medizinischen Experten erstellt und von diesen überprüft.',
+        'Die medizinischen Inhalte werden regelmäßig überprüft, um maximale Genauigkeit und Zuverlässigkeit zu gewährleisten.',
+    ],
+    'link_text'         => 'Redaktionsprozess',
+    'link_url'          => '#',
+    'show_last_updated' => true,
+], $_cms['doctor_review'] ?? []);
+
+$cmsFaq = array_merge([
+    'enabled' => true,
+    'title'   => 'Frequently asked questions',
+    'items'   => [
+        ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
+        ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
+        ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
+    ],
+], $_cms['faq'] ?? []);
+
+// --- CMS: Sections 8, 9, 10 ---
+$cmsTestoInfo = array_merge([
+    'enabled'     => true,
+    'heading'     => 'Was ist eine Testosteron-Injektion?',
+    'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
+    'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
+    'paragraph_3' => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+    'cards' => [
+        ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
+        ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
+        ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
+        ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
+    ],
+], $_cms['testo_info'] ?? []);
+
+$cmsTestoTreatments = array_merge([
+    'enabled'    => true,
+    'heading'    => 'Unsere Testosteron-Behandlungen',
+    'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+    'cards' => [
+        ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
+        ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
+    ],
+], $_cms['testo_treatments'] ?? []);
+
+$_testoTreatFallbackImgs = [
+    'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80',
+];
+
+$cmsSecurity = array_merge([
+    'enabled'    => true,
+    'heading'    => 'Ihre Sicherheit ist unsere Priorität',
+    'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+    'cards' => [
+        ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
+        ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
+        ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
+    ],
+], $_cms['security'] ?? []);
+
+// --- Section Order ---
+$_validSections  = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security'];
+$_sectionOrder   = $_cms['section_order'] ?? $_validSections;
+foreach ($_validSections as $_sk) {
+    if (!in_array($_sk, $_sectionOrder)) $_sectionOrder[] = $_sk;
+}
 @endphp
 
+@foreach($_sectionOrder as $_sectionKey)
+@switch($_sectionKey)
+
+{{-- ============================  HERO  ============================ --}}
+@case('hero')
 <!-- Hero Section -->
 @if($cmsHero['enabled'])
     @php
@@ -603,7 +691,10 @@ $cmsPay = array_merge([
         </section>
     @endif
 @endif
+@break
 
+{{-- ============================  FEATURES BAR  ============================ --}}
+@case('features_bar')
 <!-- Features Bar -->
 @if($cmsFb['enabled'])
 <section class="features-bar" style="background:{{ $cmsFb['bg_color'] }};">
@@ -622,7 +713,10 @@ $cmsPay = array_merge([
     </div>
 </section>
 @endif
+@break
 
+{{-- ============================  STEPS  ============================ --}}
+@case('steps')
 <!-- 3 Steps -->
 @if($cmsSteps['enabled'])
     @php $_stepsType = $cmsSteps['type'] ?? 'type1'; @endphp
@@ -678,7 +772,10 @@ $cmsPay = array_merge([
         </section>
     @endif
 @endif
+@break
 
+{{-- ============================  PAYMENT BAR  ============================ --}}
+@case('payment_bar')
 <!-- Payment Methods -->
 @if($cmsPay['enabled'])
 <section class="payment-bar" style="background:{{ $cmsPay['bg_color'] }};">
@@ -695,6 +792,7 @@ $cmsPay = array_merge([
   </div>
 </section>
 @endif
+@break
 
 @php
 // --- CMS: Medical Content, Doctor Review, FAQ ---
@@ -734,6 +832,8 @@ $cmsFaq = array_merge([
 ], $_cms['faq'] ?? []);
 @endphp
 
+{{-- ============================  MEDICAL CONTENT  ============================ --}}
+@case('medical_content')
 <!-- Medical Content -->
 @if($cmsMedical['enabled'])
 <div class="med-content">
@@ -798,7 +898,10 @@ $cmsFaq = array_merge([
   @endforeach
 </div>
 @endif
+@break
 
+{{-- ============================  DOCTOR REVIEW  ============================ --}}
+@case('doctor_review')
 <!-- Medical Review -->
 @if($cmsDr['enabled'])
 @php
@@ -826,7 +929,10 @@ $cmsFaq = array_merge([
   </div>
 </div>
 @endif
+@break
 
+{{-- ============================  FAQ  ============================ --}}
+@case('faq')
 <!-- FAQ -->
 @if($cmsFaq['enabled'] && !empty($cmsFaq['items']))
 <section class="py-5 bg-white">
@@ -880,50 +986,10 @@ $cmsFaq = array_merge([
     </div>
 </section>
 @endif
+@break
 
-@php
-// --- CMS: Sections 8, 9, 10 ---
-$cmsTestoInfo = array_merge([
-    'enabled'     => true,
-    'heading'     => 'Was ist eine Testosteron-Injektion?',
-    'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
-    'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
-    'paragraph_3' => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
-    'cards' => [
-        ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
-        ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
-        ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
-        ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
-    ],
-], $_cms['testo_info'] ?? []);
-
-$cmsTestoTreatments = array_merge([
-    'enabled'    => true,
-    'heading'    => 'Unsere Testosteron-Behandlungen',
-    'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
-    'cards' => [
-        ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
-        ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
-    ],
-], $_cms['testo_treatments'] ?? []);
-
-$_testoTreatFallbackImgs = [
-    'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80',
-];
-
-$cmsSecurity = array_merge([
-    'enabled'    => true,
-    'heading'    => 'Ihre Sicherheit ist unsere Priorität',
-    'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
-    'cards' => [
-        ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
-        ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
-        ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
-    ],
-], $_cms['security'] ?? []);
-@endphp
-
+{{-- ============================  TESTO INFO  ============================ --}}
+@case('testo_info')
 <!-- Section 8: Testosterone Info -->
 @if($cmsTestoInfo['enabled'])
 <section class="bg-white">
@@ -946,7 +1012,10 @@ $cmsSecurity = array_merge([
   </div>
 </section>
 @endif
+@break
 
+{{-- ============================  TESTO TREATMENTS  ============================ --}}
+@case('testo_treatments')
 <!-- Section 9: Testosterone Treatments -->
 @if($cmsTestoTreatments['enabled'])
 <section class="testo-treat-section">
@@ -975,7 +1044,10 @@ $cmsSecurity = array_merge([
   </div>
 </section>
 @endif
+@break
 
+{{-- ============================  SECURITY  ============================ --}}
+@case('security')
 <!-- Section 10: Security / Trust -->
 @if($cmsSecurity['enabled'])
 <section class="security-section">
@@ -994,6 +1066,10 @@ $cmsSecurity = array_merge([
   </div>
 </section>
 @endif
+@break
+
+@endswitch
+@endforeach
 
 <!-- Footer -->
 @include('layout.partials.footer')

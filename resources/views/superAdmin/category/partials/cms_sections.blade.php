@@ -10,6 +10,24 @@
     $steps = $cms['steps'] ?? [];
     $pay   = $cms['payment_bar'] ?? [];
 
+    $sectionLabels = [
+        'hero'             => ['icon' => 'fas fa-image',          'label' => 'Hero Section'],
+        'features_bar'     => ['icon' => 'fas fa-th-list',        'label' => 'Features Bar'],
+        'steps'            => ['icon' => 'fas fa-list-ol',        'label' => 'Steps Section'],
+        'payment_bar'      => ['icon' => 'fas fa-credit-card',    'label' => 'Payment Bar'],
+        'medical_content'  => ['icon' => 'fas fa-file-medical',   'label' => 'Medical Content'],
+        'doctor_review'    => ['icon' => 'fas fa-user-md',        'label' => 'Doctor Review'],
+        'faq'              => ['icon' => 'fas fa-question-circle','label' => 'FAQ Section'],
+        'testo_info'       => ['icon' => 'fas fa-info-circle',    'label' => 'Testosterone Info'],
+        'testo_treatments' => ['icon' => 'fas fa-pills',          'label' => 'Testosterone Treatments'],
+        'security'         => ['icon' => 'fas fa-shield-alt',     'label' => 'Security / Trust'],
+    ];
+    $defaultOrder = array_keys($sectionLabels);
+    $sectionOrder = $cms['section_order'] ?? $defaultOrder;
+    foreach ($defaultOrder as $_k) {
+        if (!in_array($_k, $sectionOrder)) $sectionOrder[] = $_k;
+    }
+
     $defaultFeatures = [
         ['title' => 'Das Rezept wird online ausgestellt.',      'subtitle' => 'Ein Klinikbesuch ist nicht erforderlich.'],
         ['title' => 'Lieferung innerhalb von 1–2 Werktagen.',   'subtitle' => 'Schnelle, zuverlässige Lieferung.'],
@@ -55,6 +73,30 @@
         <small style="color:rgba(255,255,255,0.8);">Control which sections appear on the public category page and customise their content</small>
     </div>
     <div class="card-body p-0">
+
+        {{-- ============================
+             SECTION ORDER
+        ============================ --}}
+        <div class="px-3 pt-3 pb-2 border-bottom" style="background:#fff9f0;">
+            <h6 class="font-weight-bold mb-1" style="color:#e85d04;">
+                <i class="fas fa-sort mr-1"></i> Section Order
+                <small class="text-muted font-weight-normal ml-2" style="font-size:0.8rem;">Drag rows to set the display order on the public page</small>
+            </h6>
+            <input type="hidden" name="sections[section_order]" id="cmsOrderInput" value="{{ implode(',', $sectionOrder) }}">
+            <ul id="cmsSortableOrder" class="list-unstyled mb-0 mt-2" style="display:flex;flex-wrap:wrap;gap:6px;">
+                @foreach($sectionOrder as $sKey)
+                @if(isset($sectionLabels[$sKey]))
+                <li data-key="{{ $sKey }}"
+                    style="cursor:grab;background:#fff;border:1px solid #dee2e6;border-radius:6px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:600;user-select:none;white-space:nowrap;">
+                    <i class="fas fa-grip-vertical text-muted" style="font-size:0.75rem;cursor:grab;"></i>
+                    <i class="{{ $sectionLabels[$sKey]['icon'] }} text-primary" style="font-size:0.8rem;"></i>
+                    {{ $sectionLabels[$sKey]['label'] }}
+                </li>
+                @endif
+                @endforeach
+            </ul>
+        </div>
+
         <div id="cmsSectionsAccordion">
 
             {{-- ============================
@@ -673,10 +715,9 @@
                         <div id="articles-container">
                             @foreach($mcArticles as $ai => $article)
                             <div class="card mb-3 border cms-article" data-article-idx="{{ $ai }}">
-                                <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef; cursor:pointer;"
-                                     data-toggle="collapse" data-target="#article-body-{{ $ai }}">
-                                    <strong>Article {{ $ai + 1 }}: {{ $article['heading'] ?? '' }}</strong>
-                                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2" onclick="event.stopPropagation()">× Remove</button>
+                                <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef;">
+                                    <strong data-toggle="collapse" data-target="#article-body-{{ $ai }}" style="cursor:pointer; flex:1;">Article {{ $ai + 1 }}: {{ $article['heading'] ?? '' }}</strong>
+                                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2">× Remove</button>
                                 </div>
                                 <div id="article-body-{{ $ai }}" class="collapse show">
                                     <div class="card-body">
@@ -1144,10 +1185,9 @@
 
 <template id="tpl-article">
     <div class="card mb-3 border cms-article">
-        <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef; cursor:pointer;"
-             data-toggle="collapse" data-target="#article-body-__AI__">
-            <strong class="cms-article-label">Article __NUM__</strong>
-            <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2" onclick="event.stopPropagation()">× Remove</button>
+        <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef;">
+            <strong class="cms-article-label" data-toggle="collapse" data-target="#article-body-__AI__" style="cursor:pointer; flex:1;">Article __NUM__</strong>
+            <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2">× Remove</button>
         </div>
         <div id="article-body-__AI__" class="collapse show">
             <div class="card-body">
@@ -1700,3 +1740,28 @@ $(function () {
     });
 });
 </script>
+
+{{-- SortableJS for section ordering --}}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+(function () {
+    var list  = document.getElementById('cmsSortableOrder');
+    var input = document.getElementById('cmsOrderInput');
+    if (!list || !input) return;
+
+    new Sortable(list, {
+        animation: 150,
+        ghostClass: 'cms-order-ghost',
+        onEnd: function () {
+            var order = [];
+            list.querySelectorAll('li[data-key]').forEach(function (li) {
+                order.push(li.getAttribute('data-key'));
+            });
+            input.value = order.join(',');
+        }
+    });
+})();
+</script>
+<style>
+.cms-order-ghost { opacity: 0.5; background: #e8f0fe !important; border-color: #4285f4 !important; }
+</style>
