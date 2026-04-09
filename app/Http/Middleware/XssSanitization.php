@@ -16,7 +16,7 @@ class XssSanitization
     {
         $input = $request->all();
         array_walk_recursive($input, function (&$input) {
-            $input = strip_tags($input);
+            $input = strip_tags($input, '<span><br><b><strong><i><em><u><a><ul><li><ol>');
         });
         $request->merge($input);
 
