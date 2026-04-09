@@ -54,7 +54,7 @@
                         'name' => $m->name,
                         'subtitle' => $m->category ?: 'Cannaleo Partnership',
                         'strength' => $strength,
-                        'form' => $m->price !== null ? number_format($m->price, 2) . ' €' : 'On Request',
+                        'form' => $m->price !== null ? number_format($m->price, 2, ',', '.') . ' €' : 'On Request',
                         'image' => asset('images/upload_empty/medicine_placeholder.svg'),
                         'is_available' => true
                     ];

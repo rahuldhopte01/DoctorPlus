@@ -1319,9 +1319,9 @@ class WebsiteController extends Controller
                     $cartString .= '</div>';
 
                     $total_items = count(Session::get('cart'));
-                    $total_price = array_sum(array_column(Session::get('cart'), 'price'));
+                    $total_price = number_format(array_sum(array_column(Session::get('cart'), 'price')), 2, ',', '.');
 
-                    return response(['success' => true, 'data' => ['cartString' => $cartString, 'item_price' => $medicine->price_pr_strip, 'total_items' => $total_items, 'qty' => 1, 'total_price' => $total_price]]);
+                    return response(['success' => true, 'data' => ['cartString' => $cartString, 'item_price' => number_format($medicine->price_pr_strip, 2, ',', '.'), 'total_items' => $total_items, 'qty' => 1, 'total_price' => $total_price]]);
                 }
             } else {
                 return response(['success' => false, 'data' => 'Out of stock']);
@@ -1364,9 +1364,9 @@ class WebsiteController extends Controller
                     }
                     Session::put('cart', array_values($session));
                     $total_items = count(Session::get('cart'));
-                    $total_price = array_sum(array_column(Session::get('cart'), 'price'));
+                    $total_price = number_format(array_sum(array_column(Session::get('cart'), 'price')), 2, ',', '.');
 
-                    return response(['success' => true, 'data' => ['qty' => $qty, 'item_price' => $price, 'total_items' => $total_items, 'total_price' => $total_price, 'cartString' => $cartString]]);
+                    return response(['success' => true, 'data' => ['qty' => $qty, 'item_price' => number_format($price, 2, ',', '.'), 'total_items' => $total_items, 'total_price' => $total_price, 'cartString' => $cartString]]);
                 } else {
                     if ($medicine->total_stock > $medicine->use_stock) {
                         if ($data['operation'] == 'plus') {
@@ -1402,9 +1402,9 @@ class WebsiteController extends Controller
                         }
                         Session::put('cart', array_values($session));
                         $total_items = count(Session::get('cart'));
-                        $total_price = array_sum(array_column(Session::get('cart'), 'price'));
+                        $total_price = number_format(array_sum(array_column(Session::get('cart'), 'price')), 2, ',', '.');
 
-                        return response(['success' => true, 'data' => ['qty' => $qty, 'item_price' => $medicine->price_pr_strip, 'total_price' => $total_price, 'total_items' => $total_items, 'cartString' => $cartString]]);
+                        return response(['success' => true, 'data' => ['qty' => $qty, 'item_price' => number_format($medicine->price_pr_strip, 2, ',', '.'), 'total_price' => $total_price, 'total_items' => $total_items, 'cartString' => $cartString]]);
                     } else {
                         return response(['success' => false, 'data' => 'Out of stock']);
                     }

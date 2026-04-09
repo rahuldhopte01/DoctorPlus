@@ -298,7 +298,7 @@
                 
                 <div class="prescription-info-item total-row">
                     <span class="info-label">{{ __('Total Amount') }}</span>
-                    <span class="info-value">{{ $currency }}{{ number_format($prescriptionFee, 2) }}</span>
+                    <span class="info-value">{{ number_format($prescriptionFee, 2, ',', '.') }} {{ $currency }}</span>
                 </div>
             </div>
             
@@ -311,7 +311,7 @@
                 <span class="spinner"></span>
                 <span class="btn-text">
                     <i class="fas fa-credit-card"></i>
-                    {{ __('Pay') }} {{ $currency }}{{ number_format($prescriptionFee, 2) }}
+                    {{ __('Pay') }} {{ number_format($prescriptionFee, 2, ',', '.') }} {{ $currency }}
                 </span>
             </button>
             
