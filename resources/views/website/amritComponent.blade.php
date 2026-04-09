@@ -44,7 +44,7 @@
             background-color: #fefce8;
         }
 
-        /* ed-hero variables */
+        /* --- GENERAL HERO VARS --- */
         :root {
             --ed-radius-lg: 20px;
             --ed-dark: #1a1a1a;
@@ -52,73 +52,24 @@
             --ed-text-muted: #888;
             --ed-max-width: 1280px;
         }
-        .ed-hero {
-            position: relative;
-            width: 100%;
-            min-height: 520px;
-            overflow: hidden;
-            margin-bottom: 0;
-        }
-        .ed-hero-bg {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            object-fit: cover;
-            object-position: center top;
-        }
-        .ed-hero-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 45%, transparent 70%);
-        }
-        .ed-hero-inner {
-            position: relative; z-index: 2;
-            max-width: var(--ed-max-width);
-            margin: 0 auto;
-            padding: 48px 24px;
-            display: flex;
-            align-items: center;
-            min-height: 520px;
-        }
-        .ed-hero-text {
-            max-width: 440px;
-            background: rgba(255,255,255,0.3);
-            backdrop-filter: blur(16px);
-            border-radius: var(--ed-radius-lg);
-            padding: 30px 28px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.06);
-        }
-        .ed-hero-text h1 {
-            font-size: 2.2rem; font-weight: 800; line-height: 1.15;
-            color: var(--ed-dark); margin-bottom: 14px;
-            font-family: inherit;
-        }
-        .ed-hero-text > p {
-            font-size: 0.85rem; color: var(--ed-text-light); line-height: 1.6; margin-bottom: 20px;
-        }
-        .hero-cta {
-            display: inline-flex; align-items: center;
-            padding: 16px 36px; background: #3b6fd4;
-            color: #fff; border-radius: 50px;
-            font-size: 1rem; font-weight: 700;
-            box-shadow: 0 6px 20px rgba(59,111,212,0.35);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+
+        /* --- HERO TYPE 1 (CLASSIC) --- */
+        .ed-hero { position: relative; width: 100%; min-height: 520px; overflow: hidden; margin-bottom: 0; }
+        .ed-hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+        .ed-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 45%, transparent 70%); }
+        .ed-hero-inner { position: relative; z-index: 2; max-width: var(--ed-max-width); margin: 0 auto; padding: 48px 24px; display: flex; align-items: center; min-height: 520px; }
+        .ed-hero-text { max-width: 440px; background: rgba(255,255,255,0.3); backdrop-filter: blur(16px); border-radius: var(--ed-radius-lg); padding: 30px 28px; box-shadow: 0 8px 40px rgba(0,0,0,0.06); }
+        .ed-hero-text h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.15; color: var(--ed-dark); margin-bottom: 14px; }
+        .ed-hero-text > p { font-size: 0.85rem; color: var(--ed-text-light); line-height: 1.6; margin-bottom: 20px; }
+        
+        .hero-cta { display: inline-flex; align-items: center; padding: 16px 36px; background: #3b6fd4; color: #fff; border-radius: 50px; font-size: 1rem; font-weight: 700; box-shadow: 0 6px 20px rgba(59,111,212,0.35); text-decoration: none; transition: all 0.3s ease; border:none; cursor: pointer; }
         .hero-cta:hover { background: #2a52a8; color: #fff; transform: translateY(-2px); }
+        
         .hero-pricing { margin-top: 18px; font-size: 0.82rem; color: var(--ed-text-light); line-height: 1.5; }
         .hero-rating { margin-top: 14px; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
         .hero-rating .stars { color: #f59e0b; font-size: 1rem; }
-        .ed-hero-badge {
-            position: absolute;
-            bottom: 48px; right: 80px;
-            background: linear-gradient(135deg, rgba(59,111,212,0.9), rgba(30,60,140,0.95));
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            padding: 28px 32px;
-            color: #fff;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(59,111,212,0.3);
-            z-index: 3;
-        }
+        
+        .ed-hero-badge { position: absolute; bottom: 48px; right: 80px; background: linear-gradient(135deg, rgba(59,111,212,0.9), rgba(30,60,140,0.95)); backdrop-filter: blur(8px); border-radius: 20px; padding: 28px 32px; color: #fff; text-align: center; box-shadow: 0 8px 30px rgba(59,111,212,0.3); z-index: 3; }
         .ed-hero-badge .badge-big { font-size: 3.5rem; font-weight: 900; line-height: 1; }
         .ed-hero-badge .badge-big span { font-size: 2rem; }
         .ed-hero-badge .badge-sub { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 6px; }
@@ -141,9 +92,109 @@
             .ed-hero-badge .badge-big { font-size: 1.8rem; }
             .ed-hero-badge .badge-sub { font-size: 0.72rem; }
         }
-        @media (max-width: 480px) {
-            .ed-hero-text h1 { font-size: 1.4rem; }
+
+        /* --- HERO TYPE 2 (CANNABIS) --- */
+        .ed-hero-t2 {
+            background-color: #f0fdf4; /* Very light green */
+            padding: 80px 24px;
+            overflow: hidden;
+            position: relative;
         }
+        .ed-hero-t2-inner {
+            max-width: var(--ed-max-width);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .ed-hero-t2-text h1 {
+            font-size: 3.5rem; font-weight: 800; color: #1a1a1a; line-height: 1.1; margin-bottom: 24px;
+        }
+        .ed-hero-t2-text h1 span.text-success { color: #2d7a45 !important; }
+        .ed-hero-t2-text p { font-size: 1.05rem; color: #555; line-height: 1.6; margin-bottom: 32px; max-width: 520px; }
+        .ed-hero-t2-cta-wrap { margin-bottom: 24px; }
+        .hero-t2-subtext { font-size: 0.9rem; color: #666; margin-top: 14px; font-weight: 500; }
+        .ed-hero-t2-rating { display: flex; align-items: center; gap: 8px; font-size: 0.95rem; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px; width: fit-content; }
+        .ed-hero-t2-rating .stars { color: #f59e0b; font-size: 1.2rem; }
+        
+        .ed-hero-t2-img-wrap { position: relative; display: flex; justify-content: center; height: 100%; min-height: 400px; }
+        .ed-hero-t2-main-img { width: 100%; max-width: 500px; height: auto; object-fit: contain; z-index: 2; position: relative; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1)); }
+        .ed-hero-t2-bg-blob {
+            position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;
+            background: #dcfce7; border-radius: 40px; transform: rotate(-5deg); z-index: 1;
+        }
+        .ed-hero-t2-info-box {
+            position: absolute; z-index: 3; background: #fff; padding: 14px 22px; border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 14px;
+        }
+        .ed-hero-t2-info-box .val { font-size: 1.6rem; font-weight: 900; color: #dc2626; line-height: 1; }
+        .ed-hero-t2-info-box .lbl { font-size: 0.7rem; font-weight: 800; color: #1a1a1a; text-transform: uppercase; line-height: 1.2; letter-spacing: 0.05em; }
+        .box-1 { bottom: 60px; left: -30px; }
+        .box-2 { top: 60px; right: -30px; }
+
+        @media (max-width: 1200px) {
+            .box-1 { left: 0; } .box-2 { right: 0; }
+        }
+        @media (max-width: 992px) {
+            .ed-hero-t2-inner { grid-template-columns: 1fr; text-align: center; }
+            .ed-hero-t2-text h1 { font-size: 2.8rem; }
+            .ed-hero-t2-text p { margin-left: auto; margin-right: auto; }
+            .ed-hero-t2-cta-wrap { display: flex; flex-direction: column; align-items: center; }
+            .ed-hero-t2-rating { margin-left: auto; margin-right: auto; }
+            .ed-hero-t2-img-wrap { margin-top: 60px; min-height: 350px; }
+            .box-1 { left: 10%; } .box-2 { right: 10%; top: -20px; }
+        }
+        @media (max-width: 480px) {
+            .ed-hero-t2-text h1 { font-size: 2.2rem; }
+            .ed-hero-t2-info-box { padding: 10px 16px; gap: 10px; }
+            .ed-hero-t2-info-box .val { font-size: 1.3rem; }
+            .ed-hero-t2-info-box .lbl { font-size: 0.6rem; }
+            .box-1 { left: 0; bottom: 20px; } .box-2 { right: 0; top: -10px; }
+        }
+
+        /* --- HERO TYPE 3 (TESTOSTERONE) --- */
+        .ed-hero-t3 {
+            position: relative; width: 100%; min-height: 650px;
+            display: flex; align-items: center; padding: 80px 24px;
+            background-size: cover; background-position: center; border-bottom: 1px solid #eee;
+        }
+        .ed-hero-t3-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.15); z-index: 1; }
+        .ed-hero-t3-card {
+            position: relative; z-index: 2; width: 100%; max-width: 500px;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+            padding: 50px; border-radius: 40px; margin-left: 5%;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+        }
+        .ed-hero-t3-card h1 { font-size: 2.5rem; font-weight: 800; color: #1a1a1a; margin-bottom: 24px; line-height: 1.15; }
+        .ed-hero-t3-card p { font-size: 1rem; color: #4b5563; line-height: 1.6; margin-bottom: 35px; }
+        .ed-hero-t3-btns { display: flex; flex-direction: column; gap: 16px; margin-bottom: 35px; }
+        .t3-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 16px 30px; border-radius: 60px; font-weight: 700; text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-align: center; border: none; font-size: 1.05rem;
+        }
+        .t3-btn-solid { background: #ef4444; color: #fff; box-shadow: 0 12px 24px rgba(239,68,68,0.3); }
+        .t3-btn-solid:hover { background: #dc2626; color: #fff; transform: translateY(-3px); box-shadow: 0 15px 30px rgba(239,68,68,0.4); }
+        .t3-btn-outline { border: 2.5px solid #ef4444; color: #ef4444; background: transparent; }
+        .t3-btn-outline:hover { background: #ef4444; color: #fff; transform: translateY(-3px); }
+
+        .ed-hero-t3-bottom { display: flex; flex-wrap: wrap; gap: 24px; border-top: 1px solid #e5e7eb; padding-top: 30px; }
+        .t3-bottom-item { display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: #374151; font-weight: 600; }
+        .t3-bottom-item i { color: #ef4444; font-size: 1.25rem; }
+
+        @media (max-width: 992px) {
+            .ed-hero-t3 { min-height: 550px; padding: 60px 24px; }
+            .ed-hero-t3-card { margin-left: 0; max-width: 480px; }
+        }
+        @media (max-width: 768px) {
+            .ed-hero-t3 { justify-content: center; padding: 40px 16px; background-attachment: scroll; }
+            .ed-hero-t3-card { margin-left: 0; padding: 40px 24px; border-radius: 30px; width: 100%; }
+            .ed-hero-t3-card h1 { font-size: 2rem; }
+            .ed-hero-t3-bottom { gap: 16px; justify-content: center; }
+            .t3-bottom-item { font-size: 0.8rem; }
+        }
+
         /* FEATURES BAR */
         .features-bar { background: #fafafa; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 28px 0; }
         .features-bar-inner { max-width: var(--ed-max-width); margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; gap: 24px; }
@@ -176,6 +227,25 @@
         .step-card p { font-size: 0.78rem; color: var(--ed-text-light); line-height: 1.5; margin-bottom: 14px; }
         .step-card img { width: 100%; height: 180px; object-fit: contain; border-radius: 12px; transition: transform 0.5s ease; margin-top: auto; }
         .step-card:hover img { transform: scale(1.06); }
+
+        /* 3 STEPS TYPE 2 (Testosterone) */
+        .steps-section-t2 { padding: 80px 24px; background: #fffafb; text-align: center; }
+        .steps-section-t2 h2 { font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 12px; }
+        .steps-section-t2 .subtitle { font-size: 2.2rem; font-weight: 800; color: #ef4444; font-style: italic; margin-bottom: 24px; }
+        .steps-section-t2-desc { max-width: 600px; margin: 0 auto 56px; color: #666; line-height: 1.6; font-size: 1rem; }
+        .steps-grid-t2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; max-width: 1140px; margin: 0 auto; }
+        .step-card-t2 { background: #fff; border-radius: 24px; padding: 48px 32px 40px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: transform 0.3s ease; display: flex; flex-direction: column; align-items: center; }
+        .step-card-t2:hover { transform: translateY(-10px); }
+        .step-num-t2 { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: #ef4444; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); }
+        .step-icon-t2 { width: 72px; height: 72px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        .step-icon-t2 i { font-size: 1.8rem; color: #ef4444; }
+        .step-card-t2 h3 { font-size: 1.35rem; font-weight: 800; color: #ef4444; margin-bottom: 12px; }
+        .step-card-t2 p { font-size: 0.9rem; color: #555; line-height: 1.6; margin: 0; }
+
+        @media (max-width: 992px) {
+            .steps-grid-t2 { grid-template-columns: 1fr; max-width: 400px; gap: 48px; }
+            .steps-section-t2 .subtitle { font-size: 1.8rem; }
+        }
         
         /* PAYMENT BAR */
         .payment-bar { background: var(--ed-dark); padding: 24px 0; }
@@ -303,6 +373,7 @@
 $_cms     = $category->cms_sections ?? [];
 
 $cmsHero  = array_merge([
+    'type'                 => 'type1',
     'enabled'              => true,
     'background_image'     => null,
     'cta_text'             => 'Zu den medizinischen Fragen',
@@ -316,6 +387,29 @@ $cmsHero  = array_merge([
     'rating_enabled'       => true,
     'rating_value'         => '4,79',
     'rating_count'         => '14.082',
+
+    // Type 2 defaults
+    't2_heading'           => 'Therapie mit medizinischem Cannabis',
+    't2_description'       => 'Füllen Sie einen Online-Fragebogen aus und lassen Sie Ihre Angaben von einem zugelassenen Arzt überprüfen...',
+    't2_subtext'           => 'Ärztliche Beurteilung und Verordnung 14,9 € + Cannabis-Therapeutikum ab 3 €',
+    't2_main_image'        => null,
+    't2_info_1_val'        => '700+',
+    't2_info_1_lbl'        => 'ANGESCHLOSSENE APOTHEKEN',
+    't2_info_2_val'        => '1,5K+',
+    't2_info_2_lbl'        => 'CANNABIS BLÜTEN',
+
+    // Type 3 defaults
+    't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
+    't3_subheading'        => 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
+    't3_cta_1_text'        => 'Jetzt Beratung starten',
+    't3_cta_1_url'         => '#',
+    't3_cta_2_text'        => 'Mehr erfahren',
+    't3_cta_2_url'         => '#',
+    't3_bottom_items'      => [
+        ['icon' => 'bx bx-user', 'text' => 'Deutsche Ärzte'],
+        ['icon' => 'bx bx-shield-check', 'text' => '100% DSGVO-konform'],
+        ['icon' => 'bx bx-truck', 'text' => 'Expressversand'],
+    ],
 ], $_cms['hero'] ?? []);
 
 $cmsFb = array_merge([
@@ -362,135 +456,7 @@ $cmsPay = array_merge([
     'bg_color' => '#1a1a1a',
     'methods'  => ['klarna' => true, 'visa' => true, 'maestro' => true, 'gpay' => true, 'apple_pay' => true, 'paypal' => true],
 ], $_cms['payment_bar'] ?? []);
-@endphp
 
-<!-- Hero Section -->
-@if($cmsHero['enabled'])
-<section class="ed-hero">
-    @php
-        $_heroBannerFile = $cmsHero['background_image'] ?? null;
-        $_heroFallbackFile = $category->image ?? null;
-    @endphp
-    @if($_heroBannerFile && file_exists(public_path('images/upload/'.$_heroBannerFile)))
-        <img class="ed-hero-bg" src="{{ asset('images/upload/'.$_heroBannerFile) }}" alt="{{ $category->name }}">
-    @elseif($_heroFallbackFile && file_exists(public_path('images/upload/'.$_heroFallbackFile)))
-        <img class="ed-hero-bg" src="{{ asset('images/upload/'.$_heroFallbackFile) }}" alt="{{ $category->name }}">
-    @else
-        <img class="ed-hero-bg" src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1280&q=80" alt="{{ $category->name }}">
-    @endif
-    <div class="ed-hero-overlay"></div>
-    <div class="ed-hero-inner">
-      <div class="ed-hero-text">
-        <h1>{{ $category->name }}</h1>
-        <p>{{ $category->description ? Str::limit($category->description, 150) : 'Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktage geliefert.' }}</p>
-
-        @if($hasQuestionnaire)
-            <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}"
-               class="hero-cta"
-               style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
-                {{ $cmsHero['cta_text'] }}
-            </a>
-        @else
-            <a href="{{ route('categories') }}" class="hero-cta"
-               style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
-                Browse treatments
-            </a>
-        @endif
-
-        <div class="hero-pricing">
-            Behandlungsgebühr {{ $cmsHero['consultation_fee'] }} &euro; +<br>
-            Medikament ab
-            @if(isset($category->price) && $category->price)
-                {{ number_format($category->price, 2, ',', '.') }} &euro;
-            @else
-                41,58 &euro;
-            @endif
-        </div>
-        @if($cmsHero['rating_enabled'])
-        <div class="hero-rating">
-          <span class="stars">★★★★★</span>
-          <strong>{{ $cmsHero['rating_value'] }}</strong> Hervorragend
-          <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} Bewertungen</span>
-        </div>
-        @endif
-      </div>
-    </div>
-    @if($cmsHero['badge_enabled'])
-    <div class="ed-hero-badge"
-         style="background:linear-gradient(135deg, {{ $cmsHero['badge_bg_color_start'] }}e6, {{ $cmsHero['badge_bg_color_end'] }}f2); box-shadow:0 8px 30px {{ $cmsHero['badge_bg_color_start'] }}4d;">
-      <div class="badge-big">{{ $cmsHero['badge_percentage'] }}<span>%</span></div>
-      <div class="badge-sub">{{ $cmsHero['badge_text'] }}</div>
-    </div>
-    @endif
-</section>
-@endif
-
-<!-- Features Bar -->
-@if($cmsFb['enabled'])
-<section class="features-bar" style="background:{{ $cmsFb['bg_color'] }};">
-    <div class="features-bar-inner">
-        @foreach($cmsFb['features'] as $i => $feat)
-        @if($feat['enabled'] ?? true)
-        <div class="fb-item">
-            <div class="fb-icon">{!! $_fbIcons[$i] !!}</div>
-            <div class="fb-text">
-                <strong>{{ $feat['title'] }}</strong>
-                <span>{{ $feat['subtitle'] }}</span>
-            </div>
-        </div>
-        @endif
-        @endforeach
-    </div>
-</section>
-@endif
-
-<!-- 3 Steps -->
-@if($cmsSteps['enabled'])
-<section class="steps-section">
-    <h2 class="steps-title">
-        {{ $cmsSteps['section_title'] }}<br>
-        <span style="color:{{ $cmsSteps['subtitle_color'] }};">{{ $cmsSteps['section_subtitle'] }}</span>
-    </h2>
-    <div class="steps-grid">
-      @foreach($cmsSteps['steps'] as $i => $step)
-      @php
-          $stepImg = !empty($step['image']) && file_exists(public_path('images/upload/'.$step['image']))
-              ? asset('images/upload/'.$step['image'])
-              : ($_stepFallbackImgs[$i] ?? null);
-      @endphp
-      <div class="step-card">
-        <div class="step-num" style="background:{{ $cmsSteps['step_number_bg'] }}; box-shadow:0 4px 12px {{ $cmsSteps['step_number_bg'] }}66;">{{ $i + 1 }}</div>
-        <div class="step-card-inner">
-            <h3>{{ $step['title_plain'] }} <span style="color:{{ $step['highlight_color'] ?? $cmsSteps['subtitle_color'] }};">{{ $step['title_highlighted'] }}</span></h3>
-            <p>{{ $step['description'] }}</p>
-            @if($stepImg)
-            <img src="{{ $stepImg }}" alt="{{ $_stepAltTexts[$i] ?? '' }}" loading="lazy">
-            @endif
-        </div>
-      </div>
-      @endforeach
-    </div>
-</section>
-@endif
-
-<!-- Payment Methods -->
-@if($cmsPay['enabled'])
-<section class="payment-bar" style="background:{{ $cmsPay['bg_color'] }};">
-  <div class="payment-bar-inner">
-    <span>{{ $cmsPay['label'] }}</span>
-    <div class="payment-logos">
-      @if($cmsPay['methods']['klarna'] ?? true)<span class="pay-logo">Klarna.</span>@endif
-      @if($cmsPay['methods']['visa'] ?? true)<span class="pay-logo">VISA</span>@endif
-      @if($cmsPay['methods']['maestro'] ?? true)<span class="pay-logo">Maestro</span>@endif
-      @if($cmsPay['methods']['gpay'] ?? true)<span class="pay-logo">G Pay</span>@endif
-      @if($cmsPay['methods']['apple_pay'] ?? true)<span class="pay-logo">Apple Pay</span>@endif
-      @if($cmsPay['methods']['paypal'] ?? true)<span class="pay-logo">PayPal</span>@endif
-    </div>
-  </div>
-</section>
-@endif
-
-@php
 // --- CMS: Medical Content, Doctor Review, FAQ ---
 $cmsMedical = array_merge([
     'enabled'       => true,
@@ -525,135 +491,7 @@ $cmsFaq = array_merge([
         ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
     ],
 ], $_cms['faq'] ?? []);
-@endphp
 
-<!-- Medical Content -->
-@if($cmsMedical['enabled'])
-<div class="med-content">
-  <h2>{{ $cmsMedical['section_title'] }} {{ $category->name }}</h2>
-
-  @if($cmsMedical['toc_enabled'] && !empty($cmsMedical['toc_items']))
-  <div class="toc">
-    <h3>{{ $cmsMedical['toc_title'] }}</h3>
-    @foreach($cmsMedical['toc_items'] as $tocItem)
-    <a href="{{ $tocItem['url'] }}">{{ $tocItem['label'] }}</a>
-    @endforeach
-  </div>
-  @endif
-
-  @foreach($cmsMedical['articles'] as $article)
-  <div class="med-article" id="{{ $article['anchor_id'] ?? '' }}">
-    <h2>{{ $article['heading'] }}</h2>
-    @foreach($article['blocks'] ?? [] as $block)
-      @switch($block['type'] ?? '')
-        @case('text')
-          <p>{{ $block['content'] }}</p>
-          @break
-        @case('subheading')
-          @php $lvl = in_array($block['level'] ?? '', ['h3','h4']) ? $block['level'] : 'h3'; @endphp
-          <{{ $lvl }}>{{ $block['text'] }}</{{ $lvl }}>
-          @break
-        @case('table')
-          @if(!empty($block['heading']))<h3>{{ $block['heading'] }}</h3>@endif
-          <div class="med-table-wrapper">
-          <table class="med-table" style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">
-            <tr>
-              @foreach($block['headers'] ?? [] as $th)
-              <th style="background:{{ $block['header_bg'] ?? '#3b6fd4' }}; color:{{ $block['header_text_color'] ?? '#ffffff' }};">{{ $th }}</th>
-              @endforeach
-            </tr>
-            @foreach($block['rows'] ?? [] as $ri => $row)
-            <tr style="{{ ($ri % 2 === 1) ? 'background:' . ($block['alt_row_bg'] ?? '#f8f9fa') . ';' : '' }}">
-              @foreach($row as $cell)
-              <td style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">{{ $cell }}</td>
-              @endforeach
-            </tr>
-            @endforeach
-          </table>
-          </div>
-          @break
-        @case('list')
-          <ul>
-            @foreach($block['items'] ?? [] as $item)
-            <li>@if(!empty($item['label']))<strong>{{ $item['label'] }}</strong> @endif{{ $item['text'] }}</li>
-            @endforeach
-          </ul>
-          @break
-        @case('callout')
-          <div class="callout" style="background:{{ $block['bg_color'] ?? '#eff3fb' }}; border-left:4px solid {{ $block['border_color'] ?? '#3b6fd4' }}; padding:16px 20px; border-radius:8px; margin:16px 0;">
-            @if(!empty($block['heading']))<h4>{{ $block['heading'] }}</h4>@endif
-            <p style="margin:0;">{{ $block['content'] }}</p>
-          </div>
-          @break
-      @endswitch
-    @endforeach
-  </div>
-  @endforeach
-</div>
-@endif
-
-<!-- Medical Review -->
-@if($cmsDr['enabled'])
-@php
-  $_drImg = (!empty($cmsDr['image']) && file_exists(public_path('images/upload/' . $cmsDr['image'])))
-    ? asset('images/upload/' . $cmsDr['image'])
-    : 'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=800&q=80';
-@endphp
-<div class="med-review">
-  <div class="med-review-img">
-    <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
-  </div>
-  <div class="med-review-text">
-    <div class="med-review-doc">{{ $cmsDr['name'] }}</div>
-    <div class="med-review-role">{{ $cmsDr['role'] }}</div>
-    <h3>{{ $cmsDr['title'] }}</h3>
-    @foreach($cmsDr['paragraphs'] as $para)
-    <p>{{ $para }}</p>
-    @endforeach
-    @if(!empty($cmsDr['link_text']))
-    <p>Weitere Informationen finden Sie in unserem <a href="{{ $cmsDr['link_url'] }}" style="color:var(--ed-primary, #3b6fd4);">{{ $cmsDr['link_text'] }}</a>.</p>
-    @endif
-    @if($cmsDr['show_last_updated'])
-    <div class="update">Letzte Aktualisierung am {{ date('d/m/Y') }}</div>
-    @endif
-  </div>
-</div>
-@endif
-
-<!-- FAQ -->
-@if($cmsFaq['enabled'] && !empty($cmsFaq['items']))
-<section class="py-5 bg-white">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="mb-5">
-                    <h2 class="display-6 fw-bold mb-4">{{ $cmsFaq['title'] }}</h2>
-                    <div class="accordion" id="faqAccordion">
-                        @foreach($cmsFaq['items'] as $index => $faq)
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#faq{{ $index }}">
-                                        {{ $faq['question'] ?? '' }}
-                                    </button>
-                                </h2>
-                                <div id="faq{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
-                                     data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
-                                        {{ $faq['answer'] ?? '' }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-@endif
-
-@php
 // --- CMS: Sections 8, 9, 10 ---
 $cmsTestoInfo = array_merge([
     'enabled'     => true,
@@ -694,37 +532,497 @@ $cmsSecurity = array_merge([
         ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
     ],
 ], $_cms['security'] ?? []);
+
+// --- Section Order ---
+$_validSections  = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security'];
+$_sectionOrder   = $_cms['section_order'] ?? $_validSections;
+foreach ($_validSections as $_sk) {
+    if (!in_array($_sk, $_sectionOrder)) $_sectionOrder[] = $_sk;
+}
 @endphp
 
+@foreach($_sectionOrder as $_sectionKey)
+@switch($_sectionKey)
+
+{{-- ============================  HERO  ============================ --}}
+@case('hero')
+<!-- Hero Section -->
+@if($cmsHero['enabled'])
+    @php
+        $_heroType = $cmsHero['type'] ?? 'type1';
+        $_heroBannerFile = $cmsHero['background_image'] ?? null;
+        $_heroFallbackFile = $category->image ?? null;
+        $_heroImgPath = '';
+        if ($_heroBannerFile && file_exists(public_path('images/upload/'.$_heroBannerFile))) {
+            $_heroImgPath = asset('images/upload/'.$_heroBannerFile);
+        } elseif ($_heroFallbackFile && file_exists(public_path('images/upload/'.$_heroFallbackFile))) {
+            $_heroImgPath = asset('images/upload/'.$_heroFallbackFile);
+        } else {
+            $_heroImgPath = "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1280&q=80";
+        }
+    @endphp
+
+    @if($_heroType == 'type3')
+        {{-- TYPE 3: TESTOSTERONE --}}
+        <section class="ed-hero-t3" style="background-image: url('{{ $_heroImgPath }}');">
+            <div class="ed-hero-t3-overlay"></div>
+            <div class="ed-hero-t3-card">
+                <h1>{!! $cmsHero['t3_heading'] ?? $category->name !!}</h1>
+                <p>{!! $cmsHero['t3_subheading'] ?? ($category->description ? Str::limit($category->description, 150) : '') !!}</p>
+                
+                <div class="ed-hero-t3-btns">
+                    <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
+                       class="t3-btn t3-btn-solid">
+                        {{ $cmsHero['t3_cta_1_text'] ?? 'Jetzt Beratung starten' }}
+                    </a>
+                    <a href="{{ $cmsHero['t3_cta_2_url'] ?? '#' }}" class="t3-btn t3-btn-outline">
+                        {{ $cmsHero['t3_cta_2_text'] ?? 'Mehr erfahren' }}
+                    </a>
+                </div>
+
+                <div class="ed-hero-t3-bottom">
+                    @foreach(($cmsHero['t3_bottom_items'] ?? []) as $item)
+                        <div class="t3-bottom-item">
+                            <i class="{{ $item['icon'] ?? 'bx bx-check-circle' }}"></i>
+                            <span>{{ $item['text'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+    @elseif($_heroType == 'type2')
+        {{-- TYPE 2: CANNABIS --}}
+        <section class="ed-hero-t2">
+            <div class="ed-hero-t2-inner">
+                <div class="ed-hero-t2-text">
+                    <h1>{!! $cmsHero['t2_heading'] ?? $category->name !!}</h1>
+                    <p>{!! $cmsHero['t2_description'] ?? ($category->description ? Str::limit($category->description, 180) : '') !!}</p>
+                    
+                    <div class="ed-hero-t2-cta-wrap">
+                        <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
+                           class="hero-cta" style="background:#2d7a45; box-shadow:0 10px 25px rgba(45,122,69,0.3);">
+                            {{ $cmsHero['cta_text'] }}
+                        </a>
+                        <div class="hero-t2-subtext">
+                            {!! $cmsHero['t2_subtext'] !!}
+                        </div>
+                    </div>
+
+                    @if($cmsHero['rating_enabled'])
+                    <div class="ed-hero-t2-rating">
+                        <span class="stars">★★★★★</span>
+                        <div class="ml-1">
+                            <strong>{{ $cmsHero['rating_value'] }}</strong>/5 
+                            <span style="color:#666">({{ $cmsHero['rating_count'] }} Bewertungen)</span>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                <div class="ed-hero-t2-img-wrap">
+                    <div class="ed-hero-t2-bg-blob"></div>
+                    @if(!empty($cmsHero['t2_main_image']))
+                        <img src="{{ asset('images/upload/'.$cmsHero['t2_main_image']) }}" alt="Cannabis" class="ed-hero-t2-main-img">
+                    @else
+                        <img src="https://images.unsplash.com/photo-1627582522437-db7b3c20ca47?auto=format&fit=crop&w=800" alt="Cannabis" class="ed-hero-t2-main-img">
+                    @endif
+
+                    <div class="ed-hero-t2-info-box box-1">
+                        <div class="val">{{ $cmsHero['t2_info_1_val'] }}</div>
+                        <div class="lbl">{!! str_replace(' ', '<br>', $cmsHero['t2_info_1_lbl']) !!}</div>
+                    </div>
+                    <div class="ed-hero-t2-info-box box-2">
+                        <div class="val">{{ $cmsHero['t2_info_2_val'] }}</div>
+                        <div class="lbl">{!! str_replace(' ', '<br>', $cmsHero['t2_info_2_lbl']) !!}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    @else
+        {{-- TYPE 1: DEFAULT --}}
+        <section class="ed-hero">
+            <img class="ed-hero-bg" src="{{ $_heroImgPath }}" alt="{{ $category->name }}">
+            <div class="ed-hero-overlay"></div>
+            <div class="ed-hero-inner">
+              <div class="ed-hero-text">
+                <h1>{!! $cmsHero['t1_heading'] ?? $category->name !!}</h1>
+                <p>{!! $cmsHero['t1_description'] ?? ($category->description ? Str::limit($category->description, 150) : 'Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktage geliefert.') !!}</p>
+
+                @if($hasQuestionnaire)
+                    <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}"
+                       class="hero-cta"
+                       style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
+                        {{ $cmsHero['cta_text'] }}
+                    </a>
+                @else
+                    <a href="{{ route('categories') }}" class="hero-cta"
+                       style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
+                        Browse treatments
+                    </a>
+                @endif
+
+                <div class="hero-pricing">
+                    Behandlungsgebühr {{ $cmsHero['consultation_fee'] }} &euro; +<br>
+                    Medikament ab
+                    @if(isset($category->price) && $category->price)
+                        {{ number_format($category->price, 2, ',', '.') }} &euro;
+                    @else
+                        41,58 &euro;
+                    @endif
+                </div>
+                @if($cmsHero['rating_enabled'])
+                <div class="hero-rating">
+                  <span class="stars">★★★★★</span>
+                  <strong>{{ $cmsHero['rating_value'] }}</strong> Hervorragend
+                  <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} Bewertungen</span>
+                </div>
+                @endif
+              </div>
+            </div>
+            @if($cmsHero['badge_enabled'])
+            <div class="ed-hero-badge"
+                 style="background:linear-gradient(135deg, {{ $cmsHero['badge_bg_color_start'] }}e6, {{ $cmsHero['badge_bg_color_end'] }}f2); box-shadow:0 8px 30px {{ $cmsHero['badge_bg_color_start'] }}4d;">
+              <div class="badge-big">{{ $cmsHero['badge_percentage'] }}<span>%</span></div>
+              <div class="badge-sub">{{ $cmsHero['badge_text'] }}</div>
+            </div>
+            @endif
+        </section>
+    @endif
+@endif
+@break
+
+{{-- ============================  FEATURES BAR  ============================ --}}
+@case('features_bar')
+<!-- Features Bar -->
+@if($cmsFb['enabled'])
+<section class="features-bar" style="background:{{ $cmsFb['bg_color'] }};">
+    <div class="features-bar-inner">
+        @foreach($cmsFb['features'] as $i => $feat)
+        @if($feat['enabled'] ?? true)
+        <div class="fb-item">
+            <div class="fb-icon">{!! $_fbIcons[$i] !!}</div>
+            <div class="fb-text">
+                <strong>{!! $feat['title'] !!}</strong>
+                <span>{!! $feat['subtitle'] !!}</span>
+            </div>
+        </div>
+        @endif
+        @endforeach
+    </div>
+</section>
+@endif
+@break
+
+{{-- ============================  STEPS  ============================ --}}
+@case('steps')
+<!-- 3 Steps -->
+@if($cmsSteps['enabled'])
+    @php $_stepsType = $cmsSteps['type'] ?? 'type1'; @endphp
+    
+    @if($_stepsType == 'type2')
+        {{-- TYPE 2: TESTOSTERONE --}}
+        <section class="steps-section-t2">
+            <h2>{!! $cmsSteps['t2_title'] !!}</h2>
+            <div class="subtitle">{!! $cmsSteps['t2_subtitle'] !!}</div>
+            @if(!empty($cmsSteps['t2_desc']))
+                <p class="steps-section-t2-desc">{!! $cmsSteps['t2_desc'] !!}</p>
+            @endif
+
+            <div class="steps-grid-t2">
+                @foreach($cmsSteps['steps'] as $i => $step)
+                <div class="step-card-t2">
+                    <div class="step-num-t2">{{ $i + 1 }}</div>
+                    <div class="step-icon-t2">
+                        <i class="{{ $step['icon'] ?? 'bx bx-check' }}"></i>
+                    </div>
+                    <h3>{!! $step['t2_title'] !!}</h3>
+                    <p>{!! $step['description'] !!}</p>
+                </div>
+                @endforeach
+            </div>
+        </section>
+    @else
+        {{-- TYPE 1: DEFAULT --}}
+        <section class="steps-section">
+            <h2 class="steps-title">
+                {!! $cmsSteps['section_title'] !!}<br>
+                <span style="color:{{ $cmsSteps['subtitle_color'] }};">{!! $cmsSteps['section_subtitle'] !!}</span>
+            </h2>
+            <div class="steps-grid">
+              @foreach($cmsSteps['steps'] as $i => $step)
+              @php
+                  $stepImg = !empty($step['image']) && file_exists(public_path('images/upload/'.$step['image']))
+                      ? asset('images/upload/'.$step['image'])
+                      : ($_stepFallbackImgs[$i] ?? null);
+              @endphp
+              <div class="step-card">
+                <div class="step-num" style="background:{{ $cmsSteps['step_number_bg'] }}; box-shadow:0 4px 12px {{ $cmsSteps['step_number_bg'] }}66;">{{ $i + 1 }}</div>
+                <div class="step-card-inner">
+                    <h3>{!! $step['title_plain'] !!} <span style="color:{{ $step['highlight_color'] ?? $cmsSteps['subtitle_color'] }};">{!! $step['title_highlighted'] !!}</span></h3>
+                    <p>{!! $step['description'] !!}</p>
+                    @if($stepImg)
+                    <img src="{{ $stepImg }}" alt="{{ $_stepAltTexts[$i] ?? '' }}" loading="lazy">
+                    @endif
+                </div>
+              </div>
+              @endforeach
+            </div>
+        </section>
+    @endif
+@endif
+@break
+
+{{-- ============================  PAYMENT BAR  ============================ --}}
+@case('payment_bar')
+<!-- Payment Methods -->
+@if($cmsPay['enabled'])
+<section class="payment-bar" style="background:{{ $cmsPay['bg_color'] }};">
+  <div class="payment-bar-inner">
+    <span>{{ $cmsPay['label'] }}</span>
+    <div class="payment-logos">
+      @if($cmsPay['methods']['klarna'] ?? true)<span class="pay-logo">Klarna.</span>@endif
+      @if($cmsPay['methods']['visa'] ?? true)<span class="pay-logo">VISA</span>@endif
+      @if($cmsPay['methods']['maestro'] ?? true)<span class="pay-logo">Maestro</span>@endif
+      @if($cmsPay['methods']['gpay'] ?? true)<span class="pay-logo">G Pay</span>@endif
+      @if($cmsPay['methods']['apple_pay'] ?? true)<span class="pay-logo">Apple Pay</span>@endif
+      @if($cmsPay['methods']['paypal'] ?? true)<span class="pay-logo">PayPal</span>@endif
+    </div>
+  </div>
+</section>
+@endif
+@break
+
+@php
+// --- CMS: Medical Content, Doctor Review, FAQ ---
+$cmsMedical = array_merge([
+    'enabled'       => true,
+    'section_title' => 'Behandlungen bei',
+    'toc_enabled'   => true,
+    'toc_title'     => 'Themenliste',
+    'toc_items'     => [],
+    'articles'      => [],
+], $_cms['medical_content'] ?? []);
+
+$cmsDr = array_merge([
+    'enabled'           => true,
+    'image'             => null,
+    'name'              => 'Dr. med. Experte',
+    'role'              => 'Facharzt für Urologie',
+    'title'             => 'Medizinisch-fachlich geprüft',
+    'paragraphs'        => [
+        'Die medizinischen Inhalte auf dieser Seite wurden in Zusammenarbeit mit einem unserer Ärzte bzw. medizinischen Experten erstellt und von diesen überprüft.',
+        'Die medizinischen Inhalte werden regelmäßig überprüft, um maximale Genauigkeit und Zuverlässigkeit zu gewährleisten.',
+    ],
+    'link_text'         => 'Redaktionsprozess',
+    'link_url'          => '#',
+    'show_last_updated' => true,
+], $_cms['doctor_review'] ?? []);
+
+$cmsFaq = array_merge([
+    'enabled'  => true,
+    'title'    => 'Frequently asked questions',
+    'subtitle' => '',
+    'items'    => [
+        ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
+        ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
+        ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
+    ],
+], $_cms['faq'] ?? []);
+@endphp
+
+{{-- ============================  MEDICAL CONTENT  ============================ --}}
+@case('medical_content')
+<!-- Medical Content -->
+@if($cmsMedical['enabled'])
+<div class="med-content">
+  <h2>{!! $cmsMedical['section_title'] !!} {{ $category->name }}</h2>
+
+  @if($cmsMedical['toc_enabled'] && !empty($cmsMedical['toc_items']))
+  <div class="toc">
+    <h3>{{ $cmsMedical['toc_title'] }}</h3>
+    @foreach($cmsMedical['toc_items'] as $tocItem)
+    <a href="{{ $tocItem['url'] }}">{{ $tocItem['label'] }}</a>
+    @endforeach
+  </div>
+  @endif
+
+  @foreach($cmsMedical['articles'] as $article)
+  <div class="med-article" id="{{ $article['anchor_id'] ?? '' }}">
+    <h2>{{ $article['heading'] }}</h2>
+    @foreach($article['blocks'] ?? [] as $block)
+      @switch($block['type'] ?? '')
+        @case('text')
+          <p>{!! $block['content'] !!}</p>
+          @break
+        @case('subheading')
+          @php $lvl = in_array($block['level'] ?? '', ['h3','h4']) ? $block['level'] : 'h3'; @endphp
+          <{!! $lvl !!}>{!! $block['text'] !!}</{!! $lvl !!}>
+          @break
+        @case('table')
+          @if(!empty($block['heading']))<h3>{!! $block['heading'] !!}</h3>@endif
+          <div class="med-table-wrapper">
+          <table class="med-table" style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">
+            <tr>
+              @foreach($block['headers'] ?? [] as $th)
+              <th style="background:{{ $block['header_bg'] ?? '#3b6fd4' }}; color:{{ $block['header_text_color'] ?? '#ffffff' }};">{!! $th !!}</th>
+              @endforeach
+            </tr>
+            @foreach($block['rows'] ?? [] as $ri => $row)
+            <tr style="{{ ($ri % 2 === 1) ? 'background:' . ($block['alt_row_bg'] ?? '#f8f9fa') . ';' : '' }}">
+              @foreach($row as $cell)
+              <td style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">{!! $cell !!}</td>
+              @endforeach
+            </tr>
+            @endforeach
+          </table>
+          </div>
+          @break
+        @case('list')
+          <ul>
+            @foreach($block['items'] ?? [] as $item)
+            <li>@if(!empty($item['label']))<strong>{!! $item['label'] !!}</strong> @endif{!! $item['text'] !!}</li>
+            @endforeach
+          </ul>
+          @break
+        @case('callout')
+          <div class="callout" style="background:{{ $block['bg_color'] ?? '#eff3fb' }}; border-left:4px solid {{ $block['border_color'] ?? '#3b6fd4' }}; padding:16px 20px; border-radius:8px; margin:16px 0;">
+            @if(!empty($block['heading']))<h4>{!! $block['heading'] !!}</h4>@endif
+            <p style="margin:0;">{!! $block['content'] !!}</p>
+          </div>
+          @break
+      @endswitch
+    @endforeach
+  </div>
+  @endforeach
+</div>
+@endif
+@break
+
+{{-- ============================  DOCTOR REVIEW  ============================ --}}
+@case('doctor_review')
+<!-- Medical Review -->
+@if($cmsDr['enabled'])
+@php
+  $_drImg = (!empty($cmsDr['image']) && file_exists(public_path('images/upload/' . $cmsDr['image'])))
+    ? asset('images/upload/' . $cmsDr['image'])
+    : 'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=800&q=80';
+@endphp
+<div class="med-review">
+  <div class="med-review-img">
+    <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
+  </div>
+  <div class="med-review-text">
+    <div class="med-review-doc">{!! $cmsDr['name'] !!}</div>
+    <div class="med-review-role">{!! $cmsDr['role'] !!}</div>
+    <h3>{!! $cmsDr['title'] !!}</h3>
+    @foreach($cmsDr['paragraphs'] as $para)
+    <p>{!! $para !!}</p>
+    @endforeach
+    @if(!empty($cmsDr['link_text']))
+    <p>Weitere Informationen finden Sie in unserem <a href="{{ $cmsDr['link_url'] }}" style="color:var(--ed-primary, #3b6fd4);">{{ $cmsDr['link_text'] }}</a>.</p>
+    @endif
+    @if($cmsDr['show_last_updated'])
+    <div class="update">Letzte Aktualisierung am {{ date('d/m/Y') }}</div>
+    @endif
+  </div>
+</div>
+@endif
+@break
+
+{{-- ============================  FAQ  ============================ --}}
+@case('faq')
+<!-- FAQ -->
+@if($cmsFaq['enabled'] && !empty($cmsFaq['items']))
+<section class="py-5 bg-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="mb-5 text-center">
+                    <h2 class="display-6 fw-bold mb-2">{{ $cmsFaq['title'] }}</h2>
+                    @if(!empty($cmsFaq['subtitle']))
+                        <div class="faq-subtitle-extra">
+                           <span>{!! $cmsFaq['subtitle'] !!}</span>
+                        </div>
+                    @endif
+                </div>
+
+                <style>
+                    .faq-subtitle-extra {
+                        color: #e63946;
+                        font-size: 1.75rem;
+                        font-weight: 800;
+                        margin-bottom: 30px;
+                        display: inline-block;
+                        position: relative;
+                        padding-bottom: 8px;
+                    }
+                    .faq-subtitle-extra span {
+                        border-bottom: 4px solid #e63946;
+                        border-bottom: none;
+                    }
+                </style>
+                    <div class="accordion" id="faqAccordion">
+                        @foreach($cmsFaq['items'] as $index => $faq)
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#faq{{ $index }}">
+                                        {!! $faq['question'] ?? '' !!}
+                                    </button>
+                                </h2>
+                                <div id="faq{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
+                                     data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body text-muted">
+                                        {!! $faq['answer'] ?? '' !!}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+@break
+
+{{-- ============================  TESTO INFO  ============================ --}}
+@case('testo_info')
 <!-- Section 8: Testosterone Info -->
 @if($cmsTestoInfo['enabled'])
 <section class="bg-white">
   <div class="testo-section">
     <div class="testo-content">
-      <h2>{{ $cmsTestoInfo['heading'] }}</h2>
-      <p>{{ $cmsTestoInfo['paragraph_1'] }}</p>
-      <p>{{ $cmsTestoInfo['paragraph_2'] }}</p>
-      <p>{{ $cmsTestoInfo['paragraph_3'] }}</p>
+      <h2>{!! $cmsTestoInfo['heading'] !!}</h2>
+      <p>{!! $cmsTestoInfo['paragraph_1'] !!}</p>
+      <p>{!! $cmsTestoInfo['paragraph_2'] !!}</p>
+      <p>{!! $cmsTestoInfo['paragraph_3'] !!}</p>
     </div>
     <div class="testo-grid">
       @foreach($cmsTestoInfo['cards'] as $card)
       <div class="testo-card">
         <div class="testo-icon-wrap"><i class="bi {{ $card['icon'] }}"></i></div>
-        <h4>{{ $card['title'] }}</h4>
-        <p>{{ $card['subtitle'] }}</p>
+        <h4>{!! $card['title'] !!}</h4>
+        <p>{!! $card['subtitle'] !!}</p>
       </div>
       @endforeach
     </div>
   </div>
 </section>
 @endif
+@break
 
+{{-- ============================  TESTO TREATMENTS  ============================ --}}
+@case('testo_treatments')
 <!-- Section 9: Testosterone Treatments -->
 @if($cmsTestoTreatments['enabled'])
 <section class="testo-treat-section">
   <div class="testo-treat-header">
-    <h2>{{ $cmsTestoTreatments['heading'] }}</h2>
-    <p>{{ $cmsTestoTreatments['subheading'] }}</p>
+    <h2>{!! $cmsTestoTreatments['heading'] !!}</h2>
+    <p>{!! $cmsTestoTreatments['subheading'] !!}</p>
   </div>
   <div class="testo-treat-grid">
     @foreach($cmsTestoTreatments['cards'] as $i => $card)
@@ -738,8 +1036,8 @@ $cmsSecurity = array_merge([
       <img src="{{ $_treatImg }}" alt="{{ $card['title'] }}" class="testo-treat-img" loading="lazy">
       @endif
       <div class="testo-treat-content">
-        <h3>{{ $card['title'] }}</h3>
-        <p>{{ $card['description'] }}</p>
+        <h3>{!! $card['title'] !!}</h3>
+        <p>{!! $card['description'] !!}</p>
         <a href="{{ $card['button_url'] }}" class="testo-treat-btn">{{ $card['button_text'] }}</a>
       </div>
     </div>
@@ -747,25 +1045,32 @@ $cmsSecurity = array_merge([
   </div>
 </section>
 @endif
+@break
 
+{{-- ============================  SECURITY  ============================ --}}
+@case('security')
 <!-- Section 10: Security / Trust -->
 @if($cmsSecurity['enabled'])
 <section class="security-section">
   <div class="security-header">
-    <h2>{{ $cmsSecurity['heading'] }}</h2>
-    <p>{{ $cmsSecurity['subheading'] }}</p>
+    <h2>{!! $cmsSecurity['heading'] !!}</h2>
+    <p>{!! $cmsSecurity['subheading'] !!}</p>
   </div>
   <div class="security-grid">
     @foreach($cmsSecurity['cards'] as $card)
     <div class="security-card">
       <div class="security-icon"><i class="bi {{ $card['icon'] }}"></i></div>
-      <h3>{{ $card['title'] }}</h3>
-      <p>{{ $card['description'] }}</p>
+      <h3>{!! $card['title'] !!}</h3>
+      <p>{!! $card['description'] !!}</p>
     </div>
     @endforeach
   </div>
 </section>
 @endif
+@break
+
+@endswitch
+@endforeach
 
 <!-- Footer -->
 @include('layout.partials.footer')

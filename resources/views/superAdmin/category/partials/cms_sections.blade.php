@@ -10,6 +10,24 @@
     $steps = $cms['steps'] ?? [];
     $pay   = $cms['payment_bar'] ?? [];
 
+    $sectionLabels = [
+        'hero'             => ['icon' => 'fas fa-image',          'label' => 'Hero Section'],
+        'features_bar'     => ['icon' => 'fas fa-th-list',        'label' => 'Features Bar'],
+        'steps'            => ['icon' => 'fas fa-list-ol',        'label' => 'Steps Section'],
+        'payment_bar'      => ['icon' => 'fas fa-credit-card',    'label' => 'Payment Bar'],
+        'medical_content'  => ['icon' => 'fas fa-file-medical',   'label' => 'Medical Content'],
+        'doctor_review'    => ['icon' => 'fas fa-user-md',        'label' => 'Doctor Review'],
+        'faq'              => ['icon' => 'fas fa-question-circle','label' => 'FAQ Section'],
+        'testo_info'       => ['icon' => 'fas fa-info-circle',    'label' => 'Testosterone Info'],
+        'testo_treatments' => ['icon' => 'fas fa-pills',          'label' => 'Testosterone Treatments'],
+        'security'         => ['icon' => 'fas fa-shield-alt',     'label' => 'Security / Trust'],
+    ];
+    $defaultOrder = array_keys($sectionLabels);
+    $sectionOrder = $cms['section_order'] ?? $defaultOrder;
+    foreach ($defaultOrder as $_k) {
+        if (!in_array($_k, $sectionOrder)) $sectionOrder[] = $_k;
+    }
+
     $defaultFeatures = [
         ['title' => 'Das Rezept wird online ausgestellt.',      'subtitle' => 'Ein Klinikbesuch ist nicht erforderlich.'],
         ['title' => 'Lieferung innerhalb von 1–2 Werktagen.',   'subtitle' => 'Schnelle, zuverlässige Lieferung.'],
@@ -19,9 +37,9 @@
     $fbFeatures = $fb['features'] ?? $defaultFeatures;
 
     $defaultSteps = [
-        ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null],
-        ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null],
-        ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null],
+        ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null, 'icon' => 'bx bx-file'],
+        ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null, 'icon' => 'bx bx-user'],
+        ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null, 'icon' => 'bx bx-truck'],
     ];
     $stepsData = $steps['steps'] ?? $defaultSteps;
 
@@ -55,6 +73,30 @@
         <small style="color:rgba(255,255,255,0.8);">Control which sections appear on the public category page and customise their content</small>
     </div>
     <div class="card-body p-0">
+
+        {{-- ============================
+             SECTION ORDER
+        ============================ --}}
+        <div class="px-3 pt-3 pb-2 border-bottom" style="background:#fff9f0;">
+            <h6 class="font-weight-bold mb-1" style="color:#e85d04;">
+                <i class="fas fa-sort mr-1"></i> Section Order
+                <small class="text-muted font-weight-normal ml-2" style="font-size:0.8rem;">Drag rows to set the display order on the public page</small>
+            </h6>
+            <input type="hidden" name="sections[section_order]" id="cmsOrderInput" value="{{ implode(',', $sectionOrder) }}">
+            <ul id="cmsSortableOrder" class="list-unstyled mb-0 mt-2" style="display:flex;flex-wrap:wrap;gap:6px;">
+                @foreach($sectionOrder as $sKey)
+                @if(isset($sectionLabels[$sKey]))
+                <li data-key="{{ $sKey }}"
+                    style="cursor:grab;background:#fff;border:1px solid #dee2e6;border-radius:6px;padding:6px 12px;display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:600;user-select:none;white-space:nowrap;">
+                    <i class="fas fa-grip-vertical text-muted" style="font-size:0.75rem;cursor:grab;"></i>
+                    <i class="{{ $sectionLabels[$sKey]['icon'] }} text-primary" style="font-size:0.8rem;"></i>
+                    {{ $sectionLabels[$sKey]['label'] }}
+                </li>
+                @endif
+                @endforeach
+            </ul>
+        </div>
+
         <div id="cmsSectionsAccordion">
 
             {{-- ============================
@@ -72,99 +114,251 @@
                 </div>
                 <div id="collapseHero" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[hero][enabled]" value="1" {{ ($hero['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Hero Section
-                        </label>
-                        <div class="row">
-                            <div class="col-md-12 form-group">
-                                <label>Background / Banner Image</label>
-                                <input type="file" class="form-control-file" name="hero_background_image"
-                                       accept="image/jpeg,image/png,image/jpg,image/webp">
-                                @if(!empty($hero['background_image']))
-                                    <div class="mt-2 d-flex align-items-center" style="gap:12px;">
-                                        <img src="{{ asset('images/upload/' . $hero['background_image']) }}"
-                                             alt="Hero Banner" style="height:80px;border-radius:4px;border:1px solid #dee2e6;object-fit:cover;">
-                                        <small class="text-muted">Current banner image. Upload a new file to replace it.</small>
-                                    </div>
-                                @endif
-                                <small class="text-muted">Accepted: jpeg, png, jpg, webp — max 2 MB. This image is used as the hero section background.</small>
-                            </div>
-                        </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
-                                <label>CTA Button Text</label>
-                                <input type="text" class="form-control" name="sections[hero][cta_text]"
-                                       value="{{ $hero['cta_text'] ?? 'Zu den medizinischen Fragen' }}">
+                                <label class="cms-toggle-label mb-3">
+                                    <input type="checkbox" name="sections[hero][enabled]" value="1" {{ ($hero['enabled'] ?? true) ? 'checked' : '' }}>
+                                    Show Hero Section
+                                </label>
                             </div>
-                            <div class="col-md-3 form-group">
-                                <label>CTA Button Color</label>
-                                <div class="cms-color-row">
-                                    <input type="color" name="sections[hero][cta_color]"
-                                           value="{{ $hero['cta_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
-                                    <input type="text" class="form-control color-hex"
-                                           value="{{ $hero['cta_color'] ?? '#3b6fd4' }}">
-                                </div>
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>Consultation Fee (€)</label>
-                                <input type="text" class="form-control" name="sections[hero][consultation_fee]"
-                                       value="{{ $hero['consultation_fee'] ?? '29' }}">
+                            <div class="col-md-6 form-group">
+                                <label class="font-weight-bold">Hero Type</label>
+                                <select name="sections[hero][type]" class="form-control" id="hero_type_selector">
+                                    <option value="type1" {{ ($hero['type'] ?? 'type1') == 'type1' ? 'selected' : '' }}>Type 1: Default (Classic Banner)</option>
+                                    <option value="type2" {{ ($hero['type'] ?? '') == 'type2' ? 'selected' : '' }}>Type 2: Cannabis (Split Design)</option>
+                                    <option value="type3" {{ ($hero['type'] ?? '') == 'type3' ? 'selected' : '' }}>Type 3: Testosterone (Floating Card)</option>
+                                </select>
                             </div>
                         </div>
 
-                        <hr>
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[hero][badge_enabled]" value="1" {{ ($hero['badge_enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Improvement Badge (85%)
-                        </label>
-                        <div class="row">
-                            <div class="col-md-2 form-group">
-                                <label>Badge %</label>
-                                <input type="text" class="form-control" name="sections[hero][badge_percentage]"
-                                       value="{{ $hero['badge_percentage'] ?? '85' }}">
-                            </div>
-                            <div class="col-md-5 form-group">
-                                <label>Badge Body Text</label>
-                                <input type="text" class="form-control" name="sections[hero][badge_text]"
-                                       value="{{ $hero['badge_text'] ?? 'der Männer berichten von einer Besserung' }}">
-                            </div>
-                            <div class="col-md-2 form-group">
-                                <label>Badge Color 1</label>
-                                <div class="cms-color-row">
-                                    <input type="color" name="sections[hero][badge_bg_color_start]"
-                                           value="{{ $hero['badge_bg_color_start'] ?? '#3b6fd4' }}" class="cms-color-picker">
-                                    <input type="text" class="form-control color-hex"
-                                           value="{{ $hero['badge_bg_color_start'] ?? '#3b6fd4' }}">
+                        {{-- TYPE DEPENDENT FIELDS --}}
+                        <div id="hero_type_fields">
+                            
+                            {{-- Type 1 & 3 Shared Background --}}
+                            <div class="hero-field-group hero-type-type1 hero-type-type3">
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>Background / Banner Image</label>
+                                        <input type="file" class="form-control-file" name="hero_background_image"
+                                               accept="image/jpeg,image/png,image/jpg,image/webp">
+                                        @if(!empty($hero['background_image']))
+                                            <div class="mt-2 d-flex align-items-center" style="gap:12px;">
+                                                <img src="{{ asset('images/upload/' . $hero['background_image']) }}"
+                                                     alt="Hero Banner" style="height:80px;border-radius:4px;border:1px solid #dee2e6;object-fit:cover;">
+                                                <small class="text-muted">Current banner image. Upload a new file to replace it.</small>
+                                            </div>
+                                        @endif
+                                        <small class="text-muted">Accepted: jpeg, png, jpg, webp — max 2 MB. This image is used as the background.</small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3 form-group">
-                                <label>Badge Color 2 (gradient end)</label>
-                                <div class="cms-color-row">
-                                    <input type="color" name="sections[hero][badge_bg_color_end]"
-                                           value="{{ $hero['badge_bg_color_end'] ?? '#1e3c8c' }}" class="cms-color-picker">
-                                    <input type="text" class="form-control color-hex"
-                                           value="{{ $hero['badge_bg_color_end'] ?? '#1e3c8c' }}">
-                                </div>
-                            </div>
-                        </div>
 
-                        <hr>
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[hero][rating_enabled]" value="1" {{ ($hero['rating_enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Star Rating
-                        </label>
-                        <div class="row">
-                            <div class="col-md-3 form-group">
-                                <label>Rating Value (e.g. 4,79)</label>
-                                <input type="text" class="form-control" name="sections[hero][rating_value]"
-                                       value="{{ $hero['rating_value'] ?? '4,79' }}">
+                            {{-- TYPE 1 FIELDS --}}
+                            <div class="hero-field-group hero-type-type1">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>CTA Button Text</label>
+                                        <input type="text" class="form-control" name="sections[hero][cta_text]"
+                                               value="{{ $hero['cta_text'] ?? 'Zu den medizinischen Fragen' }}">
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>CTA Button Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][cta_color]"
+                                                   value="{{ $hero['cta_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['cta_color'] ?? '#3b6fd4' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Consultation Fee (€)</label>
+                                        <input type="text" class="form-control" name="sections[hero][consultation_fee]"
+                                               value="{{ $hero['consultation_fee'] ?? '29' }}">
+                                    </div>
+                                </div>
+                                <hr>
+                                <label class="cms-toggle-label mb-3">
+                                    <input type="checkbox" name="sections[hero][badge_enabled]" value="1" {{ ($hero['badge_enabled'] ?? true) ? 'checked' : '' }}>
+                                    Show Improvement Badge (85%)
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-2 form-group">
+                                        <label>Badge %</label>
+                                        <input type="text" class="form-control" name="sections[hero][badge_percentage]"
+                                               value="{{ $hero['badge_percentage'] ?? '85' }}">
+                                    </div>
+                                    <div class="col-md-5 form-group">
+                                        <label>Badge Body Text</label>
+                                        <input type="text" class="form-control" name="sections[hero][badge_text]"
+                                               value="{{ $hero['badge_text'] ?? 'der Männer berichten von einer Besserung' }}">
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Badge Color 1</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][badge_bg_color_start]"
+                                                   value="{{ $hero['badge_bg_color_start'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['badge_bg_color_start'] ?? '#3b6fd4' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Badge Color 2 (gradient end)</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][badge_bg_color_end]"
+                                                   value="{{ $hero['badge_bg_color_end'] ?? '#1e3c8c' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['badge_bg_color_end'] ?? '#1e3c8c' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <label class="cms-toggle-label mb-3">
+                                    <input type="checkbox" name="sections[hero][rating_enabled]" value="1" {{ ($hero['rating_enabled'] ?? true) ? 'checked' : '' }}>
+                                    Show Star Rating
+                                </label>
+                                <div class="row">
+                                    <div class="col-md-3 form-group">
+                                        <label>Rating Value (e.g. 4,79)</label>
+                                        <input type="text" class="form-control" name="sections[hero][rating_value]"
+                                               value="{{ $hero['rating_value'] ?? '4,79' }}">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>Review Count (e.g. 14.082)</label>
+                                        <input type="text" class="form-control" name="sections[hero][rating_count]"
+                                               value="{{ $hero['rating_count'] ?? '14.082' }}">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-4 form-group">
-                                <label>Review Count (e.g. 14.082)</label>
-                                <input type="text" class="form-control" name="sections[hero][rating_count]"
-                                       value="{{ $hero['rating_count'] ?? '14.082' }}">
+
+                            {{-- TYPE 2 FIELDS (Cannabis) --}}
+                            <div class="hero-field-group hero-type-type2">
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>Hero Heading (use &lt;span class="text-success"&gt;Cannabis&lt;/span&gt; for color)</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_heading]"
+                                               value="{{ $hero['t2_heading'] ?? 'Therapie mit medizinischem Cannabis' }}">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" rows="3" name="sections[hero][t2_description]">{{ $hero['t2_description'] ?? '' }}</textarea>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>CTA Text</label>
+                                        <input type="text" class="form-control" name="sections[hero][cta_text]"
+                                               value="{{ $hero['cta_text'] ?? 'Zu den medizinischen Fragen' }}">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>Pricing Subtext</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_subtext]"
+                                               value="{{ $hero['t2_subtext'] ?? '' }}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>Main Image (transparent recommended)</label>
+                                        <input type="file" class="form-control-file" name="sections[hero][t2_main_image]"
+                                               accept="image/*.">
+                                        @if(!empty($hero['t2_main_image']))
+                                            <div class="mt-2">
+                                                <img src="{{ asset('images/upload/' . $hero['t2_main_image']) }}"
+                                                     style="height:80px; border-radius:4px; border:1px solid #ddd;">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Rating Value</label>
+                                        <input type="text" class="form-control" name="sections[hero][rating_value]"
+                                               value="{{ $hero['rating_value'] ?? '4,79' }}">
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Review Count</label>
+                                        <input type="text" class="form-control" name="sections[hero][rating_count]"
+                                               value="{{ $hero['rating_count'] ?? '14.082' }}">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-3 form-group">
+                                        <label>Info Box 1 Value</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_info_1_val]"
+                                               value="{{ $hero['t2_info_1_val'] ?? '700+' }}">
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Info Box 1 Label</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_info_1_lbl]"
+                                               value="{{ $hero['t2_info_1_lbl'] ?? 'ANGESCHLOSSENE APOTHEKEN' }}">
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Info Box 2 Value</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_info_2_val]"
+                                               value="{{ $hero['t2_info_2_val'] ?? '1,5K+' }}">
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Info Box 2 Label</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_info_2_lbl]"
+                                               value="{{ $hero['t2_info_2_lbl'] ?? 'CANNABIS BLÜTEN' }}">
+                                    </div>
+                                </div>
                             </div>
+
+                            {{-- TYPE 3 FIELDS (Testosterone) --}}
+                            <div class="hero-field-group hero-type-type3">
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label>Hero Heading</label>
+                                        <input type="text" class="form-control" name="sections[hero][t3_heading]"
+                                               value="{{ $hero['t3_heading'] ?? '' }}">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <label>Hero Subheading</label>
+                                        <textarea class="form-control" rows="2" name="sections[hero][t3_subheading]">{{ $hero['t3_subheading'] ?? '' }}</textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>CTA 1 (Solid) Text</label>
+                                            <input type="text" class="form-control" name="sections[hero][t3_cta_1_text]"
+                                                   value="{{ $hero['t3_cta_1_text'] ?? 'Jetzt Beratung starten' }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>CTA 1 URL</label>
+                                            <input type="text" class="form-control" name="sections[hero][t3_cta_1_url]"
+                                                   value="{{ $hero['t3_cta_1_url'] ?? '#' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>CTA 2 (Outline) Text</label>
+                                            <input type="text" class="form-control" name="sections[hero][t3_cta_2_text]"
+                                                   value="{{ $hero['t3_cta_2_text'] ?? 'Mehr erfahren' }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>CTA 2 URL</label>
+                                            <input type="text" class="form-control" name="sections[hero][t3_cta_2_url]"
+                                                   value="{{ $hero['t3_cta_2_url'] ?? '#' }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <label class="font-weight-bold d-block mt-2">Bottom Feature Items (3 items recommended)</label>
+                                <div id="t3_bottom_items_container">
+                                    @php $t3Items = $hero['t3_bottom_items'] ?? [['icon'=>'bi-person','text'=>'Deutsche Ärzte'],['icon'=>'bi-shield-check','text'=>'100% DSGVO-konform'],['icon'=>'bi-truck','text'=>'Expressversand']]; @endphp
+                                    @foreach($t3Items as $idx => $t3Item)
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control form-control-sm" name="sections[hero][t3_bottom_items][{{ $idx }}][icon]" 
+                                                   value="{{ $t3Item['icon'] ?? '' }}" placeholder="Icon (e.g. bi-person)">
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" class="form-control form-control-sm" name="sections[hero][t3_bottom_items][{{ $idx }}][text]" 
+                                                   value="{{ $t3Item['text'] ?? '' }}" placeholder="Text">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-sm btn-outline-danger js-remove-t3-item">×</button>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-1 js-add-t3-item">+ Add Item</button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -245,86 +439,143 @@
                             <input type="checkbox" name="sections[steps][enabled]" value="1" {{ ($steps['enabled'] ?? true) ? 'checked' : '' }}>
                             Show Steps Section
                         </label>
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label>Section Main Title</label>
-                                <input type="text" class="form-control" name="sections[steps][section_title]"
-                                       value="{{ $steps['section_title'] ?? '3 einfache Schritte' }}">
-                            </div>
-                            <div class="col-md-4 form-group">
-                                <label>Section Subtitle (italic line)</label>
-                                <input type="text" class="form-control" name="sections[steps][section_subtitle]"
-                                       value="{{ $steps['section_subtitle'] ?? '100 % online' }}">
-                            </div>
-                            <div class="col-md-2 form-group">
-                                <label>Subtitle Color</label>
-                                <div class="cms-color-row">
-                                    <input type="color" name="sections[steps][subtitle_color]"
-                                           value="{{ $steps['subtitle_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
-                                    <input type="text" class="form-control color-hex"
-                                           value="{{ $steps['subtitle_color'] ?? '#3b6fd4' }}">
-                                </div>
-                            </div>
-                            <div class="col-md-2 form-group">
-                                <label>Step Number Color</label>
-                                <div class="cms-color-row">
-                                    <input type="color" name="sections[steps][step_number_bg]"
-                                           value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}" class="cms-color-picker">
-                                    <input type="text" class="form-control color-hex"
-                                           value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}">
-                                </div>
-                            </div>
+
+                        <div class="form-group mb-4">
+                            <label class="font-weight-bold">Steps Design Type</label>
+                            <select name="sections[steps][type]" id="steps_type_selector" class="form-control select2">
+                                <option value="type1" {{ ($steps['type'] ?? 'type1') == 'type1' ? 'selected' : '' }}>Type 1 (Default - Wide Cards)</option>
+                                <option value="type2" {{ ($steps['type'] ?? 'type1') == 'type2' ? 'selected' : '' }}>Type 2 (Testosterone - Grid Cards)</option>
+                            </select>
                         </div>
 
-                        @foreach($defaultSteps as $i => $default)
-                        @php $step = $stepsData[$i] ?? $default; @endphp
-                        <div class="card card-body mb-3" style="background:#f8f9fa;">
-                            <h6 class="font-weight-bold mb-3 text-primary">Step {{ $i + 1 }}</h6>
-                            <div class="row">
-                                <div class="col-md-4 form-group">
-                                    <label class="text-muted" style="font-size:0.8rem;">Title — plain part</label>
-                                    <input type="text" class="form-control form-control-sm"
-                                           name="sections[steps][steps][{{ $i }}][title_plain]"
-                                           value="{{ $step['title_plain'] ?? $default['title_plain'] }}">
-                                </div>
-                                <div class="col-md-4 form-group">
-                                    <label class="text-muted" style="font-size:0.8rem;">Title — highlighted part</label>
-                                    <input type="text" class="form-control form-control-sm"
-                                           name="sections[steps][steps][{{ $i }}][title_highlighted]"
-                                           value="{{ $step['title_highlighted'] ?? $default['title_highlighted'] }}">
-                                </div>
-                                <div class="col-md-2 form-group">
-                                    <label class="text-muted" style="font-size:0.8rem;">Highlight Color</label>
-                                    <div class="cms-color-row">
-                                        <input type="color" name="sections[steps][steps][{{ $i }}][highlight_color]"
-                                               value="{{ $step['highlight_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
-                                        <input type="text" class="form-control color-hex"
-                                               value="{{ $step['highlight_color'] ?? '#3b6fd4' }}">
+                        <div id="steps_type_fields">
+                            {{-- TYPE 1 FIELDS (Default) --}}
+                            <div class="steps-field-group steps-type-type1">
+                                <div class="row">
+                                    <div class="col-md-4 form-group">
+                                        <label>Section Main Title</label>
+                                        <input type="text" class="form-control" name="sections[steps][section_title]"
+                                               value="{{ $steps['section_title'] ?? '3 einfache Schritte' }}">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label>Section Subtitle (italic line)</label>
+                                        <input type="text" class="form-control" name="sections[steps][section_subtitle]"
+                                               value="{{ $steps['section_subtitle'] ?? '100 % online' }}">
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Subtitle Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[steps][subtitle_color]"
+                                                   value="{{ $steps['subtitle_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $steps['subtitle_color'] ?? '#3b6fd4' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Step Number Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[steps][step_number_bg]"
+                                                   value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}">
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-2 form-group">
-                                    <label class="text-muted" style="font-size:0.8rem;">Card Image</label>
-                                    @if(!empty($step['image']))
-                                        <div class="mb-1">
-                                            <img src="{{ asset('images/upload/' . $step['image']) }}"
-                                                 style="height:48px; border-radius:6px; object-fit:cover; border:1px solid #ddd;">
+
+                                @foreach($defaultSteps as $i => $default)
+                                @php $step = $stepsData[$i] ?? $default; @endphp
+                                <div class="card card-body mb-3" style="background:#f8f9fa;">
+                                    <h6 class="font-weight-bold mb-3 text-primary">Step {{ $i + 1 }}</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Title — plain part</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[steps][steps][{{ $i }}][title_plain]"
+                                                   value="{{ $step['title_plain'] ?? $default['title_plain'] }}">
                                         </div>
-                                    @endif
-                                    <input type="file" class="form-control-file"
-                                           name="sections[steps][steps][{{ $i }}][image]"
-                                           accept=".jpg,.jpeg,.png,.webp">
-                                    @if(!empty($step['image']))
-                                        <small class="text-muted">Upload to replace current image</small>
-                                    @endif
+                                        <div class="col-md-4 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Title — highlighted part</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[steps][steps][{{ $i }}][title_highlighted]"
+                                                   value="{{ $step['title_highlighted'] ?? $default['title_highlighted'] }}">
+                                        </div>
+                                        <div class="col-md-2 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Highlight Color</label>
+                                            <div class="cms-color-row">
+                                                <input type="color" name="sections[steps][steps][{{ $i }}][highlight_color]"
+                                                       value="{{ $step['highlight_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                                <input type="text" class="form-control color-hex"
+                                                       value="{{ $step['highlight_color'] ?? '#3b6fd4' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Card Image</label>
+                                            @if(!empty($step['image']))
+                                                <div class="mb-1">
+                                                    <img src="{{ asset('images/upload/' . $step['image']) }}"
+                                                         style="height:48px; border-radius:6px; object-fit:cover; border:1px solid #ddd;">
+                                                </div>
+                                            @endif
+                                            <input type="file" class="form-control-file"
+                                                   name="sections[steps][steps][{{ $i }}][image]"
+                                                   accept=".jpg,.jpeg,.png,.webp">
+                                        </div>
+                                        <div class="col-12 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Description</label>
+                                            <textarea class="form-control form-control-sm" rows="2"
+                                                      name="sections[steps][steps][{{ $i }}][description]">{{ $step['description'] ?? $default['description'] }}</textarea>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-12 form-group">
-                                    <label class="text-muted" style="font-size:0.8rem;">Description</label>
-                                    <textarea class="form-control form-control-sm" rows="2"
-                                              name="sections[steps][steps][{{ $i }}][description]">{{ $step['description'] ?? $default['description'] }}</textarea>
+                                @endforeach
+                            </div>
+
+                            {{-- TYPE 2 FIELDS (Testosterone) --}}
+                            <div class="steps-field-group steps-type-type2">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label>Main Title (e.g. So einfach geht's)</label>
+                                        <input type="text" class="form-control" name="sections[steps][t2_title]"
+                                               value="{{ $steps['t2_title'] ?? 'So einfach geht\'s' }}">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label>Subtitle (Highlighted Row)</label>
+                                        <input type="text" class="form-control" name="sections[steps][t2_subtitle]"
+                                               value="{{ $steps['t2_subtitle'] ?? 'In 3 Schritten zur Behandlung' }}">
+                                    </div>
+                                    <div class="col-md-12 form-group">
+                                        <label>Description under Title</label>
+                                        <textarea class="form-control" rows="2" name="sections[steps][t2_desc]">{{ $steps['t2_desc'] ?? '' }}</textarea>
+                                    </div>
                                 </div>
+
+                                @foreach($defaultSteps as $i => $default)
+                                @php $step = $stepsData[$i] ?? $default; @endphp
+                                <div class="card card-body mb-3" style="background:#f8f9fa;">
+                                    <h6 class="font-weight-bold mb-3 text-danger">Step {{ $i + 1 }}</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Step Icon (Boxicons class)</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[steps][steps][{{ $i }}][icon]"
+                                                   value="{{ $step['icon'] ?? $default['icon'] }}" placeholder="bx bx-file">
+                                        </div>
+                                        <div class="col-md-8 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Title (Use &lt;span style="color:#000"&gt;...&lt;/span&gt; for black text)</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[steps][steps][{{ $i }}][t2_title]"
+                                                   value="{{ $step['t2_title'] ?? ($i==0 ? 'Fragebogen ausfüllen' : ($i==1 ? 'Ärztliche Prüfung' : 'Lieferung in 1-2 Werktagen')) }}">
+                                        </div>
+                                        <div class="col-12 form-group">
+                                            <label class="text-muted" style="font-size:0.8rem;">Description</label>
+                                            <textarea class="form-control form-control-sm" rows="2"
+                                                      name="sections[steps][steps][{{ $i }}][t2_description]">{{ $step['description'] ?? $default['description'] }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
                             </div>
                         </div>
-                        @endforeach
                     </div>
                 </div>
             </div>
@@ -464,10 +715,9 @@
                         <div id="articles-container">
                             @foreach($mcArticles as $ai => $article)
                             <div class="card mb-3 border cms-article" data-article-idx="{{ $ai }}">
-                                <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef; cursor:pointer;"
-                                     data-toggle="collapse" data-target="#article-body-{{ $ai }}">
-                                    <strong>Article {{ $ai + 1 }}: {{ $article['heading'] ?? '' }}</strong>
-                                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2" onclick="event.stopPropagation()">× Remove</button>
+                                <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef;">
+                                    <strong data-toggle="collapse" data-target="#article-body-{{ $ai }}" style="cursor:pointer; flex:1;">Article {{ $ai + 1 }}: {{ $article['heading'] ?? '' }}</strong>
+                                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2">× Remove</button>
                                 </div>
                                 <div id="article-body-{{ $ai }}" class="collapse show">
                                     <div class="card-body">
@@ -627,10 +877,17 @@
                                    {{ ($faqCms['enabled'] ?? true) ? 'checked' : '' }}>
                             Show FAQ Section
                         </label>
-                        <div class="form-group col-md-6 pl-0">
-                            <label>Section Title</label>
-                            <input type="text" class="form-control" name="sections[faq][title]"
-                                   value="{{ $faqCms['title'] ?? 'Frequently asked questions' }}">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>Section Title</label>
+                                <input type="text" class="form-control" name="sections[faq][title]"
+                                       value="{{ $faqCms['title'] ?? 'Frequently asked questions' }}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Extra Title (Subtitle)</label>
+                                <input type="text" class="form-control" name="sections[faq][subtitle]"
+                                       value="{{ $faqCms['subtitle'] ?? '' }}">
+                            </div>
                         </div>
                         <div id="faq-items-container">
                             @php $faqItems = $faqCms['items'] ?? []; @endphp
@@ -928,10 +1185,9 @@
 
 <template id="tpl-article">
     <div class="card mb-3 border cms-article">
-        <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef; cursor:pointer;"
-             data-toggle="collapse" data-target="#article-body-__AI__">
-            <strong class="cms-article-label">Article __NUM__</strong>
-            <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2" onclick="event.stopPropagation()">× Remove</button>
+        <div class="card-header d-flex align-items-center justify-content-between py-2" style="background:#e9ecef;">
+            <strong class="cms-article-label" data-toggle="collapse" data-target="#article-body-__AI__" style="cursor:pointer; flex:1;">Article __NUM__</strong>
+            <button type="button" class="btn btn-sm btn-outline-danger js-remove-article ml-2">× Remove</button>
         </div>
         <div id="article-body-__AI__" class="collapse show">
             <div class="card-body">
@@ -1160,6 +1416,21 @@
         <button type="button" class="btn btn-sm btn-outline-danger js-remove-dr-para flex-shrink-0" style="align-self:flex-start;">×</button>
     </div>
 </template>
+<template id="tpl-t3-item">
+    <div class="row mb-2">
+        <div class="col-md-4">
+            <input type="text" class="form-control form-control-sm" name="sections[hero][t3_bottom_items][__IDX__][icon]" 
+                   value="" placeholder="Icon (e.g. bi-person)">
+        </div>
+        <div class="col-md-7">
+            <input type="text" class="form-control form-control-sm" name="sections[hero][t3_bottom_items][__IDX__][text]" 
+                   value="" placeholder="Text">
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-sm btn-outline-danger js-remove-t3-item">×</button>
+        </div>
+    </div>
+</template>
 
 <script>
 $(function () {
@@ -1239,15 +1510,21 @@ $(function () {
     function reindexTableCells($block, ai, bi) {
         $block.find('.cms-table-header-row th input').each(function (ci) {
             var n = $(this).attr('name');
-            if (n) $(this).attr('name', n.replace(/\[headers\]\[\d+\]/, '[headers][' + ci + ']'));
+            if (n) {
+                $(this).attr('name', n.replace(/\[headers\]\[\d+\]/, '[headers][' + ci + ']'));
+            } else {
+                $(this).attr('name', 'sections[medical_content][articles][' + ai + '][blocks][' + bi + '][headers][' + ci + ']');
+            }
         });
         $block.find('.cms-table-body .cms-table-data-row').each(function (ri) {
             $(this).find('td input').each(function (ci) {
                 var n = $(this).attr('name');
                 if (n) {
                     n = n.replace(/\[rows\]\[\d+\]\[\d+\]/, '[rows][' + ri + '][' + ci + ']');
-                    $(this).attr('name', n);
+                } else {
+                    n = 'sections[medical_content][articles][' + ai + '][blocks][' + bi + '][rows][' + ri + '][' + ci + ']';
                 }
+                $(this).attr('name', n);
             });
         });
         $block.find('.cms-list-items-container > div').each(function (ii) {
@@ -1422,12 +1699,75 @@ $(function () {
         reindexFaq();
     });
 
+    // ── Hero Type Toggling ───────────────────────────────────────────
+    function toggleHeroFields() {
+        var type = $('#hero_type_selector').val();
+        $('#hero_type_fields .hero-field-group').hide();
+        $('#hero_type_fields .hero-type-' + type).fadeIn();
+    }
+    $('#hero_type_selector').on('change', toggleHeroFields);
+    toggleHeroFields(); // init
+
+    // ── Steps Type Toggling ───────────────────────────────────────────
+    function toggleStepsFields() {
+        var type = $('#steps_type_selector').val();
+        $('#steps_type_fields .steps-field-group').hide();
+        $('#steps_type_fields .steps-type-' + type).fadeIn();
+    }
+    $('#steps_type_selector').on('change', toggleStepsFields);
+    toggleStepsFields(); // init
+
+    // ── T3 Bottom Items ──────────────────────────────────────────────
+    function reindexT3Items() {
+        $('#t3_bottom_items_container .row').each(function (i) {
+            $(this).find('input').each(function () {
+                var n = $(this).attr('name');
+                if (n) $(this).attr('name', n.replace(/\[t3_bottom_items\]\[\d+\]/, '[t3_bottom_items][' + i + ']'));
+            });
+        });
+    }
+    $(document).on('click', '.js-add-t3-item', function () {
+        var count = $('#t3_bottom_items_container .row').length;
+        var html = document.getElementById('tpl-t3-item').innerHTML.replace(/__IDX__/g, count);
+        $('#t3_bottom_items_container').append(html);
+    });
+    $(document).on('click', '.js-remove-t3-item', function () {
+        $(this).closest('.row').remove();
+        reindexT3Items();
+    });
+
     // ── Re-index ALL before submit ────────────────────────────────────
     $('form').on('submit', function () {
         reindexToc();
         reindexArticles();
         reindexFaq();
         reindexDrParas();
+        reindexT3Items();
     });
 });
 </script>
+
+{{-- SortableJS for section ordering --}}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+(function () {
+    var list  = document.getElementById('cmsSortableOrder');
+    var input = document.getElementById('cmsOrderInput');
+    if (!list || !input) return;
+
+    new Sortable(list, {
+        animation: 150,
+        ghostClass: 'cms-order-ghost',
+        onEnd: function () {
+            var order = [];
+            list.querySelectorAll('li[data-key]').forEach(function (li) {
+                order.push(li.getAttribute('data-key'));
+            });
+            input.value = order.join(',');
+        }
+    });
+})();
+</script>
+<style>
+.cms-order-ghost { opacity: 0.5; background: #e8f0fe !important; border-color: #4285f4 !important; }
+</style>
