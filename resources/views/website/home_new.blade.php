@@ -736,56 +736,58 @@
 @endphp
 
 <!-- Natural Relief Section -->
-<section class="cannabis-banner-section">
-    <div class="cbs-inner">
-        @if(!empty($relief['badge']))
-            <span class="cbs-pill">{{ $relief['badge'] }}</span>
-        @endif
+<div class="premium-section-outer">
+    <section class="cannabis-banner-section">
+        <div class="cbs-inner">
+            @if(!empty($relief['badge']))
+                <span class="cbs-pill">{{ $relief['badge'] }}</span>
+            @endif
 
-        @php
-            $rTitleParts = explode('|', $relief['title'] ?? '', 2);
-            $rTitleNormal = trim($rTitleParts[0]);
-            $rTitleGreen = isset($rTitleParts[1]) ? trim($rTitleParts[1]) : '';
-        @endphp
-        
-        <h2 class="cbs-heading">{{ $rTitleNormal }} @if($rTitleGreen)<span class="cbs-green">{{ $rTitleGreen }}</span>@endif</h2>
+            @php
+                $rTitleParts = explode('|', $relief['title'] ?? '', 2);
+                $rTitleNormal = trim($rTitleParts[0]);
+                $rTitleGreen = isset($rTitleParts[1]) ? trim($rTitleParts[1]) : '';
+            @endphp
+            
+            <h2 class="cbs-heading">{{ $rTitleNormal }} @if($rTitleGreen)<span class="cbs-green">{{ $rTitleGreen }}</span>@endif</h2>
 
-        <!-- Center hero image with buttons overlaid -->
-        <div class="cbs-hero-img-wrap">
-            <img src="{{ !empty($relief['image']) ? url('images/upload/'.$relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img">
+            <!-- Center hero image with buttons overlaid -->
+            <div class="cbs-hero-img-wrap">
+                <img src="{{ !empty($relief['image']) ? url('images/upload/'.$relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img">
 
-            <div class="cbs-btns-overlay">
-                @if(!empty($relief['btn1_text']))
-                    <a href="{{ $relief['btn1_url'] ?? '#' }}" class="cbs-btn cbs-btn-outline">{{ $relief['btn1_text'] }}</a>
-                @endif
-                @if(!empty($relief['btn2_text']))
-                    <a href="{{ $relief['btn2_url'] ?? '#' }}" class="cbs-btn cbs-btn-filled">{{ $relief['btn2_text'] }}</a>
-                @endif
+                <div class="cbs-btns-overlay">
+                    @if(!empty($relief['btn1_text']))
+                        <a href="{{ $relief['btn1_url'] ?? '#' }}" class="cbs-btn cbs-btn-outline">{{ $relief['btn1_text'] }}</a>
+                    @endif
+                    @if(!empty($relief['btn2_text']))
+                        <a href="{{ $relief['btn2_url'] ?? '#' }}" class="cbs-btn cbs-btn-filled">{{ $relief['btn2_text'] }}</a>
+                    @endif
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Two info cards -->
-    <div class="cbs-cards">
-        @foreach($relief['cards'] as $card)
-        @if(!empty($card['title']))
-        <div class="cbs-card">
-            <div class="cbs-card-text" @if(empty($card['icon'])) style="width:100%;padding-right:0;" @endif>
-                <h3>{{ $card['title'] }}</h3>
-                @if(!empty($card['btn_text']))
-                    <a href="{{ $card['btn_url'] ?? '#' }}" class="cbs-card-btn">{{ $card['btn_text'] }}</a>
+        <!-- Two info cards -->
+        <div class="cbs-cards">
+            @foreach($relief['cards'] as $card)
+            @if(!empty($card['title']))
+            <div class="cbs-card">
+                <div class="cbs-card-text" @if(empty($card['icon'])) style="width:100%;padding-right:0;" @endif>
+                    <h3>{{ $card['title'] }}</h3>
+                    @if(!empty($card['btn_text']))
+                        <a href="{{ $card['btn_url'] ?? '#' }}" class="cbs-card-btn">{{ $card['btn_text'] }}</a>
+                    @endif
+                </div>
+                @if(!empty($card['icon']))
+                <div class="cbs-card-img-wrap">
+                    <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
+                </div>
                 @endif
-            </div>
-            @if(!empty($card['icon']))
-            <div class="cbs-card-img-wrap">
-                <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
             </div>
             @endif
+            @endforeach
         </div>
-        @endif
-        @endforeach
-    </div>
-</section>
+    </section>
+</div>
 
 <!-- ED Banner Section -->
 @php
@@ -834,50 +836,52 @@
     $r2BtnUrl = !empty($r2['btn_url']) ? $r2['btn_url'] : route('categories');
     $r2Image = !empty($r2['image']) ? url('images/upload/'.$r2['image']) : 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=1000&auto=format&fit=crop';
 @endphp
-<section class="ed-banner-section">
-    <div class="ed-inner">
-        <span class="ed-pill">{{ $edPill }}</span>
-        <h2 class="ed-heading">{!! $edHeading !!}</h2>
-        <div class="ed-hero-img-wrap">
-            <img src="{{ $edHeroImage }}" alt="Paar" class="ed-hero-img" />
-            <div class="ed-btns-overlay">
-                <a href="{{ $edBtn1Url }}" class="ed-btn ed-btn-outline">{{ $edBtn1Text }}</a>
-                <a href="{{ $edBtn2Url }}" class="ed-btn ed-btn-filled">{{ $edBtn2Text }}</a>
+<div class="premium-section-outer">
+    <section class="ed-banner-section">
+        <div class="ed-inner">
+            <span class="ed-pill">{{ $edPill }}</span>
+            <h2 class="ed-heading">{!! $edHeading !!}</h2>
+            <div class="ed-hero-img-wrap">
+                <img src="{{ $edHeroImage }}" alt="Paar" class="ed-hero-img" />
+                <div class="ed-btns-overlay">
+                    <a href="{{ $edBtn1Url }}" class="ed-btn ed-btn-outline">{{ $edBtn1Text }}</a>
+                    <a href="{{ $edBtn2Url }}" class="ed-btn ed-btn-filled">{{ $edBtn2Text }}</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="ed-cards">
-        <div class="ed-card ed-card-large">
-            <div class="ed-card-text">
-                <h3>{!! $largeTitle !!}</h3>
-                <a href="{{ $largeBtnUrl }}" class="ed-card-btn">{{ $largeBtnText }}</a>
-            </div>
-            <div class="ed-card-img-wrap">
-                <img src="{{ $largeImage }}" alt="" class="ed-card-img" />
-            </div>
-        </div>
-        <div class="ed-cards-right">
-            <div class="ed-card ed-card-small">
+        <div class="ed-cards">
+            <div class="ed-card ed-card-large">
                 <div class="ed-card-text">
-                    <h3>{!! $r1Title !!}</h3>
-                    <a href="{{ $r1BtnUrl }}" class="ed-card-btn">{{ $r1BtnText }}</a>
+                    <h3>{!! $largeTitle !!}</h3>
+                    <a href="{{ $largeBtnUrl }}" class="ed-card-btn">{{ $largeBtnText }}</a>
                 </div>
                 <div class="ed-card-img-wrap">
-                    <img src="{{ $r1Image }}" alt="" class="ed-card-img" />
+                    <img src="{{ $largeImage }}" alt="" class="ed-card-img" />
                 </div>
             </div>
-            <div class="ed-card ed-card-small">
-                <div class="ed-card-text">
-                    <h3>{!! $r2Title !!}</h3>
-                    <a href="{{ $r2BtnUrl }}" class="ed-card-btn">{{ $r2BtnText }}</a>
+            <div class="ed-cards-right">
+                <div class="ed-card ed-card-small">
+                    <div class="ed-card-text">
+                        <h3>{!! $r1Title !!}</h3>
+                        <a href="{{ $r1BtnUrl }}" class="ed-card-btn">{{ $r1BtnText }}</a>
+                    </div>
+                    <div class="ed-card-img-wrap">
+                        <img src="{{ $r1Image }}" alt="" class="ed-card-img" />
+                    </div>
                 </div>
-                <div class="ed-card-img-wrap">
-                    <img src="{{ $r2Image }}" alt="" class="ed-card-img" />
+                <div class="ed-card ed-card-small">
+                    <div class="ed-card-text">
+                        <h3>{!! $r2Title !!}</h3>
+                        <a href="{{ $r2BtnUrl }}" class="ed-card-btn">{{ $r2BtnText }}</a>
+                    </div>
+                    <div class="ed-card-img-wrap">
+                        <img src="{{ $r2Image }}" alt="" class="ed-card-img" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</div>
 
 <!-- Testosterone Banner Section -->
 @php
@@ -920,39 +924,41 @@
     $tRightBtnUrl = !empty($tRight['btn_url']) ? $tRight['btn_url'] : route('categories');
     $tRightImage = !empty($tRight['image']) ? url('images/upload/'.$tRight['image']) : 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop';
 @endphp
-<section class="testo-banner-section">
-    <div class="testo-inner">
-        <span class="testo-pill">{{ $testoPill }}</span>
-        <h2 class="testo-heading">{!! $testoHeading !!}</h2>
-        <div class="testo-hero-img-wrap">
-            <img src="{{ $testoHeroImage }}" alt="Testosterone" class="testo-hero-img" />
-            <div class="testo-btns-overlay">
-                <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
-                <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
+<div class="premium-section-outer">
+    <section class="testo-banner-section">
+        <div class="testo-inner">
+            <span class="testo-pill">{{ $testoPill }}</span>
+            <h2 class="testo-heading">{!! $testoHeading !!}</h2>
+            <div class="testo-hero-img-wrap">
+                <img src="{{ $testoHeroImage }}" alt="Testosterone" class="testo-hero-img" />
+                <div class="testo-btns-overlay">
+                    <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
+                    <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="testo-cards">
-        <div class="testo-card">
-            <div class="testo-card-text">
-                <h3>{!! $tLeftTitle !!}</h3>
-                <a href="{{ $tLeftBtnUrl }}" class="testo-card-btn">{{ $tLeftBtnText }}</a>
+        <div class="testo-cards">
+            <div class="testo-card">
+                <div class="testo-card-text">
+                    <h3>{!! $tLeftTitle !!}</h3>
+                    <a href="{{ $tLeftBtnUrl }}" class="testo-card-btn">{{ $tLeftBtnText }}</a>
+                </div>
+                <div class="testo-card-img-wrap">
+                    <img src="{{ $tLeftImage }}" alt="" class="testo-card-img" />
+                </div>
             </div>
-            <div class="testo-card-img-wrap">
-                <img src="{{ $tLeftImage }}" alt="" class="testo-card-img" />
+            <div class="testo-card">
+                <div class="testo-card-text">
+                    <h3>{!! $tRightTitle !!}</h3>
+                    <a href="{{ $tRightBtnUrl }}" class="testo-card-btn">{{ $tRightBtnText }}</a>
+                </div>
+                <div class="testo-card-img-wrap">
+                    <img src="{{ $tRightImage }}" alt="" class="testo-card-img" />
+                </div>
             </div>
         </div>
-        <div class="testo-card">
-            <div class="testo-card-text">
-                <h3>{!! $tRightTitle !!}</h3>
-                <a href="{{ $tRightBtnUrl }}" class="testo-card-btn">{{ $tRightBtnText }}</a>
-            </div>
-            <div class="testo-card-img-wrap">
-                <img src="{{ $tRightImage }}" alt="" class="testo-card-img" />
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+</div>
 
 <!-- Weight Management Banner Section -->
 @php
@@ -997,40 +1003,42 @@
     $wlRightBtnUrl = !empty($wlRight['btn_url']) ? $wlRight['btn_url'] : route('categories');
     $wlRightImage = !empty($wlRight['image']) ? url('images/upload/'.$wlRight['image']) : 'https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?w=800&q=80';
 @endphp
-<section class="wl-banner-section">
-    <div class="wl-inner">
-        <span class="wl-pill">{{ $wlPill }}</span>
-        <h2 class="wl-heading">{!! $wlHeading !!}</h2>
-        <p class="wl-sub">{{ $wlSubtext }}</p>
-        <div class="wl-hero-img-wrap">
-            <img src="{{ $wlHeroImage }}" alt="Weight Management" class="wl-hero-img" />
-            <div class="wl-btns-overlay">
-                <a href="{{ $wlBtn1Url }}" class="wl-btn wl-btn-outline">{{ $wlBtn1Text }}</a>
-                <a href="{{ $wlBtn2Url }}" class="wl-btn wl-btn-filled">{{ $wlBtn2Text }}</a>
+<div class="premium-section-outer">
+    <section class="wl-banner-section">
+        <div class="wl-inner">
+            <span class="wl-pill">{{ $wlPill }}</span>
+            <h2 class="wl-heading">{!! $wlHeading !!}</h2>
+            <p class="wl-sub">{{ $wlSubtext }}</p>
+            <div class="wl-hero-img-wrap">
+                <img src="{{ $wlHeroImage }}" alt="Weight Management" class="wl-hero-img" />
+                <div class="wl-btns-overlay">
+                    <a href="{{ $wlBtn1Url }}" class="wl-btn wl-btn-outline">{{ $wlBtn1Text }}</a>
+                    <a href="{{ $wlBtn2Url }}" class="wl-btn wl-btn-filled">{{ $wlBtn2Text }}</a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="wl-cards">
-        <div class="wl-card">
-            <div class="wl-card-text">
-                <h3>{!! $wlLeftTitle !!}</h3>
-                <a href="{{ $wlLeftBtnUrl }}" class="wl-card-btn">{{ $wlLeftBtnText }}</a>
+        <div class="wl-cards">
+            <div class="wl-card">
+                <div class="wl-card-text">
+                    <h3>{!! $wlLeftTitle !!}</h3>
+                    <a href="{{ $wlLeftBtnUrl }}" class="wl-card-btn">{{ $wlLeftBtnText }}</a>
+                </div>
+                <div class="wl-card-img-wrap">
+                    <img src="{{ $wlLeftImage }}" alt="" class="wl-card-img" />
+                </div>
             </div>
-            <div class="wl-card-img-wrap">
-                <img src="{{ $wlLeftImage }}" alt="" class="wl-card-img" />
+            <div class="wl-card">
+                <div class="wl-card-text">
+                    <h3>{!! $wlRightTitle !!}</h3>
+                    <a href="{{ $wlRightBtnUrl }}" class="wl-card-btn">{{ $wlRightBtnText }}</a>
+                </div>
+                <div class="wl-card-img-wrap">
+                    <img src="{{ $wlRightImage }}" alt="" class="wl-card-img" />
+                </div>
             </div>
         </div>
-        <div class="wl-card">
-            <div class="wl-card-text">
-                <h3>{!! $wlRightTitle !!}</h3>
-                <a href="{{ $wlRightBtnUrl }}" class="wl-card-btn">{{ $wlRightBtnText }}</a>
-            </div>
-            <div class="wl-card-img-wrap">
-                <img src="{{ $wlRightImage }}" alt="" class="wl-card-img" />
-            </div>
-        </div>
-    </div>
-</section>
+    </section>
+</div>
 
 <!-- Medical Advisory Board Section -->
 @php

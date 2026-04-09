@@ -1,44 +1,50 @@
-﻿
-/* ===== CANNABIS BANNER SECTION ===== */
+/* ===== CATEGORY SECTIONS OUTER WRAPPER ===== */
+.premium-section-outer {
+  background-color: #f3effe;
+  padding: 60px 20px;
+}
 .cannabis-banner-section {
-  background: linear-gradient(180deg, #f0fdf4 0%, #f7fdf7 60%, #fdfdfd 100%);
-  padding: 48px 16px 32px;
+  background-color: #e9f5ee;
+  border-radius: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 40px 0;
   text-align: center;
+  overflow: hidden;
+  position: relative;
 }
 .cbs-inner {
-  max-width: 390px;
+  max-width: 800px;
   margin: 0 auto;
 }
 .cbs-pill {
   display: inline-block;
-  border: 1.5px solid #4caf50;
-  color: #2e7d32;
-  font-size: 0.65rem;
-  font-weight: 700;
+  border: 1.5px solid #a8d5ba;
+  color: #316d31;
+  font-size: 0.7rem;
+  font-weight: 800;
   letter-spacing: 0.08em;
-  padding: 5px 14px;
+  padding: 6px 18px;
   border-radius: 999px;
-  margin-bottom: 14px;
+  margin-bottom: 24px;
+  background: rgba(255,255,255,0.4);
 }
 .cbs-heading {
-  font-size: 1.8rem;
+  font-size: 3.2rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.1;
   color: #111;
-  margin: 0 0 12px;
-  letter-spacing: -0.01em;
+  margin: 0 0 36px;
+  letter-spacing: -0.02em;
 }
 .cbs-green { color: #3a8e3e; }
-.cbs-sub {
-  font-size: 0.82rem;
-  color: #555;
-  margin: 0 0 16px;
-  line-height: 1.5;
-}
+
 .cbs-hero-img-wrap {
   position: relative;
   width: 100%;
-  margin-bottom: -60px;
+  max-width: 520px;
+  margin: 0 auto -20px;
+  z-index: 1;
 }
 .cbs-hero-img {
   width: 100%;
@@ -49,164 +55,131 @@
   content: "";
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 160px;
-  background: linear-gradient(to bottom, transparent 0%, rgba(220,240,220,0.6) 50%, rgba(210,235,210,0.95) 100%);
+  height: 140px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(233,245,238,0.7) 60%, #e9f5ee 100%);
   pointer-events: none;
 }
 .cbs-btns-overlay {
   position: absolute;
-  bottom: 24px;
+  bottom: 40px;
   left: 0;
   right: 0;
   display: flex;
-  gap: 10px;
+  gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
   padding: 0 16px;
   z-index: 5;
 }
 .cbs-btn {
-  font-size: 0.82rem;
-  font-weight: 600;
-  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 14px 32px;
   border-radius: 999px;
   text-decoration: none;
-  transition: all 0.2s;
-  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 200px;
 }
 .cbs-btn-outline {
-  border: 1.5px solid #222;
-  color: #222;
-  background: #faf8ff;
+  background: #ffffff;
+  color: #111;
+  border: 1.5px solid #e0eedb;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 .cbs-btn-filled {
   background: #3a8e3e;
   color: #fff;
   border: 1.5px solid #3a8e3e;
+  box-shadow: 0 6px 20px rgba(58,142,62,0.2);
 }
-.cbs-btn-outline:hover { background: #f3f0ff; }
-.cbs-btn-filled:hover { background: #2e7d32; }
+.cbs-btn-outline:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: #316d31; }
+.cbs-btn-filled:hover { background: #2e7d32; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(46,125,50,0.3); }
 
 /* Desktop card grid */
 .cbs-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 20px;
   position: relative;
   z-index: 2;
-  padding: 0 20px 28px;
-  max-width: 1280px;
+  padding: 0 40px 60px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 .cbs-card {
-  background: linear-gradient(135deg, #e8f5e9 0%, #f0faf0 100%);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 20px;
-  padding: 20px 0 20px 20px;
+  background-color: #f7fdfa;
+  border-radius: 28px;
+  padding: 32px;
   text-align: left;
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  align-items: center;
   overflow: hidden;
   position: relative;
-  min-height: 180px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.07);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
+  min-height: 200px;
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .cbs-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 16px 40px rgba(124,58,237,0.18);
+  transform: translateY(-10px);
+  box-shadow: 0 24px 50px rgba(58,142,62,0.12);
 }
 .cbs-card-text {
-  width: 55%;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-right: 12px;
+  flex: 1;
+  padding-right: 15px;
 }
 .cbs-card-text h3 {
-  font-size: 0.95rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: #111;
-  margin: 0 0 6px;
-  line-height: 1.25;
-}
-.cbs-card-text p {
-  font-size: 0.72rem;
-  color: #444;
-  line-height: 1.45;
-  margin: 0 0 12px;
+  margin: 0 0 24px;
+  line-height: 1.3;
 }
 .cbs-card-btn {
   display: inline-block;
   background: #3a8e3e;
   color: #fff;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 12px 28px;
   border-radius: 999px;
-  text-decoration: none;
+  text-decoration: none !important;
   transition: background 0.2s, transform 0.2s;
   white-space: nowrap;
-  width: fit-content;
-  position: relative;
-  z-index: 2;
 }
-.cbs-card-btn:hover { background: #2e7d32; transform: scale(1.03); }
+.cbs-card-btn:hover { background: #2e7d32; transform: scale(1.05); }
 .cbs-card-img-wrap {
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 45%;
-  overflow: hidden;
-  border-radius: 0 20px 20px 0;
+  width: 110px;
+  height: 110px;
 }
 .cbs-card-img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: right bottom;
-  display: block;
-  transition: transform 0.4s ease;
-}
-.cbs-card:hover .cbs-card-img { transform: scale(1.05); }
-
-/* Desktop Opt */
-@media (min-width: 769px) {
-  .cbs-card {
-    min-height: 220px !important;
-    max-height: 240px !important;
-  }
-  .cbs-card-img-wrap {
-    width: 45%;
-    height: 100%;
-  }
-  .cbs-card:nth-child(1) .cbs-card-img { object-fit: cover; object-position: center top; }
-  .cbs-card:nth-child(2) .cbs-card-img { object-fit: contain; object-position: center center; }
 }
 
 /* Mobile responsive */
+@media (max-width: 991px) {
+  .cbs-heading { font-size: 2.4rem !important; }
+  .cbs-cards { 
+    grid-template-columns: 1fr; 
+    padding: 0 20px 40px;
+  }
+}
 @media (max-width: 768px) {
-  .cbs-cards {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
-    padding: 0 16px 20px;
-  }
-  .cbs-card {
-    min-height: 200px !important;
-  }
-}
-@media (max-width: 480px) {
-  .cbs-heading { font-size: 1.1rem !important; }
-  .cbs-card-text h3 { font-size: 0.85rem !important; }
-}
-@media (max-width: 360px) {
-  .cbs-heading { font-size: 1rem !important; }
+  .cannabis-section-outer { padding: 40px 15px; }
+  .cannabis-banner-section { border-radius: 30px; padding: 40px 20px 0; }
+  .cbs-heading { font-size: 1.8rem !important; margin-bottom: 24px; }
+  .cbs-btn { min-width: auto; width: 100%; font-size: 0.85rem; padding: 12px 20px; }
+  .cbs-btns-overlay { position: relative; bottom: 0; margin-top: 20px; display: flex; flex-direction: column; }
+  .cbs-card { flex-direction: column-reverse; padding: 24px; text-align: center; }
+  .cbs-card-text { width: 100%; padding-right: 0; margin-top: 20px; }
+  .cbs-card-text h3 { font-size: 1.1rem !important; margin-bottom: 16px; }
+  .cbs-card-img-wrap { width: 80px; height: 80px; margin: 0 auto; }
 }
 
 
@@ -215,9 +188,9 @@
   background: linear-gradient(160deg, #E6F1FB 0%, #d8e8f7 50%, #E6F1FB 100%);
   padding: 48px 24px 0;
   text-align: center;
-  max-width: 1280px;
-  margin: 0 auto 60px;
-  border-radius: 28px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: 40px;
   overflow: hidden;
 }
 .ed-inner {
@@ -476,11 +449,11 @@
    ========================================================================== */
 .testo-banner-section {
   background: linear-gradient(145deg, #fcebe9 0%, #f6d2ce 100%);
-  border-radius: 28px;
+  border-radius: 40px;
   overflow: hidden;
   padding: 48px 48px 0;
-  margin: 0 auto 60px;
-  max-width: 1280px;
+  margin: 0 auto;
+  max-width: 1200px;
   text-align: center;
   position: relative;
 }
@@ -697,11 +670,11 @@
    ========================================================================== */
 .wl-banner-section {
   background: linear-gradient(145deg, #d3eee3 0%, #c1ebd9 100%);
-  border-radius: 28px;
+  border-radius: 40px;
   overflow: hidden;
   padding: 48px 48px 0;
-  margin: 0 auto 60px;
-  max-width: 1280px;
+  margin: 0 auto;
+  max-width: 1200px;
   text-align: center;
   position: relative;
 }
