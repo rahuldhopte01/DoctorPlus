@@ -52,7 +52,7 @@
                                 <h3 class="font-fira-sans font-medium text-xl text-black mb-1">{{ $option['label'] }}</h3>
                                 <p class="font-fira-sans text-gray text-sm">{{ $option['description'] }}</p>
                                 @if($option['cost'] !== null)
-                                <p class="font-fira-sans text-primary font-medium mt-2">{{ number_format($option['cost'], 2) }} €</p>
+                                <p class="font-fira-sans text-primary font-medium mt-2">{{ number_format($option['cost'], 2, ',', '.') }} €</p>
                                 @endif
                             </div>
                         </div>

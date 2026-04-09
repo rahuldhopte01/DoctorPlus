@@ -42,7 +42,7 @@
                                                     </div>
                                                 </th>
                                                 <td class="py-4 px-9">
-                                                    {{ $currency }}{{ $cart['original_price'] }}
+                                                    {{ number_format($cart['original_price'], 2, ',', '.') }} {{ $currency }}
                                                 </td>
                                                 <td class="py-4 px-6">
                                                     <div class="flex flex-row h-10 w-full rounded-lg relative bg-transparent mt-1">
@@ -56,8 +56,8 @@
                                                     </div>
                                                 </td>
                                                 <td class="py-4 px-6">
-                                                    <p class="font-medium text-primary dark:text-blue-500">{{ $currency }}
-                                                        <span class="item_price{{ $cart['id'] }}">{{ $cart['price'] }}</span>
+                                                    <p class="font-medium text-primary dark:text-blue-500">
+                                                        <span class="item_price{{ $cart['id'] }}">{{ number_format($cart['price'], 2, ',', '.') }}</span> {{ $currency }}
                                                     </p>
                                                 </td>
                                                 <td class="p-4 w-4">
@@ -94,9 +94,8 @@
                                 <h1 class="font-fira-sans text-sm font-medium leading-5 text-black">{{__('Total')}}</h1>
                             </div>
                             <div>
-                                <h1 class="font-fira-sans text-sm font-medium leading-5 text-black ">{{ $currency }}
-                                    <span class="total_price">{{array_sum(array_column(Session::get('cart'), 'price')) }}
-                                    </span>
+                                <h1 class="font-fira-sans text-sm font-medium leading-5 text-black ">
+                                    <span class="total_price">{{ number_format(array_sum(array_column(Session::get('cart'), 'price')), 2, ',', '.') }}</span> {{ $currency }}
                                 </h1>
                             </div>
                         </div>

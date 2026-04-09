@@ -49,7 +49,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">{{__('Price (€)')}}</label>
-                                <input type="number" step="0.01" min="0" value="{{ old('price') }}" name="price" class="form-control @error('price') is-invalid @enderror">
+                                <input type="number" step="0.01" min="0" value="{{ old('price', 0) }}" name="price" class="form-control @error('price') is-invalid @enderror" placeholder="0">
                                 @error('price')
                                 <div class="invalid-feedback">
                                     {{ $message }}

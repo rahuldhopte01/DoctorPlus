@@ -75,7 +75,7 @@
                 <div class="d-flex align-items-center gap-3 mb-4">
                     <div class="display-6 fw-bold text-primary">
                         @if(isset($category->price) && $category->price)
-                            €{{ number_format($category->price, 2) }}
+                            {{ number_format($category->price, 2, ',', '.') }} €
                         @else
                             Price not available
                         @endif
@@ -420,7 +420,7 @@
                                 <span class="text-muted">Starting from:</span>
                                 <span class="h4 text-primary fw-bold mb-0">
                                     @if(isset($category->price) && $category->price)
-                                        €{{ number_format($category->price, 2) }}
+                                        {{ number_format($category->price, 2, ',', '.') }} €
                                     @else
                                         Price not available
                                     @endif

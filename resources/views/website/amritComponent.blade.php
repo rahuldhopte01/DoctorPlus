@@ -401,7 +401,7 @@ $cmsPay = array_merge([
             Behandlungsgebühr {{ $cmsHero['consultation_fee'] }} &euro; +<br>
             Medikament ab
             @if(isset($category->price) && $category->price)
-                {{ number_format($category->price, 2) }} &euro;
+                {{ number_format($category->price, 2, ',', '.') }} &euro;
             @else
                 41,58 &euro;
             @endif

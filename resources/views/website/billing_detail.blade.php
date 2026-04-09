@@ -219,7 +219,7 @@ $price = array_sum(array_column(Session::get('cart'), 'price'));
                                 </div>
                             </th>
                             <td class="py-4 px-6 font-medium font-fira-sans text-sm leading-5">
-                                {{ $setting->currency_symbol }}{{ $cart['original_price'] }}
+                                {{ number_format($cart['original_price'], 2, ',', '.') }} {{ $setting->currency_symbol }}
                             </td>
                         </tr>
                         @endforeach
@@ -230,8 +230,7 @@ $price = array_sum(array_column(Session::get('cart'), 'price'));
                         <h1 class="font-fira-sans text-sm font-normal leading-5 text-gray">{{__('Subtotal')}}</h1>
                     </div>
                     <div>
-                        <h1 class="font-fira-sans text-sm font-medium leading-5 text-black">{{ $setting->currency_symbol
-                        }}<span class="subtotal">{{ $price }}</span></h1>
+                        <h1 class="font-fira-sans text-sm font-medium leading-5 text-black"><span class="subtotal">{{ number_format($price, 2, ',', '.') }}</span> {{ $setting->currency_symbol }}</h1>
                     </div>
                 </div>
                 @if($master['is_shipping'] == 1)
@@ -250,7 +249,7 @@ $price = array_sum(array_column(Session::get('cart'), 'price'));
                         <h1 class="font-fira-sans text-sm font-medium leading-5 text-black">{{__('Total')}}</h1>
                     </div>
                     <div>
-                        <h1 class="font-fira-sans text-sm font-medium leading-5 text-black">{{ $setting->currency_symbol}}<span class="finalPrice">{{ $price }}</span></h1>
+                        <h1 class="font-fira-sans text-sm font-medium leading-5 text-black"><span class="finalPrice">{{ number_format($price, 2, ',', '.') }}</span> {{ $setting->currency_symbol }}</h1>
                     </div>
                 </div>
 

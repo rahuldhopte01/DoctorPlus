@@ -308,7 +308,7 @@
                                             <div class="treatment-card-tags">
                                                 <span class="treatment-tag treatment-tag-type">{{ $treatmentName }}</span>
                                                 @if($category->price && $category->price > 0)
-                                                    <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0) }} €</span>
+                                                    <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0, ',', '.') }} €</span>
                                                 @endif
                                             </div>
                                             <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professionelle medizinische Beratung und Behandlung' }}</p>
@@ -344,7 +344,7 @@
                                             <div class="treatment-card-tags">
                                                 <span class="treatment-tag treatment-tag-type">{{ $treatmentName }}</span>
                                                 @if($category->price && $category->price > 0)
-                                                    <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0) }} €</span>
+                                                    <span class="treatment-tag treatment-tag-info">from {{ number_format($category->price, 0, ',', '.') }} €</span>
                                                 @endif
                                             </div>
                                             <p class="treatment-card-sub">{{ $category->description ? Str::limit($category->description, 60) : 'Professionelle medizinische Beratung und Behandlung' }}</p>

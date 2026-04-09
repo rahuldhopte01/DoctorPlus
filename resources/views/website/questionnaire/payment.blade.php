@@ -211,7 +211,7 @@
                 </div>
                 <div class="q-info-item fee-highlight">
                     <span class="q-label">{{ __('Consultation Fee') }}</span>
-                    <span class="q-value">{{ $currency }}{{ number_format($submissionFee, 2) }}</span>
+                    <span class="q-value">{{ number_format($submissionFee, 2, ',', '.') }} {{ $currency }}</span>
                 </div>
             </div>
 
@@ -224,7 +224,7 @@
                 <span class="spinner"></span>
                 <span class="btn-text">
                     <i class="fas fa-lock"></i>
-                    {{ __('Secure Payment') }} - {{ $currency }}{{ number_format($submissionFee, 2) }}
+                    {{ __('Secure Payment') }} - {{ number_format($submissionFee, 2, ',', '.') }} {{ $currency }}
                 </span>
             </button>
 

@@ -48,7 +48,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name'                  => 'bail|required|unique:category',
-            'price'                 => 'bail|required|numeric|min:0',
+            'price'                 => 'bail|nullable|numeric|min:0',
             'image'                 => 'bail|mimes:jpeg,png,jpg|max:1000',
             'hero_background_image' => 'bail|nullable|mimes:jpeg,png,jpg,webp|max:2048',
         ],
@@ -56,7 +56,8 @@ class CategoryController extends Controller
                 'image.max'                 => 'The Image May Not Be Greater Than 1 MegaBytes.',
                 'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
-        $data = $request->only(['name', 'description', 'price', 'treatment_id']);
+        $data = $request->only(['name', 'description', 'treatment_id']);
+        $data['price'] = $request->input('price') ?? 0;
         if ($request->hasFile('image')) {
             $data['image'] = (new CustomController)->imageUpload($request->image);
         } else {
@@ -109,7 +110,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name'                  => 'bail|required|unique:category,name,'.$id.',id',
-            'price'                 => 'bail|required|numeric|min:0',
+            'price'                 => 'bail|nullable|numeric|min:0',
             'image'                 => 'bail|mimes:jpeg,png,jpg|max:1000',
             'hero_background_image' => 'bail|nullable|mimes:jpeg,png,jpg,webp|max:2048',
         ],
@@ -117,7 +118,8 @@ class CategoryController extends Controller
                 'image.max'                 => 'The Image May Not Be Greater Than 1 MegaBytes.',
                 'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
-        $data = $request->only(['name', 'description', 'price', 'treatment_id']);
+        $data = $request->only(['name', 'description', 'treatment_id']);
+        $data['price'] = $request->input('price') ?? 0;
         $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
         $category = Category::find($id);
         if ($request->hasFile('image')) {
