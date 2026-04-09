@@ -285,56 +285,62 @@ class CategoryController extends Controller
             ['enabled' => true, 'title' => 'Beratung über Online-Fragebogen.',         'subtitle' => 'Schnelle medizinische Beratung'],
         ];
         $featuresInput = $s['features_bar']['features'] ?? [];
+        $existingFeatures = $existing['features_bar']['features'] ?? [];
         $features = [];
         foreach ($defaultFeatures as $i => $default) {
+            $exf = $existingFeatures[$i] ?? $default;
             $features[] = [
                 'enabled'  => isset($featuresInput[$i]['enabled']),
-                'title'    => $featuresInput[$i]['title'] ?? $default['title'],
-                'subtitle' => $featuresInput[$i]['subtitle'] ?? $default['subtitle'],
+                'title'    => $featuresInput[$i]['title'] ?? $exf['title'],
+                'subtitle' => $featuresInput[$i]['subtitle'] ?? $exf['subtitle'],
             ];
         }
         $featuresBar = [
             'enabled'  => isset($s['features_bar']['enabled']),
-            'bg_color' => $s['features_bar']['bg_color'] ?? '#fafafa',
+            'bg_color' => $s['features_bar']['bg_color'] ?? ($existing['features_bar']['bg_color'] ?? '#fafafa'),
             'features' => $features,
         ];
 
         // --- Steps ---
         $defaultSteps = [
-            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',           'image' => null, 'icon' => 'bx bx-file'],
-            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.',          'image' => null, 'icon' => 'bx bx-user'],
-            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                             'image' => null, 'icon' => 'bx bx-truck'],
+            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',           'image' => null, 'icon' => 'bx bx-file', 't2_title' => 'Fragebogen ausfüllen'],
+            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.',          'image' => null, 'icon' => 'bx bx-user', 't2_title' => 'Ärztliche Prüfung'],
+            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                             'image' => null, 'icon' => 'bx bx-truck', 't2_title' => 'Lieferung in 1-2 Werktagen'],
         ];
         $stepsInput = $s['steps']['steps'] ?? [];
         $existingSteps = $existing['steps']['steps'] ?? [];
         $steps = [];
         foreach ($defaultSteps as $i => $default) {
-            $existingImage = $existingSteps[$i]['image'] ?? null;
+            $exs = $existingSteps[$i] ?? $default;
             $uploadedImage = null;
             if ($request->hasFile("sections.steps.steps.{$i}.image")) {
                 $uploadedImage = (new CustomController)->imageUpload($request->file("sections.steps.steps.{$i}.image"));
             }
+
+            // Description can come from type 1 'description' or type 2 't2_description'
+            $desc = $stepsInput[$i]['description'] ?? ($stepsInput[$i]['t2_description'] ?? $exs['description']);
+
             $steps[] = [
-                'title_plain'       => $stepsInput[$i]['title_plain'] ?? $default['title_plain'],
-                'title_highlighted' => $stepsInput[$i]['title_highlighted'] ?? $default['title_highlighted'],
-                'highlight_color'   => $stepsInput[$i]['highlight_color'] ?? $default['highlight_color'],
-                'description'       => $stepsInput[$i]['description'] ?? $default['description'],
-                'image'             => $uploadedImage ?? $existingImage,
-                'icon'              => $stepsInput[$i]['icon'] ?? $default['icon'],
-                't2_title'          => $stepsInput[$i]['t2_title'] ?? ($i==0 ? 'Fragebogen ausfüllen' : ($i==1 ? 'Ärztliche Prüfung' : 'Lieferung in 1-2 Werktagen')),
+                'title_plain'       => $stepsInput[$i]['title_plain']       ?? $exs['title_plain'],
+                'title_highlighted' => $stepsInput[$i]['title_highlighted'] ?? $exs['title_highlighted'],
+                'highlight_color'   => $stepsInput[$i]['highlight_color']   ?? $exs['highlight_color'],
+                'description'       => $desc,
+                'image'             => $uploadedImage ?? ($exs['image'] ?? null),
+                'icon'              => $stepsInput[$i]['icon']              ?? $exs['icon'],
+                't2_title'          => $stepsInput[$i]['t2_title']          ?? $exs['t2_title'],
             ];
         }
         $stepsSection = [
             'enabled'            => isset($s['steps']['enabled']),
-            'type'               => $s['steps']['type'] ?? 'type1',
-            'section_title'      => $s['steps']['section_title'] ?? '3 einfache Schritte',
-            'section_subtitle'   => $s['steps']['section_subtitle'] ?? '100 % online',
-            'subtitle_color'     => $s['steps']['subtitle_color'] ?? '#3b6fd4',
-            'step_number_bg'     => $s['steps']['step_number_bg'] ?? '#3b6fd4',
-            't2_title'           => $s['steps']['t2_title'] ?? 'So einfach geht\'s',
-            't2_subtitle'        => $s['steps']['t2_subtitle'] ?? 'In 3 Schritten zur Behandlung',
-            't2_subtitle_italic' => $s['steps']['t2_subtitle_italic'] ?? 'In 3 Schritten zur Behandlung',
-            't2_desc'            => $s['steps']['t2_desc'] ?? 'Schnell, diskret und ärztlich betreut — Ihre Testosteron-Injektion in wenigen Schritten.',
+            'type'               => $s['steps']['type']               ?? ($existing['steps']['type'] ?? 'type1'),
+            'section_title'      => $s['steps']['section_title']      ?? ($existing['steps']['section_title'] ?? '3 einfache Schritte'),
+            'section_subtitle'   => $s['steps']['section_subtitle']   ?? ($existing['steps']['section_subtitle'] ?? '100 % online'),
+            'subtitle_color'     => $s['steps']['subtitle_color']     ?? ($existing['steps']['subtitle_color'] ?? '#3b6fd4'),
+            'step_number_bg'     => $s['steps']['step_number_bg']     ?? ($existing['steps']['step_number_bg'] ?? '#3b6fd4'),
+            't2_title'           => $s['steps']['t2_title']           ?? ($existing['steps']['t2_title'] ?? 'So einfach geht\'s'),
+            't2_subtitle'        => $s['steps']['t2_subtitle']        ?? ($existing['steps']['t2_subtitle'] ?? 'In 3 Schritten zur Behandlung'),
+            't2_subtitle_italic' => $s['steps']['t2_subtitle_italic'] ?? ($existing['steps']['t2_subtitle_italic'] ?? 'In 3 Schritten zur Behandlung'),
+            't2_desc'            => $s['steps']['t2_desc']            ?? ($existing['steps']['t2_desc'] ?? 'Schnell, diskret und ärztlich betreut — Ihre Testosteron-Injektion in wenigen Schritten.'),
             'steps'              => $steps,
         ];
 
@@ -450,12 +456,12 @@ class CategoryController extends Controller
         $doctorReview = [
             'enabled'           => isset($drInput['enabled']),
             'image'             => $drImage,
-            'name'              => $drInput['name'] ?? 'Dr. med. Experte',
-            'role'              => $drInput['role'] ?? 'Facharzt für Urologie',
-            'title'             => $drInput['title'] ?? 'Medizinisch-fachlich geprüft',
+            'name'              => $drInput['name'] ?? ($existing['doctor_review']['name'] ?? 'Dr. med. Experte'),
+            'role'              => $drInput['role'] ?? ($existing['doctor_review']['role'] ?? 'Facharzt für Urologie'),
+            'title'             => $drInput['title'] ?? ($existing['doctor_review']['title'] ?? 'Medizinisch-fachlich geprüft'),
             'paragraphs'        => $drParagraphs,
-            'link_text'         => $drInput['link_text'] ?? 'Redaktionsprozess',
-            'link_url'          => $drInput['link_url'] ?? '#',
+            'link_text'         => $drInput['link_text'] ?? ($existing['doctor_review']['link_text'] ?? 'Redaktionsprozess'),
+            'link_url'          => $drInput['link_url'] ?? ($existing['doctor_review']['link_url'] ?? '#'),
             'show_last_updated' => isset($drInput['show_last_updated']),
         ];
 
@@ -468,9 +474,10 @@ class CategoryController extends Controller
             if ($q !== '' && $a !== '') $faqItems[] = ['question' => $q, 'answer' => $a];
         }
         $faq = [
-            'enabled' => isset($faqInput['enabled']),
-            'title'   => $faqInput['title'] ?? 'Frequently asked questions',
-            'items'   => $faqItems,
+            'enabled'  => isset($faqInput['enabled']),
+            'title'    => $faqInput['title'] ?? ($existing['faq']['title'] ?? 'Frequently asked questions'),
+            'subtitle' => $faqInput['subtitle'] ?? ($existing['faq']['subtitle'] ?? ''),
+            'items'    => $faqItems,
         ];
 
         // --- Testosterone Info (Section 8) ---
@@ -481,21 +488,22 @@ class CategoryController extends Controller
             ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
             ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
         ];
-        $testoCards = [];
+        $existingTi = $existing['testo_info'] ?? [];
         foreach ($defaultTestoCards as $i => $default) {
             $card = $tiInput['cards'][$i] ?? [];
+            $exti = $existingTi['cards'][$i] ?? $default;
             $testoCards[] = [
-                'icon'     => $card['icon']     ?? $default['icon'],
-                'title'    => $card['title']    ?? $default['title'],
-                'subtitle' => $card['subtitle'] ?? $default['subtitle'],
+                'icon'     => $card['icon']     ?? $exti['icon'],
+                'title'    => $card['title']    ?? $exti['title'],
+                'subtitle' => $card['subtitle'] ?? $exti['subtitle'],
             ];
         }
         $testoInfo = [
             'enabled'     => isset($tiInput['enabled']),
-            'heading'     => $tiInput['heading']     ?? 'Was ist eine Testosteron-Injektion?',
-            'paragraph_1' => $tiInput['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
-            'paragraph_2' => $tiInput['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
-            'paragraph_3' => $tiInput['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+            'heading'     => $tiInput['heading']     ?? ($existingTi['heading'] ?? 'Was ist eine Testosteron-Injektion?'),
+            'paragraph_1' => $tiInput['paragraph_1'] ?? ($existingTi['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.'),
+            'paragraph_2' => $tiInput['paragraph_2'] ?? ($existingTi['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.'),
+            'paragraph_3' => $tiInput['paragraph_3'] ?? ($existingTi['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.'),
             'cards'       => $testoCards,
         ];
 
@@ -524,8 +532,8 @@ class CategoryController extends Controller
         }
         $testoTreatments = [
             'enabled'    => isset($ttInput['enabled']),
-            'heading'    => $ttInput['heading']    ?? 'Unsere Testosteron-Behandlungen',
-            'subheading' => $ttInput['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+            'heading'    => $ttInput['heading']    ?? ($existingTt['heading'] ?? 'Unsere Testosteron-Behandlungen'),
+            'subheading' => $ttInput['subheading'] ?? ($existingTt['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.'),
             'cards'      => $treatCards,
         ];
 
@@ -536,19 +544,20 @@ class CategoryController extends Controller
             ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
             ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
         ];
-        $secCards = [];
+        $existingSec = $existing['security'] ?? [];
         foreach ($defaultSecCards as $i => $default) {
             $card = $secInput['cards'][$i] ?? [];
+            $exsec = $existingSec['cards'][$i] ?? $default;
             $secCards[] = [
-                'icon'        => $card['icon']        ?? $default['icon'],
-                'title'       => $card['title']       ?? $default['title'],
-                'description' => $card['description'] ?? $default['description'],
+                'icon'        => $card['icon']        ?? $exsec['icon'],
+                'title'       => $card['title']       ?? $exsec['title'],
+                'description' => $card['description'] ?? $exsec['description'],
             ];
         }
         $security = [
             'enabled'    => isset($secInput['enabled']),
-            'heading'    => $secInput['heading']    ?? 'Ihre Sicherheit ist unsere Priorität',
-            'subheading' => $secInput['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+            'heading'    => $secInput['heading']    ?? ($existingSec['heading'] ?? 'Ihre Sicherheit ist unsere Priorität'),
+            'subheading' => $secInput['subheading'] ?? ($existingSec['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.'),
             'cards'      => $secCards,
         ];
 

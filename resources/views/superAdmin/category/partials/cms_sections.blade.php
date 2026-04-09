@@ -519,7 +519,7 @@
                                                    value="{{ $step['icon'] ?? $default['icon'] }}" placeholder="bx bx-file">
                                         </div>
                                         <div class="col-md-8 form-group">
-                                            <label class="text-muted" style="font-size:0.8rem;">Title</label>
+                                            <label class="text-muted" style="font-size:0.8rem;">Title (Use &lt;span style="color:#000"&gt;...&lt;/span&gt; for black text)</label>
                                             <input type="text" class="form-control form-control-sm"
                                                    name="sections[steps][steps][{{ $i }}][t2_title]"
                                                    value="{{ $step['t2_title'] ?? ($i==0 ? 'Fragebogen ausfüllen' : ($i==1 ? 'Ärztliche Prüfung' : 'Lieferung in 1-2 Werktagen')) }}">
@@ -527,7 +527,7 @@
                                         <div class="col-12 form-group">
                                             <label class="text-muted" style="font-size:0.8rem;">Description</label>
                                             <textarea class="form-control form-control-sm" rows="2"
-                                                      name="sections[steps][steps][{{ $i }}][description]">{{ $step['description'] ?? $default['description'] }}</textarea>
+                                                      name="sections[steps][steps][{{ $i }}][t2_description]">{{ $step['description'] ?? $default['description'] }}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -836,10 +836,17 @@
                                    {{ ($faqCms['enabled'] ?? true) ? 'checked' : '' }}>
                             Show FAQ Section
                         </label>
-                        <div class="form-group col-md-6 pl-0">
-                            <label>Section Title</label>
-                            <input type="text" class="form-control" name="sections[faq][title]"
-                                   value="{{ $faqCms['title'] ?? 'Frequently asked questions' }}">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label>Section Title</label>
+                                <input type="text" class="form-control" name="sections[faq][title]"
+                                       value="{{ $faqCms['title'] ?? 'Frequently asked questions' }}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Extra Title (Subtitle)</label>
+                                <input type="text" class="form-control" name="sections[faq][subtitle]"
+                                       value="{{ $faqCms['subtitle'] ?? '' }}">
+                            </div>
                         </div>
                         <div id="faq-items-container">
                             @php $faqItems = $faqCms['items'] ?? []; @endphp

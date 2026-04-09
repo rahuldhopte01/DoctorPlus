@@ -480,7 +480,7 @@ $cmsPay = array_merge([
             <div class="ed-hero-t3-overlay"></div>
             <div class="ed-hero-t3-card">
                 <h1>{!! $cmsHero['t3_heading'] ?? $category->name !!}</h1>
-                <p>{{ $cmsHero['t3_subheading'] ?? ($category->description ? Str::limit($category->description, 150) : '') }}</p>
+                <p>{!! $cmsHero['t3_subheading'] ?? ($category->description ? Str::limit($category->description, 150) : '') !!}</p>
                 
                 <div class="ed-hero-t3-btns">
                     <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
@@ -509,7 +509,7 @@ $cmsPay = array_merge([
             <div class="ed-hero-t2-inner">
                 <div class="ed-hero-t2-text">
                     <h1>{!! $cmsHero['t2_heading'] ?? $category->name !!}</h1>
-                    <p>{{ $cmsHero['t2_description'] ?? ($category->description ? Str::limit($category->description, 180) : '') }}</p>
+                    <p>{!! $cmsHero['t2_description'] ?? ($category->description ? Str::limit($category->description, 180) : '') !!}</p>
                     
                     <div class="ed-hero-t2-cta-wrap">
                         <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
@@ -517,7 +517,7 @@ $cmsPay = array_merge([
                             {{ $cmsHero['cta_text'] }}
                         </a>
                         <div class="hero-t2-subtext">
-                            {{ $cmsHero['t2_subtext'] }}
+                            {!! $cmsHero['t2_subtext'] !!}
                         </div>
                     </div>
 
@@ -559,8 +559,8 @@ $cmsPay = array_merge([
             <div class="ed-hero-overlay"></div>
             <div class="ed-hero-inner">
               <div class="ed-hero-text">
-                <h1>{{ $category->name }}</h1>
-                <p>{{ $category->description ? Str::limit($category->description, 150) : 'Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktage geliefert.' }}</p>
+                <h1>{!! $cmsHero['t1_heading'] ?? $category->name !!}</h1>
+                <p>{!! $cmsHero['t1_description'] ?? ($category->description ? Str::limit($category->description, 150) : 'Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktage geliefert.') !!}</p>
 
                 @if($hasQuestionnaire)
                     <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}"
@@ -613,8 +613,8 @@ $cmsPay = array_merge([
         <div class="fb-item">
             <div class="fb-icon">{!! $_fbIcons[$i] !!}</div>
             <div class="fb-text">
-                <strong>{{ $feat['title'] }}</strong>
-                <span>{{ $feat['subtitle'] }}</span>
+                <strong>{!! $feat['title'] !!}</strong>
+                <span>{!! $feat['subtitle'] !!}</span>
             </div>
         </div>
         @endif
@@ -630,10 +630,10 @@ $cmsPay = array_merge([
     @if($_stepsType == 'type2')
         {{-- TYPE 2: TESTOSTERONE --}}
         <section class="steps-section-t2">
-            <h2>{{ $cmsSteps['t2_title'] }}</h2>
-            <div class="subtitle">{{ $cmsSteps['t2_subtitle'] }}</div>
+            <h2>{!! $cmsSteps['t2_title'] !!}</h2>
+            <div class="subtitle">{!! $cmsSteps['t2_subtitle'] !!}</div>
             @if(!empty($cmsSteps['t2_desc']))
-                <p class="steps-section-t2-desc">{{ $cmsSteps['t2_desc'] }}</p>
+                <p class="steps-section-t2-desc">{!! $cmsSteps['t2_desc'] !!}</p>
             @endif
 
             <div class="steps-grid-t2">
@@ -643,8 +643,8 @@ $cmsPay = array_merge([
                     <div class="step-icon-t2">
                         <i class="{{ $step['icon'] ?? 'bx bx-check' }}"></i>
                     </div>
-                    <h3>{{ $step['t2_title'] }}</h3>
-                    <p>{{ $step['description'] }}</p>
+                    <h3>{!! $step['t2_title'] !!}</h3>
+                    <p>{!! $step['description'] !!}</p>
                 </div>
                 @endforeach
             </div>
@@ -653,8 +653,8 @@ $cmsPay = array_merge([
         {{-- TYPE 1: DEFAULT --}}
         <section class="steps-section">
             <h2 class="steps-title">
-                {{ $cmsSteps['section_title'] }}<br>
-                <span style="color:{{ $cmsSteps['subtitle_color'] }};">{{ $cmsSteps['section_subtitle'] }}</span>
+                {!! $cmsSteps['section_title'] !!}<br>
+                <span style="color:{{ $cmsSteps['subtitle_color'] }};">{!! $cmsSteps['section_subtitle'] !!}</span>
             </h2>
             <div class="steps-grid">
               @foreach($cmsSteps['steps'] as $i => $step)
@@ -666,8 +666,8 @@ $cmsPay = array_merge([
               <div class="step-card">
                 <div class="step-num" style="background:{{ $cmsSteps['step_number_bg'] }}; box-shadow:0 4px 12px {{ $cmsSteps['step_number_bg'] }}66;">{{ $i + 1 }}</div>
                 <div class="step-card-inner">
-                    <h3>{{ $step['title_plain'] }} <span style="color:{{ $step['highlight_color'] ?? $cmsSteps['subtitle_color'] }};">{{ $step['title_highlighted'] }}</span></h3>
-                    <p>{{ $step['description'] }}</p>
+                    <h3>{!! $step['title_plain'] !!} <span style="color:{{ $step['highlight_color'] ?? $cmsSteps['subtitle_color'] }};">{!! $step['title_highlighted'] !!}</span></h3>
+                    <p>{!! $step['description'] !!}</p>
                     @if($stepImg)
                     <img src="{{ $stepImg }}" alt="{{ $_stepAltTexts[$i] ?? '' }}" loading="lazy">
                     @endif
@@ -723,9 +723,10 @@ $cmsDr = array_merge([
 ], $_cms['doctor_review'] ?? []);
 
 $cmsFaq = array_merge([
-    'enabled' => true,
-    'title'   => 'Frequently asked questions',
-    'items'   => [
+    'enabled'  => true,
+    'title'    => 'Frequently asked questions',
+    'subtitle' => '',
+    'items'    => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
         ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
@@ -736,7 +737,7 @@ $cmsFaq = array_merge([
 <!-- Medical Content -->
 @if($cmsMedical['enabled'])
 <div class="med-content">
-  <h2>{{ $cmsMedical['section_title'] }} {{ $category->name }}</h2>
+  <h2>{!! $cmsMedical['section_title'] !!} {{ $category->name }}</h2>
 
   @if($cmsMedical['toc_enabled'] && !empty($cmsMedical['toc_items']))
   <div class="toc">
@@ -753,25 +754,25 @@ $cmsFaq = array_merge([
     @foreach($article['blocks'] ?? [] as $block)
       @switch($block['type'] ?? '')
         @case('text')
-          <p>{{ $block['content'] }}</p>
+          <p>{!! $block['content'] !!}</p>
           @break
         @case('subheading')
           @php $lvl = in_array($block['level'] ?? '', ['h3','h4']) ? $block['level'] : 'h3'; @endphp
-          <{{ $lvl }}>{{ $block['text'] }}</{{ $lvl }}>
+          <{!! $lvl !!}>{!! $block['text'] !!}</{!! $lvl !!}>
           @break
         @case('table')
-          @if(!empty($block['heading']))<h3>{{ $block['heading'] }}</h3>@endif
+          @if(!empty($block['heading']))<h3>{!! $block['heading'] !!}</h3>@endif
           <div class="med-table-wrapper">
           <table class="med-table" style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">
             <tr>
               @foreach($block['headers'] ?? [] as $th)
-              <th style="background:{{ $block['header_bg'] ?? '#3b6fd4' }}; color:{{ $block['header_text_color'] ?? '#ffffff' }};">{{ $th }}</th>
+              <th style="background:{{ $block['header_bg'] ?? '#3b6fd4' }}; color:{{ $block['header_text_color'] ?? '#ffffff' }};">{!! $th !!}</th>
               @endforeach
             </tr>
             @foreach($block['rows'] ?? [] as $ri => $row)
             <tr style="{{ ($ri % 2 === 1) ? 'background:' . ($block['alt_row_bg'] ?? '#f8f9fa') . ';' : '' }}">
               @foreach($row as $cell)
-              <td style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">{{ $cell }}</td>
+              <td style="border-color:{{ $block['border_color'] ?? '#dee2e6' }};">{!! $cell !!}</td>
               @endforeach
             </tr>
             @endforeach
@@ -781,14 +782,14 @@ $cmsFaq = array_merge([
         @case('list')
           <ul>
             @foreach($block['items'] ?? [] as $item)
-            <li>@if(!empty($item['label']))<strong>{{ $item['label'] }}</strong> @endif{{ $item['text'] }}</li>
+            <li>@if(!empty($item['label']))<strong>{!! $item['label'] !!}</strong> @endif{!! $item['text'] !!}</li>
             @endforeach
           </ul>
           @break
         @case('callout')
           <div class="callout" style="background:{{ $block['bg_color'] ?? '#eff3fb' }}; border-left:4px solid {{ $block['border_color'] ?? '#3b6fd4' }}; padding:16px 20px; border-radius:8px; margin:16px 0;">
-            @if(!empty($block['heading']))<h4>{{ $block['heading'] }}</h4>@endif
-            <p style="margin:0;">{{ $block['content'] }}</p>
+            @if(!empty($block['heading']))<h4>{!! $block['heading'] !!}</h4>@endif
+            <p style="margin:0;">{!! $block['content'] !!}</p>
           </div>
           @break
       @endswitch
@@ -810,11 +811,11 @@ $cmsFaq = array_merge([
     <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
   </div>
   <div class="med-review-text">
-    <div class="med-review-doc">{{ $cmsDr['name'] }}</div>
-    <div class="med-review-role">{{ $cmsDr['role'] }}</div>
-    <h3>{{ $cmsDr['title'] }}</h3>
+    <div class="med-review-doc">{!! $cmsDr['name'] !!}</div>
+    <div class="med-review-role">{!! $cmsDr['role'] !!}</div>
+    <h3>{!! $cmsDr['title'] !!}</h3>
     @foreach($cmsDr['paragraphs'] as $para)
-    <p>{{ $para }}</p>
+    <p>{!! $para !!}</p>
     @endforeach
     @if(!empty($cmsDr['link_text']))
     <p>Weitere Informationen finden Sie in unserem <a href="{{ $cmsDr['link_url'] }}" style="color:var(--ed-primary, #3b6fd4);">{{ $cmsDr['link_text'] }}</a>.</p>
@@ -832,21 +833,42 @@ $cmsFaq = array_merge([
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <div class="mb-5">
-                    <h2 class="display-6 fw-bold mb-4">{{ $cmsFaq['title'] }}</h2>
+                <div class="mb-5 text-center">
+                    <h2 class="display-6 fw-bold mb-2">{{ $cmsFaq['title'] }}</h2>
+                    @if(!empty($cmsFaq['subtitle']))
+                        <div class="faq-subtitle-extra">
+                           <span>{!! $cmsFaq['subtitle'] !!}</span>
+                        </div>
+                    @endif
+                </div>
+
+                <style>
+                    .faq-subtitle-extra {
+                        color: #e63946;
+                        font-size: 1.75rem;
+                        font-weight: 800;
+                        margin-bottom: 30px;
+                        display: inline-block;
+                        position: relative;
+                        padding-bottom: 8px;
+                    }
+                    .faq-subtitle-extra span {
+                        border-bottom: 4px solid #e63946;
+                    }
+                </style>
                     <div class="accordion" id="faqAccordion">
                         @foreach($cmsFaq['items'] as $index => $faq)
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}" type="button"
                                             data-bs-toggle="collapse" data-bs-target="#faq{{ $index }}">
-                                        {{ $faq['question'] ?? '' }}
+                                        {!! $faq['question'] ?? '' !!}
                                     </button>
                                 </h2>
                                 <div id="faq{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                      data-bs-parent="#faqAccordion">
                                     <div class="accordion-body text-muted">
-                                        {{ $faq['answer'] ?? '' }}
+                                        {!! $faq['answer'] ?? '' !!}
                                     </div>
                                 </div>
                             </div>
@@ -907,17 +929,17 @@ $cmsSecurity = array_merge([
 <section class="bg-white">
   <div class="testo-section">
     <div class="testo-content">
-      <h2>{{ $cmsTestoInfo['heading'] }}</h2>
-      <p>{{ $cmsTestoInfo['paragraph_1'] }}</p>
-      <p>{{ $cmsTestoInfo['paragraph_2'] }}</p>
-      <p>{{ $cmsTestoInfo['paragraph_3'] }}</p>
+      <h2>{!! $cmsTestoInfo['heading'] !!}</h2>
+      <p>{!! $cmsTestoInfo['paragraph_1'] !!}</p>
+      <p>{!! $cmsTestoInfo['paragraph_2'] !!}</p>
+      <p>{!! $cmsTestoInfo['paragraph_3'] !!}</p>
     </div>
     <div class="testo-grid">
       @foreach($cmsTestoInfo['cards'] as $card)
       <div class="testo-card">
         <div class="testo-icon-wrap"><i class="bi {{ $card['icon'] }}"></i></div>
-        <h4>{{ $card['title'] }}</h4>
-        <p>{{ $card['subtitle'] }}</p>
+        <h4>{!! $card['title'] !!}</h4>
+        <p>{!! $card['subtitle'] !!}</p>
       </div>
       @endforeach
     </div>
@@ -929,8 +951,8 @@ $cmsSecurity = array_merge([
 @if($cmsTestoTreatments['enabled'])
 <section class="testo-treat-section">
   <div class="testo-treat-header">
-    <h2>{{ $cmsTestoTreatments['heading'] }}</h2>
-    <p>{{ $cmsTestoTreatments['subheading'] }}</p>
+    <h2>{!! $cmsTestoTreatments['heading'] !!}</h2>
+    <p>{!! $cmsTestoTreatments['subheading'] !!}</p>
   </div>
   <div class="testo-treat-grid">
     @foreach($cmsTestoTreatments['cards'] as $i => $card)
@@ -944,8 +966,8 @@ $cmsSecurity = array_merge([
       <img src="{{ $_treatImg }}" alt="{{ $card['title'] }}" class="testo-treat-img" loading="lazy">
       @endif
       <div class="testo-treat-content">
-        <h3>{{ $card['title'] }}</h3>
-        <p>{{ $card['description'] }}</p>
+        <h3>{!! $card['title'] !!}</h3>
+        <p>{!! $card['description'] !!}</p>
         <a href="{{ $card['button_url'] }}" class="testo-treat-btn">{{ $card['button_text'] }}</a>
       </div>
     </div>
@@ -958,15 +980,15 @@ $cmsSecurity = array_merge([
 @if($cmsSecurity['enabled'])
 <section class="security-section">
   <div class="security-header">
-    <h2>{{ $cmsSecurity['heading'] }}</h2>
-    <p>{{ $cmsSecurity['subheading'] }}</p>
+    <h2>{!! $cmsSecurity['heading'] !!}</h2>
+    <p>{!! $cmsSecurity['subheading'] !!}</p>
   </div>
   <div class="security-grid">
     @foreach($cmsSecurity['cards'] as $card)
     <div class="security-card">
       <div class="security-icon"><i class="bi {{ $card['icon'] }}"></i></div>
-      <h3>{{ $card['title'] }}</h3>
-      <p>{{ $card['description'] }}</p>
+      <h3>{!! $card['title'] !!}</h3>
+      <p>{!! $card['description'] !!}</p>
     </div>
     @endforeach
   </div>
