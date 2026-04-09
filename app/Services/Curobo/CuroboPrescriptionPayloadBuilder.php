@@ -145,27 +145,8 @@ class CuroboPrescriptionPayloadBuilder
             $totalGrossFloat += $priceFloat * $qty;
         }
 
-        // Curobo API accepted shipping values: 'shipping', 'express', 'pickup'
-        // Note: Curobo uses 'shipping' (not 'standard'/'delivery') for regular delivery
         $shipping = 'shipping';
-        if (! empty($submission->cannaleo_delivery_option)) {
-            $rawOption = $submission->cannaleo_delivery_option;
-            $shippingMap = [
-                'delivery' => 'shipping',
-                'standard' => 'shipping',
-                'shipping' => 'shipping',
-                'express'  => 'express',
-                'pickup'   => 'pickup',
-            ];
-            $shipping = $shippingMap[$rawOption] ?? 'shipping';
-        } elseif ($submission->delivery_type === 'pickup') {
-            $shipping = 'pickup';
-        }
-
         $pickupBranchId = null;
-        if ($shipping === 'pickup' && $pharmacy->external_id !== null && $pharmacy->external_id !== '') {
-            $pickupBranchId = is_numeric($pharmacy->external_id) ? (int) $pharmacy->external_id : null;
-        }
 
         $doctorPayload = [
             'name'            => $doctorName,
