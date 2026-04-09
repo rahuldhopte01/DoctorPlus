@@ -386,23 +386,21 @@ class CategoryController extends Controller
                         if ($text !== '') $blocks[] = ['type' => 'subheading', 'level' => in_array($block['level'] ?? '', ['h3','h4']) ? $block['level'] : 'h3', 'text' => $text];
                         break;
                     case 'table':
-                        $headers = array_values(array_filter(array_map('trim', $block['headers'] ?? []), fn($h) => $h !== ''));
+                        $headers = array_map('trim', array_values($block['headers'] ?? []));
                         $rows = [];
                         foreach ($block['rows'] ?? [] as $row) {
                             $rows[] = array_map('trim', array_values($row));
                         }
-                        if (!empty($headers)) {
-                            $blocks[] = [
-                                'type'              => 'table',
-                                'heading'           => trim($block['heading'] ?? ''),
-                                'header_bg'         => $block['header_bg'] ?? '#3b6fd4',
-                                'header_text_color' => $block['header_text_color'] ?? '#ffffff',
-                                'alt_row_bg'        => $block['alt_row_bg'] ?? '#f8f9fa',
-                                'border_color'      => $block['border_color'] ?? '#dee2e6',
-                                'headers'           => $headers,
-                                'rows'              => $rows,
-                            ];
-                        }
+                        $blocks[] = [
+                            'type'              => 'table',
+                            'heading'           => trim($block['heading'] ?? ''),
+                            'header_bg'         => $block['header_bg'] ?? '#3b6fd4',
+                            'header_text_color' => $block['header_text_color'] ?? '#ffffff',
+                            'alt_row_bg'        => $block['alt_row_bg'] ?? '#f8f9fa',
+                            'border_color'      => $block['border_color'] ?? '#dee2e6',
+                            'headers'           => $headers,
+                            'rows'              => $rows,
+                        ];
                         break;
                     case 'list':
                         $items = [];

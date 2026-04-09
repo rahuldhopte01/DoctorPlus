@@ -1510,15 +1510,21 @@ $(function () {
     function reindexTableCells($block, ai, bi) {
         $block.find('.cms-table-header-row th input').each(function (ci) {
             var n = $(this).attr('name');
-            if (n) $(this).attr('name', n.replace(/\[headers\]\[\d+\]/, '[headers][' + ci + ']'));
+            if (n) {
+                $(this).attr('name', n.replace(/\[headers\]\[\d+\]/, '[headers][' + ci + ']'));
+            } else {
+                $(this).attr('name', 'sections[medical_content][articles][' + ai + '][blocks][' + bi + '][headers][' + ci + ']');
+            }
         });
         $block.find('.cms-table-body .cms-table-data-row').each(function (ri) {
             $(this).find('td input').each(function (ci) {
                 var n = $(this).attr('name');
                 if (n) {
                     n = n.replace(/\[rows\]\[\d+\]\[\d+\]/, '[rows][' + ri + '][' + ci + ']');
-                    $(this).attr('name', n);
+                } else {
+                    n = 'sections[medical_content][articles][' + ai + '][blocks][' + bi + '][rows][' + ri + '][' + ci + ']';
                 }
+                $(this).attr('name', n);
             });
         });
         $block.find('.cms-list-items-container > div').each(function (ii) {
