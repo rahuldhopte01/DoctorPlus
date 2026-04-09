@@ -194,7 +194,7 @@
             .ed-hero-t3-bottom { gap: 16px; justify-content: center; }
             .t3-bottom-item { font-size: 0.8rem; }
         }
-    </style>
+
         /* FEATURES BAR */
         .features-bar { background: #fafafa; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 28px 0; }
         .features-bar-inner { max-width: var(--ed-max-width); margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; gap: 24px; }
