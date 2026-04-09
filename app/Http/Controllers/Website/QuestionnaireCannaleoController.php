@@ -241,9 +241,98 @@ class QuestionnaireCannaleoController extends Controller
             'cannaleo_delivery_option' => $request->cannaleo_delivery_option,
         ]);
 
+        // Pickup doesn't need a delivery address
+        if ($request->cannaleo_delivery_option === 'pickup') {
+            $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection');
+        } else {
+            $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-delivery-address');
+        }
+
         return response()->json([
             'success' => true,
             'message' => __('Delivery option selected successfully'),
+            'redirect_url' => $nextUrl,
+        ]);
+    }
+
+    /**
+     * Show delivery address form for Cannaleo flow.
+     */
+    public function showDeliveryAddress($categoryId)
+    {
+        if (!Auth::check()) {
+            return redirect('/patient-login')->with('info', __('Please login to continue'));
+        }
+
+        $category = Category::findOrFail($categoryId);
+        $user = Auth::user();
+
+        $submission = QuestionnaireSubmission::where('user_id', $user->id)
+            ->where('category_id', $categoryId)
+            ->firstOrFail();
+
+        if ($submission->delivery_type !== 'cannaleo' || empty($submission->cannaleo_delivery_option)) {
+            return redirect()->route('questionnaire.cannaleo-delivery-selection', ['categoryId' => $categoryId])
+                ->with('error', __('Please select a delivery option first.'));
+        }
+
+        $existingAddresses = \App\Models\UserAddress::where('user_id', $user->id)->get();
+
+        return view('website.questionnaire.cannaleo_delivery_address', compact('category', 'submission', 'existingAddresses'));
+    }
+
+    /**
+     * Save delivery address for Cannaleo flow.
+     */
+    public function saveDeliveryAddress(Request $request, $categoryId)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => __('Please login to continue')], 401);
+        }
+
+        $request->validate([
+            'address'    => 'required|string|max:500',
+            'postcode'   => 'required|string|max:20',
+            'city'       => 'required|string|max:100',
+            'state'      => 'nullable|string|max:100',
+            'address_id' => 'nullable|exists:user_address,id',
+        ]);
+
+        $user = Auth::user();
+        $submission = QuestionnaireSubmission::where('user_id', $user->id)
+            ->where('category_id', $categoryId)
+            ->firstOrFail();
+
+        if ($request->filled('address_id')) {
+            $address = \App\Models\UserAddress::where('id', $request->address_id)
+                ->where('user_id', $user->id)
+                ->firstOrFail();
+
+            $submission->update([
+                'delivery_address_id' => $address->id,
+                'delivery_address'    => $address->address,
+                'delivery_postcode'   => $request->postcode,
+                'delivery_city'       => $request->city,
+                'delivery_state'      => $request->state ?? '',
+            ]);
+        } else {
+            $address = \App\Models\UserAddress::updateOrCreate(
+                ['user_id' => $user->id, 'id' => null],
+                ['address' => $request->address, 'lat' => '0', 'lang' => '0', 'label' => 'Delivery Address']
+            );
+
+            $submission->update([
+                'delivery_address_id' => $address->id,
+                'delivery_address'    => $request->address,
+                'delivery_postcode'   => $request->postcode,
+                'delivery_city'       => $request->city,
+                'delivery_state'      => $request->state ?? '',
+            ]);
+        }
+
+        return response()->json([
+            'success'      => true,
+            'message'      => __('Address saved successfully'),
             'redirect_url' => url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection'),
         ]);
     }
