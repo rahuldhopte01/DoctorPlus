@@ -24,6 +24,7 @@
     <link href="{{asset('css/new-design.css')}}?v={{ time() }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
     <link href="{{asset('css/landing_styles.css')}}?v={{ time() }}" rel="stylesheet">
+    <link href="{{asset('css/home_target_match.css')}}?v={{ time() }}" rel="stylesheet">
     
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -37,11 +38,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        h1, h2, h3, h4, h5, h6, .display-4, .display-5 { font-family: 'Clash Display', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .display-4, .display-5 { font-family: 'DM Serif Display', serif; }
         h1 span, h2 span, h3 span, h4 span, h5 span, h6 span, .display-4 span, .display-5 span { font-family: inherit; }
     </style>
 </head>
-<body>
+<body class="home-target">
     @include('layout.partials.skeleton_loader')
 <!-- Navigation -->
 @include('layout.partials.navbar_website')
@@ -53,7 +54,7 @@
 @endphp
 
 @php
-    $heroBgColor = $hero['bg_color'] ?? '#f3ecff';
+    $heroBgColor = $hero['bg_color'] ?? '#f5f3ff';
 @endphp
 <style>
     /* Hero Background & Blend */
@@ -67,32 +68,26 @@
     
     /* Premium Button Interactive Styles */
     .btn-hero-premium {
-        background-color: #8a48ff !important;
-        border-color: #8a48ff !important;
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
         color: #ffffff !important;
-        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+        padding: 11px 24px !important;
+        border-radius: 50px !important;
+        font-weight: 600 !important;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4) !important;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
         position: relative;
         overflow: hidden;
     }
     
     .btn-hero-premium:hover {
-        transform: translateY(-4px) !important;
-        background-color: #7a35fa !important;
-        border-color: #7a35fa !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        background-color: var(--primary-hover) !important;
+        border-color: var(--primary-hover) !important;
         color: #ffffff !important;
+        box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3) !important;
     }
 
-    /* Quick Link Cards Interactive Styles */
-    .quick-link-card .card {
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        cursor: pointer;
-    }
-    
-    .quick-link-card:hover .card {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 24px rgba(0,0,0,0.1) !important;
-    }
-    
     /* Trust Icons */
     .trust-icon-badge {
         display: inline-flex;
@@ -143,11 +138,11 @@
         display: inline-block;
     }
     .category-pill-link:hover .category-pill {
-        background-color: #8a48ff;
+        background-color: var(--primary-color);
         color: #ffffff;
         transform: translateY(-3px);
-        box-shadow: 0 8px 16px rgba(138, 72, 255, 0.25);
-        border-color: #8a48ff;
+        box-shadow: 0 8px 16px rgba(124, 58, 237, 0.25);
+        border-color: var(--primary-color);
     }
     .category-pill-link {
         text-decoration: none !important;
@@ -180,146 +175,74 @@
 
     <div class="container position-relative" style="z-index: 3;">
         
-        <!-- Top Quick Link Cards -->
-        @if(!empty($hero['quick_links']) && count($hero['quick_links']) > 0)
-        <style>
-            .hero-quick-links-container {
-                max-width: 1100px;
-                margin: 0 auto;
-            }
-            .quick-link-card {
-                padding: 10px; /* Space for box-shadow on hover during slide */
-                perspective: 1000px;
-            }
-            .quick-link-card .card {
-                border-radius: 20px !important;
-                background-color: #ffffff;
-                border: none !important;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
-                min-height: 140px;
-                padding: 24px;
-                overflow: hidden;
-                position: relative;
-                transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            }
-            .quick-link-card:hover .card {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 35px rgba(0,0,0,0.12) !important;
-            }
-            
-            /* Dark Tint Overlay */
-            .quick-link-card .card-overlay {
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background-color: rgba(60, 60, 60, 0.85); /* Dark grey filter */
-                opacity: 0;
-                transition: opacity 0.4s ease;
-                z-index: 3;
-            }
-            .quick-link-card:hover .card-overlay {
-                opacity: 1;
-            }
-            
-            /* Typography Wrapper - needs high z-index to stay above overlay */
-            .quick-link-card .qlink-title-wrapper {
-                position: relative;
-                z-index: 10;
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-            }
-
-            /* Title */
-            .quick-link-card .qlink-title {
-                font-size: 1.15rem;
-                font-weight: 800;
-                color: #111;
-                margin-bottom: 4px;
-                letter-spacing: -0.3px;
-                transition: color 0.4s ease;
-                text-transform: uppercase;
-            }
-            .quick-link-card:hover .qlink-title {
-                color: #8a48ff !important;
-            }
-
-            /* Subtitle Reveal */
-            .quick-link-card .qlink-subtitle {
-                font-size: 0.85rem;
-                color: #ffffff;
-                font-weight: 500;
-                opacity: 0;
-                max-height: 0;
-                transform: translateY(10px);
-                transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-                margin: 0;
-            }
-            .quick-link-card:hover .qlink-subtitle {
-                opacity: 0.9;
-                max-height: 100px;
-                transform: translateY(0);
-                margin-top: 6px;
-            }
-
-            /* Image setup */
-            .quick-link-card .qlink-img {
-                position: absolute;
-                bottom: 15px;
-                left: 50%;
-                transform: translateX(-50%) scale(1);
-                height: 55px; /* Fixed height for clean proportion scaling */
-                width: auto;
-                object-fit: contain;
-                transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
-                z-index: 2; /* Below the overlay */
-            }
-            
-            /* Hover Image Expansion */
-            .quick-link-card:hover .qlink-img {
-                transform: translateX(-50%) scale(8); /* Massive scale to fill background */
-                opacity: 0.3; /* Fade into the background under the overlay */
-            }
-
-            /* Badge */
-            .qlink-badge {
-                background-color: #f79d00;
-                color: #fff;
-                border-radius: 4px;
-                font-size: 0.65rem;
-                padding: 3px 6px;
-                font-weight: 700;
-                vertical-align: middle;
-            }
-        </style>
-        <div class="hero-quick-links-container mb-5 px-3">
-            <div id="quickLinksSlider" class="hero-quick-links-slider">
-            @foreach($hero['quick_links'] as $qlink)
-            <a href="{{ $qlink['url'] ?? '#' }}" class="quick-link-card text-decoration-none">
-                <div class="card position-relative">
-                    <div class="card-overlay"></div>
-                    <div class="qlink-title-wrapper">
-                        <div class="d-flex align-items-center gap-2">
-                            <h5 class="qlink-title mb-0">{{ $qlink['title'] ?? '' }}</h5>
-                            @if(!empty($qlink['badge']))
-                                <span class="qlink-badge">{{ $qlink['badge'] }}</span>
+        <!-- Top Category Strip -->
+        @php
+            $cmsQuickLinks = $hero['quick_links'] ?? [];
+            $heroCategories = [
+                [
+                    'title' => 'Med. Cannabis',
+                    'desc' => 'Diskrete Beratung & Rezept online',
+                    'badge' => 'NEU',
+                    'url' => !empty($cmsQuickLinks[0]['url']) && $cmsQuickLinks[0]['url'] !== '#' ? $cmsQuickLinks[0]['url'] : route('categories'),
+                    'image' => !empty($cmsQuickLinks[0]['image']) ? url('images/upload/'.$cmsQuickLinks[0]['image']) : '',
+                    'alt' => 'Cannabis',
+                    'active' => false,
+                ],
+                [
+                    'title' => 'Erektions&shy;st&ouml;rungen',
+                    'desc' => 'Vertraulich & ohne Wartezeit',
+                    'badge' => '',
+                    'url' => !empty($cmsQuickLinks[1]['url']) && $cmsQuickLinks[1]['url'] !== '#' ? $cmsQuickLinks[1]['url'] : route('erektionsstoerungen'),
+                    'image' => !empty($cmsQuickLinks[1]['image']) ? url('images/upload/'.$cmsQuickLinks[1]['image']) : '',
+                    'alt' => 'ED',
+                    'active' => false,
+                ],
+                [
+                    'title' => 'Testosteron',
+                    'desc' => 'Fertige Injektion - direkt einsatzbereit',
+                    'badge' => '',
+                    'url' => !empty($cmsQuickLinks[2]['url']) && $cmsQuickLinks[2]['url'] !== '#' ? $cmsQuickLinks[2]['url'] : route('categories'),
+                    'image' => !empty($cmsQuickLinks[2]['image']) ? url('images/upload/'.$cmsQuickLinks[2]['image']) : '',
+                    'alt' => 'Testosteron',
+                    'active' => false,
+                ],
+                [
+                    'title' => 'Abnehmen',
+                    'desc' => 'Abnehmspritze - ärztlich begleitet',
+                    'badge' => '',
+                    'url' => !empty($cmsQuickLinks[3]['url']) && $cmsQuickLinks[3]['url'] !== '#' ? $cmsQuickLinks[3]['url'] : route('categories'),
+                    'image' => !empty($cmsQuickLinks[3]['image']) ? url('images/upload/'.$cmsQuickLinks[3]['image']) : '',
+                    'alt' => 'Abnehmen',
+                    'active' => false,
+                ],
+            ];
+        @endphp
+        <section class="desktop-only-cats">
+            <div class="desktop-cats-grid">
+                @foreach($heroCategories as $category)
+                    <a href="{{ $category['url'] }}" class="tcat{{ $category['active'] ? ' tcat-active' : '' }}" data-bg="{{ $category['image'] }}">
+                        <div class="tcat-bg" @if(!empty($category['image'])) style="background-image: url('{{ $category['image'] }}');" @endif></div>
+                        <div class="tcat-overlay"></div>
+                        <div class="tcat-content">
+                            <span class="tcat-title">
+                                {!! $category['title'] !!}
+                                @if(!empty($category['badge']))
+                                    <span class="tcat-badge">{{ $category['badge'] }}</span>
+                                @endif
+                            </span>
+                            <span class="tcat-desc">{{ $category['desc'] }}</span>
+                        </div>
+                        <div class="tcat-img">
+                            @if(!empty($category['image']))
+                                <img src="{{ $category['image'] }}" alt="{{ $category['alt'] }}" width="120" height="120">
+                            @elseif(!empty($cmsQuickLinks[$loop->index]['icon_class']))
+                                <i class="{{ $cmsQuickLinks[$loop->index]['icon_class'] }}"></i>
                             @endif
                         </div>
-                        @if(!empty($qlink['subtitle']))
-                            <p class="qlink-subtitle">{{ $qlink['subtitle'] }}</p>
-                        @endif
-                    </div>
-                    
-                    @if(!empty($qlink['image']))
-                        <img src="{{ url('images/upload/'.$qlink['image']) }}" class="qlink-img" alt="">
-                    @elseif(!empty($qlink['icon_class']))
-                        <i class="{{ $qlink['icon_class'] }} qlink-img" style="font-size: 2.5rem; color: #7b42f6; bottom: 5px;"></i>
-                    @endif
-                </div>
-            </a>
-            @endforeach
+                    </a>
+                @endforeach
             </div>
-        </div>
-        @endif
+        </section>
 
         <!-- Main Content -->
         <div class="hero-main-content text-center mx-auto" style="max-width: 800px; margin-top: 60px;">
@@ -360,38 +283,25 @@
                     const keywords = {!! json_encode(array_values($typingKeywordsArray)) !!};
                     const tickerEl = document.getElementById('heroTicker');
                     let keywordIndex = 0;
-                    let charIndex = 0;
-                    let isDeleting = false;
-                    let typingSpeed = 100;
 
-                    function typeEffect() {
-                        const currentKeyword = keywords[keywordIndex];
-                        
-                        if (isDeleting) {
-                            tickerEl.textContent = currentKeyword.substring(0, charIndex - 1);
-                            charIndex--;
-                            typingSpeed = 50; // Faster when deleting
-                        } else {
-                            tickerEl.textContent = currentKeyword.substring(0, charIndex + 1);
-                            charIndex++;
-                            typingSpeed = 120; // Normal typing speed
-                        }
+                    if (!tickerEl || !keywords.length) return;
 
-                        if (!isDeleting && charIndex === currentKeyword.length) {
-                            typingSpeed = 2000; // Pause at the end of word
-                            isDeleting = true;
-                        } else if (isDeleting && charIndex === 0) {
-                            isDeleting = false;
+                    tickerEl.textContent = keywords[0];
+                    tickerEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+
+                    function rotateKeyword() {
+                        tickerEl.style.opacity = '0';
+                        tickerEl.style.transform = 'translateY(10px)';
+
+                        setTimeout(() => {
                             keywordIndex = (keywordIndex + 1) % keywords.length;
-                            typingSpeed = 400; // Pause before typing next word
-                        }
-
-                        setTimeout(typeEffect, typingSpeed);
+                            tickerEl.textContent = keywords[keywordIndex];
+                            tickerEl.style.opacity = '1';
+                            tickerEl.style.transform = 'translateY(0)';
+                        }, 400);
                     }
 
-                    if(tickerEl) {
-                        setTimeout(typeEffect, 500);
-                    }
+                    setInterval(rotateKeyword, 3000);
                 });
             </script>
 
@@ -418,7 +328,7 @@
 
             <!-- Trust Items -->
             @if(!empty($hero['trust_items']) && count($hero['trust_items']) > 0)
-            <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
+            <div class="d-flex flex-wrap justify-content-center gap-4 mb-4 trust-motion">
                 @foreach($hero['trust_items'] as $trust)
                     <div class="d-flex align-items-center text-dark" style="font-size: 0.95rem;">
                         @if(strpos($trust['icon_class'], 'bi-') !== false || strpos($trust['icon_class'], 'fa-') !== false)
@@ -509,6 +419,7 @@
     @endif
 </section>
 
+<main class="home-flow">
 
 @php
     $how = $homeSettings['how_it_works'] ?? [];
@@ -528,24 +439,25 @@
 @endphp
 
 <!-- How It Works Section -->
-<section class="pb-5 pt-3 position-relative overflow-hidden" style="background: linear-gradient(175deg, #ddd6ff 0%, #e9e4ff 40%, #f3f0ff 100%); min-height: 560px;">
+<section class="home-step-story pb-5 pt-3 position-relative overflow-hidden" style="background: linear-gradient(180deg, #cdc7e8 0%, #c8c2e4 45%, #cdc7e8 100%); min-height: 560px;">
 
     <!-- Wavy background line SVG -->
-    <svg class="position-absolute w-100" style="bottom: 60px; left: 0; opacity: 0.18; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
-        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#7b42f6" stroke-width="3" fill="none"/>
+    <svg class="position-absolute w-100" style="bottom: 60px; left: 0; opacity: 0.22; pointer-events:none;" viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path d="M0,60 C180,20 360,100 540,60 C720,20 900,100 1080,60 C1260,20 1380,80 1440,60" stroke="#b3a4ea" stroke-width="3" fill="none"/>
     </svg>
 
     <style>
-        .hiw-title  { font-size: 2.3rem; font-weight: 800; color: #111; letter-spacing: -0.5px; font-family: 'Clash Display', sans-serif; }
-        .hiw-sub    { font-size: 2.1rem; font-weight: 800; color: #7b42f6; letter-spacing: -0.5px; font-style: italic; font-family: 'Clash Display', sans-serif; }
-        .hiw-badge  { display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 50px; padding: 6px 16px; font-size: 0.82rem; font-weight: 600; color: #333; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
-        .hiw-dot    { width: 9px; height: 9px; background: #22c55e; border-radius: 50%; flex-shrink: 0; animation: hiwDotPulse 2s ease-in-out infinite; }
-        @keyframes hiwDotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+        .hiw-title  { font-size: 2.3rem; font-weight: 700; color: #15141c; letter-spacing: -0.4px; font-family: 'DM Serif Display', serif; }
+        .hiw-sub    { font-size: 2.1rem; font-weight: 700; color: #6a40ee; letter-spacing: -0.4px; font-style: normal; font-family: 'DM Serif Display', serif; }
+        .hiw-badge  { display: inline-flex; align-items: center; gap: 8px; background: #d9d1ef; border: 1px solid #b8a6e8; border-radius: 999px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; color: #6548cf; box-shadow: 0 2px 10px rgba(95,78,156,0.12); }
+        .hiw-dot    { width: 8px; height: 8px; background: #6a40ee; border-radius: 50%; flex-shrink: 0; animation: hiwDotPulse 2s ease-in-out infinite; }
+        @keyframes hiwDotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(106,64,238,0.45)} 50%{box-shadow:0 0 0 6px rgba(106,64,238,0)} }
 
         /* Deck layout — exact reference values */
         .hiw-deck   { display: flex; justify-content: center; align-items: flex-end; gap: 0; padding: 40px 0 20px; }
         .step-card-tilted {
-            background: #faf8ff;
+            background: #efedf4;
+            border: 1px solid rgba(214, 206, 231, 0.9);
             border-radius: 20px;
             padding: 28px 24px 20px;
             text-align: left;
@@ -554,11 +466,11 @@
             width: 280px;
             flex-shrink: 0;
             min-height: 360px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+            box-shadow: 0 12px 30px rgba(82, 69, 124, 0.14), 0 1px 4px rgba(0,0,0,0.04);
             transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
         }
         .step-card-tilted:hover {
-            box-shadow: 0 16px 45px rgba(80,40,180,0.22);
+            box-shadow: 0 18px 48px rgba(77, 61, 129, 0.24);
         }
         /* Exact transforms from reference */
         .tilt-left   { transform: rotate(-6deg) translateY(10px); z-index: 1; margin-right: -30px; }
@@ -571,12 +483,12 @@
         .tilt-center.hiw-active { transform: rotate(0deg)  translateY(-30px) scale(1.02); }
         .tilt-right.hiw-active  { transform: rotate(4deg)  translateY(0px) scale(1.02); }
 
-        .step-num-tilted { width: 38px; height: 38px; background: #7b42f6; color: #fff; border-radius: 50%;
+        .step-num-tilted { width: 38px; height: 38px; background: #6a40ee; color: #fff; border-radius: 50%;
             display: inline-flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1rem; margin-bottom: 16px; }
-        .step-card-tilted h3 { font-size: 1.2rem; font-weight: 600; color: #1a1a1a; line-height: 1.35; margin-bottom: 6px; }
-        .step-card-tilted h3 span { color: #7b42f6; display: block; }
-        .step-card-tilted > p { color: #666; font-size: 0.82rem; line-height: 1.5; margin-bottom: 16px; }
+            font-weight: 800; font-size: 1rem; margin-bottom: 16px; box-shadow: 0 6px 18px rgba(106,64,238,0.34); }
+        .step-card-tilted h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 600; color: #1a1a1a; line-height: 1.35; margin-bottom: 6px; }
+        .step-card-tilted h3 span { color: #6a40ee; display: block; }
+        .step-card-tilted > p { color: #666; font-size: 0.88rem; line-height: 1.6; margin-bottom: 16px; }
         .hiw-sub-items { 
             margin-top: 16px; 
             display: flex; 
@@ -592,17 +504,17 @@
             align-items: center; 
             text-align: center;
             padding: 16px 8px;
-            border: 1px solid #f0f0f0; 
+            border: 1px solid #e7e2f3; 
             border-radius: 16px; 
             margin-bottom: 0px; 
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            background: #f5f2fb;
+            box-shadow: 0 4px 12px rgba(79, 63, 125, 0.08);
             transition: transform 0.2s ease;
         }
-        .hiw-sub-item:hover { transform: translateY(-3px); border-color: #8a48ff; }
+        .hiw-sub-item:hover { transform: translateY(-3px); border-color: #8c72e2; }
         .hiw-sub-item i { font-size: 1.5rem; margin-bottom: 10px; flex-shrink: 0; }
-        .hiw-sub-item i.bi-box-seam { color: #8a48ff; }
-        .hiw-sub-item i.bi-house { color: #dc3545; }
+        .hiw-sub-item i.bi-box-seam { color: #6a40ee; }
+        .hiw-sub-item i.bi-house { color: #e24b4a; }
         .hiw-sub-item-label { font-weight: 700; font-size: 0.78rem; color: #111; line-height: 1.2; margin-bottom: 4px; }
         .hiw-sub-item-desc  { font-size: 0.65rem; color: #777; line-height: 1.3; }
         .hiw-card-photo { display: block; width: 100%; margin-top: 20px; object-fit: contain; max-height: 190px; }
@@ -701,7 +613,7 @@
     $bannerBg = $inter['bg_color'] ?? '#8a48ff';
     $bannerTextCol = $inter['text_color'] ?? '#ffffff';
 @endphp
-<section class="py-5" style="background-color: {{ $bannerBg }}; color: {{ $bannerTextCol }};">
+<section class="py-5 home-intermission-banner home-story-intermission" style="background-color: {{ $bannerBg }}; color: {{ $bannerTextCol }};">
     <div class="container text-center py-4">
         <h2 class="fw-bold mb-0" style="font-size: clamp(1.4rem, 4vw, 2rem); line-height: 1.4; color: inherit;">
             {{ $bannerText }}
@@ -736,7 +648,7 @@
 @endphp
 
 <!-- Natural Relief Section -->
-<div class="premium-section-outer">
+<div class="premium-section-outer home-story-cannabis">
     <section class="cannabis-banner-section">
         <div class="cbs-inner">
             @if(!empty($relief['badge']))
@@ -749,7 +661,7 @@
                 $rTitleGreen = isset($rTitleParts[1]) ? trim($rTitleParts[1]) : '';
             @endphp
             
-            <h2 class="cbs-heading">{{ $rTitleNormal }} @if($rTitleGreen)<span class="cbs-green">{{ $rTitleGreen }}</span>@endif</h2>
+            <h2 class="cbs-heading">{{ $rTitleNormal }}@if($rTitleGreen)<br><span class="cbs-green">{{ $rTitleGreen }}</span>@endif</h2>
 
             <!-- Center hero image with buttons overlaid -->
             <div class="cbs-hero-img-wrap">
@@ -812,31 +724,32 @@
     $edHeading = $processedTitle;
 
     $edHeroImage = !empty($ed['hero_image']) ? url('images/upload/'.$ed['hero_image']) : 'https://images.unsplash.com/photo-1511130558040-bb3396b42b79?q=80&w=1000&auto=format&fit=crop';
+    $edLandingUrl = route('erektionsstoerungen');
     
     $edBtn1Text = !empty($ed['btn1_text']) ? $ed['btn1_text'] : 'Meine Behandlung finden';
-    $edBtn1Url = !empty($ed['btn1_url']) ? $ed['btn1_url'] : route('categories');
+    $edBtn1Url = !empty($ed['btn1_url']) && $ed['btn1_url'] !== '#' ? $ed['btn1_url'] : $edLandingUrl;
     $edBtn2Text = !empty($ed['btn2_text']) ? $ed['btn2_text'] : 'Meine kostenlose Beratung starten';
-    $edBtn2Url = !empty($ed['btn2_url']) ? $ed['btn2_url'] : route('categories');
+    $edBtn2Url = !empty($ed['btn2_url']) && $ed['btn2_url'] !== '#' ? $ed['btn2_url'] : $edLandingUrl;
 
     $largeCard = $ed['large_card'] ?? [];
     $largeTitle = !empty($largeCard['title']) ? str_replace('|', '<br>', $largeCard['title']) : 'Es kommt häufiger vor, als Sie denken.';
     $largeBtnText = !empty($largeCard['btn_text']) ? $largeCard['btn_text'] : 'Mehr über Ursachen erfahren';
-    $largeBtnUrl = !empty($largeCard['btn_url']) ? $largeCard['btn_url'] : route('categories');
+    $largeBtnUrl = !empty($largeCard['btn_url']) && $largeCard['btn_url'] !== '#' ? $largeCard['btn_url'] : $edLandingUrl;
     $largeImage = !empty($largeCard['image']) ? url('images/upload/'.$largeCard['image']) : 'https://images.unsplash.com/photo-1621348123733-47a824707db9?q=80&w=1000&auto=format&fit=crop';
 
     $r1 = $ed['right_card_1'] ?? [];
     $r1Title = !empty($r1['title']) ? str_replace('|', '<br>', $r1['title']) : 'Wenn Leistung zu Druck wird';
     $r1BtnText = !empty($r1['btn_text']) ? $r1['btn_text'] : 'Verstehen, wie ED funktioniert';
-    $r1BtnUrl = !empty($r1['btn_url']) ? $r1['btn_url'] : route('categories');
+    $r1BtnUrl = !empty($r1['btn_url']) && $r1['btn_url'] !== '#' ? $r1['btn_url'] : $edLandingUrl;
     $r1Image = !empty($r1['image']) ? url('images/upload/'.$r1['image']) : 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1000&auto=format&fit=crop';
 
     $r2 = $ed['right_card_2'] ?? [];
     $r2Title = !empty($r2['title']) ? str_replace('|', '<br>', $r2['title']) : 'Professionelle Hilfe, die diskret wirkt.';
     $r2BtnText = !empty($r2['btn_text']) ? $r2['btn_text'] : 'Mein Rezept erhalten';
-    $r2BtnUrl = !empty($r2['btn_url']) ? $r2['btn_url'] : route('categories');
+    $r2BtnUrl = !empty($r2['btn_url']) && $r2['btn_url'] !== '#' ? $r2['btn_url'] : $edLandingUrl;
     $r2Image = !empty($r2['image']) ? url('images/upload/'.$r2['image']) : 'https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=80&w=1000&auto=format&fit=crop';
 @endphp
-<div class="premium-section-outer">
+<div class="premium-section-outer home-story-ed">
     <section class="ed-banner-section">
         <div class="ed-inner">
             <span class="ed-pill">{{ $edPill }}</span>
@@ -924,19 +837,20 @@
     $tRightBtnUrl = !empty($tRight['btn_url']) ? $tRight['btn_url'] : route('categories');
     $tRightImage = !empty($tRight['image']) ? url('images/upload/'.$tRight['image']) : 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop';
 @endphp
-<div class="premium-section-outer">
-    <section class="testo-banner-section">
-        <div class="testo-inner">
-            <span class="testo-pill">{{ $testoPill }}</span>
-            <h2 class="testo-heading">{!! $testoHeading !!}</h2>
-            <div class="testo-hero-img-wrap">
-                <img src="{{ $testoHeroImage }}" alt="Testosterone" class="testo-hero-img" />
-                <div class="testo-btns-overlay">
-                    <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
-                    <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
-                </div>
+<div class="premium-section-outer home-story-testo">
+    <section class="ha-banner-section testo-banner-section">
+        <div class="testo-bg-art" style="background-image:url('{{ $testoHeroImage }}');"></div>
+        <div class="testo-bg-wash"></div>
+        <div class="ha-inner testo-inner">
+            <span class="ha-pill testo-pill">{{ $testoPill }}</span>
+            <h2 class="ha-heading testo-heading">{!! $testoHeading !!}</h2>
+
+            <div class="testo-btns">
+                <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
+                <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
             </div>
         </div>
+
         <div class="testo-cards">
             <div class="testo-card">
                 <div class="testo-card-text">
@@ -944,7 +858,7 @@
                     <a href="{{ $tLeftBtnUrl }}" class="testo-card-btn">{{ $tLeftBtnText }}</a>
                 </div>
                 <div class="testo-card-img-wrap">
-                    <img src="{{ $tLeftImage }}" alt="" class="testo-card-img" />
+                    <img src="{{ $tLeftImage }}" alt="Testosteron Behandlung" class="testo-card-img loaded" width="300" height="200" loading="lazy" />
                 </div>
             </div>
             <div class="testo-card">
@@ -953,7 +867,7 @@
                     <a href="{{ $tRightBtnUrl }}" class="testo-card-btn">{{ $tRightBtnText }}</a>
                 </div>
                 <div class="testo-card-img-wrap">
-                    <img src="{{ $tRightImage }}" alt="" class="testo-card-img" />
+                    <img src="{{ $tRightImage }}" alt="Testosteron Injektion" class="testo-card-img loaded" width="300" height="200" loading="lazy" />
                 </div>
             </div>
         </div>
@@ -1003,7 +917,7 @@
     $wlRightBtnUrl = !empty($wlRight['btn_url']) ? $wlRight['btn_url'] : route('categories');
     $wlRightImage = !empty($wlRight['image']) ? url('images/upload/'.$wlRight['image']) : 'https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?w=800&q=80';
 @endphp
-<div class="premium-section-outer">
+<div class="premium-section-outer home-story-weight">
     <section class="wl-banner-section">
         <div class="wl-inner">
             <span class="wl-pill">{{ $wlPill }}</span>
@@ -1057,7 +971,7 @@
         ];
     }
 @endphp
-<section class="advisors-section">
+<section class="advisors-section home-story-advisors">
     <div class="advisors-container">
         <h2 class="advisors-heading">{{ $advHeading }}</h2>
         <div class="advisors-grid">
@@ -1096,7 +1010,7 @@
     $sRightNum = $statsRight['number'] ?? '12';
     $sRightBot = $statsRight['bottom_text'] ?? 'Jahre Expertise';
 @endphp
-<section class="stats-section">
+<section class="stats-section home-story-stats">
     <div class="stats-container">
         <h3 class="stats-heading">{{ $statsHeading }}</h3>
         <div class="stats-cards">
@@ -1152,7 +1066,7 @@
     $compBtnUrl = !empty($compData['btn_url']) ? $compData['btn_url'] : route('categories');
     $compBtnSub = $compData['btn_subtext'] ?? 'Kostenlose Erstberatung &bull; Rezept in 24h';
 @endphp
-<section class="comparison-section">
+<section class="comparison-section home-story-comparison">
     <div class="comp-container">
         <div class="comp-header">
             <span class="comp-pill"><i class="bi bi-shield-check"></i> {{ $compPill }}</span>
@@ -1209,7 +1123,7 @@
     }
 @endphp
 @if(!empty($faqItems))
-<section class="faq-section">
+<section class="faq-section home-story-faq">
     <div class="faq-container">
         <div class="faq-header">
             <h2 class="faq-heading">{{ $faqData['heading'] ?? 'Sie haben Fragen?' }}</h2>
@@ -1263,7 +1177,7 @@
     }
 @endphp
 
-<section class="press-logos">
+<section class="press-logos home-story-press">
     <div class="press-logos-inner">
         <span class="press-label">{{ $mediaData['heading'] ?? 'Bekannt aus' }}</span>
         <div class="press-track">
@@ -1274,7 +1188,7 @@
     </div>
 </section>
 
-<section class="mid-cta">
+<section class="mid-cta home-story-cta">
     <div class="mid-cta-inner">
         <h2>{{ $ctaData['heading'] ?? 'Bereit? In 3 Minuten zu deinem Rezept.' }}</h2>
         <a href="{{ $ctaData['btn_url'] ?? '#' }}" class="btn-cta-lg">{{ $ctaData['btn_text'] ?? 'Jetzt kostenlos starten' }}</a>
@@ -1298,7 +1212,7 @@
     }
 @endphp
 
-<section class="privacy-v2">
+<section class="privacy-v2 home-story-privacy">
     <div class="privacy-container container">
         <div class="row align-items-center">
             <div class="col-lg-5 mb-5 mb-lg-0">
@@ -1360,7 +1274,7 @@
     $nlBg = $nlData['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg';
 @endphp
 
-<section class="newsletter-hero">
+<section class="newsletter-hero home-story-newsletter">
     <div class="nl-hero-bg" style="background-image: url('{{ $nlBg }}');"></div>
     <div class="nl-hero-content">
         <h2>{!! nl2br(e($nlHeading)) !!}</h2>
@@ -1377,6 +1291,8 @@
     </div>
 </section>
 
+ </main>
+
 
 
 @include('layout.partials.footer')
@@ -1390,36 +1306,167 @@
 
 <script>
     $(document).ready(function(){
-        $('#quickLinksSlider').slick({
-            infinite: true,
-            slidesToShow: 4,
-            slidesToScroll: 1,
-            autoplay: true,
-            autoplaySpeed: 1000,
-            dots: false,
-            arrows: false,
-            responsive: [
-                {
-                    breakpoint: 1200,
-                    settings: {
-                        slidesToShow: 3,
-                    }
-                },
-                {
-                    breakpoint: 992,
-                    settings: {
+        const $quickLinksSlider = $('#quickLinksSlider');
+
+        function syncQuickLinksSlider() {
+            if (!$quickLinksSlider.length) return;
+
+            if (window.innerWidth <= 767) {
+                if (!$quickLinksSlider.hasClass('slick-initialized')) {
+                    $quickLinksSlider.slick({
+                        infinite: true,
                         slidesToShow: 2,
-                    }
-                },
-                {
-                    breakpoint: 576,
-                    settings: {
-                        slidesToShow: 1,
-                    }
+                        slidesToScroll: 1,
+                        autoplay: false,
+                        dots: false,
+                        arrows: false,
+                        responsive: [
+                            {
+                                breakpoint: 576,
+                                settings: {
+                                    slidesToShow: 1
+                                }
+                            }
+                        ]
+                    });
                 }
-            ]
+            } else if ($quickLinksSlider.hasClass('slick-initialized')) {
+                $quickLinksSlider.slick('unslick');
+            }
+        }
+
+        syncQuickLinksSlider();
+        $(window).on('resize orientationchange', syncQuickLinksSlider);
+    });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (!document.body.classList.contains('home-target')) return;
+
+    const header = document.querySelector('.main-header');
+    const trustMotion = document.querySelector('.trust-motion');
+    const heroRating = document.querySelector('.rating-section');
+    const heroTitle = document.querySelector('.hero-main-content h1');
+
+    function updateHeaderState() {
+        if (header) {
+            header.classList.toggle('is-scrolled', window.scrollY > 10);
+        }
+
+        if (trustMotion && window.scrollY < 600) {
+            trustMotion.style.transform = 'translateY(' + (window.scrollY * 0.08) + 'px)';
+        }
+
+        if (heroRating && window.scrollY < 600) {
+            heroRating.style.transform = 'translateY(' + (window.scrollY * 0.05) + 'px)';
+        }
+    }
+
+    updateHeaderState();
+    window.addEventListener('scroll', updateHeaderState, { passive: true });
+
+    if (heroTitle && !heroTitle.querySelector('.shimmer-text') && /dr\.fuxx/i.test(heroTitle.innerHTML)) {
+        heroTitle.innerHTML = heroTitle.innerHTML.replace(/dr\.fuxx/ig, '<span class="shimmer-text">$&</span>');
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener('click', function (e) {
+            const href = anchor.getAttribute('href');
+            if (!href || href === '#') return;
+            const target = document.querySelector(href);
+            if (!target) return;
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
+
+    const motionGroups = [
+        { selector: '.tcat', className: 'motion-scale-in', stagger: 0.08 },
+        { selector: '.home-story-cannabis .cbs-inner, .home-story-testo .testo-inner, .home-story-comparison .comp-header, .home-story-comparison .comp-board, .home-story-comparison .comp-cta-wrap, .home-story-privacy .row.align-items-center, .home-story-newsletter .nl-hero-content', className: 'motion-slide-left', stagger: 0.06 },
+        { selector: '.home-story-ed .ed-inner, .home-story-weight .wl-inner, .home-story-faq .faq-container, .home-story-advisors .advisors-container, .home-story-stats .stats-container, .home-story-press .press-logos-inner, .home-story-cta .mid-cta-inner', className: 'motion-slide-right', stagger: 0.06 },
+        { selector: '.cbs-card, .ed-card, .testo-card, .wl-card, .advisor-card, .stats-card, .faq-item, .privacy-feature-item, .priv-pill', className: 'motion-reveal', stagger: 0.08 },
+        { selector: '.hiw-title, .hiw-sub, .hiw-badge, .advisors-heading, .stats-heading, .comp-pill, .comp-heading, .comp-sub, .faq-heading, .faq-sub, .privacy-label, .privacy-heading, .privacy-intro, .press-label, .mid-cta h2, .mid-cta-note, .nl-hero-content h2, .nl-hero-content > p, .nl-hero-legal', className: 'motion-title', stagger: 0.08 }
+    ];
+
+    const motionElements = [];
+
+    motionGroups.forEach(function (group) {
+        document.querySelectorAll(group.selector).forEach(function (el, index) {
+            el.classList.add(group.className);
+            el.style.transitionDelay = (group.stagger || 0) * (index % 5) + 's';
+            motionElements.push(el);
+        });
+    });
+
+    if (!('IntersectionObserver' in window)) {
+        motionElements.forEach(function (el) {
+            el.classList.add('motion-visible');
+        });
+    } else {
+        const motionObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('motion-visible');
+                    motionObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.06, rootMargin: '0px 0px -12% 0px' });
+
+        motionElements.forEach(function (el) {
+            motionObserver.observe(el);
+        });
+    }
+
+    document.querySelectorAll('.header-btn, .btn-hero-premium, .cbs-btn-filled, .ed-btn-filled, .testo-btn-filled, .wl-btn-filled, .comp-btn, .btn-cta-lg').forEach(function (el) {
+        el.classList.add('motion-bounce');
+    });
+
+    document.querySelectorAll('.cbs-card, .ed-card-small, .testo-card, .wl-card').forEach(function (el) {
+        el.classList.add('motion-tilt');
+    });
+
+    document.querySelectorAll('.advisor-card').forEach(function (el) {
+        el.classList.add('motion-glow');
+    });
+
+    document.querySelectorAll('.footer-col-v2 a').forEach(function (el) {
+        el.classList.add('motion-underline');
+    });
+
+    document.querySelectorAll('.live-viewers .spinner-grow, .hiw-dot').forEach(function (el) {
+        el.classList.add('motion-pulse-ring');
+    });
+
+    document.querySelectorAll('.stats-num').forEach(function (el) {
+        const numericText = el.textContent.replace(/[^0-9]/g, '');
+        const target = parseInt(numericText, 10);
+        if (!target) return;
+
+        let counted = false;
+        el.classList.add('motion-count-up');
+
+        const countObserver = new IntersectionObserver(function (entries) {
+            if (!entries[0].isIntersecting || counted) return;
+            counted = true;
+
+            const duration = 1500;
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = Math.min((timestamp - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(eased * target).toLocaleString('de-DE');
+                if (progress < 1) requestAnimationFrame(step);
+            }
+
+            requestAnimationFrame(step);
+            countObserver.unobserve(el);
+        }, { threshold: 0.5 });
+
+        countObserver.observe(el);
+    });
+});
 </script>
 <!-- Treatment Areas Carousel -->
 <script>

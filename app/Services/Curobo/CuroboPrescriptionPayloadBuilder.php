@@ -20,7 +20,7 @@ class CuroboPrescriptionPayloadBuilder
      *
      * @param  array<CannaleoMedicine>|Collection<int, CannaleoMedicine>  $products
      * @return array<string, mixed>
-     */
+     */ 
     public static function build(
         Prescription $prescription,
         QuestionnaireSubmission $submission,

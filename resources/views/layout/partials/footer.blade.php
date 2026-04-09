@@ -85,7 +85,15 @@
             <h4>{{ $col['title'] ?? '' }}</h4>
             <ul>
                 @foreach($col['links'] ?? [] as $link)
-                <li><a href="{{ $link['url'] ?? '#' }}">{{ $link['name'] ?? $link['label'] ?? '' }}</a></li>
+                @php
+                    $linkLabel = $link['name'] ?? $link['label'] ?? '';
+                    $linkUrl = $link['url'] ?? '#';
+
+                    if (in_array($linkUrl, ['', '#'], true) && stripos($linkLabel, 'Erektions') !== false) {
+                        $linkUrl = route('erektionsstoerungen');
+                    }
+                @endphp
+                <li><a href="{{ $linkUrl }}">{{ $linkLabel }}</a></li>
                 @endforeach
             </ul>
         </div>
