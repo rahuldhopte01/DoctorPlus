@@ -126,6 +126,7 @@ class CuroboPrescriptionPayloadBuilder
             'dateOfBirth'     => $dob,
             'email'           => $customer->email ?? '',
             'phone'           => $customer->phone ?? '',
+            'homeAddress'     => $homeAddress,
             'deliveryAddress' => $deliveryAddress,
         ];
 
