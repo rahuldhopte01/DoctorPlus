@@ -960,6 +960,7 @@ $cmsFaq = array_merge([
                     }
                     .faq-subtitle-extra span {
                         border-bottom: 4px solid #e63946;
+                        border-bottom: none;
                     }
                 </style>
                     <div class="accordion" id="faqAccordion">
