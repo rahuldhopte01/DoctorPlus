@@ -3,6 +3,200 @@
 <head>
     @php
     $setting = App\Models\Setting::first();
+    // --- CMS Section Data (with defaults) ---
+    $_cms     = $category->cms_sections ?? [];
+
+    $cmsHero  = array_merge([
+        'type'                 => 'type1',
+        'enabled'              => true,
+        'background_image'     => null,
+        'bg_color'             => '#f0fdf4',
+        'cta_text'             => 'Zu den medizinischen Fragen',
+        'cta_color'            => '#3b6fd4',
+        'cta_text_color'       => '#ffffff',
+        'consultation_fee'     => '29',
+        'badge_enabled'        => true,
+        'badge_percentage'     => '85',
+        'badge_text'           => 'der Männer berichten von einer Besserung',
+        'badge_bg_color_start' => '#3b6fd4',
+        'badge_bg_color_end'   => '#1e3c8c',
+        'rating_enabled'       => true,
+        'rating_value'         => '4,79',
+        'rating_count'         => '14.082',
+
+        // Type 2 defaults
+        't2_heading'           => 'Therapie mit medizinischem Cannabis',
+        't2_description'       => 'Füllen Sie einen Online-Fragebogen aus und lassen Sie Ihre Angaben von einem zugelassenen Arzt überprüfen...',
+        't2_subtext'           => 'Ärztliche Beurteilung und Verordnung 14,9 € + Cannabis-Therapeutikum ab 3 €',
+        't2_main_image'        => null,
+        't2_info_1_val'        => '700+',
+        't2_info_1_lbl'        => 'ANGESCHLOSSENE APOTHEKEN',
+        't2_info_2_val'        => '1,5K+',
+        't2_info_2_lbl'        => 'CANNABIS BLÜTEN',
+        't2_heading_highlight_color' => '#2d7a45',
+        't2_blob_color'        => '#dcfce7',
+
+        // Type 3 defaults
+        't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
+        't3_subheading'        => 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
+        't3_cta_1_url'         => '#',
+        't3_cta_1_color'       => '#ef4444',
+        't3_cta_1_text_color'  => '#ffffff',
+        't3_cta_2_text'        => 'Mehr erfahren',
+        't3_cta_2_url'         => '#',
+        't3_cta_2_color'       => '#ef4444',
+        't3_cta_2_text_color'  => '#ef4444',
+        't2_rating_line'       => '<strong>4,79</strong>/5 <span style="color:#666">(14.082 Bewertungen)</span>',
+        't3_bottom_items'      => [
+            ['icon' => 'bx bx-user', 'text' => 'Deutsche Ärzte'],
+            ['icon' => 'bx bx-shield-check', 'text' => '100% DSGVO-konform'],
+            ['icon' => 'bx bx-truck', 'text' => 'Expressversand'],
+        ],
+    ], $_cms['hero'] ?? []);
+
+    $cmsFb = array_merge([
+        'enabled'    => true,
+        'bg_color'   => '#fafafa',
+        'icon_color' => '#3b6fd4',
+        'features' => [
+            ['enabled' => true, 'title' => 'Das Rezept wird online ausgestellt.',      'subtitle' => 'Ein Klinikbesuch ist nicht erforderlich.'],
+            ['enabled' => true, 'title' => 'Lieferung innerhalb von 1–2 Werktagen.',   'subtitle' => 'Schnelle, zuverlässige Lieferung.'],
+            ['enabled' => true, 'title' => 'Originalmedizin und Generika.',            'subtitle' => 'Aus zertifizierten Apotheken.'],
+            ['enabled' => true, 'title' => 'Beratung über Online-Fragebogen.',         'subtitle' => 'Schnelle medizinische Beratung'],
+        ],
+    ], $_cms['features_bar'] ?? []);
+
+    $_fbIcons = [
+        '<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+        '<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
+        '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
+        '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+    ];
+
+    $cmsSteps = array_merge([
+        'enabled'          => true,
+        'bg_color'         => '#ffffff',
+        'section_title'    => '3 einfache Schritte',
+        'section_subtitle' => '100 % online',
+        'subtitle_color'   => '#3b6fd4',
+        'step_number_bg'   => '#3b6fd4',
+        'steps' => [
+            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null],
+            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null],
+            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null],
+        ],
+    ], $_cms['steps'] ?? []);
+
+    $_stepFallbackImgs = [
+        'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80',
+        'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=400&q=80',
+        'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=400&q=80',
+    ];
+    $_stepAltTexts = ['Fragebogen', 'Arzt', 'Lieferung'];
+
+    $cmsPay = array_merge([
+        'enabled'  => true,
+        'label'    => 'Akzeptierte Zahlungsmethoden:',
+        'bg_color' => '#1a1a1a',
+        'methods'  => ['klarna' => true, 'visa' => true, 'maestro' => true, 'gpay' => true, 'apple_pay' => true, 'paypal' => true],
+    ], $_cms['payment_bar'] ?? []);
+
+    $cmsMedical = array_merge([
+        'enabled'       => true,
+        'bg_color'      => '#ffffff',
+        'section_title' => 'Behandlungen bei',
+        'toc_enabled'   => true,
+        'toc_title'     => 'Themenliste',
+        'toc_items'     => [],
+        'articles'      => [],
+    ], $_cms['medical_content'] ?? []);
+
+    $cmsDr = array_merge([
+        'enabled'           => true,
+        'bg_color'          => '#ffffff',
+        'image'             => null,
+        'name'              => 'Dr. med. Experte',
+        'role'              => 'Facharzt für Urologie',
+        'title'             => 'Medizinisch-fachlich geprüft',
+        'paragraphs'        => [
+            'Die medizinischen Inhalte auf dieser Seite wurden in Zusammenarbeit mit einem unserer Ärzte bzw. medizinischen Experten erstellt und von diesen überprüft.',
+            'Die medizinischen Inhalte werden regelmäßig überprüft, um maximale Genauigkeit und Zuverlässigkeit zu gewährleisten.',
+        ],
+        'link_text'         => 'Redaktionsprozess',
+        'link_url'          => '#',
+        'show_last_updated' => true,
+    ], $_cms['doctor_review'] ?? []);
+
+    $cmsFaq = array_merge([
+        'enabled'              => true,
+        'bg_color'             => '#ffffff',
+        'title'                => 'Frequently asked questions',
+        'subtitle'             => '',
+        'subtitle_color'       => '#e63946',
+        'question_color'       => '#1a1a1a',
+        'question_hover_color' => '#3b6fd4',
+        'question_bg_color'       => '#ffffff',
+        'question_bg_hover_color' => '#f8f9fa',
+        'question_bg_active_color' => '#ffffff',
+        'question_active_color'    => '#ffffff',
+        'answer_bg_color'          => '#ffffff',
+        'answer_text_color'        => '#6c757d',
+        'items'                => [
+            ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
+            ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
+            ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
+        ],
+    ], $_cms['faq'] ?? []);
+
+    $cmsTestoInfo = array_merge([
+        'enabled'     => true,
+        'bg_color'    => '#ffffff',
+        'heading'     => 'Was ist eine Testosteron-Injektion?',
+        'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
+        'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
+        'paragraph_3' => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+        'cards' => [
+            ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
+            ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
+            ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
+            ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
+        ],
+    ], $_cms['testo_info'] ?? []);
+
+    $cmsTestoTreatments = array_merge([
+        'enabled'    => true,
+        'bg_color'   => '#fdf5f5',
+        'heading'    => 'Unsere Testosteron-Behandlungen',
+        'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+        'cards' => [
+            ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
+            ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
+        ],
+    ], $_cms['testo_treatments'] ?? []);
+
+    $_testoTreatFallbackImgs = [
+        'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80',
+        'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80',
+    ];
+
+    $cmsSecurity = array_merge([
+        'enabled'    => true,
+        'bg_color'   => '#fdf5f5',
+        'heading'    => 'Ihre Sicherheit ist unsere Priorität',
+        'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+        'cards' => [
+            ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
+            ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
+            ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
+        ],
+    ], $_cms['security'] ?? []);
+
+    // --- Section Order ---
+    $_validSections  = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security'];
+    $_sectionOrder   = $_cms['section_order'] ?? $_validSections;
+    foreach ($_validSections as $_sk) {
+        if (!in_array($_sk, $_sectionOrder)) $_sectionOrder[] = $_sk;
+    }
     @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -216,7 +410,7 @@
         /* 3 STEPS */
         .steps-section { 
             padding: 72px 24px; 
-            background: {{ $cmsSteps['bg_color'] ?? '#eaf2ff' }} !important;
+            background: {{ $cmsSteps['bg_color'] ?? '#ffffff' }} !important;
             text-align: center; 
             overflow: hidden; 
         }
@@ -373,206 +567,6 @@
     </div>
 </div>
 
-@php
-// --- CMS Section Data (with defaults) ---
-$_cms     = $category->cms_sections ?? [];
-
-$cmsHero  = array_merge([
-    'type'                 => 'type1',
-    'enabled'              => true,
-    'background_image'     => null,
-    'bg_color'             => '#f0fdf4',
-    'cta_text'             => 'Zu den medizinischen Fragen',
-    'cta_color'            => '#3b6fd4',
-    'cta_text_color'       => '#ffffff',
-    'consultation_fee'     => '29',
-    'badge_enabled'        => true,
-    'badge_percentage'     => '85',
-    'badge_text'           => 'der Männer berichten von einer Besserung',
-    'badge_bg_color_start' => '#3b6fd4',
-    'badge_bg_color_end'   => '#1e3c8c',
-    'rating_enabled'       => true,
-    'rating_value'         => '4,79',
-    'rating_count'         => '14.082',
-
-    // Type 2 defaults
-    't2_heading'           => 'Therapie mit medizinischem Cannabis',
-    't2_description'       => 'Füllen Sie einen Online-Fragebogen aus und lassen Sie Ihre Angaben von einem zugelassenen Arzt überprüfen...',
-    't2_subtext'           => 'Ärztliche Beurteilung und Verordnung 14,9 € + Cannabis-Therapeutikum ab 3 €',
-    't2_main_image'        => null,
-    't2_info_1_val'        => '700+',
-    't2_info_1_lbl'        => 'ANGESCHLOSSENE APOTHEKEN',
-    't2_info_2_val'        => '1,5K+',
-    't2_info_2_lbl'        => 'CANNABIS BLÜTEN',
-    't2_heading_highlight_color' => '#2d7a45',
-    't2_blob_color'        => '#dcfce7',
-
-    // Type 3 defaults
-    't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
-    't3_subheading'        => 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
-    't3_cta_1_url'         => '#',
-    't3_cta_1_color'       => '#ef4444',
-    't3_cta_1_text_color'  => '#ffffff',
-    't3_cta_2_text'        => 'Mehr erfahren',
-    't3_cta_2_url'         => '#',
-    't3_cta_2_color'       => '#ef4444',
-    't3_cta_2_text_color'  => '#ef4444',
-    't2_rating_line'       => '<strong>4,79</strong>/5 <span style="color:#666">(14.082 Bewertungen)</span>',
-    't3_bottom_items'      => [
-        ['icon' => 'bx bx-user', 'text' => 'Deutsche Ärzte'],
-        ['icon' => 'bx bx-shield-check', 'text' => '100% DSGVO-konform'],
-        ['icon' => 'bx bx-truck', 'text' => 'Expressversand'],
-    ],
-], $_cms['hero'] ?? []);
-
-$cmsFb = array_merge([
-    'enabled'    => true,
-    'bg_color'   => '#fafafa',
-    'icon_color' => '#3b6fd4',
-    'features' => [
-        ['enabled' => true, 'title' => 'Das Rezept wird online ausgestellt.',      'subtitle' => 'Ein Klinikbesuch ist nicht erforderlich.'],
-        ['enabled' => true, 'title' => 'Lieferung innerhalb von 1–2 Werktagen.',   'subtitle' => 'Schnelle, zuverlässige Lieferung.'],
-        ['enabled' => true, 'title' => 'Originalmedizin und Generika.',            'subtitle' => 'Aus zertifizierten Apotheken.'],
-        ['enabled' => true, 'title' => 'Beratung über Online-Fragebogen.',         'subtitle' => 'Schnelle medizinische Beratung'],
-    ],
-], $_cms['features_bar'] ?? []);
-
-$_fbIcons = [
-    '<svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
-    '<svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>',
-    '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>',
-    '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
-];
-
-$cmsSteps = array_merge([
-    'enabled'          => true,
-    'bg_color'         => '#eaf2ff',
-    'section_title'    => '3 einfache Schritte',
-    'section_subtitle' => '100 % online',
-    'subtitle_color'   => '#3b6fd4',
-    'step_number_bg'   => '#3b6fd4',
-    'bg_color'         => '#ffffff',
-    'steps' => [
-        ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null],
-        ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null],
-        ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null],
-    ],
-], $_cms['steps'] ?? []);
-
-$_stepFallbackImgs = [
-    'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=400&q=80',
-    'https://images.unsplash.com/photo-1580674285054-bed31e145f59?auto=format&fit=crop&w=400&q=80',
-];
-$_stepAltTexts = ['Fragebogen', 'Arzt', 'Lieferung'];
-
-$cmsPay = array_merge([
-    'enabled'  => true,
-    'label'    => 'Akzeptierte Zahlungsmethoden:',
-    'bg_color' => '#1a1a1a',
-    'methods'  => ['klarna' => true, 'visa' => true, 'maestro' => true, 'gpay' => true, 'apple_pay' => true, 'paypal' => true],
-], $_cms['payment_bar'] ?? []);
-
-// --- CMS: Medical Content, Doctor Review, FAQ ---
-$cmsMedical = array_merge([
-    'enabled'       => true,
-    'bg_color'      => '#ffffff',
-    'section_title' => 'Behandlungen bei',
-    'toc_enabled'   => true,
-    'toc_title'     => 'Themenliste',
-    'toc_items'     => [],
-    'articles'      => [],
-], $_cms['medical_content'] ?? []);
-
-$cmsDr = array_merge([
-    'enabled'           => true,
-    'bg_color'          => '#ffffff',
-    'image'             => null,
-    'name'              => 'Dr. med. Experte',
-    'role'              => 'Facharzt für Urologie',
-    'title'             => 'Medizinisch-fachlich geprüft',
-    'paragraphs'        => [
-        'Die medizinischen Inhalte auf dieser Seite wurden in Zusammenarbeit mit einem unserer Ärzte bzw. medizinischen Experten erstellt und von diesen überprüft.',
-        'Die medizinischen Inhalte werden regelmäßig überprüft, um maximale Genauigkeit und Zuverlässigkeit zu gewährleisten.',
-    ],
-    'link_text'         => 'Redaktionsprozess',
-    'link_url'          => '#',
-    'show_last_updated' => true,
-], $_cms['doctor_review'] ?? []);
-
-$cmsFaq = array_merge([
-    'enabled'              => true,
-    'bg_color'             => '#ffffff',
-    'title'                => 'Frequently asked questions',
-    'subtitle'             => '',
-    'subtitle_color'       => '#e63946',
-    'question_color'       => '#1a1a1a',
-    'question_hover_color' => '#3b6fd4',
-    'question_bg_color'       => '#ffffff',
-    'question_bg_hover_color' => '#f8f9fa',
-    'question_bg_active_color' => '#ffffff',
-    'question_active_color'    => '#ffffff',
-    'answer_bg_color'          => '#ffffff',
-    'answer_text_color'        => '#6c757d',
-    'items'                => [
-        ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
-        ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
-        ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
-    ],
-], $_cms['faq'] ?? []);
-
-// --- CMS: Sections 8, 9, 10 ---
-$cmsTestoInfo = array_merge([
-    'enabled'     => true,
-    'bg_color'    => '#ffffff',
-    'heading'     => 'Was ist eine Testosteron-Injektion?',
-    'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
-    'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
-    'paragraph_3' => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
-    'cards' => [
-        ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
-        ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
-        ['icon' => 'bi-person',       'title' => 'Ärztlich dosiert',         'subtitle' => 'Individuell geprüft und verschrieben'],
-        ['icon' => 'bi-truck',        'title' => 'Express-Lieferung',        'subtitle' => 'Diskret in 1-2 Werktagen bei Ihnen'],
-    ],
-], $_cms['testo_info'] ?? []);
-
-$cmsTestoTreatments = array_merge([
-    'enabled'    => true,
-    'bg_color'   => '#fdf5f5',
-    'heading'    => 'Unsere Testosteron-Behandlungen',
-    'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
-    'cards' => [
-        ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
-        ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
-    ],
-], $_cms['testo_treatments'] ?? []);
-
-$_testoTreatFallbackImgs = [
-    'https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=600&q=80',
-];
-
-$cmsSecurity = array_merge([
-    'enabled'    => true,
-    'bg_color'   => '#fdf5f5',
-    'heading'    => 'Ihre Sicherheit ist unsere Priorität',
-    'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
-    'cards' => [
-        ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
-        ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
-        ['icon' => 'bi-lock',   'title' => 'Diskret & vertraulich', 'description' => 'Neutrale Verpackung, verschlüsselte Kommunikation und keine Weitergabe Ihrer Daten an Dritte.'],
-    ],
-], $_cms['security'] ?? []);
-
-// --- Section Order ---
-$_validSections  = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security'];
-$_sectionOrder   = $_cms['section_order'] ?? $_validSections;
-foreach ($_validSections as $_sk) {
-    if (!in_array($_sk, $_sectionOrder)) $_sectionOrder[] = $_sk;
-}
-@endphp
-
 @foreach($_sectionOrder as $_sectionKey)
 @switch($_sectionKey)
 
@@ -645,12 +639,12 @@ foreach ($_validSections as $_sk) {
                     </div>
 
                     @if($cmsHero['rating_enabled'])
-                    <!-- <div class="ed-hero-t2-rating">
+                    <div class="ed-hero-t2-rating">
                         <span class="stars">★★★★★</span>
                         <div class="ml-1">
-                            {!! $cmsHero['t2_rating_line'] ?? '<strong>' . ($cmsHero['rating_value'] ?? '4,79') . '</strong>/5 <span style="color:#666">(' . ($cmsHero['rating_count'] ?? '14.082') . ' Bewertungen)</span>' !!}
+                            {!! $cmsHero['t2_rating_line'] !!}
                         </div>
-                    </div> -->
+                    </div>
                     @endif
                 </div>
 
@@ -829,55 +823,7 @@ foreach ($_validSections as $_sk) {
 @endif
 @break
 
-@php
-// --- CMS: Medical Content, Doctor Review, FAQ ---
-$cmsMedical = array_merge([
-    'enabled'       => true,
-    'bg_color'      => '#ffffff',
-    'section_title' => 'Behandlungen bei',
-    'toc_enabled'   => true,
-    'toc_title'     => 'Themenliste',
-    'toc_items'     => [],
-    'articles'      => [],
-], $_cms['medical_content'] ?? []);
 
-$cmsDr = array_merge([
-    'enabled'           => true,
-    'bg_color'          => '#ffffff',
-    'image'             => null,
-    'name'              => 'Dr. med. Experte',
-    'role'              => 'Facharzt für Urologie',
-    'title'             => 'Medizinisch-fachlich geprüft',
-    'paragraphs'        => [
-        'Die medizinischen Inhalte auf dieser Seite wurden in Zusammenarbeit mit einem unserer Ärzte bzw. medizinischen Experten erstellt und von diesen überprüft.',
-        'Die medizinischen Inhalte werden regelmäßig überprüft, um maximale Genauigkeit und Zuverlässigkeit zu gewährleisten.',
-    ],
-    'link_text'         => 'Redaktionsprozess',
-    'link_url'          => '#',
-    'show_last_updated' => true,
-], $_cms['doctor_review'] ?? []);
-
-$cmsFaq = array_merge([
-    'enabled'              => true,
-    'bg_color'             => '#ffffff',
-    'title'                => 'Frequently asked questions',
-    'subtitle'             => '',
-    'subtitle_color'       => '#e63946',
-    'question_color'       => '#1a1a1a',
-    'question_hover_color' => '#3b6fd4',
-    'question_bg_color'       => '#ffffff',
-    'question_bg_hover_color' => '#f8f9fa',
-    'question_bg_active_color' => '#ffffff',
-    'question_active_color'    => '#ffffff',
-    'answer_bg_color'          => '#ffffff',
-    'answer_text_color'        => '#6c757d',
-    'items'                => [
-        ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
-        ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
-        ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
-    ],
-], $_cms['faq'] ?? []);
-@endphp
 
 {{-- ============================  MEDICAL CONTENT  ============================ --}}
 @case('medical_content')
@@ -1013,7 +959,7 @@ $cmsFaq = array_merge([
                     }
                     #faqAccordion .accordion-button:not(.collapsed) {
                         background-color: {{ $cmsFaq['question_bg_active_color'] ?? '#ffffff' }} !important;
-                        color: {{ $cmsFaq['question_active_color'] ?? $cmsFaq['question_color'] ?? '#1a1a1a' }} !important;
+                        color: {{ $cmsFaq['question_active_color'] ?? '#1a1a1a' }} !important;
                     }
                     #faqAccordion .accordion-button:hover {
                         background-color: {{ $cmsFaq['question_bg_hover_color'] ?? '#f8f9fa' }} !important;

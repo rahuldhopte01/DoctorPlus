@@ -601,15 +601,7 @@
                                                    value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}">
                                         </div>
                                     </div>
-                                    <div class="col-md-2 form-group">
-                                        <label>Section Bg</label>
-                                        <div class="cms-color-row">
-                                            <input type="color" name="sections[steps][bg_color]"
-                                                   value="{{ $steps['bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
-                                            <input type="text" class="form-control color-hex"
-                                                   value="{{ $steps['bg_color'] ?? '#ffffff' }}">
-                                        </div>
-                                    </div>
+
                                 </div>
 
                                 @foreach($defaultSteps as $i => $default)

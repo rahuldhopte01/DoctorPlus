@@ -114,6 +114,9 @@
         padding-right: 1rem;
         word-wrap: break-word; /* Force wrapping of long diagnostic names */
         overflow-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+        min-width: 0; /* Ensure flex child can shrink */
     }
     .modern-check-label:hover {
         border-color: var(--primary-color);
@@ -363,7 +366,7 @@
                                             data-question-id="{{ $question->id }}"
                                             {{ in_array($option, $savedCheckboxes) ? 'checked' : '' }}>
                                         <label for="q{{ $question->id }}_opt{{ $optionIndex }}" class="modern-check-label">
-                                            <span class="font-body text-gray-800 font-semibold text-lg">
+                                            <span class="font-body text-gray-800 font-semibold text-base md:text-lg">
                                                 {{ $option }}
                                             </span>
                                             <div class="w-7 h-7 rounded-full border-2 border-gray-200 flex items-center justify-center transition-all bg-white check-icon-box">
