@@ -107,6 +107,13 @@
         border-radius: 10px;
         cursor: pointer;
         transition: all 0.2s ease;
+        min-height: 60px; /* Ensure a minimum height */
+    }
+    .modern-check-label span {
+        flex: 1; /* Allow text to take up remaining space and wrap */
+        padding-right: 1rem;
+        word-wrap: break-word; /* Force wrapping of long diagnostic names */
+        overflow-wrap: break-word;
     }
     .modern-check-label:hover {
         border-color: var(--primary-color);
@@ -329,8 +336,8 @@
                                             {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                             @if($question->required) required @endif>
                                     <label for="q{{ $question->id }}_opt{{ $optionIndex }}" 
-                                        class="flex items-center justify-center min-w-[80px] px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:bg-primary peer-checked:!text-white peer-checked:border-primary transition-all font-body text-center">
-                                        {{ $option }}
+                                        class="flex items-center justify-center min-w-[80px] px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:bg-primary peer-checked:!text-white peer-checked:border-primary transition-all font-body text-center h-full">
+                                        <span class="block w-full" style="word-wrap: break-word; overflow-wrap: break-word;">{{ $option }}</span>
                                     </label>
                                     </div>
                                     @endforeach
@@ -467,17 +474,17 @@
                         </div>
 
                         {{-- Tabs --}}
-                        <div class="d-flex gap-2 mb-3">
+                        <div class="d-flex flex-wrap gap-2 mb-3">
                             <button type="button" id="authTabRegister"
-                                class="btn btn-sm fw-semibold active-auth-tab"
+                                class="btn btn-sm fw-semibold flex-fill active-auth-tab"
                                 onclick="switchInlineAuthTab('register')"
-                                style="border-radius:20px;padding:4px 16px;background:var(--primary-color);color:#fff;border:none;">
+                                style="border-radius:20px;padding:6px 16px;background:var(--primary-color);color:#fff;border:none;min-width:140px;">
                                 {{ __('Neu registrieren') }}
                             </button>
                             <button type="button" id="authTabLogin"
-                                class="btn btn-sm fw-semibold"
+                                class="btn btn-sm fw-semibold flex-fill"
                                 onclick="switchInlineAuthTab('login')"
-                                style="border-radius:20px;padding:4px 16px;background:#f1f3f5;color:#333;border:none;">
+                                style="border-radius:20px;padding:6px 16px;background:#f1f3f5;color:#333;border:none;min-width:140px;">
                                 {{ __('Bereits registriert') }}
                             </button>
                         </div>
@@ -485,11 +492,11 @@
                         {{-- Register form --}}
                         <div id="inlineRegisterForm">
                             <div class="row g-2 mb-2">
-                                <div class="col-6">
+                                <div class="col-12 col-md-6 mb-2 mb-md-0">
                                     <input type="text" id="inline_first_name" class="form-control form-control-sm"
                                            placeholder="{{ __('Vorname') }} *">
                                 </div>
-                                <div class="col-6">
+                                <div class="col-12 col-md-6">
                                     <input type="text" id="inline_last_name" class="form-control form-control-sm"
                                            placeholder="{{ __('Nachname') }} *">
                                 </div>
@@ -499,11 +506,11 @@
                                        placeholder="{{ __('E-Mail-Adresse') }} *">
                             </div>
                             <div class="row g-2 mb-2">
-                                <div class="col-6">
+                                <div class="col-12 col-md-6 mb-2 mb-md-0">
                                     <input type="password" id="inline_password" class="form-control form-control-sm"
                                            placeholder="{{ __('Passwort') }} ({{ __('mind. 8 Zeichen') }}) *">
                                 </div>
-                                <div class="col-6">
+                                <div class="col-12 col-md-6">
                                     <input type="tel" id="inline_phone" class="form-control form-control-sm"
                                            placeholder="{{ __('Telefon') }}">
                                 </div>
@@ -554,14 +561,14 @@
                 @endguest
             </div>
 
-            <div class="bg-light border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10" style="border-radius: 0 0 20px 20px;">
-                <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-body text-gray-500 hover:text-primary transition-colors duration-200 no-underline hover:no-underline font-medium">
+            <div class="bg-light border-t border-gray-200 px-6 py-4 flex flex-wrap flex-md-row justify-between items-center sticky bottom-0 z-10 gap-3" style="border-radius: 0 0 20px 20px;">
+                <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-body text-gray-500 hover:text-primary transition-colors duration-200 no-underline hover:no-underline font-medium order-2 order-md-1 w-full text-center w-md-auto">
                     <i class="bi bi-arrow-left mr-2"></i>{{ __('Back') }}
                 </a>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap flex-sm-nowrap items-center justify-center gap-3 order-1 order-md-2 w-full w-md-auto">
                     @if(empty($category->is_cannaleo_only))
-                    <button type="submit" class="btn border font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
-                        style="border-radius: 6px; background: white; color: var(--primary-color); border-color: var(--primary-color);"
+                    <button type="submit" class="btn border font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all flex-fill w-full w-sm-auto" id="submitPrescriptionBtn" data-submission-flow="prescription_only"
+                        style="border-radius: 6px; background: white; color: var(--primary-color); border-color: var(--primary-color); min-width: 140px;"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
                             {{ __('Under Review') }}
@@ -570,8 +577,8 @@
                         @endif
                     </button>
                     @endif
-                    <button type="submit" class="btn font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
-                        style="border-radius: 6px; background: var(--primary-color); color: #fff;"
+                    <button type="submit" class="btn font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all flex-fill w-full w-sm-auto" id="submitWithMedicineBtn" data-submission-flow="with_medicine"
+                        style="border-radius: 6px; background: var(--primary-color); color: #fff; min-width: 140px;"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
                             {{ __('Under Review') }}

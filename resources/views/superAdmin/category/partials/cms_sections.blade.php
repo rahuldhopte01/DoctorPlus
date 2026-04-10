@@ -298,10 +298,29 @@
                                                    value="{{ $hero['cta_text_color'] ?? '#ffffff' }}">
                                         </div>
                                     </div>
-                                </div>
                                 <div class="row">
+                                    <div class="col-md-3 form-group">
+                                        <label>Heading Highlight Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][t2_heading_highlight_color]"
+                                                   value="{{ $hero['t2_heading_highlight_color'] ?? '#2d7a45' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['t2_heading_highlight_color'] ?? '#2d7a45' }}">
+                                        </div>
+                                        <small class="text-muted">Color for text inside &lt;span class="text-success"&gt;</small>
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label>Image Background Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][t2_blob_color]"
+                                                   value="{{ $hero['t2_blob_color'] ?? '#dcfce7' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['t2_blob_color'] ?? '#dcfce7' }}">
+                                        </div>
+                                        <small class="text-muted">Color for the blob behind the image</small>
+                                    </div>
                                     <div class="col-md-6 form-group">
-                                        <label>Main Image (transparent recommended)</label>
+                                        <label>Main Image (Transparent Recommended)</label>
                                         <input type="file" class="form-control-file" name="sections[hero][t2_main_image]"
                                                accept="image/*.">
                                         @if(!empty($hero['t2_main_image']))

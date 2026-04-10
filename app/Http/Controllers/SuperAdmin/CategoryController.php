@@ -203,6 +203,10 @@ class CategoryController extends Controller
             't2_info_1_lbl'        => 'ANGESCHLOSSENE APOTHEKEN',
             't2_info_2_val'        => '1,5K+',
             't2_info_2_lbl'        => 'CANNABIS BLÜTEN',
+            'bg_color'             => '#f0fdf4',
+            'cta_text_color'       => '#ffffff',
+            't2_heading_highlight_color' => '#2d7a45',
+            't2_blob_color'        => '#dcfce7',
 
             // Type 3 specific defaults
             't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
@@ -247,6 +251,10 @@ class CategoryController extends Controller
             't3_cta_1_url'         => $heroInput['t3_cta_1_url'] ?? '#',
             't3_cta_2_url'         => $heroInput['t3_cta_2_url']  ?? '#',
             't2_rating_line'       => $heroInput['t2_rating_line'] ?? null,
+            'bg_color'             => $heroInput['bg_color'] ?? '#f0fdf4',
+            'cta_text_color'       => $heroInput['cta_text_color'] ?? '#ffffff',
+            't2_heading_highlight_color' => $heroInput['t2_heading_highlight_color'] ?? '#2d7a45',
+            't2_blob_color'        => $heroInput['t2_blob_color'] ?? '#dcfce7',
         ]);
 
         // Process bottom items for Type 3

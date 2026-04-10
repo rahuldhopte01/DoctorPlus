@@ -95,7 +95,7 @@
 
         /* --- HERO TYPE 2 (CANNABIS) --- */
         .ed-hero-t2 {
-            background-color: #f0fdf4; /* Very light green */
+            background-color: {{ $cmsHero['bg_color'] ?? '#f0fdf4' }};
             padding: 80px 24px;
             overflow: hidden;
             position: relative;
@@ -111,7 +111,7 @@
         .ed-hero-t2-text h1 {
             font-size: 3.5rem; font-weight: 800; color: #1a1a1a; line-height: 1.1; margin-bottom: 24px;
         }
-        .ed-hero-t2-text h1 span.text-success { color: #2d7a45 !important; }
+        .ed-hero-t2-text h1 span.text-success { color: {{ $cmsHero['t2_heading_highlight_color'] ?? '#2d7a45' }} !important; }
         .ed-hero-t2-text p { font-size: 1.05rem; color: #555; line-height: 1.6; margin-bottom: 32px; max-width: 520px; }
         .ed-hero-t2-cta-wrap { margin-bottom: 24px; }
         .hero-t2-subtext { font-size: 0.9rem; color: #666; margin-top: 14px; font-weight: 500; }
@@ -122,7 +122,7 @@
         .ed-hero-t2-main-img { width: 100%; max-width: 500px; height: auto; object-fit: contain; z-index: 2; position: relative; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.1)); }
         .ed-hero-t2-bg-blob {
             position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;
-            background: #dcfce7; border-radius: 40px; transform: rotate(-5deg); z-index: 1;
+            background: {{ $cmsHero['t2_blob_color'] ?? '#dcfce7' }}; border-radius: 40px; transform: rotate(-5deg); z-index: 1;
         }
         .ed-hero-t2-info-box {
             position: absolute; z-index: 3; background: #fff; padding: 14px 22px; border-radius: 16px;
@@ -404,6 +404,8 @@ $cmsHero  = array_merge([
     't2_info_1_lbl'        => 'ANGESCHLOSSENE APOTHEKEN',
     't2_info_2_val'        => '1,5K+',
     't2_info_2_lbl'        => 'CANNABIS BLÜTEN',
+    't2_heading_highlight_color' => '#2d7a45',
+    't2_blob_color'        => '#dcfce7',
 
     // Type 3 defaults
     't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
