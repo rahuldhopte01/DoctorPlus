@@ -381,8 +381,10 @@ $cmsHero  = array_merge([
     'type'                 => 'type1',
     'enabled'              => true,
     'background_image'     => null,
+    'bg_color'             => '#f0fdf4',
     'cta_text'             => 'Zu den medizinischen Fragen',
     'cta_color'            => '#3b6fd4',
+    'cta_text_color'       => '#ffffff',
     'consultation_fee'     => '29',
     'badge_enabled'        => true,
     'badge_percentage'     => '85',
@@ -407,8 +409,12 @@ $cmsHero  = array_merge([
     't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
     't3_subheading'        => 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
     't3_cta_1_url'         => '#',
+    't3_cta_1_color'       => '#ef4444',
+    't3_cta_1_text_color'  => '#ffffff',
     't3_cta_2_text'        => 'Mehr erfahren',
     't3_cta_2_url'         => '#',
+    't3_cta_2_color'       => '#ef4444',
+    't3_cta_2_text_color'  => '#ef4444',
     't2_rating_line'       => '<strong>4,79</strong>/5 <span style="color:#666">(14.082 Bewertungen)</span>',
     't3_bottom_items'      => [
         ['icon' => 'bx bx-user', 'text' => 'Deutsche Ärzte'],
@@ -438,6 +444,7 @@ $_fbIcons = [
 
 $cmsSteps = array_merge([
     'enabled'          => true,
+    'bg_color'         => '#eaf2ff',
     'section_title'    => '3 einfache Schritte',
     'section_subtitle' => '100 % online',
     'subtitle_color'   => '#3b6fd4',
@@ -467,6 +474,7 @@ $cmsPay = array_merge([
 // --- CMS: Medical Content, Doctor Review, FAQ ---
 $cmsMedical = array_merge([
     'enabled'       => true,
+    'bg_color'      => '#ffffff',
     'section_title' => 'Behandlungen bei',
     'toc_enabled'   => true,
     'toc_title'     => 'Themenliste',
@@ -476,6 +484,7 @@ $cmsMedical = array_merge([
 
 $cmsDr = array_merge([
     'enabled'           => true,
+    'bg_color'          => '#ffffff',
     'image'             => null,
     'name'              => 'Dr. med. Experte',
     'role'              => 'Facharzt für Urologie',
@@ -491,6 +500,7 @@ $cmsDr = array_merge([
 
 $cmsFaq = array_merge([
     'enabled'              => true,
+    'bg_color'             => '#ffffff',
     'title'                => 'Frequently asked questions',
     'subtitle'             => '',
     'subtitle_color'       => '#e63946',
@@ -512,6 +522,7 @@ $cmsFaq = array_merge([
 // --- CMS: Sections 8, 9, 10 ---
 $cmsTestoInfo = array_merge([
     'enabled'     => true,
+    'bg_color'    => '#ffffff',
     'heading'     => 'Was ist eine Testosteron-Injektion?',
     'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
     'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
@@ -526,6 +537,7 @@ $cmsTestoInfo = array_merge([
 
 $cmsTestoTreatments = array_merge([
     'enabled'    => true,
+    'bg_color'   => '#fdf5f5',
     'heading'    => 'Unsere Testosteron-Behandlungen',
     'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
     'cards' => [
@@ -541,6 +553,7 @@ $_testoTreatFallbackImgs = [
 
 $cmsSecurity = array_merge([
     'enabled'    => true,
+    'bg_color'   => '#fdf5f5',
     'heading'    => 'Ihre Sicherheit ist unsere Priorität',
     'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
     'cards' => [
@@ -581,18 +594,20 @@ foreach ($_validSections as $_sk) {
 
     @if($_heroType == 'type3')
         {{-- TYPE 3: TESTOSTERONE --}}
-        <section class="ed-hero-t3" style="background-image: url('{{ $_heroImgPath }}');">
+        <section class="ed-hero-t3" style="background-image: url('{{ $_heroImgPath }}'); background-color: {{ $cmsHero['bg_color'] }};">
             <div class="ed-hero-t3-overlay"></div>
             <div class="ed-hero-t3-card">
                 <h1>{!! $cmsHero['t3_heading'] ?? $category->name !!}</h1>
                 <p>{!! $cmsHero['t3_subheading'] ?? ($category->description ? Str::limit($category->description, 150) : '') !!}</p>
-                
+
                 <div class="ed-hero-t3-btns">
-                    <a href="{{ url('/questionnaire/category/' . $category->id) }}" 
-                       class="t3-btn t3-btn-solid">
+                    <a href="{{ url('/questionnaire/category/' . $category->id) }}"
+                       class="t3-btn t3-btn-solid"
+                       style="background:{{ $cmsHero['t3_cta_1_color'] }}; color:{{ $cmsHero['t3_cta_1_text_color'] }}; box-shadow:0 12px 24px {{ $cmsHero['t3_cta_1_color'] }}4d;">
                         {{ $cmsHero['t3_cta_1_text'] ?? 'Jetzt Beratung starten' }}
                     </a>
-                    <a href="{{ $cmsHero['t3_cta_2_url'] ?? '#' }}" class="t3-btn t3-btn-outline">
+                    <a href="{{ $cmsHero['t3_cta_2_url'] ?? '#' }}" class="t3-btn t3-btn-outline"
+                       style="border-color:{{ $cmsHero['t3_cta_2_color'] }}; color:{{ $cmsHero['t3_cta_2_text_color'] }};">
                         {{ $cmsHero['t3_cta_2_text'] ?? 'Mehr erfahren' }}
                     </a>
                 </div>
@@ -610,15 +625,16 @@ foreach ($_validSections as $_sk) {
 
     @elseif($_heroType == 'type2')
         {{-- TYPE 2: CANNABIS --}}
-        <section class="ed-hero-t2">
+        <section class="ed-hero-t2" style="background-color: {{ $cmsHero['bg_color'] }};">
             <div class="ed-hero-t2-inner">
                 <div class="ed-hero-t2-text">
                     <h1>{!! $cmsHero['t2_heading'] ?? $category->name !!}</h1>
                     <p>{!! $cmsHero['t2_description'] ?? ($category->description ? Str::limit($category->description, 180) : '') !!}</p>
-                    
+
                     <div class="ed-hero-t2-cta-wrap">
-                        <a href="{{ url('/questionnaire/category/' . $category->id) }}" 
-                           class="hero-cta" style="background:#2d7a45; box-shadow:0 10px 25px rgba(45,122,69,0.3);">
+                        <a href="{{ url('/questionnaire/category/' . $category->id) }}"
+                           class="hero-cta"
+                           style="background:{{ $cmsHero['cta_color'] }}; color:{{ $cmsHero['cta_text_color'] }}; box-shadow:0 10px 25px {{ $cmsHero['cta_color'] }}4d;">
                             {{ $cmsHero['cta_text'] }}
                         </a>
                         <div class="hero-t2-subtext">
@@ -658,7 +674,7 @@ foreach ($_validSections as $_sk) {
 
     @else
         {{-- TYPE 1: DEFAULT --}}
-        <section class="ed-hero">
+        <section class="ed-hero" style="background-color: {{ $cmsHero['bg_color'] }};">
             <img class="ed-hero-bg" src="{{ $_heroImgPath }}" alt="{{ $category->name }}">
             <div class="ed-hero-overlay"></div>
             <div class="ed-hero-inner">
@@ -669,12 +685,12 @@ foreach ($_validSections as $_sk) {
                 @if($hasQuestionnaire)
                     <a href="{{ url('/questionnaire/category/' . $category->id) }}"
                        class="hero-cta"
-                       style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
+                       style="background:{{ $cmsHero['cta_color'] }}; color:{{ $cmsHero['cta_text_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
                         {{ $cmsHero['cta_text'] }}
                     </a>
                 @else
                     <a href="{{ route('categories') }}" class="hero-cta"
-                       style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
+                       style="background:{{ $cmsHero['cta_color'] }}; color:{{ $cmsHero['cta_text_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
                         Browse treatments
                     </a>
                 @endif
@@ -740,7 +756,7 @@ foreach ($_validSections as $_sk) {
     
     @if($_stepsType == 'type2')
         {{-- TYPE 2: TESTOSTERONE --}}
-        <section class="steps-section-t2">
+        <section class="steps-section-t2" style="background-color: {{ $cmsSteps['bg_color'] ?? '#fffafb' }};">
             <h2>{!! $cmsSteps['t2_title'] !!}</h2>
             <div class="subtitle">{!! $cmsSteps['t2_subtitle'] !!}</div>
             @if(!empty($cmsSteps['t2_desc']))
@@ -762,7 +778,7 @@ foreach ($_validSections as $_sk) {
         </section>
     @else
         {{-- TYPE 1: DEFAULT --}}
-        <section class="steps-section">
+        <section class="steps-section" style="background-color: {{ $cmsSteps['bg_color'] }};">
             <h2 class="steps-title">
                 {!! $cmsSteps['section_title'] !!}<br>
                 <span style="color:{{ $cmsSteps['subtitle_color'] }};">{!! $cmsSteps['section_subtitle'] !!}</span>
@@ -815,6 +831,7 @@ foreach ($_validSections as $_sk) {
 // --- CMS: Medical Content, Doctor Review, FAQ ---
 $cmsMedical = array_merge([
     'enabled'       => true,
+    'bg_color'      => '#ffffff',
     'section_title' => 'Behandlungen bei',
     'toc_enabled'   => true,
     'toc_title'     => 'Themenliste',
@@ -824,6 +841,7 @@ $cmsMedical = array_merge([
 
 $cmsDr = array_merge([
     'enabled'           => true,
+    'bg_color'          => '#ffffff',
     'image'             => null,
     'name'              => 'Dr. med. Experte',
     'role'              => 'Facharzt für Urologie',
@@ -839,6 +857,7 @@ $cmsDr = array_merge([
 
 $cmsFaq = array_merge([
     'enabled'              => true,
+    'bg_color'             => '#ffffff',
     'title'                => 'Frequently asked questions',
     'subtitle'             => '',
     'subtitle_color'       => '#e63946',
@@ -862,7 +881,7 @@ $cmsFaq = array_merge([
 @case('medical_content')
 <!-- Medical Content -->
 @if($cmsMedical['enabled'])
-<div class="med-content">
+<div class="med-content" style="background-color: {{ $cmsMedical['bg_color'] }};">
   <h2>{!! $cmsMedical['section_title'] !!} {{ $category->name }}</h2>
 
   @if($cmsMedical['toc_enabled'] && !empty($cmsMedical['toc_items']))
@@ -935,7 +954,7 @@ $cmsFaq = array_merge([
     ? asset('images/upload/' . $cmsDr['image'])
     : 'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=800&q=80';
 @endphp
-<div class="med-review">
+<div class="med-review" style="background-color: {{ $cmsDr['bg_color'] }};">
   <div class="med-review-img">
     <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
   </div>
@@ -961,7 +980,7 @@ $cmsFaq = array_merge([
 @case('faq')
 <!-- FAQ -->
 @if($cmsFaq['enabled'] && !empty($cmsFaq['items']))
-<section class="py-5 bg-white">
+<section class="py-5" style="background-color: {{ $cmsFaq['bg_color'] }};">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -1039,7 +1058,7 @@ $cmsFaq = array_merge([
 @case('testo_info')
 <!-- Section 8: Testosterone Info -->
 @if($cmsTestoInfo['enabled'])
-<section class="bg-white">
+<section style="background-color: {{ $cmsTestoInfo['bg_color'] }};">
   <div class="testo-section">
     <div class="testo-content">
       <h2>{!! $cmsTestoInfo['heading'] !!}</h2>
@@ -1065,7 +1084,7 @@ $cmsFaq = array_merge([
 @case('testo_treatments')
 <!-- Section 9: Testosterone Treatments -->
 @if($cmsTestoTreatments['enabled'])
-<section class="testo-treat-section">
+<section class="testo-treat-section" style="background-color: {{ $cmsTestoTreatments['bg_color'] }};">
   <div class="testo-treat-header">
     <h2>{!! $cmsTestoTreatments['heading'] !!}</h2>
     <p>{!! $cmsTestoTreatments['subheading'] !!}</p>
@@ -1097,7 +1116,7 @@ $cmsFaq = array_merge([
 @case('security')
 <!-- Section 10: Security / Trust -->
 @if($cmsSecurity['enabled'])
-<section class="security-section">
+<section class="security-section" style="background-color: {{ $cmsSecurity['bg_color'] }};">
   <div class="security-header">
     <h2>{!! $cmsSecurity['heading'] !!}</h2>
     <p>{!! $cmsSecurity['subheading'] !!}</p>
