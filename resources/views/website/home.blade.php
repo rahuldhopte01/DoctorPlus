@@ -1,5 +1,32 @@
 @extends('layout.mainlayout',['activePage' => 'home'])
 
+@php
+    // Helper to get background-removed version of an image if it exists
+    if (!function_exists('getLandingImage')) {
+        function getLandingImage($image) {
+            if (empty($image)) return '';
+            
+            $uploadFolder = 'images/upload/';
+            
+            // Map of known background removed images
+            $replacements = [
+                '69d607d8d2c54.png' => '69d607d8d2c54-Photoroom.png',
+                '69d60c814e779.png' => '69d60c814e779-Photoroom.png',
+                '69d60c814f564.png' => '69d60c814f564-Photoroom.png',
+                '69d60d3acc448.jpg' => '69d60d3acc448-Photoroom.png',
+                '69d60966d8131.png' => 'ChatGPT Image Apr 10, 2026, 08_09_01 PM.png',
+                '69d60c814dd6d.png' => 'ChatGPT Image Apr 10, 2026, 08_07_12 PM.png',
+            ];
+
+            if (array_key_exists($image, $replacements)) {
+                return url($uploadFolder . $replacements[$image]);
+            }
+            
+            return url($uploadFolder . $image);
+        }
+    }
+@endphp
+
 @section('css')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
 <style>

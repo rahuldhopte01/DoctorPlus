@@ -757,6 +757,9 @@ body.home-target .hero-main-content .rating-section {
   }
 }
 
+
+@media (max-width: 767px) {}
+
 @media (max-width: 991px) {
   body.home-target .main-header {
     height: 72px;
@@ -843,14 +846,29 @@ body.home-target .hero-main-content .rating-section {
     }
 
     body.home-target .tcat-img img {
-      width: 46px !important;
-      height: 46px !important;
+      width: 72px !important;
+      height: 72px !important;
     }
   }
 
   @media (max-width: 768px) {
     body.home-target .tcat {
       height: 96px !important;
+    }
+
+    body.home-target .home-story-cannabis .cbs-cards,
+    body.home-target .home-story-testo .testo-cards {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      padding: 10px 20px 20px !important;
+      margin-left: -12px;
+      margin-right: -12px;
+      gap: 12px;
+      scrollbar-width: none;
+      flex-direction: column;
     }
 
     body.home-target .tcat-title {
@@ -864,8 +882,8 @@ body.home-target .hero-main-content .rating-section {
     }
 
     body.home-target .tcat-img img {
-      width: 38px !important;
-      height: 38px !important;
+      width: 64px !important;
+      height: 64px !important;
     }
 
     body.home-target .tcat-content {
@@ -1482,116 +1500,144 @@ body.home-target .comp-btn {
   padding: 16px 42px;
 }
 
-body.home-target .faq-section {
-  padding: 88px 20px;
+/* ==========================================================================
+   FAQ SECTION ("Sie haben Fragen?")
+   ========================================================================== */
+.faq-section {
+  background: radial-gradient(circle at 12% 18%, rgba(124, 58, 237, 0.07), transparent 34%),
+    radial-gradient(circle at 88% 10%, rgba(139, 92, 246, 0.06), transparent 28%),
+    linear-gradient(180deg, #f0edf6 0%, #ece8f3 100%);
+  padding: 100px 20px;
 }
 
-body.home-target .faq-container {
-  max-width: 860px;
+.faq-container {
+  max-width: 850px;
+  margin: 0 auto;
 }
 
-body.home-target .faq-accordion {
-  display: block;
-  width: 100%;
+.faq-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.faq-heading {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 3rem;
+  /* Exact size from reference */
+  font-weight: 900 !important;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+  letter-spacing: -1px;
+}
+
+.faq-sub {
+  font-family: 'Inter', system-ui, sans-serif !important;
+  font-size: 3rem;
+  /* Exact size from reference */
+  font-weight: 800 !important;
+  color: var(--primary-color);
+  letter-spacing: -1px;
+}
+
+/* FAQ Accordion Styling */
+.faq-accordion {
   background: transparent;
-  border-top: 1px solid #e0d4fc;
 }
 
-/* New FAQ Hover Effect */
 .faq-item {
-  border-bottom: 1px solid #ececec;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  border-radius: 12px;
-  padding: 0 20px;
-  margin-bottom: 8px;
-}
-
-.faq-item:hover {
-  background-color: #a78bfa;
-  /* Vibrant purple from video */
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 30px rgba(124, 58, 237, 0.2);
-  border-color: transparent;
-}
-
-.faq-item:hover .faq-q,
-.faq-item:hover .faq-icon {
-  color: #ffffff !important;
-}
-
-
-body.home-target .faq-header {
-  margin-bottom: 52px;
-}
-
-body.home-target .faq-heading,
-body.home-target .faq-sub {
-  font-size: clamp(2.3rem, 4vw, 3rem);
-}
-
-body.home-target .faq-question {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 20px 0;
-  padding-left: 0;
-  border: none;
-  border-left: 3px solid transparent;
+  border-bottom: 1px solid #e0e0e0;
+  /* Exact border from reference */
   background: transparent;
+}
+
+.faq-question {
+  padding: 28px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   cursor: pointer;
-  transition: padding-left 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-body.home-target .faq-q-text {
-  flex: 1;
-  font-size: 1.08rem;
-  line-height: 1.45;
-  color: var(--color-text);
-  transition: color 0.2s ease;
+/* Text styling for question */
+.faq-q-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1f2129;
+  line-height: 1.4;
 }
 
-body.home-target .faq-chevron {
-  flex-shrink: 0;
-  color: var(--color-text);
-  transition: transform 0.3s ease, color 0.2s ease;
+.faq-chevron {
+  font-size: 1.1rem;
+  color: #1f2129;
+  transition: transform 0.3s ease;
+  font-weight: bold;
 }
 
-body.home-target .faq-answer {
-  padding: 0 0 20px;
-  color: var(--color-text-light);
-  line-height: 1.7;
-  transition: color 0.2s ease;
-}
-
-body.home-target .faq-question[aria-expanded="true"] {
+/* Active & Hover State Styling - UPDATED TO HOVER ONLY */
+.faq-question {
+  border-left: 5px solid transparent;
   padding-left: 0;
-  border-left-color: transparent;
+  transition: all 0.3s ease;
 }
 
-body.home-target .faq-question[aria-expanded="true"] .faq-chevron {
+.faq-question:hover {
+  border-left: 12px solid var(--primary-color);
+  padding-left: 25px;
+  /* Significant indent to accommodate the border */
+}
+
+.faq-question:hover .faq-q-text {
+  color: var(--primary-color);
+}
+
+.faq-question[aria-expanded="true"] .faq-chevron {
   transform: rotate(180deg);
 }
 
-@media (hover: hover) {
-  body.home-target .faq-question:hover {}
+.faq-question:hover .faq-chevron {
+  color: var(--primary-color);
+}
 
-  body.home-target .faq-question:hover .faq-q-text,
-  body.home-target .faq-question:hover .faq-chevron {
-    color: var(--color-primary);
+.faq-answer {
+  padding: 0 0 28px 0;
+  /* Align with the non-indented question */
+  color: #605f64;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .faq-heading {
+    font-size: 2.2rem;
+  }
+
+  .faq-sub {
+    font-size: 2.2rem;
+  }
+
+  .faq-section {
+    padding: 60px 15px;
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (max-width: 768px) {
+  .faq-heading {
+    font-size: 1.8rem;
+  }
 
-  body.home-target .faq-question,
-  body.home-target .faq-q-text,
-  body.home-target .faq-chevron,
-  body.home-target .faq-answer {
-    transition: none;
+  .faq-sub {
+    font-size: 1.4rem;
+  }
+
+  .faq-q-text {
+    font-size: 1rem;
   }
 }
+
 
 body.home-target .press-logos {
   padding: 36px 20px;
@@ -1877,6 +1923,12 @@ body.home-target .footer-inner-v2 {
 @media (max-width: 767px) {
   body.home-target .home-intermission-banner {
     padding: 48px 16px !important;
+  }
+
+  body.home-target .ed-card-large .ed-card-text {
+    width: 100% !important;
+    padding-right: 0 !important;
+    bottom: -5rem;
   }
 
   body.home-target .home-intermission-banner h2 {
@@ -2242,7 +2294,11 @@ body.home-target .footer-inner-v2 {
   }
 
   body.home-target .comp-board {
-    margin: 112px auto 28px;
+    margin: -120px auto 0 !important;
+  }
+
+  body.home-target .comp-cta-wrap {
+    margin-top: 0 !important;
   }
 
   body.home-target .comp-floating-img-wrap {
@@ -2254,32 +2310,40 @@ body.home-target .footer-inner-v2 {
     padding: 16px 18px;
   }
 
+  body.home-target .comp-table-head,
+  body.home-target .comp-row {
+    flex-direction: row !important;
+  }
+
+  body.home-target .comp-col-h,
+  body.home-target .comp-col {
+    padding: 12px 10px !important;
+    font-size: 0.8rem !important;
+  }
+
+  body.home-target .comp-left-item {
+    border-right: 1px solid #f6f6f6 !important;
+    border-bottom: none !important;
+  }
+
+  body.home-target .comp-col-left,
+  body.home-target .comp-col-right {
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+  }
+
+  body.home-target .comp-dot-left,
+  body.home-target .comp-dot-right {
+    margin-right: 8px !important;
+  }
+
   body.home-target .comp-btn {
     width: 100%;
     max-width: 320px;
     padding: 15px 24px;
   }
 
-  body.home-target .faq-section {
-    padding: 56px 16px;
-  }
 
-  body.home-target .faq-header {
-    margin-bottom: 36px;
-  }
-
-  body.home-target .faq-heading,
-  body.home-target .faq-sub {
-    font-size: 1.95rem;
-  }
-
-  body.home-target .faq-question {
-    padding: 20px 0;
-  }
-
-  body.home-target .faq-q-text {
-    font-size: 1rem;
-  }
 
   body.home-target .press-logos {
     padding: 24px 16px;
@@ -2561,11 +2625,11 @@ body.home-target .home-story-cannabis .cbs-hero-img-wrap::after {
 body.home-target .home-story-cannabis .cbs-hero-img {
   width: min(100%, 320px);
   height: auto;
-  max-height: 340px;
+  margin-top: -3rem;
+  min-height: 388px;
   object-fit: contain;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
   display: block;
-  /* margin: 0 auto; */
   position: relative;
   left: var(--cbs-center-x);
   transform: translateX(-50%);
@@ -2775,9 +2839,9 @@ body.home-target .home-story-weight .wl-hero-img-wrap::after {
 }
 
 body.home-target .home-story-weight .wl-hero-img {
-  width: min(100%, 230px);
+  width: 26%;
   height: auto;
-  max-height: 250px;
+  min-height: 151px;
   object-fit: contain;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
 }
@@ -2787,7 +2851,7 @@ body.home-target .home-story-weight .wl-btns-overlay {
   left: auto;
   right: auto;
   bottom: auto;
-  margin-top: 10px;
+  margin-top: -6px;
   padding: 0;
   gap: 10px;
   display: flex;
@@ -3151,7 +3215,8 @@ body.home-target .home-story-testo .testo-hero-img-wrap {
 body.home-target .home-story-testo .testo-hero-img {
   width: min(100%, 320px);
   height: auto;
-  max-height: 340px;
+  margin-top: -3rem;
+  min-height: 346px;
   object-fit: contain;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
   display: block;
@@ -3349,6 +3414,15 @@ body.home-target .home-story-newsletter .nl-hero-content {
     border-radius: 24px;
   }
 
+  body.home-target .home-story-cannabis .cbs-hero-img,
+  body.home-target .home-story-testo .testo-hero-img {
+    height: auto;
+    margin-top: -7rem;
+    min-height: 24rem;
+  }
+
+
+
   body.home-target .home-story-cannabis .cbs-heading {
     max-width: 450px;
     font-size: 2.35rem;
@@ -3433,6 +3507,12 @@ body.home-target .home-story-newsletter .nl-hero-content {
     padding: 0 12px 18px;
   }
 
+  body.home-target .home-story-cannabis .cbs-hero-img {
+    width: min(200px, 72vw);
+    max-height: 219px;
+    margin-top: -3.5rem !important;
+  }
+
   body.home-target .home-story-cannabis .cannabis-banner-section {
     padding: 30px 10px 12px;
     border-radius: 18px;
@@ -3449,9 +3529,13 @@ body.home-target .home-story-newsletter .nl-hero-content {
     margin-bottom: 0;
   }
 
-  body.home-target .home-story-cannabis .cbs-hero-img {
-    width: min(200px, 72vw);
-    max-height: 220px;
+
+  body.home-target .home-story-testo .testo-hero-img {
+    margin-top: -2.5rem !important;
+    max-height: 300px !important;
+    min-height: auto !important;
+    width: auto !important;
+    object-fit: contain;
   }
 
 
@@ -3485,35 +3569,57 @@ body.home-target .home-story-newsletter .nl-hero-content {
 
   body.home-target .home-story-cannabis .cbs-cards,
   body.home-target .home-story-testo .testo-cards {
-    grid-template-columns: 1fr !important;
-    padding: 0 4px 10px;
-    margin-top: 10px;
-    gap: 10px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: 10px 20px 20px !important;
+    margin-left: -12px;
+    margin-right: -12px;
+    gap: 12px;
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  body.home-target .home-story-cannabis .cbs-cards::-webkit-scrollbar,
+  body.home-target .home-story-testo .testo-cards::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
   }
 
   body.home-target .home-story-cannabis .cbs-card,
   body.home-target .home-story-testo .testo-card {
-    min-width: 2rem;
+    flex: 0 0 100%;
+    scroll-snap-align: center;
     display: flex;
     flex-direction: row;
     align-items: center;
-    text-align: center;
+    text-align: left;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 16px;
+    min-height: 140px;
+    min-width: 0 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   }
 
   body.home-target .home-story-cannabis .cbs-card-text,
   body.home-target .home-story-testo .testo-card-text {
-    padding-right: 0;
-    margin-top: 16px;
-    text-align: center;
+    flex: 1;
+    padding-right: 12px;
+    margin-top: 0;
+    text-align: left;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
 
   body.home-target .home-story-cannabis .cbs-card-text h3,
   body.home-target .home-story-testo .testo-card-text h3 {
     font-size: 1.05rem;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    font-weight: 700;
   }
 
   body.home-target .home-story-cannabis .cbs-card-img-wrap,
@@ -3556,7 +3662,7 @@ body.home-target .home-story-newsletter .nl-hero-content {
   }
 
   body.home-target .home-story-weight .wl-btns-overlay {
-    margin-top: 14px;
+    margin-top: 0;
     padding: 0 6px;
     gap: 10px;
     flex-direction: column;
@@ -3630,6 +3736,7 @@ body.home-target .home-story-newsletter .nl-hero-content {
 
   body.home-target .home-story-ed .ed-hero-img {
     max-height: 390px;
+    width: 15rem;
     object-position: center bottom;
   }
 
@@ -3652,8 +3759,8 @@ body.home-target .home-story-newsletter .nl-hero-content {
 
 @media (max-width: 767px) {
   body.home-target .newsletter-hero {
-    min-height: auto;
     padding: 0;
+    height: 28rem;
   }
 
   body.home-target .nl-hero-bg {
