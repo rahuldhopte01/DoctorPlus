@@ -473,11 +473,13 @@ class CategoryController extends Controller
             if ($q !== '' && $a !== '') $faqItems[] = ['question' => $q, 'answer' => $a];
         }
         $faq = [
-            'enabled'        => isset($faqInput['enabled']),
-            'title'          => $faqInput['title']          ?? ($existing['faq']['title']          ?? 'Frequently asked questions'),
-            'subtitle'       => $faqInput['subtitle']       ?? ($existing['faq']['subtitle']       ?? ''),
-            'subtitle_color' => $faqInput['subtitle_color'] ?? ($existing['faq']['subtitle_color'] ?? '#e63946'),
-            'items'          => $faqItems,
+            'enabled'              => isset($faqInput['enabled']),
+            'title'                => $faqInput['title']                ?? ($existing['faq']['title']                ?? 'Frequently asked questions'),
+            'subtitle'             => $faqInput['subtitle']             ?? ($existing['faq']['subtitle']             ?? ''),
+            'subtitle_color'       => $faqInput['subtitle_color']       ?? ($existing['faq']['subtitle_color']       ?? '#e63946'),
+            'question_color'       => $faqInput['question_color']       ?? ($existing['faq']['question_color']       ?? '#1a1a1a'),
+            'question_hover_color' => $faqInput['question_hover_color'] ?? ($existing['faq']['question_hover_color'] ?? '#3b6fd4'),
+            'items'                => $faqItems,
         ];
 
         // --- Testosterone Info (Section 8) ---

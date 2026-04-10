@@ -484,11 +484,13 @@ $cmsDr = array_merge([
 ], $_cms['doctor_review'] ?? []);
 
 $cmsFaq = array_merge([
-    'enabled'        => true,
-    'title'          => 'Frequently asked questions',
-    'subtitle'       => '',
-    'subtitle_color' => '#e63946',
-    'items'          => [
+    'enabled'              => true,
+    'title'                => 'Frequently asked questions',
+    'subtitle'             => '',
+    'subtitle_color'       => '#e63946',
+    'question_color'       => '#1a1a1a',
+    'question_hover_color' => '#3b6fd4',
+    'items'                => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
         ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
@@ -825,11 +827,13 @@ $cmsDr = array_merge([
 ], $_cms['doctor_review'] ?? []);
 
 $cmsFaq = array_merge([
-    'enabled'        => true,
-    'title'          => 'Frequently asked questions',
-    'subtitle'       => '',
-    'subtitle_color' => '#e63946',
-    'items'          => [
+    'enabled'              => true,
+    'title'                => 'Frequently asked questions',
+    'subtitle'             => '',
+    'subtitle_color'       => '#e63946',
+    'question_color'       => '#1a1a1a',
+    'question_hover_color' => '#3b6fd4',
+    'items'                => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
         ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
@@ -955,7 +959,6 @@ $cmsFaq = array_merge([
 
                 <style>
                     .faq-subtitle-extra {
-                        color: #e63946;
                         font-size: 1.75rem;
                         font-weight: 800;
                         margin-bottom: 30px;
@@ -964,8 +967,17 @@ $cmsFaq = array_merge([
                         padding-bottom: 8px;
                     }
                     .faq-subtitle-extra span {
-                        border-bottom: 4px solid #e63946;
                         border-bottom: none;
+                    }
+                    #faqAccordion .accordion-button,
+                    #faqAccordion .accordion-button:not(.collapsed) {
+                        color: {{ $cmsFaq['question_color'] ?? '#1a1a1a' }} !important;
+                    }
+                    #faqAccordion .accordion-button:hover,
+                    #faqAccordion .accordion-button:focus,
+                    #faqAccordion .accordion-button:not(.collapsed):hover,
+                    #faqAccordion .accordion-button:not(.collapsed):focus {
+                        color: {{ $cmsFaq['question_hover_color'] ?? '#3b6fd4' }} !important;
                     }
                 </style>
                     <div class="accordion" id="faqAccordion">

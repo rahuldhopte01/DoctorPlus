@@ -905,6 +905,24 @@
                                            value="{{ $faqCms['subtitle_color'] ?? '#e63946' }}">
                                 </div>
                             </div>
+                            <div class="form-group col-md-3">
+                                <label>Question Color</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][question_color]"
+                                           value="{{ $faqCms['question_color'] ?? '#1a1a1a' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['question_color'] ?? '#1a1a1a' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label>Question Hover Color</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][question_hover_color]"
+                                           value="{{ $faqCms['question_hover_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['question_hover_color'] ?? '#3b6fd4' }}">
+                                </div>
+                            </div>
                         </div>
                         <div id="faq-items-container">
                             @php $faqItems = $faqCms['items'] ?? []; @endphp
