@@ -57,7 +57,7 @@ class CategoryController extends Controller
                 'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
         $data = $request->only(['name', 'description', 'treatment_id']);
-        $data['price'] = $request->input('price') ?? 0;
+        $data['price'] = is_numeric($request->input('price')) ? $request->input('price') : 0;
         if ($request->hasFile('image')) {
             $data['image'] = (new CustomController)->imageUpload($request->image);
         } else {
@@ -119,7 +119,7 @@ class CategoryController extends Controller
                 'hero_background_image.max' => 'The hero banner image may not be greater than 2 MB.',
             ]);
         $data = $request->only(['name', 'description', 'treatment_id']);
-        $data['price'] = $request->input('price') ?? 0;
+        $data['price'] = is_numeric($request->input('price')) ? $request->input('price') : 0;
         $data['is_cannaleo_only'] = $request->boolean('is_cannaleo_only');
         $category = Category::find($id);
         if ($request->hasFile('image')) {
@@ -296,9 +296,10 @@ class CategoryController extends Controller
             ];
         }
         $featuresBar = [
-            'enabled'  => isset($s['features_bar']['enabled']),
-            'bg_color' => $s['features_bar']['bg_color'] ?? ($existing['features_bar']['bg_color'] ?? '#fafafa'),
-            'features' => $features,
+            'enabled'    => isset($s['features_bar']['enabled']),
+            'bg_color'   => $s['features_bar']['bg_color']   ?? ($existing['features_bar']['bg_color']   ?? '#fafafa'),
+            'icon_color' => $s['features_bar']['icon_color'] ?? ($existing['features_bar']['icon_color'] ?? '#3b6fd4'),
+            'features'   => $features,
         ];
 
         // --- Steps ---
@@ -472,10 +473,11 @@ class CategoryController extends Controller
             if ($q !== '' && $a !== '') $faqItems[] = ['question' => $q, 'answer' => $a];
         }
         $faq = [
-            'enabled'  => isset($faqInput['enabled']),
-            'title'    => $faqInput['title'] ?? ($existing['faq']['title'] ?? 'Frequently asked questions'),
-            'subtitle' => $faqInput['subtitle'] ?? ($existing['faq']['subtitle'] ?? ''),
-            'items'    => $faqItems,
+            'enabled'        => isset($faqInput['enabled']),
+            'title'          => $faqInput['title']          ?? ($existing['faq']['title']          ?? 'Frequently asked questions'),
+            'subtitle'       => $faqInput['subtitle']       ?? ($existing['faq']['subtitle']       ?? ''),
+            'subtitle_color' => $faqInput['subtitle_color'] ?? ($existing['faq']['subtitle_color'] ?? '#e63946'),
+            'items'          => $faqItems,
         ];
 
         // --- Testosterone Info (Section 8) ---

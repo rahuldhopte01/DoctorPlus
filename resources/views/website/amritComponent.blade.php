@@ -200,7 +200,7 @@
         .features-bar-inner { max-width: var(--ed-max-width); margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; gap: 24px; }
         .fb-item { display: flex; align-items: center; gap: 12px; flex: 1; }
         .fb-icon { width: 44px; height: 44px; border-radius: 50%; background: #eff3fb; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .fb-icon svg { width: 20px; height: 20px; stroke: #3b6fd4; fill: none; stroke-width: 2; }
+        .fb-icon svg { width: 20px; height: 20px; stroke: var(--fb-icon-color, #3b6fd4); fill: none; stroke-width: 2; }
         .fb-text strong { display: block; font-size: 0.82rem; font-weight: 700; color: var(--ed-dark); line-height: 1.3; }
         .fb-text span { font-size: 0.78rem; color: var(--ed-text-muted); }
 
@@ -413,8 +413,9 @@ $cmsHero  = array_merge([
 ], $_cms['hero'] ?? []);
 
 $cmsFb = array_merge([
-    'enabled'  => true,
-    'bg_color' => '#fafafa',
+    'enabled'    => true,
+    'bg_color'   => '#fafafa',
+    'icon_color' => '#3b6fd4',
     'features' => [
         ['enabled' => true, 'title' => 'Das Rezept wird online ausgestellt.',      'subtitle' => 'Ein Klinikbesuch ist nicht erforderlich.'],
         ['enabled' => true, 'title' => 'Lieferung innerhalb von 1–2 Werktagen.',   'subtitle' => 'Schnelle, zuverlässige Lieferung.'],
@@ -483,9 +484,11 @@ $cmsDr = array_merge([
 ], $_cms['doctor_review'] ?? []);
 
 $cmsFaq = array_merge([
-    'enabled' => true,
-    'title'   => 'Frequently asked questions',
-    'items'   => [
+    'enabled'        => true,
+    'title'          => 'Frequently asked questions',
+    'subtitle'       => '',
+    'subtitle_color' => '#e63946',
+    'items'          => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
         ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
@@ -702,7 +705,8 @@ foreach ($_validSections as $_sk) {
         @foreach($cmsFb['features'] as $i => $feat)
         @if($feat['enabled'] ?? true)
         <div class="fb-item">
-            <div class="fb-icon">{!! $_fbIcons[$i] !!}</div>
+            @php $_fbIconColor = $cmsFb['icon_color'] ?? '#3b6fd4'; $_fbIconBg = $_fbIconColor . '22'; @endphp
+            <div class="fb-icon" style="background:{{ $_fbIconBg }}; --fb-icon-color:{{ $_fbIconColor }};">{!! $_fbIcons[$i] !!}</div>
             <div class="fb-text">
                 <strong>{!! $feat['title'] !!}</strong>
                 <span>{!! $feat['subtitle'] !!}</span>
@@ -821,10 +825,11 @@ $cmsDr = array_merge([
 ], $_cms['doctor_review'] ?? []);
 
 $cmsFaq = array_merge([
-    'enabled'  => true,
-    'title'    => 'Frequently asked questions',
-    'subtitle' => '',
-    'items'    => [
+    'enabled'        => true,
+    'title'          => 'Frequently asked questions',
+    'subtitle'       => '',
+    'subtitle_color' => '#e63946',
+    'items'          => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
         ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
@@ -942,7 +947,7 @@ $cmsFaq = array_merge([
                 <div class="mb-5 text-center">
                     <h2 class="display-6 fw-bold mb-2">{{ $cmsFaq['title'] }}</h2>
                     @if(!empty($cmsFaq['subtitle']))
-                        <div class="faq-subtitle-extra">
+                        <div class="faq-subtitle-extra" style="color:{{ $cmsFaq['subtitle_color'] ?? '#e63946' }};">
                            <span>{!! $cmsFaq['subtitle'] !!}</span>
                         </div>
                     @endif

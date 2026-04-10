@@ -392,6 +392,13 @@
                                 <input type="text" class="form-control color-hex"
                                        value="{{ $fb['bg_color'] ?? '#fafafa' }}">
                             </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Icon Color</label>
+                                <input type="color" name="sections[features_bar][icon_color]"
+                                       value="{{ $fb['icon_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $fb['icon_color'] ?? '#3b6fd4' }}">
+                            </div>
                         </div>
                         @foreach($defaultFeatures as $i => $default)
                         @php $feat = $fbFeatures[$i] ?? $default; @endphp
@@ -884,10 +891,19 @@
                                 <input type="text" class="form-control" name="sections[faq][title]"
                                        value="{{ $faqCms['title'] ?? 'Frequently asked questions' }}">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label>Extra Title (Subtitle)</label>
                                 <input type="text" class="form-control" name="sections[faq][subtitle]"
                                        value="{{ $faqCms['subtitle'] ?? '' }}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Subtitle Color</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][subtitle_color]"
+                                           value="{{ $faqCms['subtitle_color'] ?? '#e63946' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['subtitle_color'] ?? '#e63946' }}">
+                                </div>
                             </div>
                         </div>
                         <div id="faq-items-container">
