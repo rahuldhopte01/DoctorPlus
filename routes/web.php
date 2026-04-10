@@ -124,6 +124,21 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
     Route::get('/erektionsstoerungen', [WebsiteController::class, 'erektionsstoerungen'])->name('erektionsstoerungen');
     Route::get('/category/{id}', [WebsiteController::class, 'categoryDetail'])->where('id', '[0-9]+')->name('category.detail');
 
+    // Questionnaire public routes (accessible without login - auth gate is inline at submit time)
+    Route::get('/questionnaire/category/{categoryId}', [WebQuestionnaireController::class, 'showByCategory'])->name('questionnaire.category');
+    Route::get('/questionnaire/category/{categoryId}/section/{sectionIndex}', [WebQuestionnaireController::class, 'showSection'])->name('questionnaire.section');
+    Route::post('/questionnaire/category/{categoryId}/save', [WebQuestionnaireController::class, 'saveAnswers'])->name('questionnaire.save');
+    Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
+    Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
+    Route::get('/questionnaire/category/{categoryId}/check-status', [WebQuestionnaireController::class, 'checkSubmissionStatus'])->name('questionnaire.check-status');
+    Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
+        return view('website.questionnaire.success', compact('categoryId'));
+    })->name('questionnaire.success');
+    Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
+    // Inline auth endpoints for questionnaire (register or login without leaving the page)
+    Route::post('/questionnaire/inline-register', [WebQuestionnaireController::class, 'inlineRegister'])->name('questionnaire.inline-register');
+    Route::post('/questionnaire/inline-login', [WebQuestionnaireController::class, 'inlineLogin'])->name('questionnaire.inline-login');
+
     Route::middleware(['auth'])->group(function () {
         Route::get('/user_profile', [WebsiteController::class, 'user_profile']);
         Route::get('/lab_test/{id}/{name}', [WebsiteController::class, 'labTest']);
@@ -151,22 +166,12 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         Route::post('getDeliveryCharge', [WebsiteController::class, 'getDeliveryCharge']);
         Route::post('bookMedicine', [WebsiteController::class, 'bookMedicine']);
         
-        // Questionnaire Routes (Category-based flow)
-        Route::get('/questionnaire/category/{categoryId}', [WebQuestionnaireController::class, 'showByCategory'])->name('questionnaire.category');
-        Route::get('/questionnaire/category/{categoryId}/section/{sectionIndex}', [WebQuestionnaireController::class, 'showSection'])->name('questionnaire.section');
-        Route::post('/questionnaire/category/{categoryId}/save', [WebQuestionnaireController::class, 'saveAnswers'])->name('questionnaire.save');
-        Route::post('/questionnaire/category/{categoryId}/save-section', [WebQuestionnaireController::class, 'saveSectionAnswers'])->name('questionnaire.save-section');
+        // Questionnaire Routes (authenticated - submit/payment flow)
         Route::post('/questionnaire/category/{categoryId}/prepare-submit', [WebQuestionnaireController::class, 'prepareSubmit'])->name('questionnaire.prepare-submit');
         Route::post('/questionnaire/category/{categoryId}/submit', [WebQuestionnaireController::class, 'submitQuestionnaire'])->name('questionnaire.submit');
         Route::get('/questionnaire/category/{categoryId}/payment', [\App\Http\Controllers\Website\QuestionnairePaymentController::class, 'showPaymentPage'])->name('questionnaire.payment');
         Route::post('/questionnaire/category/{categoryId}/create-checkout-session', [\App\Http\Controllers\Website\QuestionnairePaymentController::class, 'createCheckoutSession'])->name('questionnaire.create-checkout');
         Route::get('/questionnaire/payment/success/{categoryId}', [\App\Http\Controllers\Website\QuestionnairePaymentController::class, 'paymentSuccess'])->name('questionnaire.payment.success');
-        Route::get('/questionnaire/category/{categoryId}/saved-answers', [WebQuestionnaireController::class, 'getSavedAnswers'])->name('questionnaire.saved-answers');
-        Route::get('/questionnaire/category/{categoryId}/check-status', [WebQuestionnaireController::class, 'checkSubmissionStatus'])->name('questionnaire.check-status');
-        Route::get('/questionnaire/category/{categoryId}/success', function($categoryId) {
-            return view('website.questionnaire.success', compact('categoryId'));
-        })->name('questionnaire.success');
-        Route::get('/api/questionnaire/{categoryId}', [WebQuestionnaireController::class, 'getQuestionnaire']);
 
         // Questionnaire Post-Submission Flow Routes
         Route::get('/questionnaire/category/{categoryId}/delivery-choice', [\App\Http\Controllers\Website\QuestionnaireDeliveryController::class, 'showDeliveryChoice'])->name('questionnaire.delivery-choice');

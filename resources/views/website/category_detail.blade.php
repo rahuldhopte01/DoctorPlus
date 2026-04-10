@@ -151,18 +151,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const startBtns = document.querySelectorAll('.start-questionnaire-btn');
     startBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            @if(Auth::check())
-                window.location.href = '{{ url("/questionnaire/category/" . $category->id) }}';
-            @else
-                const intent = {
-                    categoryId: {{ $category->id }},
-                    treatmentId: {{ $treatment ? $treatment->id : 'null' }},
-                    redirectToQuestionnaire: true,
-                    redirectUrl: '{{ url("/questionnaire/category/" . $category->id) }}'
-                };
-                localStorage.setItem('questionnaire_intent', JSON.stringify(intent));
-                window.location.href = '{{ url("/patient-login") }}?redirect_to=' + encodeURIComponent(intent.redirectUrl);
-            @endif
+            // Always go directly to the questionnaire page; auth is handled inline at submit time
+            window.location.href = '{{ url("/questionnaire/category/" . $category->id) }}';
         });
     });
 });

@@ -180,7 +180,7 @@
                 </div>
                 
                 @if($hasQuestionnaire)
-                    <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
+                    <a href="{{ url('/questionnaire/category/' . $category->id) }}" 
                        class="btn btn-primary btn-lg w-100 w-lg-auto">
                         Start consultation now
                     </a>
@@ -460,7 +460,7 @@
                         </div>
 
                         @if($hasQuestionnaire)
-                            <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
+                            <a href="{{ url('/questionnaire/category/' . $category->id) }}" 
                                class="btn btn-primary btn-lg w-100 mb-2">
                                 Start consultation
                             </a>

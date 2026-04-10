@@ -9,9 +9,11 @@ use App\Models\Doctor;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireAnswer;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\QuestionnaireService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
@@ -120,18 +122,8 @@ class QuestionnaireController extends Controller
      */
     public function showByCategory($categoryId)
     {
-        // Ensure user is authenticated (middleware should handle this, but double-check)
-        if (!Auth::check()) {
-            // Store intent in session for post-login redirect
-            session()->put('questionnaire_intent', [
-                'category_id' => $categoryId,
-                'redirect_to' => url('/questionnaire/category/' . $categoryId),
-            ]);
-            return redirect('/patient-login')->with('info', __('Please login to continue with the questionnaire'));
-        }
-
         $category = Category::with(['treatment', 'questionnaire.sections.questions'])->findOrFail($categoryId);
-        
+
         if (!$category->questionnaire || !$category->questionnaire->status) {
             return redirect()->route('category.detail', ['id' => $categoryId])
                 ->with('error', __('No questionnaire available for this category'));
@@ -145,7 +137,7 @@ class QuestionnaireController extends Controller
         if (!is_array($savedAnswers) || !isset($savedAnswers['answers'])) {
             $savedAnswers = ['answers' => [], 'files' => []];
         }
-        
+
         // Normalize saved answers to ensure question IDs are integers
         if (isset($savedAnswers['answers']) && is_array($savedAnswers['answers'])) {
             $normalizedSavedAnswers = [];
@@ -155,13 +147,16 @@ class QuestionnaireController extends Controller
             $savedAnswers['answers'] = $normalizedSavedAnswers;
         }
 
-        // Check if patient can submit (has active submission)
-        $submissionCheck = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
+        // Check if patient can submit (only for authenticated users)
+        $submissionCheck = null;
+        if (Auth::check()) {
+            $submissionCheck = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
+        }
 
         return view('website.questionnaire.category_form', compact(
-            'category', 
-            'questionnaire', 
-            'treatment', 
+            'category',
+            'questionnaire',
+            'treatment',
             'savedAnswers',
             'submissionCheck'
         ));
@@ -173,14 +168,6 @@ class QuestionnaireController extends Controller
      */
     public function showSection($categoryId, $sectionIndex)
     {
-        if (!Auth::check()) {
-            session()->put('questionnaire_intent', [
-                'category_id' => $categoryId,
-                'redirect_to' => url('/questionnaire/category/' . $categoryId . '/section/' . $sectionIndex),
-            ]);
-            return redirect('/patient-login')->with('info', __('Please login to continue with the questionnaire'));
-        }
-
         $category = Category::with(['treatment', 'questionnaire.sections.questions'])->findOrFail($categoryId);
         
         if (!$category->questionnaire || !$category->questionnaire->status) {
@@ -236,13 +223,6 @@ class QuestionnaireController extends Controller
      */
     public function saveAnswers(Request $request, $categoryId)
     {
-        if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('Please login to save answers'),
-            ], 401);
-        }
-
         $category = Category::findOrFail($categoryId);
         $questionnaire = $this->questionnaireService->getQuestionnaireForCategory($categoryId);
 
@@ -255,10 +235,10 @@ class QuestionnaireController extends Controller
 
         $answers = $request->input('answers', []);
         $files = $request->file('files', []);
-        
-        // Handle file uploads (Issue 3: File upload support - Birth Certificate and other files)
+
+        // Handle file uploads only for authenticated users (guests upload at submit time)
         $uploadedFiles = [];
-        if (!empty($files)) {
+        if (!empty($files) && Auth::check()) {
             $uploadDir = 'questionnaire_uploads/temp/' . Auth::id() . '/' . $categoryId;
             $fullPath = public_path($uploadDir);
             
@@ -347,12 +327,6 @@ class QuestionnaireController extends Controller
      */
     public function saveSectionAnswers(Request $request, $categoryId)
     {
-        if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('Please login to save answers'),
-            ], 401);
-        }
 
         $category = Category::findOrFail($categoryId);
         $questionnaire = $this->questionnaireService->getQuestionnaireForCategory($categoryId);
@@ -404,7 +378,7 @@ class QuestionnaireController extends Controller
 
         // Handle file uploads (Issue 3: File upload support)
         $uploadedFiles = [];
-        if (!empty($files)) {
+        if (!empty($files) && Auth::check()) {
             $uploadDir = 'questionnaire_uploads/temp/' . Auth::id() . '/' . $categoryId;
             $fullPath = public_path($uploadDir);
             
@@ -513,13 +487,6 @@ class QuestionnaireController extends Controller
      */
     public function getSavedAnswers($categoryId)
     {
-        if (!Auth::check()) {
-            return response()->json([
-                'success' => false,
-                'data' => [],
-            ], 401);
-        }
-
         $savedAnswers = session()->get('questionnaire_answers_' . $categoryId, []);
 
         return response()->json([
@@ -1084,11 +1051,14 @@ class QuestionnaireController extends Controller
     public function checkSubmissionStatus($categoryId)
     {
         if (!Auth::check()) {
+            // Guests can always submit (auth gate is shown inline at submit time)
             return response()->json([
-                'success' => false,
-                'can_submit' => false,
-                'message' => __('Please login to check submission status'),
-            ], 401);
+                'success' => true,
+                'can_submit' => true,
+                'status' => null,
+                'message' => '',
+                'submitted_at' => null,
+            ]);
         }
 
         $canSubmit = \App\Models\QuestionnaireSubmission::canPatientSubmit(Auth::id(), $categoryId);
@@ -1101,6 +1071,77 @@ class QuestionnaireController extends Controller
             'message' => $canSubmit['message'],
             'submitted_at' => $canSubmit['existing_submission']?->submitted_at?->toDateTimeString(),
         ]);
+    }
+
+    /**
+     * Inline registration during questionnaire submit flow.
+     * Creates a patient account and logs the user in without leaving the page.
+     */
+    public function inlineRegister(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name'  => 'required|string|max:100',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|min:8',
+            'phone'      => 'nullable|string|max:30',
+        ]);
+
+        $setting = Setting::first();
+        $defaultPhoneCode = '+' . (env('DEFAULT_DIALING_CODE', '49'));
+
+        $user = User::create([
+            'name'       => trim($request->first_name . ' ' . $request->last_name),
+            'email'      => $request->email,
+            'password'   => Hash::make($request->password),
+            'phone'      => $request->phone ?? '',
+            'phone_code' => $defaultPhoneCode,
+            'image'      => 'defaultUser.png',
+            'status'     => 1,
+            'verify'     => 1,
+        ]);
+
+        Auth::loginUsingId($user->id);
+
+        return response()->json([
+            'success'    => true,
+            'message'    => __('Account created successfully'),
+            'csrf_token' => csrf_token(),
+        ]);
+    }
+
+    /**
+     * Inline login during questionnaire submit flow.
+     * Authenticates the user without leaving the page.
+     */
+    public function inlineLogin(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $user = Auth::user();
+            if (!$user->status) {
+                Auth::logout();
+                return response()->json([
+                    'success' => false,
+                    'message' => __('Your account has been blocked. Please contact support.'),
+                ], 403);
+            }
+
+            return response()->json([
+                'success'    => true,
+                'message'    => __('Logged in successfully'),
+                'csrf_token' => csrf_token(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => __('Invalid email or password.'),
+        ], 401);
     }
 }
 

@@ -450,6 +450,108 @@
                     </h5>
                     <ul id="warningList" class="list-disc list-inside text-muted font-body mb-0"></ul>
                 </div>
+
+                @guest
+                {{-- Inline auth section: shown to unauthenticated users before submit --}}
+                <div id="inlineAuthSection" class="mb-4" style="display:none;">
+                    <div class="rounded-3 p-4" style="border: 1.5px solid #e2e8f0; background: #fafbff;">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                                 style="width:42px;height:42px;background:var(--primary-color);">
+                                <i class="bi bi-person-circle text-white fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 font-heading">{{ __('Konto anlegen & bezahlen') }}</h6>
+                                <small class="text-muted">{{ __('Ihr Konto wird automatisch für Sie eingerichtet') }}</small>
+                            </div>
+                        </div>
+
+                        {{-- Tabs --}}
+                        <div class="d-flex gap-2 mb-3">
+                            <button type="button" id="authTabRegister"
+                                class="btn btn-sm fw-semibold active-auth-tab"
+                                onclick="switchInlineAuthTab('register')"
+                                style="border-radius:20px;padding:4px 16px;background:var(--primary-color);color:#fff;border:none;">
+                                {{ __('Neu registrieren') }}
+                            </button>
+                            <button type="button" id="authTabLogin"
+                                class="btn btn-sm fw-semibold"
+                                onclick="switchInlineAuthTab('login')"
+                                style="border-radius:20px;padding:4px 16px;background:#f1f3f5;color:#333;border:none;">
+                                {{ __('Bereits registriert') }}
+                            </button>
+                        </div>
+
+                        {{-- Register form --}}
+                        <div id="inlineRegisterForm">
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <input type="text" id="inline_first_name" class="form-control form-control-sm"
+                                           placeholder="{{ __('Vorname') }} *">
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" id="inline_last_name" class="form-control form-control-sm"
+                                           placeholder="{{ __('Nachname') }} *">
+                                </div>
+                            </div>
+                            <div class="mb-2">
+                                <input type="email" id="inline_email" class="form-control form-control-sm"
+                                       placeholder="{{ __('E-Mail-Adresse') }} *">
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <input type="password" id="inline_password" class="form-control form-control-sm"
+                                           placeholder="{{ __('Passwort') }} ({{ __('mind. 8 Zeichen') }}) *">
+                                </div>
+                                <div class="col-6">
+                                    <input type="tel" id="inline_phone" class="form-control form-control-sm"
+                                           placeholder="{{ __('Telefon') }}">
+                                </div>
+                            </div>
+                            <p class="text-muted small mb-0">
+                                {{ __('Sie haben bereits ein Konto?') }}
+                                <a href="#" class="text-primary text-decoration-none fw-semibold"
+                                   onclick="switchInlineAuthTab('login'); return false;">{{ __('Direkt einloggen') }}</a>
+                            </p>
+                        </div>
+
+                        {{-- Login form --}}
+                        <div id="inlineLoginForm" style="display:none;">
+                            <div class="mb-2">
+                                <input type="email" id="inline_login_email" class="form-control form-control-sm"
+                                       placeholder="{{ __('E-Mail-Adresse') }} *">
+                            </div>
+                            <div class="mb-2">
+                                <input type="password" id="inline_login_password" class="form-control form-control-sm"
+                                       placeholder="{{ __('Passwort') }} *">
+                            </div>
+                            <p class="text-muted small mb-0">
+                                {{ __('Noch kein Konto?') }}
+                                <a href="#" class="text-primary text-decoration-none fw-semibold"
+                                   onclick="switchInlineAuthTab('register'); return false;">{{ __('Jetzt registrieren') }}</a>
+                            </p>
+                        </div>
+
+                        <div id="inlineAuthError" class="text-danger small mt-2" style="display:none;"></div>
+                    </div>
+
+                    {{-- Terms checkbox --}}
+                    <div class="mt-3 p-3 rounded-3" style="border:1.5px solid #e2e8f0;background:#fff;">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="inlineTermsCheck">
+                            <label class="form-check-label small" for="inlineTermsCheck">
+                                {{ __('Ich bestätige, dass alle Angaben wahrheitsgemäß sind. Ich stimme der Verarbeitung meiner Gesundheitsdaten gemäß der') }}
+                                <a href="#" class="text-primary">{{ __('Datenschutzerklärung') }}</a>
+                                {{ __('zu und akzeptiere die') }}
+                                <a href="#" class="text-primary">{{ __('AGB') }}</a>.
+                            </label>
+                        </div>
+                        <div id="inlineTermsError" class="text-danger small mt-1" style="display:none;">
+                            {{ __('Bitte stimmen Sie den Bedingungen zu.') }}
+                        </div>
+                    </div>
+                </div>
+                @endguest
             </div>
 
             <div class="bg-light border-t border-gray-200 px-6 py-4 flex justify-between items-center sticky bottom-0 z-10" style="border-radius: 0 0 20px 20px;">
@@ -486,6 +588,29 @@
 
 @section('js')
 <script>
+// Inline auth tab switcher (accessible globally for onclick handlers)
+function switchInlineAuthTab(tab) {
+    const registerForm = document.getElementById('inlineRegisterForm');
+    const loginForm = document.getElementById('inlineLoginForm');
+    const tabRegister = document.getElementById('authTabRegister');
+    const tabLogin = document.getElementById('authTabLogin');
+    const errEl = document.getElementById('inlineAuthError');
+
+    if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+
+    if (tab === 'register') {
+        if (registerForm) registerForm.style.display = '';
+        if (loginForm) loginForm.style.display = 'none';
+        if (tabRegister) { tabRegister.style.background = 'var(--primary-color)'; tabRegister.style.color = '#fff'; }
+        if (tabLogin) { tabLogin.style.background = '#f1f3f5'; tabLogin.style.color = '#333'; }
+    } else {
+        if (registerForm) registerForm.style.display = 'none';
+        if (loginForm) loginForm.style.display = '';
+        if (tabLogin) { tabLogin.style.background = 'var(--primary-color)'; tabLogin.style.color = '#fff'; }
+        if (tabRegister) { tabRegister.style.background = '#f1f3f5'; tabRegister.style.color = '#333'; }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('questionnaireForm');
     const progressBar = document.getElementById('progressBar');
@@ -500,7 +625,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const submissionStatusMessage = document.getElementById('submissionStatusMessage');
     const submissionStatusText = document.getElementById('submissionStatusText');
     const categoryId = {{ $category->id }};
-    
+    const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+
     let saveTimeout;
     const SAVE_DELAY = 2000; // Auto-save after 2 seconds of no typing
 
@@ -932,8 +1058,78 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initCustomDropdowns();
 
-    // Form submission (Final Submit - Phase 6)
-    form.addEventListener('submit', function(e) {
+    // ── Inline auth state ─────────────────────────────────────────────────────
+    let currentCsrfToken = '{{ csrf_token() }}';
+    let inlineAuthShown = false;
+    const inlineAuthSection = document.getElementById('inlineAuthSection');
+
+    // Validate inline auth fields and call register/login endpoint, returns Promise<bool>
+    async function performInlineAuth() {
+        const errEl = document.getElementById('inlineAuthError');
+        const termsCheck = document.getElementById('inlineTermsCheck');
+        const termsError = document.getElementById('inlineTermsError');
+
+        // Validate terms
+        if (termsCheck && !termsCheck.checked) {
+            if (termsError) termsError.style.display = '';
+            termsCheck.closest('.mt-3').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return false;
+        }
+        if (termsError) termsError.style.display = 'none';
+
+        const loginForm = document.getElementById('inlineLoginForm');
+        const isLoginTab = loginForm && loginForm.style.display !== 'none';
+
+        if (isLoginTab) {
+            const email = document.getElementById('inline_login_email')?.value.trim();
+            const password = document.getElementById('inline_login_password')?.value;
+            if (!email || !password) {
+                if (errEl) { errEl.textContent = '{{ __("Please fill in your email and password.") }}'; errEl.style.display = ''; }
+                return false;
+            }
+            const resp = await fetch('{{ route("questionnaire.inline-login") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': currentCsrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+            const data = await resp.json();
+            if (data.success) {
+                if (data.csrf_token) currentCsrfToken = data.csrf_token;
+                return true;
+            }
+            if (errEl) { errEl.textContent = data.message || '{{ __("Login failed. Please try again.") }}'; errEl.style.display = ''; }
+            return false;
+        } else {
+            const firstName = document.getElementById('inline_first_name')?.value.trim();
+            const lastName  = document.getElementById('inline_last_name')?.value.trim();
+            const email     = document.getElementById('inline_email')?.value.trim();
+            const password  = document.getElementById('inline_password')?.value;
+            const phone     = document.getElementById('inline_phone')?.value.trim();
+            if (!firstName || !lastName || !email || !password) {
+                if (errEl) { errEl.textContent = '{{ __("Please fill in all required fields (Vorname, Nachname, E-Mail, Passwort).") }}'; errEl.style.display = ''; }
+                return false;
+            }
+            if (password.length < 8) {
+                if (errEl) { errEl.textContent = '{{ __("Password must be at least 8 characters.") }}'; errEl.style.display = ''; }
+                return false;
+            }
+            const resp = await fetch('{{ route("questionnaire.inline-register") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': currentCsrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({ first_name: firstName, last_name: lastName, email, password, phone }),
+            });
+            const data = await resp.json();
+            if (data.success) {
+                if (data.csrf_token) currentCsrfToken = data.csrf_token;
+                return true;
+            }
+            if (errEl) { errEl.textContent = data.message || '{{ __("Registration failed. Please try again.") }}'; errEl.style.display = ''; }
+            return false;
+        }
+    }
+
+    // ── Form submission ────────────────────────────────────────────────────────
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         blockedMessage.classList.add('hidden');
@@ -950,6 +1146,28 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // If guest: show auth section first time, then on second submit (after filling auth) proceed
+        if (!isAuthenticated && inlineAuthSection) {
+            if (!inlineAuthShown) {
+                // Reveal the auth section and scroll to it
+                inlineAuthSection.style.display = '';
+                inlineAuthShown = true;
+                inlineAuthSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return; // Wait for user to fill auth form and click submit again
+            }
+            // Auth section already shown – perform auth now
+            submitButtons.forEach(b => { b.disabled = true; b.classList.add('opacity-50', 'cursor-not-allowed'); });
+            if (activeSubmitBtn) activeSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Signing in...") }}';
+
+            const authOk = await performInlineAuth();
+
+            submitButtons.forEach(b => { b.disabled = false; b.classList.remove('opacity-50', 'cursor-not-allowed'); });
+            if (activeSubmitBtn) activeSubmitBtn.innerHTML = activeSubmitBtnHtml;
+
+            if (!authOk) return; // Auth failed – errors are shown inline
+        }
+
+        // Proceed with questionnaire submission
         submitButtons.forEach(button => {
             button.disabled = true;
             button.classList.add('opacity-50', 'cursor-not-allowed');
@@ -965,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'X-CSRF-TOKEN': currentCsrfToken,
                 'Accept': 'application/json',
             }
         })

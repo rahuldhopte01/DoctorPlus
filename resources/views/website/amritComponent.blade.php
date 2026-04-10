@@ -571,7 +571,7 @@ foreach ($_validSections as $_sk) {
                 <p>{!! $cmsHero['t3_subheading'] ?? ($category->description ? Str::limit($category->description, 150) : '') !!}</p>
                 
                 <div class="ed-hero-t3-btns">
-                    <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
+                    <a href="{{ url('/questionnaire/category/' . $category->id) }}" 
                        class="t3-btn t3-btn-solid">
                         {{ $cmsHero['t3_cta_1_text'] ?? 'Jetzt Beratung starten' }}
                     </a>
@@ -600,7 +600,7 @@ foreach ($_validSections as $_sk) {
                     <p>{!! $cmsHero['t2_description'] ?? ($category->description ? Str::limit($category->description, 180) : '') !!}</p>
                     
                     <div class="ed-hero-t2-cta-wrap">
-                        <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}" 
+                        <a href="{{ url('/questionnaire/category/' . $category->id) }}" 
                            class="hero-cta" style="background:#2d7a45; box-shadow:0 10px 25px rgba(45,122,69,0.3);">
                             {{ $cmsHero['cta_text'] }}
                         </a>
@@ -651,7 +651,7 @@ foreach ($_validSections as $_sk) {
                 <p>{!! $cmsHero['t1_description'] ?? ($category->description ? Str::limit($category->description, 150) : 'Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktage geliefert.') !!}</p>
 
                 @if($hasQuestionnaire)
-                    <a href="{{ auth()->check() ? url('/questionnaire/category/' . $category->id) : url('/patient-login?redirect_to=' . urlencode('/questionnaire/category/' . $category->id)) }}"
+                    <a href="{{ url('/questionnaire/category/' . $category->id) }}"
                        class="hero-cta"
                        style="background:{{ $cmsHero['cta_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
                         {{ $cmsHero['cta_text'] }}

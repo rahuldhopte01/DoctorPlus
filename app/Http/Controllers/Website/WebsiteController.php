@@ -1899,13 +1899,9 @@ class WebsiteController extends Controller
             ->where('name', 'LIKE', 'Erektions%')
             ->first();
 
-        $questionnaireUrl = $category
+        $consultationUrl = $category
             ? route('questionnaire.category', ['categoryId' => $category->id])
             : route('categories');
-
-        $consultationUrl = auth()->check()
-            ? $questionnaireUrl
-            : url('/patient-login?redirect_to=' . urlencode($questionnaireUrl));
 
         return view('website.erektionsstoerungen', compact('setting', 'category', 'consultationUrl'));
     }
