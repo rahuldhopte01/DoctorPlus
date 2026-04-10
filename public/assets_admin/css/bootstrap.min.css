@@ -5528,7 +5528,7 @@ input[type=submit].btn-block {
 }
 
 .breadcrumb-item.active {
-    color: #6c757d
+    color: hsl(208, 7%, 46%)
 }
 
 .pagination {
@@ -11376,7 +11376,7 @@ a.text-dark:hover {
     }
 
     abbr[title]::after {
-        content: " ("attr(title) ")"
+        content: " (" attr(title) ")"
     }
 
     pre {
@@ -11460,8 +11460,7 @@ a.text-dark:hover {
         border-color: #dee2e6
     }
 }
-.cursor-pointer
-{
-  cursor: pointer;
-}
 
+.cursor-pointer {
+    cursor: pointer;
+}
