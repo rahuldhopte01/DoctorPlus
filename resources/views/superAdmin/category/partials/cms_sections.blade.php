@@ -132,6 +132,18 @@
                             </div>
                         </div>
 
+                        <div class="row mb-2">
+                            <div class="col-md-3 form-group">
+                                <label>Section Background Color</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[hero][bg_color]"
+                                           value="{{ $hero['bg_color'] ?? '#f0fdf4' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $hero['bg_color'] ?? '#f0fdf4' }}">
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- TYPE DEPENDENT FIELDS --}}
                         <div id="hero_type_fields">
                             
@@ -157,18 +169,27 @@
                             {{-- TYPE 1 FIELDS --}}
                             <div class="hero-field-group hero-type-type1">
                                 <div class="row">
-                                    <div class="col-md-6 form-group">
+                                    <div class="col-md-5 form-group">
                                         <label>CTA Button Text</label>
                                         <input type="text" class="form-control" name="sections[hero][cta_text]"
                                                value="{{ $hero['cta_text'] ?? 'Zu den medizinischen Fragen' }}">
                                     </div>
-                                    <div class="col-md-3 form-group">
-                                        <label>CTA Button Color</label>
+                                    <div class="col-md-2 form-group">
+                                        <label>Button Color</label>
                                         <div class="cms-color-row">
                                             <input type="color" name="sections[hero][cta_color]"
                                                    value="{{ $hero['cta_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
                                             <input type="text" class="form-control color-hex"
                                                    value="{{ $hero['cta_color'] ?? '#3b6fd4' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Text Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][cta_text_color]"
+                                                   value="{{ $hero['cta_text_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['cta_text_color'] ?? '#ffffff' }}">
                                         </div>
                                     </div>
                                     <div class="col-md-3 form-group">
@@ -243,15 +264,33 @@
                                         <label>Description</label>
                                         <textarea class="form-control" rows="3" name="sections[hero][t2_description]">{{ $hero['t2_description'] ?? '' }}</textarea>
                                     </div>
-                                    <div class="col-md-6 form-group">
+                                    <div class="col-md-4 form-group">
                                         <label>CTA Text</label>
                                         <input type="text" class="form-control" name="sections[hero][cta_text]"
                                                value="{{ $hero['cta_text'] ?? 'Zu den medizinischen Fragen' }}">
                                     </div>
-                                    <div class="col-md-6 form-group">
+                                    <div class="col-md-4 form-group">
                                         <label>Pricing Subtext</label>
                                         <input type="text" class="form-control" name="sections[hero][t2_subtext]"
                                                value="{{ $hero['t2_subtext'] ?? '' }}">
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Button Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][cta_color]"
+                                                   value="{{ $hero['cta_color'] ?? '#2d7a45' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['cta_color'] ?? '#2d7a45' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Text Color</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[hero][cta_text_color]"
+                                                   value="{{ $hero['cta_text_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $hero['cta_text_color'] ?? '#ffffff' }}">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -324,6 +363,26 @@
                                             <input type="text" class="form-control" name="sections[hero][t3_cta_1_url]"
                                                    value="{{ $hero['t3_cta_1_url'] ?? '#' }}">
                                         </div>
+                                        <div class="row">
+                                            <div class="col-6 form-group">
+                                                <label>CTA 1 Button Color</label>
+                                                <div class="cms-color-row">
+                                                    <input type="color" name="sections[hero][t3_cta_1_color]"
+                                                           value="{{ $hero['t3_cta_1_color'] ?? '#ef4444' }}" class="cms-color-picker">
+                                                    <input type="text" class="form-control color-hex"
+                                                           value="{{ $hero['t3_cta_1_color'] ?? '#ef4444' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-6 form-group">
+                                                <label>CTA 1 Text Color</label>
+                                                <div class="cms-color-row">
+                                                    <input type="color" name="sections[hero][t3_cta_1_text_color]"
+                                                           value="{{ $hero['t3_cta_1_text_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                                    <input type="text" class="form-control color-hex"
+                                                           value="{{ $hero['t3_cta_1_text_color'] ?? '#ffffff' }}">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -335,6 +394,26 @@
                                             <label>CTA 2 URL</label>
                                             <input type="text" class="form-control" name="sections[hero][t3_cta_2_url]"
                                                    value="{{ $hero['t3_cta_2_url'] ?? '#' }}">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-6 form-group">
+                                                <label>CTA 2 Border Color</label>
+                                                <div class="cms-color-row">
+                                                    <input type="color" name="sections[hero][t3_cta_2_color]"
+                                                           value="{{ $hero['t3_cta_2_color'] ?? '#ef4444' }}" class="cms-color-picker">
+                                                    <input type="text" class="form-control color-hex"
+                                                           value="{{ $hero['t3_cta_2_color'] ?? '#ef4444' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-6 form-group">
+                                                <label>CTA 2 Text Color</label>
+                                                <div class="cms-color-row">
+                                                    <input type="color" name="sections[hero][t3_cta_2_text_color]"
+                                                           value="{{ $hero['t3_cta_2_text_color'] ?? '#ef4444' }}" class="cms-color-picker">
+                                                    <input type="text" class="form-control color-hex"
+                                                           value="{{ $hero['t3_cta_2_text_color'] ?? '#ef4444' }}">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -443,10 +522,19 @@
                 </div>
                 <div id="collapseSteps" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[steps][enabled]" value="1" {{ ($steps['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Steps Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[steps][enabled]" value="1" {{ ($steps['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show Steps Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[steps][bg_color]"
+                                       value="{{ $steps['bg_color'] ?? '#eaf2ff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $steps['bg_color'] ?? '#eaf2ff' }}">
+                            </div>
+                        </div>
 
                         <div class="form-group mb-4">
                             <label class="font-weight-bold">Steps Design Type</label>
@@ -659,11 +747,20 @@
                 </div>
                 <div id="collapseMedical" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[medical_content][enabled]" value="1"
-                                   {{ ($mc['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Medical Content Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[medical_content][enabled]" value="1"
+                                       {{ ($mc['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show Medical Content Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[medical_content][bg_color]"
+                                       value="{{ $mc['bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $mc['bg_color'] ?? '#ffffff' }}">
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-4 form-group">
                                 <label>Section Title <small class="text-muted">(category name appended automatically)</small></label>
@@ -789,11 +886,20 @@
                 </div>
                 <div id="collapseDr" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[doctor_review][enabled]" value="1"
-                                   {{ ($dr['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Doctor Review Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[doctor_review][enabled]" value="1"
+                                       {{ ($dr['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show Doctor Review Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[doctor_review][bg_color]"
+                                       value="{{ $dr['bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $dr['bg_color'] ?? '#ffffff' }}">
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label>Doctor Photo</label>
@@ -880,11 +986,20 @@
                 </div>
                 <div id="collapseFaq" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[faq][enabled]" value="1"
-                                   {{ ($faqCms['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show FAQ Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[faq][enabled]" value="1"
+                                       {{ ($faqCms['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show FAQ Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[faq][bg_color]"
+                                       value="{{ $faqCms['bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $faqCms['bg_color'] ?? '#ffffff' }}">
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="form-group col-md-6">
                                 <label>Section Title</label>
@@ -976,11 +1091,20 @@
                 </div>
                 <div id="collapseTestoInfo" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[testo_info][enabled]" value="1"
-                                   {{ ($ti['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Testosterone Info Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[testo_info][enabled]" value="1"
+                                       {{ ($ti['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show Testosterone Info Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[testo_info][bg_color]"
+                                       value="{{ $ti['bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $ti['bg_color'] ?? '#ffffff' }}">
+                            </div>
+                        </div>
                         <div class="form-group">
                             <label>Section Heading</label>
                             <input type="text" class="form-control" name="sections[testo_info][heading]"
@@ -1057,11 +1181,20 @@
                 </div>
                 <div id="collapseTestoTreat" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[testo_treatments][enabled]" value="1"
-                                   {{ ($tt['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Testosterone Treatments Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[testo_treatments][enabled]" value="1"
+                                       {{ ($tt['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show Testosterone Treatments Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[testo_treatments][bg_color]"
+                                       value="{{ $tt['bg_color'] ?? '#fdf5f5' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $tt['bg_color'] ?? '#fdf5f5' }}">
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>Section Heading</label>
@@ -1152,11 +1285,20 @@
                 </div>
                 <div id="collapseSecurity" class="collapse" data-parent="#cmsSectionsAccordion">
                     <div class="card-body">
-                        <label class="cms-toggle-label mb-3">
-                            <input type="checkbox" name="sections[security][enabled]" value="1"
-                                   {{ ($sec['enabled'] ?? true) ? 'checked' : '' }}>
-                            Show Security Section
-                        </label>
+                        <div class="d-flex align-items-center mb-3" style="gap:24px;">
+                            <label class="cms-toggle-label mb-0">
+                                <input type="checkbox" name="sections[security][enabled]" value="1"
+                                       {{ ($sec['enabled'] ?? true) ? 'checked' : '' }}>
+                                Show Security Section
+                            </label>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Background Color</label>
+                                <input type="color" name="sections[security][bg_color]"
+                                       value="{{ $sec['bg_color'] ?? '#fdf5f5' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $sec['bg_color'] ?? '#fdf5f5' }}">
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>Section Heading</label>
