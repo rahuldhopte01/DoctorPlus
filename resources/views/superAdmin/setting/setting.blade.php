@@ -651,7 +651,7 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <label>{{__('Promo Text (Italic)')}}</label>
-                                                <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im März Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im März Ihre Gesundheit:">
+                                                <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im April Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im April Ihre Gesundheit:">
                                             </div>
                                                 <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
@@ -659,11 +659,11 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
-                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode M4RZ sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode M4RZ sparen Sie 10 €">
+                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode APRIL sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode APRIL sparen Sie 10 €">
                                             </div>
                                                 <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
-                                                <input type="text" name="promo_text_bold_black" value="{{ $promo['text_bold'] ?? 'M4RZ' }}" class="form-control" placeholder="M4RZ ">
+                                                <input type="text" name="promo_text_bold_black" value="{{ $promo['text_bold'] ?? 'APRIL' }}" class="form-control" placeholder="APRIL ">
                                             </div>
                                                 <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>

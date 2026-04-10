@@ -237,8 +237,8 @@
         <div class="floral-left"></div>
         <div class="floral-right"></div>
         <div class="promo-text">
-            <em>{{ $promo['text_italic'] ?? 'Erfrischen Sie im März Ihre Gesundheit:' }}</em>
-            &nbsp;Mit dem Rabattcode <span class="promo-code">{{ $promo['text_bold_black'] ?? 'M4RZ' }}</span> sparen Sie 10
+            <em>{{ $promo['text_italic'] ?? 'Erfrischen Sie im April Ihre Gesundheit:' }}</em>
+            &nbsp;Mit dem Rabattcode <span class="promo-code">{{ $promo['text_bold_black'] ?? 'APRIL' }}</span> sparen Sie 10
             €.
             @if(!empty($promo['end_date']))
                 <span class="promo-countdown promo-timer-container" id="promoCountdown" data-endtime="{{ $promo['end_date'] }}">

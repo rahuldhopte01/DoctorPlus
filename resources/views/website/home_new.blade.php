@@ -3,6 +3,31 @@
 <head>
     @php
     $setting = App\Models\Setting::first();
+
+    // Helper to get background-removed version of an image if it exists
+    if (!function_exists('getLandingImage')) {
+        function getLandingImage($image) {
+            if (empty($image)) return '';
+            
+            $uploadFolder = 'images/upload/';
+            
+            // Map of known background removed images
+            $replacements = [
+                '69d607d8d2c54.png' => '69d607d8d2c54-Photoroom.png',
+                '69d60c814e779.png' => '69d60c814e779-Photoroom.png',
+                '69d60c814f564.png' => '69d60c814f564-Photoroom.png',
+                '69d60d3acc448.jpg' => '69d60d3acc448-Photoroom.png',
+                '69d60966d8131.png' => 'ChatGPT Image Apr 10, 2026, 08_09_01 PM.png',
+                '69d60c814dd6d.png' => 'ChatGPT Image Apr 10, 2026, 08_07_12 PM.png',
+            ];
+
+            if (array_key_exists($image, $replacements)) {
+                return url($uploadFolder . $replacements[$image]);
+            }
+            
+            return url($uploadFolder . $image);
+        }
+    }
     @endphp
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -159,7 +184,7 @@
     <!-- Center Foreground Product Image -->
     @if(!empty($hero['image']))
         <div class="hero-bg-wrapper position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; pointer-events: none; width: 100%; max-width: 800px;">
-            <img src="{{ url('images/upload/'.$hero['image']) }}" alt="Background" class="img-fluid w-100" style="mask-image: linear-gradient(to top, transparent 0%, black 50%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 50%);">
+            <img src="{{ getLandingImage($hero['image']) }}" alt="Background" class="img-fluid w-100" style="mask-image: linear-gradient(to top, transparent 0%, black 50%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 50%);">
         </div>
     @endif
 
@@ -167,7 +192,7 @@
     @if(!empty($hero['bg_image']))
         <!-- Image sits at z-index:1 (lowest) -->
         <div class="position-absolute" style="top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;max-width:380px;width:100%;">
-            <img src="{{ url('images/upload/'.$hero['bg_image']) }}" alt="" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%); opacity: 0.9;">
+            <img src="{{ getLandingImage($hero['bg_image']) }}" alt="" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%); opacity: 0.9;">
         </div>
         <!-- Color overlay #f3ecfe sits at z-index:2, above image -->
         <div class="position-absolute" style="top:0;left:0;right:0;bottom:0;background-color:#f3ecfe;opacity:0.78;z-index:2;pointer-events:none;"></div>
@@ -250,15 +275,6 @@
                 .hero-ticker-badge {
                     display: inline-block;
                     position: relative;
-                }
-                .hero-ticker-badge::after {
-                    content: '|';
-                    color: #7b42f6;
-                    animation: blink 1s step-end infinite;
-                }
-                @keyframes blink {
-                    0%, 100% { opacity: 1; }
-                    50% { opacity: 0; }
                 }
             </style>
 
@@ -587,7 +603,7 @@
                 
                 @if(!empty($step['icon']))
                     <div class="hiw-card-photo-wrap">
-                        <img src="{{ url('images/upload/'.$step['icon']) }}" class="hiw-card-photo" alt="">
+                        <img src="{{ getLandingImage($step['icon']) }}" class="hiw-card-photo" alt="">
                     </div>
                 @endif
             </div>
@@ -667,7 +683,7 @@
 
             <!-- Center hero image with buttons overlaid -->
             <div class="cbs-hero-img-wrap">
-                <img src="{{ !empty($relief['image']) ? url('images/upload/'.$relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img">
+                <img src="{{ !empty($relief['image']) ? getLandingImage($relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img">
 
                 <div class="cbs-btns-overlay">
                     @if(!empty($relief['btn1_text']))
@@ -693,7 +709,7 @@
                 </div>
                 @if(!empty($card['icon']))
                 <div class="cbs-card-img-wrap">
-                    <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="cbs-card-img" />
+                    <img src="{{ getLandingImage($card['icon']) }}" alt="" class="cbs-card-img" />
                 </div>
                 @endif
             </div>
@@ -725,7 +741,7 @@
     }
     $edHeading = $processedTitle;
 
-    $edHeroImage = !empty($ed['hero_image']) ? url('images/upload/'.$ed['hero_image']) : 'https://images.unsplash.com/photo-1511130558040-bb3396b42b79?q=80&w=1000&auto=format&fit=crop';
+    $edHeroImage = !empty($ed['hero_image']) ? getLandingImage($ed['hero_image']) : 'https://images.unsplash.com/photo-1511130558040-bb3396b42b79?q=80&w=1000&auto=format&fit=crop';
     $edLandingUrl = route('erektionsstoerungen');
     
     $edBtn1Text = !empty($ed['btn1_text']) ? $ed['btn1_text'] : 'Meine Behandlung finden';
@@ -737,7 +753,7 @@
     $largeTitle = !empty($largeCard['title']) ? str_replace('|', '<br>', $largeCard['title']) : 'Es kommt häufiger vor, als Sie denken.';
     $largeBtnText = !empty($largeCard['btn_text']) ? $largeCard['btn_text'] : 'Mehr über Ursachen erfahren';
     $largeBtnUrl = !empty($largeCard['btn_url']) && $largeCard['btn_url'] !== '#' ? $largeCard['btn_url'] : $edLandingUrl;
-    $largeImage = !empty($largeCard['image']) ? url('images/upload/'.$largeCard['image']) : 'https://images.unsplash.com/photo-1621348123733-47a824707db9?q=80&w=1000&auto=format&fit=crop';
+    $largeImage = !empty($largeCard['image']) ? getLandingImage($largeCard['image']) : 'https://images.unsplash.com/photo-1621348123733-47a824707db9?q=80&w=1000&auto=format&fit=crop';
 
     $r1 = $ed['right_card_1'] ?? [];
     $r1Title = !empty($r1['title']) ? str_replace('|', '<br>', $r1['title']) : 'Wenn Leistung zu Druck wird';
@@ -915,7 +931,7 @@
     
     $wlSubtext = $wl['subtext'] ?? 'Abnehmspritze, Ernährungsberatung und medikamentöse Therapie – alles aus einer Hand, 100% online.';
 
-    $wlHeroImage = !empty($wl['hero_image']) ? url('images/upload/'.$wl['hero_image']) : 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=800&q=80';
+    $wlHeroImage = !empty($wl['hero_image']) ? getLandingImage($wl['hero_image']) : 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=800&q=80';
     
     $wlBtn1Text = !empty($wl['btn1_text']) ? $wl['btn1_text'] : 'Mehr erfahren';
     $wlBtn1Url = !empty($wl['btn1_url']) ? $wl['btn1_url'] : route('categories');
@@ -926,13 +942,13 @@
     $wlLeftTitle = !empty($wlLeft['title']) ? str_replace('|', '<br>', $wlLeft['title']) : 'Abnehmspritze — einfach und effektiv';
     $wlLeftBtnText = !empty($wlLeft['btn_text']) ? $wlLeft['btn_text'] : 'Jetzt informieren';
     $wlLeftBtnUrl = !empty($wlLeft['btn_url']) ? $wlLeft['btn_url'] : route('categories');
-    $wlLeftImage = !empty($wlLeft['image']) ? url('images/upload/'.$wlLeft['image']) : 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800&q=80';
+    $wlLeftImage = !empty($wlLeft['image']) ? getLandingImage($wlLeft['image']) : 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800&q=80';
 
     $wlRight = $wl['right_card'] ?? [];
     $wlRightTitle = !empty($wlRight['title']) ? str_replace('|', '<br>', $wlRight['title']) : 'Ärztlich begleitet — sicher zum Wunschgewicht';
     $wlRightBtnText = !empty($wlRight['btn_text']) ? $wlRight['btn_text'] : 'Behandlung starten';
     $wlRightBtnUrl = !empty($wlRight['btn_url']) ? $wlRight['btn_url'] : route('categories');
-    $wlRightImage = !empty($wlRight['image']) ? url('images/upload/'.$wlRight['image']) : 'https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?w=800&q=80';
+    $wlRightImage = !empty($wlRight['image']) ? getLandingImage($wlRight['image']) : 'https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?w=800&q=80';
 @endphp
 <div class="premium-section-outer home-story-weight">
     <section class="wl-banner-section">
@@ -997,7 +1013,7 @@
                     <div class="advisor-card">
                         <div class="advisor-img-wrap">
                             @if(!empty($slot['image']))
-                                <img src="{{ url('images/upload/'.$slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
+                                <img src="{{ getLandingImage($slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
                             @else
                                 <div class="advisor-img advisor-img-placeholder"></div>
                             @endif
@@ -1067,7 +1083,7 @@
     }
     
     $compSub = $compData['subheading'] ?? 'Der Unterschied, der zählt';
-    $compCenterImage = !empty($compData['center_image']) ? url('images/upload/'.$compData['center_image']) : 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=800&q=80'; /* default phone placeholder */
+    $compCenterImage = !empty($compData['center_image']) ? getLandingImage($compData['center_image']) : 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?w=800&q=80'; /* default phone placeholder */
 
     $compLeftTitle = $compData['left_col_title'] ?? 'ANDERE ANBIETER';
     $compRightTitle = $compData['right_col_title'] ?? 'DR. FUXX';
