@@ -245,8 +245,8 @@ class CategoryController extends Controller
             't3_subheading'        => $heroInput['t3_subheading'] ?? 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
             't3_cta_1_text'        => $heroInput['t3_cta_1_text'] ?? 'Jetzt Beratung starten',
             't3_cta_1_url'         => $heroInput['t3_cta_1_url'] ?? '#',
-            't3_cta_2_text'        => $heroInput['t3_cta_2_text'] ?? 'Mehr erfahren',
-            't3_cta_2_url'         => $heroInput['t3_cta_2_url'] ?? '#',
+            't3_cta_2_url'         => $heroInput['t3_cta_2_url']  ?? '#',
+            't2_rating_line'       => $heroInput['t2_rating_line'] ?? null,
         ]);
 
         // Process bottom items for Type 3
@@ -341,7 +341,8 @@ class CategoryController extends Controller
             't2_title'           => $s['steps']['t2_title']           ?? ($existing['steps']['t2_title'] ?? 'So einfach geht\'s'),
             't2_subtitle'        => $s['steps']['t2_subtitle']        ?? ($existing['steps']['t2_subtitle'] ?? 'In 3 Schritten zur Behandlung'),
             't2_subtitle_italic' => $s['steps']['t2_subtitle_italic'] ?? ($existing['steps']['t2_subtitle_italic'] ?? 'In 3 Schritten zur Behandlung'),
-            't2_desc'            => $s['steps']['t2_desc']            ?? ($existing['steps']['t2_desc'] ?? 'Schnell, diskret und ärztlich betreut — Ihre Testosteron-Injektion in wenigen Schritten.'),
+            't2_desc'            => $s['steps']['t2_desc']            ?? ($existing['steps']['t2_desc']            ?? 'Schnell, diskret und ärztlich betreut — Ihre Testosteron-Injektion in wenigen Schritten.'),
+            'bg_color'           => $s['steps']['bg_color']           ?? ($existing['steps']['bg_color']           ?? '#ffffff'),
             'steps'              => $steps,
         ];
 
@@ -479,7 +480,13 @@ class CategoryController extends Controller
             'subtitle_color'       => $faqInput['subtitle_color']       ?? ($existing['faq']['subtitle_color']       ?? '#e63946'),
             'question_color'       => $faqInput['question_color']       ?? ($existing['faq']['question_color']       ?? '#1a1a1a'),
             'question_hover_color' => $faqInput['question_hover_color'] ?? ($existing['faq']['question_hover_color'] ?? '#3b6fd4'),
-            'items'                => $faqItems,
+            'question_bg_color'        => $faqInput['question_bg_color']        ?? ($existing['faq']['question_bg_color']        ?? '#ffffff'),
+            'question_bg_hover_color'  => $faqInput['question_bg_hover_color']  ?? ($existing['faq']['question_bg_hover_color']  ?? '#f8f9fa'),
+            'question_bg_active_color' => $faqInput['question_bg_active_color'] ?? ($existing['faq']['question_bg_active_color'] ?? '#ffffff'),
+            'question_active_color'    => $faqInput['question_active_color']    ?? ($existing['faq']['question_active_color']    ?? '#ffffff'),
+            'answer_bg_color'          => $faqInput['answer_bg_color']          ?? ($existing['faq']['answer_bg_color']          ?? '#ffffff'),
+            'answer_text_color'        => $faqInput['answer_text_color']        ?? ($existing['faq']['answer_text_color']        ?? '#6c757d'),
+            'items'                    => $faqItems,
         ];
 
         // --- Testosterone Info (Section 8) ---

@@ -214,7 +214,12 @@
             .fb-item { flex: 0 0 auto; min-width: 200px; }
         }
         /* 3 STEPS */
-        .steps-section { padding: 72px 24px; background: linear-gradient(180deg, #eaf2ff 0%, #fff 100%); text-align: center; overflow: hidden; }
+        .steps-section { 
+            padding: 72px 24px; 
+            background: {{ $cmsSteps['bg_color'] ?? '#eaf2ff' }} !important;
+            text-align: center; 
+            overflow: hidden; 
+        }
         .steps-title { font-size: 2.4rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 8px; font-family: inherit; }
         .steps-title span { color: #3b6fd4; font-style: italic; font-family: inherit; }
         .steps-grid { display: flex; justify-content: center; gap: 24px; max-width: 960px; margin: 48px auto 0; position: relative; }
@@ -403,7 +408,6 @@ $cmsHero  = array_merge([
     // Type 3 defaults
     't3_heading'           => 'Testosteron-Injektion — fertig zur Direktnutzung',
     't3_subheading'        => 'Ärztlich geprüft, sofort einsatzbereit. Kein Mischen, keine Vorbereitung — einfach anwenden.',
-    't3_cta_1_text'        => 'Jetzt Beratung starten',
     't3_cta_1_url'         => '#',
     't3_cta_1_color'       => '#ef4444',
     't3_cta_1_text_color'  => '#ffffff',
@@ -411,6 +415,7 @@ $cmsHero  = array_merge([
     't3_cta_2_url'         => '#',
     't3_cta_2_color'       => '#ef4444',
     't3_cta_2_text_color'  => '#ef4444',
+    't2_rating_line'       => '<strong>4,79</strong>/5 <span style="color:#666">(14.082 Bewertungen)</span>',
     't3_bottom_items'      => [
         ['icon' => 'bx bx-user', 'text' => 'Deutsche Ärzte'],
         ['icon' => 'bx bx-shield-check', 'text' => '100% DSGVO-konform'],
@@ -444,6 +449,7 @@ $cmsSteps = array_merge([
     'section_subtitle' => '100 % online',
     'subtitle_color'   => '#3b6fd4',
     'step_number_bg'   => '#3b6fd4',
+    'bg_color'         => '#ffffff',
     'steps' => [
         ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null],
         ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null],
@@ -500,6 +506,12 @@ $cmsFaq = array_merge([
     'subtitle_color'       => '#e63946',
     'question_color'       => '#1a1a1a',
     'question_hover_color' => '#3b6fd4',
+    'question_bg_color'       => '#ffffff',
+    'question_bg_hover_color' => '#f8f9fa',
+    'question_bg_active_color' => '#ffffff',
+    'question_active_color'    => '#ffffff',
+    'answer_bg_color'          => '#ffffff',
+    'answer_text_color'        => '#6c757d',
     'items'                => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
@@ -631,13 +643,12 @@ foreach ($_validSections as $_sk) {
                     </div>
 
                     @if($cmsHero['rating_enabled'])
-                    <div class="ed-hero-t2-rating">
+                    <!-- <div class="ed-hero-t2-rating">
                         <span class="stars">★★★★★</span>
                         <div class="ml-1">
-                            <strong>{{ $cmsHero['rating_value'] }}</strong>/5 
-                            <span style="color:#666">({{ $cmsHero['rating_count'] }} Bewertungen)</span>
+                            {!! $cmsHero['t2_rating_line'] ?? '<strong>' . ($cmsHero['rating_value'] ?? '4,79') . '</strong>/5 <span style="color:#666">(' . ($cmsHero['rating_count'] ?? '14.082') . ' Bewertungen)</span>' !!}
                         </div>
-                    </div>
+                    </div> -->
                     @endif
                 </div>
 
@@ -852,6 +863,12 @@ $cmsFaq = array_merge([
     'subtitle_color'       => '#e63946',
     'question_color'       => '#1a1a1a',
     'question_hover_color' => '#3b6fd4',
+    'question_bg_color'       => '#ffffff',
+    'question_bg_hover_color' => '#f8f9fa',
+    'question_bg_active_color' => '#ffffff',
+    'question_active_color'    => '#ffffff',
+    'answer_bg_color'          => '#ffffff',
+    'answer_text_color'        => '#6c757d',
     'items'                => [
         ['question' => 'How long does the consultation process take?',  'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
         ['question' => 'Is this treatment suitable for me?',            'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
@@ -988,15 +1005,27 @@ $cmsFaq = array_merge([
                     .faq-subtitle-extra span {
                         border-bottom: none;
                     }
-                    #faqAccordion .accordion-button,
-                    #faqAccordion .accordion-button:not(.collapsed) {
+                    #faqAccordion .accordion-button {
+                        background-color: {{ $cmsFaq['question_bg_color'] ?? '#ffffff' }} !important;
                         color: {{ $cmsFaq['question_color'] ?? '#1a1a1a' }} !important;
                     }
-                    #faqAccordion .accordion-button:hover,
-                    #faqAccordion .accordion-button:focus,
-                    #faqAccordion .accordion-button:not(.collapsed):hover,
-                    #faqAccordion .accordion-button:not(.collapsed):focus {
+                    #faqAccordion .accordion-button:not(.collapsed) {
+                        background-color: {{ $cmsFaq['question_bg_active_color'] ?? '#ffffff' }} !important;
+                        color: {{ $cmsFaq['question_active_color'] ?? $cmsFaq['question_color'] ?? '#1a1a1a' }} !important;
+                    }
+                    #faqAccordion .accordion-button:hover {
+                        background-color: {{ $cmsFaq['question_bg_hover_color'] ?? '#f8f9fa' }} !important;
                         color: {{ $cmsFaq['question_hover_color'] ?? '#3b6fd4' }} !important;
+                    }
+                    #faqAccordion .accordion-collapse {
+                        background-color: {{ $cmsFaq['answer_bg_color'] ?? '#ffffff' }} !important;
+                    }
+                    #faqAccordion .accordion-body {
+                        color: {{ $cmsFaq['answer_text_color'] ?? '#6c757d' }} !important;
+                    }
+                    #faqAccordion .accordion-button:focus {
+                        box-shadow: none;
+                        border-color: rgba(0,0,0,0.125);
                     }
                 </style>
                     <div class="accordion" id="faqAccordion">
@@ -1010,7 +1039,7 @@ $cmsFaq = array_merge([
                                 </h2>
                                 <div id="faq{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}"
                                      data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
+                                    <div class="accordion-body">
                                         {!! $faq['answer'] ?? '' !!}
                                     </div>
                                 </div>

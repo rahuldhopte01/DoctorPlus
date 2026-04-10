@@ -239,15 +239,21 @@
                                     Show Star Rating
                                 </label>
                                 <div class="row">
-                                    <div class="col-md-3 form-group">
-                                        <label>Rating Value (e.g. 4,79)</label>
+                                    <div class="col-md-2 form-group">
+                                        <label>Rating Value</label>
                                         <input type="text" class="form-control" name="sections[hero][rating_value]"
                                                value="{{ $hero['rating_value'] ?? '4,79' }}">
                                     </div>
-                                    <div class="col-md-4 form-group">
-                                        <label>Review Count (e.g. 14.082)</label>
+                                    <div class="col-md-2 form-group">
+                                        <label>Review Count</label>
                                         <input type="text" class="form-control" name="sections[hero][rating_count]"
                                                value="{{ $hero['rating_count'] ?? '14.082' }}">
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <label>Rating Line (Full Text)</label>
+                                        <input type="text" class="form-control" name="sections[hero][t2_rating_line]"
+                                               value="{{ $hero['t2_rating_line'] ?? '<strong>' . ($hero['rating_value'] ?? '4,79') . '</strong>/5 <span style=\"color:#666\">(' . ($hero['rating_count'] ?? '14.082') . ' Bewertungen)</span>' }}">
+                                        <small class="text-muted">Supports HTML. Use to customize the entire line after stars.</small>
                                     </div>
                                 </div>
                             </div>
@@ -574,6 +580,15 @@
                                                    value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}" class="cms-color-picker">
                                             <input type="text" class="form-control color-hex"
                                                    value="{{ $steps['step_number_bg'] ?? '#3b6fd4' }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 form-group">
+                                        <label>Section Bg</label>
+                                        <div class="cms-color-row">
+                                            <input type="color" name="sections[steps][bg_color]"
+                                                   value="{{ $steps['bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                            <input type="text" class="form-control color-hex"
+                                                   value="{{ $steps['bg_color'] ?? '#ffffff' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -1036,6 +1051,60 @@
                                            value="{{ $faqCms['question_hover_color'] ?? '#3b6fd4' }}" class="cms-color-picker">
                                     <input type="text" class="form-control color-hex"
                                            value="{{ $faqCms['question_hover_color'] ?? '#3b6fd4' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Question Bg</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][question_bg_color]"
+                                           value="{{ $faqCms['question_bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['question_bg_color'] ?? '#ffffff' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Bg Hover</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][question_bg_hover_color]"
+                                           value="{{ $faqCms['question_bg_hover_color'] ?? '#f8f9fa' }}" class="cms-color-picker">
+                                     <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['question_bg_hover_color'] ?? '#f8f9fa' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Bg Active</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][question_bg_active_color]"
+                                           value="{{ $faqCms['question_bg_active_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['question_bg_active_color'] ?? '#ffffff' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Active Q Color</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][question_active_color]"
+                                           value="{{ $faqCms['question_active_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['question_active_color'] ?? '#ffffff' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Answer Bg</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][answer_bg_color]"
+                                           value="{{ $faqCms['answer_bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['answer_bg_color'] ?? '#ffffff' }}">
+                                </div>
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label>Answer Color</label>
+                                <div class="cms-color-row">
+                                    <input type="color" name="sections[faq][answer_text_color]"
+                                           value="{{ $faqCms['answer_text_color'] ?? '#6c757d' }}" class="cms-color-picker">
+                                    <input type="text" class="form-control color-hex"
+                                           value="{{ $faqCms['answer_text_color'] ?? '#6c757d' }}">
                                 </div>
                             </div>
                         </div>
