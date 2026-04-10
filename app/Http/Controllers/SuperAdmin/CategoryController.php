@@ -559,8 +559,43 @@ class CategoryController extends Controller
             'cards'      => $secCards,
         ];
 
+        // --- Sidebar Navigation ---
+        $snavInput = $s['sidebar_nav'] ?? [];
+        $existingSnav = $existing['sidebar_nav'] ?? [];
+        $snavItems = [];
+        foreach ($snavInput['items'] ?? [] as $item) {
+            $label = trim($item['label'] ?? '');
+            if ($label === '') continue;
+            $type = ($item['type'] ?? 'link') === 'dropdown' ? 'dropdown' : 'link';
+            $entry = [
+                'label' => $label,
+                'icon'  => trim($item['icon'] ?? 'fas fa-circle'),
+                'type'  => $type,
+            ];
+            if ($type === 'link') {
+                $entry['url'] = trim($item['url'] ?? '#');
+            } else {
+                $subItems = [];
+                foreach ($item['sub_items'] ?? [] as $sub) {
+                    $subLabel = trim($sub['label'] ?? '');
+                    if ($subLabel !== '') {
+                        $subItems[] = [
+                            'label' => $subLabel,
+                            'url'   => trim($sub['url'] ?? '#'),
+                        ];
+                    }
+                }
+                $entry['sub_items'] = $subItems;
+            }
+            $snavItems[] = $entry;
+        }
+        $sidebarNav = [
+            'enabled' => isset($snavInput['enabled']),
+            'items'   => $snavItems,
+        ];
+
         // Section order
-        $validSectionKeys = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security'];
+        $validSectionKeys = ['hero','features_bar','steps','payment_bar','medical_content','doctor_review','faq','testo_info','testo_treatments','security','sidebar_nav'];
         $sectionOrderRaw  = $s['section_order'] ?? '';
         $sectionOrder     = array_filter(array_map('trim', explode(',', $sectionOrderRaw)));
         $sectionOrder     = array_values(array_intersect($sectionOrder, $validSectionKeys));
@@ -585,6 +620,7 @@ class CategoryController extends Controller
             'testo_info'       => $testoInfo,
             'testo_treatments' => $testoTreatments,
             'security'         => $security,
+            'sidebar_nav'      => $sidebarNav,
             'section_order'    => $sectionOrder,
         ];
     }

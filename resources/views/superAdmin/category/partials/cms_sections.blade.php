@@ -21,6 +21,7 @@
         'testo_info'       => ['icon' => 'fas fa-info-circle',    'label' => 'Testosterone Info'],
         'testo_treatments' => ['icon' => 'fas fa-pills',          'label' => 'Testosterone Treatments'],
         'security'         => ['icon' => 'fas fa-shield-alt',     'label' => 'Security / Trust'],
+        'sidebar_nav'      => ['icon' => 'fas fa-bars',            'label' => 'Sidebar Navigation'],
     ];
     $defaultOrder = array_keys($sectionLabels);
     $sectionOrder = $cms['section_order'] ?? $defaultOrder;
@@ -1166,6 +1167,104 @@
                 </div>
             </div>
 
+            {{-- ============================
+                 11. SIDEBAR NAVIGATION
+            ============================ --}}
+            @php
+                $snav = $cms['sidebar_nav'] ?? [];
+                $snavItems = $snav['items'] ?? [];
+            @endphp
+            <div class="card mb-0 border-0 rounded-0">
+                <div class="card-header cms-panel-header" id="headingSidebarNav" style="background:#f8f9fa;">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button"
+                                data-toggle="collapse" data-target="#collapseSidebarNav"
+                                aria-expanded="false" aria-controls="collapseSidebarNav">
+                            <i class="fas fa-bars mr-2" style="color:#6f42c1;"></i> Section 11 — Sidebar Navigation
+                        </button>
+                    </h2>
+                </div>
+                <div id="collapseSidebarNav" class="collapse" data-parent="#cmsSectionsAccordion">
+                    <div class="card-body">
+                        <label class="cms-toggle-label mb-3">
+                            <input type="checkbox" name="sections[sidebar_nav][enabled]" value="1"
+                                   {{ ($snav['enabled'] ?? false) ? 'checked' : '' }}>
+                            Show Sidebar Navigation on category page
+                        </label>
+                        <p class="text-muted" style="font-size:0.85rem;">
+                            Add main categories and optional sub-categories that appear as a sidebar on the public category page.
+                            Set <strong>Type = Link</strong> to open a direct URL, or <strong>Type = Dropdown</strong> to show a sub-menu list.
+                        </p>
+
+                        <div id="snav-items-container">
+                            @forelse($snavItems as $si => $snavItem)
+                            <div class="snav-item card card-body mb-3 border" style="background:#f8f9fa;">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <strong class="snav-item-label">{{ $snavItem['label'] ?? 'Item '.($si+1) }}</strong>
+                                    <button type="button" class="btn btn-sm btn-outline-danger js-remove-snav-item">× Remove</button>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 form-group mb-2">
+                                        <label class="text-muted" style="font-size:0.8rem;">Label / Title</label>
+                                        <input type="text" class="form-control form-control-sm snav-label-input"
+                                               name="sections[sidebar_nav][items][{{ $si }}][label]"
+                                               value="{{ $snavItem['label'] ?? '' }}" placeholder="e.g. Behandlungen">
+                                    </div>
+                                    <div class="col-md-3 form-group mb-2">
+                                        <label class="text-muted" style="font-size:0.8rem;">Icon (Font Awesome class)</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               name="sections[sidebar_nav][items][{{ $si }}][icon]"
+                                               value="{{ $snavItem['icon'] ?? 'fas fa-circle' }}" placeholder="e.g. fas fa-home">
+                                    </div>
+                                    <div class="col-md-3 form-group mb-2">
+                                        <label class="text-muted" style="font-size:0.8rem;">Type</label>
+                                        <select class="form-control form-control-sm snav-type-select"
+                                                name="sections[sidebar_nav][items][{{ $si }}][type]">
+                                            <option value="link" {{ ($snavItem['type'] ?? 'link') === 'link' ? 'selected' : '' }}>Link (direct URL)</option>
+                                            <option value="dropdown" {{ ($snavItem['type'] ?? '') === 'dropdown' ? 'selected' : '' }}>Dropdown (sub-items)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                {{-- URL field (shown when type=link) --}}
+                                <div class="snav-url-row row {{ ($snavItem['type'] ?? 'link') === 'dropdown' ? 'd-none' : '' }}">
+                                    <div class="col-md-6 form-group mb-2">
+                                        <label class="text-muted" style="font-size:0.8rem;">URL</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                               name="sections[sidebar_nav][items][{{ $si }}][url]"
+                                               value="{{ $snavItem['url'] ?? '#' }}" placeholder="/category/page">
+                                    </div>
+                                </div>
+                                {{-- Sub-items (shown when type=dropdown) --}}
+                                <div class="snav-subitems-wrap {{ ($snavItem['type'] ?? 'link') === 'link' ? 'd-none' : '' }}">
+                                    <label class="font-weight-bold d-block mb-2" style="font-size:0.85rem;">Sub-items</label>
+                                    <div class="snav-subitems-container pl-3" style="border-left:3px solid #6f42c1;">
+                                        @foreach($snavItem['sub_items'] ?? [] as $sj => $subItem)
+                                        <div class="snav-subitem d-flex mb-2" style="gap:8px;">
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[sidebar_nav][items][{{ $si }}][sub_items][{{ $sj }}][label]"
+                                                   value="{{ $subItem['label'] ?? '' }}" placeholder="Sub-item label">
+                                            <input type="text" class="form-control form-control-sm"
+                                                   name="sections[sidebar_nav][items][{{ $si }}][sub_items][{{ $sj }}][url]"
+                                                   value="{{ $subItem['url'] ?? '#' }}" placeholder="URL">
+                                            <button type="button" class="btn btn-sm btn-outline-danger js-remove-snav-subitem flex-shrink-0">×</button>
+                                        </div>
+                                        @endforeach
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary mt-1 js-add-snav-subitem">+ Add Sub-item</button>
+                                </div>
+                            </div>
+                            @empty
+                            <p id="no-snav-msg" class="text-muted">No sidebar items yet. Click "Add Sidebar Item" to begin.</p>
+                            @endforelse
+                        </div>
+
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-2 js-add-snav-item">
+                            <i class="fas fa-plus mr-1"></i> Add Sidebar Item
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>{{-- end accordion --}}
     </div>
 </div>
@@ -1736,6 +1835,80 @@ $(function () {
         reindexT3Items();
     });
 
+    // ── Sidebar Navigation ────────────────────────────────────────────
+    function reindexSnavItems() {
+        $('#snav-items-container .snav-item').each(function (i) {
+            $(this).find('[name]').each(function () {
+                var n = $(this).attr('name');
+                if (n) $(this).attr('name', n.replace(/\[items\]\[\d+\]/, '[items][' + i + ']'));
+            });
+            reindexSnavSubitems($(this), i);
+        });
+    }
+    function reindexSnavSubitems($item, i) {
+        $item.find('.snav-subitem').each(function (j) {
+            $(this).find('[name]').each(function () {
+                var n = $(this).attr('name');
+                if (n) $(this).attr('name', n.replace(/\[sub_items\]\[\d+\]/, '[sub_items][' + j + ']'));
+            });
+        });
+    }
+
+    // Add a top-level sidebar item
+    $(document).on('click', '.js-add-snav-item', function () {
+        $('#no-snav-msg').remove();
+        var i = $('#snav-items-container .snav-item').length;
+        var html = document.getElementById('tpl-snav-item').innerHTML.replace(/__SI__/g, i);
+        $('#snav-items-container').append(html);
+    });
+
+    // Remove a top-level sidebar item
+    $(document).on('click', '.js-remove-snav-item', function () {
+        $(this).closest('.snav-item').remove();
+        reindexSnavItems();
+    });
+
+    // Toggle URL / sub-items based on type
+    $(document).on('change', '.snav-type-select', function () {
+        var $item = $(this).closest('.snav-item');
+        if ($(this).val() === 'dropdown') {
+            $item.find('.snav-url-row').addClass('d-none');
+            $item.find('.snav-subitems-wrap').removeClass('d-none');
+        } else {
+            $item.find('.snav-url-row').removeClass('d-none');
+            $item.find('.snav-subitems-wrap').addClass('d-none');
+        }
+    });
+
+    // Live-update item label from input
+    $(document).on('input', '.snav-label-input', function () {
+        var val = $(this).val() || 'Untitled';
+        $(this).closest('.snav-item').find('.snav-item-label').text(val);
+    });
+
+    // Add a sub-item
+    $(document).on('click', '.js-add-snav-subitem', function () {
+        var $item = $(this).closest('.snav-item');
+        var i = $('#snav-items-container .snav-item').index($item);
+        var j = $item.find('.snav-subitem').length;
+        var html = '<div class="snav-subitem d-flex mb-2" style="gap:8px;">' +
+            '<input type="text" class="form-control form-control-sm" ' +
+                   'name="sections[sidebar_nav][items][' + i + '][sub_items][' + j + '][label]" placeholder="Sub-item label">' +
+            '<input type="text" class="form-control form-control-sm" ' +
+                   'name="sections[sidebar_nav][items][' + i + '][sub_items][' + j + '][url]" placeholder="URL" value="#">' +
+            '<button type="button" class="btn btn-sm btn-outline-danger js-remove-snav-subitem flex-shrink-0">×</button>' +
+            '</div>';
+        $item.find('.snav-subitems-container').append(html);
+    });
+
+    // Remove a sub-item
+    $(document).on('click', '.js-remove-snav-subitem', function () {
+        var $item = $(this).closest('.snav-item');
+        var i = $('#snav-items-container .snav-item').index($item);
+        $(this).closest('.snav-subitem').remove();
+        reindexSnavSubitems($item, i);
+    });
+
     // ── Re-index ALL before submit ────────────────────────────────────
     $('form').on('submit', function () {
         reindexToc();
@@ -1743,6 +1916,7 @@ $(function () {
         reindexFaq();
         reindexDrParas();
         reindexT3Items();
+        reindexSnavItems();
     });
 });
 </script>
@@ -1771,3 +1945,48 @@ $(function () {
 <style>
 .cms-order-ghost { opacity: 0.5; background: #e8f0fe !important; border-color: #4285f4 !important; }
 </style>
+
+{{-- Sidebar Nav item template --}}
+<template id="tpl-snav-item">
+    <div class="snav-item card card-body mb-3 border" style="background:#f8f9fa;">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <strong class="snav-item-label">New Item</strong>
+            <button type="button" class="btn btn-sm btn-outline-danger js-remove-snav-item">× Remove</button>
+        </div>
+        <div class="row">
+            <div class="col-md-4 form-group mb-2">
+                <label class="text-muted" style="font-size:0.8rem;">Label / Title</label>
+                <input type="text" class="form-control form-control-sm snav-label-input"
+                       name="sections[sidebar_nav][items][__SI__][label]"
+                       value="" placeholder="e.g. Behandlungen">
+            </div>
+            <div class="col-md-3 form-group mb-2">
+                <label class="text-muted" style="font-size:0.8rem;">Icon (Font Awesome class)</label>
+                <input type="text" class="form-control form-control-sm"
+                       name="sections[sidebar_nav][items][__SI__][icon]"
+                       value="fas fa-circle" placeholder="e.g. fas fa-home">
+            </div>
+            <div class="col-md-3 form-group mb-2">
+                <label class="text-muted" style="font-size:0.8rem;">Type</label>
+                <select class="form-control form-control-sm snav-type-select"
+                        name="sections[sidebar_nav][items][__SI__][type]">
+                    <option value="link" selected>Link (direct URL)</option>
+                    <option value="dropdown">Dropdown (sub-items)</option>
+                </select>
+            </div>
+        </div>
+        <div class="snav-url-row row">
+            <div class="col-md-6 form-group mb-2">
+                <label class="text-muted" style="font-size:0.8rem;">URL</label>
+                <input type="text" class="form-control form-control-sm"
+                       name="sections[sidebar_nav][items][__SI__][url]"
+                       value="#" placeholder="/category/page">
+            </div>
+        </div>
+        <div class="snav-subitems-wrap d-none">
+            <label class="font-weight-bold d-block mb-2" style="font-size:0.85rem;">Sub-items</label>
+            <div class="snav-subitems-container pl-3" style="border-left:3px solid #6f42c1;"></div>
+            <button type="button" class="btn btn-sm btn-outline-secondary mt-1 js-add-snav-subitem">+ Add Sub-item</button>
+        </div>
+    </div>
+</template>

@@ -24,8 +24,11 @@ class SettingController extends Controller
         $currencies = Currency::get();
         $languages = Language::whereStatus(1)->get();
         $categories = \App\Models\Category::whereStatus(1)->orderBy('name', 'ASC')->get();
+        $treatments = \App\Models\Treatments::whereStatus(1)->with(['category' => function($q) {
+            $q->whereStatus(1)->orderBy('name', 'ASC');
+        }])->orderBy('name', 'ASC')->get();
 
-        return view('superAdmin.setting.setting', compact('setting', 'timezones', 'currencies', 'languages', 'categories'));
+        return view('superAdmin.setting.setting', compact('setting', 'timezones', 'currencies', 'languages', 'categories', 'treatments'));
     }
 
     public function update_general_setting(Request $request)
@@ -238,15 +241,15 @@ class SettingController extends Controller
             $data['website_header_sidebar_menu'] = json_encode($menu);
         }
 
-        // Handle Sidebar Categories (JSON)
+        // Handle Sidebar Categories — TOP-KATEGORIEN (simple category list)
         if ($request->has('sidebar_category_id')) {
             $sidebarCategories = [];
             foreach ($request->sidebar_category_id as $index => $catId) {
                 if (!empty($catId)) {
                     $sidebarCategories[] = [
-                        'id' => $catId,
-                        'is_new' => isset($request->sidebar_category_is_new[$index]) ? 1 : 0,
-                        'custom_title' => $request->sidebar_category_title[$index] ?? ''
+                        'id'           => $catId,
+                        'is_new'       => isset($request->sidebar_category_is_new[$index]) ? 1 : 0,
+                        'custom_title' => $request->sidebar_category_title[$index] ?? '',
                     ];
                 }
             }
@@ -255,19 +258,45 @@ class SettingController extends Controller
             $data['website_sidebar_categories'] = json_encode([]);
         }
 
-        // Handle ENTDECKEN Categories (JSON)
-        if ($request->has('entdecken_category_id')) {
-            $entdeckenCategories = [];
-            foreach ($request->entdecken_category_id as $index => $catId) {
-                if (!empty($catId)) {
-                    $entdeckenCategories[] = [
-                        'id' => $catId,
-                        'is_new' => isset($request->entdecken_category_is_new[$index]) ? 1 : 0,
-                        'custom_title' => $request->entdecken_category_title[$index] ?? ''
-                    ];
+        // Handle ENTDECKEN — Treatment as main item, categories as sub-items
+        if ($request->has('entdecken_treatment_id')) {
+            $entdeckenItems = [];
+            $modes        = $request->entdecken_mode ?? [];
+            $labels       = $request->entdecken_custom_label ?? [];
+            $urls         = $request->entdecken_url ?? [];
+            $subJsons     = $request->entdecken_sub_items_json ?? [];
+            foreach ($request->entdecken_treatment_id as $i => $treatId) {
+                if (empty($treatId)) continue;
+                $mode     = ($modes[$i] ?? 'link') === 'dropdown' ? 'dropdown' : 'link';
+                $subItems = [];
+                if ($mode === 'dropdown' && isset($subJsons[$i])) {
+                    $decoded = json_decode($subJsons[$i], true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $sub) {
+                            $subLabel = trim($sub['label'] ?? '');
+                            if ($subLabel !== '') {
+                                $subItems[] = [
+                                    'category_id' => $sub['category_id'] ?? null,
+                                    'label'       => $subLabel,
+                                    'url'         => trim($sub['url'] ?? '#'),
+                                ];
+                            }
+                        }
+                    }
                 }
+                $entry = [
+                    'treatment_id'  => $treatId,
+                    'custom_label'  => trim($labels[$i] ?? ''),
+                    'mode'          => $mode,
+                ];
+                if ($mode === 'link') {
+                    $entry['url'] = trim($urls[$i] ?? '#');
+                } else {
+                    $entry['sub_items'] = $subItems;
+                }
+                $entdeckenItems[] = $entry;
             }
-            $data['website_sidebar_entdecken'] = json_encode($entdeckenCategories);
+            $data['website_sidebar_entdecken'] = json_encode($entdeckenItems);
         } else {
             $data['website_sidebar_entdecken'] = json_encode([]);
         }

@@ -845,6 +845,7 @@
                                         <hr>
                                         <h5 class="my-4">{{__('Sidebar Categories (TOP-KATEGORIEN)')}}</h5>
                                         <p class="text-muted small mb-3">Control which treatments appear at the top of the sidebar. You can also label them as "NEU".</p>
+                                        {{-- TOP-KATEGORIEN: simple category list (no sub-item logic) --}}
                                         <div id="sidebar-categories-container">
                                             @php
                                                 $sidebarCats = json_decode($setting->website_sidebar_categories, true) ?: [];
@@ -857,7 +858,7 @@
                                                             <select name="sidebar_category_id[]" class="form-control">
                                                                 <option value="">{{__('Choose Category')}}</option>
                                                                 @foreach($categories as $cat)
-                                                                    <option value="{{ $cat->id }}" {{ $item['id'] == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                                                                    <option value="{{ $cat->id }}" {{ ($item['id'] ?? '') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                                                                 @endforeach
                                                             </select>
                                                         </div>
@@ -869,7 +870,7 @@
                                                             <div class="form-check mb-2">
                                                                 <input type="checkbox" name="sidebar_category_is_new[{{ $index }}]" class="form-check-input" id="is_new_{{ $index }}" {{ ($item['is_new'] ?? 0) == 1 ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="is_new_{{ $index }}">Show "NEU" Badge</label>
-                                                                <input type="hidden" name="sidebar_category_is_new_placeholder[]" value="1"> {{-- Helper for indexing --}}
+                                                                <input type="hidden" name="sidebar_category_is_new_placeholder[]" value="1">
                                                             </div>
                                                         </div>
                                                         <div class="col-md-1 text-right">
@@ -885,43 +886,78 @@
                                         </div>
 
                                         <hr>
+                                        {{-- ENTDECKEN: Treatment as main item, categories from that treatment as sub-items --}}
                                         <h5 class="my-4">{{__('ENTDECKEN Categories')}}</h5>
+                                        <p class="text-muted small mb-3">
+                                            Each row is a <strong>Treatment</strong> (main heading). Choose <strong>Direct Link</strong> to link directly to the treatment page, or <strong>Show Sub-categories</strong> to display a dropdown of all categories from that treatment.
+                                        </p>
+                                        @php
+                                            $entdeckenItems = json_decode($setting->website_sidebar_entdecken, true) ?: [];
+                                        @endphp
                                         <div id="entdecken-categories-container">
-                                            @php
-                                                $entdeckenCats = json_decode($setting->website_sidebar_entdecken, true) ?: [];
-                                            @endphp
-                                            @if(count($entdeckenCats) > 0)
-                                                @foreach($entdeckenCats as $index => $item)
-                                                    <div class="row entdecken-cat-item mb-3 align-items-end">
-                                                        <div class="col-md-4">
-                                                            <label>{{__('Category')}}</label>
-                                                            <select name="entdecken_category_id[]" class="form-control">
-                                                                <option value="">{{__('Choose Category')}}</option>
-                                                                @foreach($categories as $cat)
-                                                                    <option value="{{ $cat->id }}" {{ $item['id'] == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-5">
-                                                            <label>{{__('Custom Title (Optional)')}}</label>
-                                                            <input type="text" name="entdecken_category_title[]" value="{{ $item['custom_title'] ?? '' }}" class="form-control" placeholder="E.g. Cannabis Shop">
-                                                        </div>
-                                                        <div class="col-md-2">
-                                                            <div class="form-check mb-2">
-                                                                <input type="checkbox" name="entdecken_category_is_new[{{ $index }}]" class="form-check-input" id="ent_is_new_{{ $index }}" {{ ($item['is_new'] ?? 0) == 1 ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="ent_is_new_{{ $index }}">"NEU" Badge</label>
+                                            @foreach($entdeckenItems as $idx => $item)
+                                                @php $entMode = $item['mode'] ?? 'link'; @endphp
+                                                <div class="card entdecken-cat-item mb-3 border">
+                                                    <div class="card-body py-2">
+                                                        <div class="row align-items-end mb-1">
+                                                            <div class="col-md-4">
+                                                                <label class="small mb-1">{{__('Treatment (Main Item)')}}</label>
+                                                                <select name="entdecken_treatment_id[]" class="form-control form-control-sm entdecken-treatment-select">
+                                                                    <option value="">{{__('Choose Treatment')}}</option>
+                                                                    @foreach($treatments as $treat)
+                                                                        <option value="{{ $treat->id }}" {{ ($item['treatment_id'] ?? '') == $treat->id ? 'selected' : '' }}>{{ $treat->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="small mb-1">{{__('Custom Label (Optional)')}}</label>
+                                                                <input type="text" name="entdecken_custom_label[]" value="{{ $item['custom_label'] ?? '' }}" class="form-control form-control-sm" placeholder="E.g. Männergesundheit">
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="small mb-1">{{__('Display Mode')}}</label>
+                                                                <select name="entdecken_mode[]" class="form-control form-control-sm entdecken-mode-select">
+                                                                    <option value="link" {{ $entMode === 'link' ? 'selected' : '' }}>Direct Link</option>
+                                                                    <option value="dropdown" {{ $entMode === 'dropdown' ? 'selected' : '' }}>Show Sub-categories</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-1 text-right">
+                                                                <button type="button" class="btn btn-danger btn-sm remove-entdecken-cat mt-3"><i class="fas fa-trash"></i></button>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-1 text-right">
-                                                            <button type="button" class="btn btn-danger btn-sm remove-entdecken-cat"><i class="fas fa-trash"></i></button>
+                                                        {{-- URL row for direct link mode --}}
+                                                        <div class="entdecken-url-row row{{ $entMode === 'dropdown' ? ' d-none' : '' }}">
+                                                            <div class="col-md-6 form-group mb-1">
+                                                                <label class="small mb-1">{{__('URL')}}</label>
+                                                                <input type="text" name="entdecken_url[]" value="{{ $item['url'] ?? '#' }}" class="form-control form-control-sm" placeholder="/treatments/...">
+                                                            </div>
                                                         </div>
+                                                        {{-- Sub-categories panel (shown when mode=dropdown) --}}
+                                                        <div class="entdecken-subitems-wrap mt-2{{ $entMode === 'dropdown' ? '' : ' d-none' }}">
+                                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                                <p class="small text-muted mb-0">Sub-categories from the selected treatment (you can edit labels/URLs or remove individual ones):</p>
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary entdecken-load-cats ml-2" style="white-space:nowrap;">
+                                                                    <i class="fas fa-sync-alt"></i> Load from Treatment
+                                                                </button>
+                                                            </div>
+                                                            <div class="entdecken-subitems-container pl-3" style="border-left:3px solid #e85d04;">
+                                                                @foreach($item['sub_items'] ?? [] as $sub)
+                                                                <div class="d-flex mb-2 entdecken-subitem" style="gap:8px;">
+                                                                    <input type="text" class="form-control form-control-sm ent-sub-label" placeholder="Label" value="{{ $sub['label'] ?? '' }}">
+                                                                    <input type="text" class="form-control form-control-sm ent-sub-url" placeholder="URL" value="{{ $sub['url'] ?? '#' }}">
+                                                                    <input type="hidden" class="ent-sub-cat-id" value="{{ $sub['category_id'] ?? '' }}">
+                                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-entdecken-subitem flex-shrink-0">×</button>
+                                                                </div>
+                                                                @endforeach
+                                                            </div>
+                                                            <button type="button" class="btn btn-sm btn-outline-secondary mt-1 add-entdecken-subitem"><i class="fas fa-plus"></i> Add Sub-item Manually</button>
+                                                        </div>
+                                                        <input type="hidden" name="entdecken_sub_items_json[]" class="entdecken-sub-json" value="{{ json_encode($item['sub_items'] ?? []) }}">
                                                     </div>
-                                                @endforeach
-                                            @endif
+                                                </div>
+                                            @endforeach
                                         </div>
                                         <div class="d-flex gap-2">
-                                            <button type="button" id="add-entdecken-cat" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Category Line')}}</button>
-                                            <button type="button" id="add-all-entdecken-cats" class="btn btn-outline-primary btn-sm mb-4 ml-2"><i class="fas fa-layer-group"></i> {{__('Add All Active Categories')}}</button>
+                                            <button type="button" id="add-entdecken-item" class="btn btn-info btn-sm mb-4"><i class="fas fa-plus"></i> {{__('Add Treatment Item')}}</button>
                                         </div>
 
                                         <hr>
@@ -2384,6 +2420,21 @@
 </div>
 @endsection
 
+@php
+    $treatmentCategoriesMap = $treatments->mapWithKeys(function($t) {
+        return [$t->id => [
+            'id'   => $t->id,
+            'name' => $t->name,
+            'categories' => $t->category->map(function($c) {
+                return [
+                    'id'   => $c->id,
+                    'name' => $c->name,
+                    'slug' => \Illuminate\Support\Str::slug($c->name),
+                ];
+            })->values()->toArray(),
+        ]];
+    })->toArray();
+@endphp
 @section('js')
 <script>
     $(document).ready(function() {
@@ -2711,23 +2762,18 @@
         });
         $(document).on('click', '.remove-footer-col', function() { $(this).closest('.footer-col-item').remove(); });
 
-        // Sidebar Categories Repeater
+        // ── Sidebar Categories (TOP-KATEGORIEN) — simple repeater ──────────
         $(document).on('click', '#add-sidebar-cat', function() {
             var idx = $('#sidebar-categories-container .sidebar-cat-item').length;
+            var opts = `<option value="">{{__('Choose Category')}}</option>`;
+            @foreach($categories as $cat)
+            opts += `<option value="{{ $cat->id }}">{{ $cat->name }}</option>`;
+            @endforeach
             var html = `<div class="row sidebar-cat-item mb-3 align-items-end">
-                <div class="col-md-4">
-                    <label>{{__('Category')}}</label>
-                    <select name="sidebar_category_id[]" class="form-control">
-                        <option value="">{{__('Choose Category')}}</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label>{{__('Custom Title (Optional)')}}</label>
-                    <input type="text" name="sidebar_category_title[]" class="form-control" placeholder="E.g. Cannabis Shop">
-                </div>
+                <div class="col-md-4"><label>{{__('Category')}}</label>
+                    <select name="sidebar_category_id[]" class="form-control">${opts}</select></div>
+                <div class="col-md-4"><label>{{__('Custom Title (Optional)')}}</label>
+                    <input type="text" name="sidebar_category_title[]" class="form-control" placeholder="E.g. Cannabis Shop"></div>
                 <div class="col-md-3">
                     <div class="form-check mb-2">
                         <input type="checkbox" name="sidebar_category_is_new[${idx}]" class="form-check-input" id="is_new_${idx}">
@@ -2744,31 +2790,23 @@
 
         $(document).on('click', '#add-all-sidebar-cats', function() {
             const container = $('#sidebar-categories-container');
-            const categories = @json($categories);
-            
-            categories.forEach((cat, index) => {
-                // Check if already exists in container
+            const cats = @json($categories);
+            cats.forEach((cat) => {
                 let exists = false;
                 container.find('select[name="sidebar_category_id[]"]').each(function() {
                     if ($(this).val() == cat.id) exists = true;
                 });
-                
                 if (!exists) {
                     var idx = container.find('.sidebar-cat-item').length;
+                    var opts = `<option value="${cat.id}" selected>${cat.name}</option>`;
+                    @foreach($categories as $c)
+                    opts += `<option value="{{ $c->id }}">{{ $c->name }}</option>`;
+                    @endforeach
                     var html = `<div class="row sidebar-cat-item mb-3 align-items-end">
-                        <div class="col-md-4">
-                            <label>{{__('Category')}}</label>
-                            <select name="sidebar_category_id[]" class="form-control">
-                                <option value="${cat.id}" selected>${cat.name}</option>
-                                @foreach($categories as $c)
-                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label>{{__('Custom Title (Optional)')}}</label>
-                            <input type="text" name="sidebar_category_title[]" class="form-control" placeholder="E.g. Cannabis Shop">
-                        </div>
+                        <div class="col-md-4"><label>{{__('Category')}}</label>
+                            <select name="sidebar_category_id[]" class="form-control">${opts}</select></div>
+                        <div class="col-md-4"><label>{{__('Custom Title (Optional)')}}</label>
+                            <input type="text" name="sidebar_category_title[]" class="form-control" placeholder="E.g. Cannabis Shop"></div>
                         <div class="col-md-3">
                             <div class="form-check mb-2">
                                 <input type="checkbox" name="sidebar_category_is_new[${idx}]" class="form-check-input" id="is_new_${idx}">
@@ -2787,87 +2825,139 @@
 
         $(document).on('click', '.remove-sidebar-cat', function() {
             $(this).closest('.sidebar-cat-item').remove();
-            // Re-index checkboxes
-            $('#sidebar-categories-container .sidebar-cat-item').each(function(index) {
-                $(this).find('input[type="checkbox"]').attr('name', `sidebar_category_is_new[${index}]`).attr('id', `is_new_${index}`);
-                $(this).find('label.form-check-label').attr('for', `is_new_${index}`);
+            $('#sidebar-categories-container .sidebar-cat-item').each(function(i) {
+                $(this).find('input[name^="sidebar_category_is_new"]').attr('name', `sidebar_category_is_new[${i}]`).attr('id', `is_new_${i}`);
+                $(this).find('label.form-check-label[for^="is_new_"]').attr('for', `is_new_${i}`);
             });
         });
 
-        // --- ENTDECKEN repeater handlers ---
-        $(document).on('click', '#add-entdecken-cat', function() {
-            var idx = $('#entdecken-categories-container .entdecken-cat-item').length;
-            var html = `<div class="row entdecken-cat-item mb-3 align-items-end">
-                <div class="col-md-4">
-                    <label>{{__('Category')}}</label>
-                    <select name="entdecken_category_id[]" class="form-control">
-                        <option value="">{{__('Choose Category')}}</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-5">
-                    <label>{{__('Custom Title (Optional)')}}</label>
-                    <input type="text" name="entdecken_category_title[]" class="form-control" placeholder="E.g. Cannabis Shop">
-                </div>
-                <div class="col-md-2">
-                    <div class="form-check mb-2">
-                        <input type="checkbox" name="entdecken_category_is_new[${idx}]" class="form-check-input" id="ent_is_new_${idx}">
-                        <label class="form-check-label" for="ent_is_new_${idx}">"NEU" Badge</label>
-                    </div>
-                </div>
-                <div class="col-md-1 text-right">
-                    <button type="button" class="btn btn-danger btn-sm remove-entdecken-cat"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>`;
-            $('#entdecken-categories-container').append(html);
-        });
+        // ── ENTDECKEN — Treatment as main, categories as sub-items ─────────
+        // Pre-loaded map: treatment_id → array of {id, name, categories[]}
+        var treatmentCategories = @json($treatmentCategoriesMap);
 
-        $(document).on('click', '#add-all-entdecken-cats', function() {
-            const container = $('#entdecken-categories-container');
-            const categories = @json($categories);
-            categories.forEach((cat) => {
-                let exists = false;
-                container.find('select[name="entdecken_category_id[]"]').each(function() {
-                    if ($(this).val() == cat.id) exists = true;
-                });
-                if (!exists) {
-                    var idx = container.find('.entdecken-cat-item').length;
-                    var html = `<div class="row entdecken-cat-item mb-3 align-items-end">
+        function buildEntdeckenItemHtml(treatId, treatName, mode) {
+            treatId   = treatId   || '';
+            treatName = treatName || '';
+            mode      = mode      || 'link';
+            var treatOpts = `<option value="">{{__('Choose Treatment')}}</option>`;
+            @foreach($treatments as $treat)
+            treatOpts += `<option value="{{ $treat->id }}" ${treatId == '{{ $treat->id }}' ? 'selected' : ''}>{{ $treat->name }}</option>`;
+            @endforeach
+            return `<div class="card entdecken-cat-item mb-3 border">
+                <div class="card-body py-2">
+                    <div class="row align-items-end mb-1">
                         <div class="col-md-4">
-                            <label>{{__('Category')}}</label>
-                            <select name="entdecken_category_id[]" class="form-control">
-                                <option value="${cat.id}" selected>${cat.name}</option>
-                                @foreach($categories as $c)
-                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
-                                @endforeach
+                            <label class="small mb-1">{{__('Treatment (Main Item)')}}</label>
+                            <select name="entdecken_treatment_id[]" class="form-control form-control-sm entdecken-treatment-select">${treatOpts}</select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small mb-1">{{__('Custom Label (Optional)')}}</label>
+                            <input type="text" name="entdecken_custom_label[]" class="form-control form-control-sm" placeholder="E.g. Männergesundheit">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="small mb-1">{{__('Display Mode')}}</label>
+                            <select name="entdecken_mode[]" class="form-control form-control-sm entdecken-mode-select">
+                                <option value="link" ${mode==='link'?'selected':''}>Direct Link</option>
+                                <option value="dropdown" ${mode==='dropdown'?'selected':''}>Show Sub-categories</option>
                             </select>
                         </div>
-                        <div class="col-md-5">
-                            <label>{{__('Custom Title (Optional)')}}</label>
-                            <input type="text" name="entdecken_category_title[]" class="form-control" placeholder="E.g. Cannabis Shop">
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-check mb-2">
-                                <input type="checkbox" name="entdecken_category_is_new[${idx}]" class="form-check-input" id="ent_is_new_${idx}">
-                                <label class="form-check-label" for="ent_is_new_${idx}">"NEU" Badge</label>
-                            </div>
-                        </div>
                         <div class="col-md-1 text-right">
-                            <button type="button" class="btn btn-danger btn-sm remove-entdecken-cat"><i class="fas fa-trash"></i></button>
+                            <button type="button" class="btn btn-danger btn-sm remove-entdecken-cat mt-3"><i class="fas fa-trash"></i></button>
                         </div>
-                    </div>`;
-                    container.append(html);
-                }
+                    </div>
+                    <div class="entdecken-url-row row ${mode==='dropdown'?'d-none':''}">
+                        <div class="col-md-6 form-group mb-1">
+                            <label class="small mb-1">{{__('URL')}}</label>
+                            <input type="text" name="entdecken_url[]" value="#" class="form-control form-control-sm" placeholder="/treatments/...">
+                        </div>
+                    </div>
+                    <div class="entdecken-subitems-wrap mt-2 ${mode==='dropdown'?'':'d-none'}">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <p class="small text-muted mb-0">Sub-categories from the selected treatment:</p>
+                            <button type="button" class="btn btn-sm btn-outline-secondary entdecken-load-cats ml-2" style="white-space:nowrap;">
+                                <i class="fas fa-sync-alt"></i> Load from Treatment
+                            </button>
+                        </div>
+                        <div class="entdecken-subitems-container pl-3" style="border-left:3px solid #e85d04;"></div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary mt-1 add-entdecken-subitem"><i class="fas fa-plus"></i> Add Sub-item Manually</button>
+                    </div>
+                    <input type="hidden" name="entdecken_sub_items_json[]" class="entdecken-sub-json" value="[]">
+                </div>
+            </div>`;
+        }
+
+        // Add new treatment item
+        $(document).on('click', '#add-entdecken-item', function() {
+            $('#entdecken-categories-container').append(buildEntdeckenItemHtml());
+        });
+
+        // Remove treatment item
+        $(document).on('click', '.remove-entdecken-cat', function() {
+            $(this).closest('.entdecken-cat-item').remove();
+        });
+
+        // Toggle URL / sub-items panel when ENTDECKEN mode changes
+        $(document).on('change', '.entdecken-mode-select', function() {
+            var $item = $(this).closest('.entdecken-cat-item');
+            if ($(this).val() === 'dropdown') {
+                $item.find('.entdecken-url-row').addClass('d-none');
+                $item.find('.entdecken-subitems-wrap').removeClass('d-none');
+            } else {
+                $item.find('.entdecken-url-row').removeClass('d-none');
+                $item.find('.entdecken-subitems-wrap').addClass('d-none');
+            }
+        });
+
+        // "Load from Treatment" — auto-populate sub-items from selected treatment's categories
+        $(document).on('click', '.entdecken-load-cats', function() {
+            var $item = $(this).closest('.entdecken-cat-item');
+            var treatId = $item.find('.entdecken-treatment-select').val();
+            if (!treatId) { alert('Please select a Treatment first.'); return; }
+            var treat = treatmentCategories[treatId];
+            if (!treat || !treat.categories || treat.categories.length === 0) {
+                alert('No active categories found for this treatment.'); return;
+            }
+            var $container = $item.find('.entdecken-subitems-container');
+            $container.empty();
+            treat.categories.forEach(function(cat) {
+                $container.append(buildEntdeckenSubitemRow(cat.name, '/' + cat.slug, cat.id));
             });
         });
 
-        $(document).on('click', '.remove-entdecken-cat', function() {
-            $(this).closest('.entdecken-cat-item').remove();
-            $('#entdecken-categories-container .entdecken-cat-item').each(function(index) {
-                $(this).find('input[type="checkbox"]').attr('name', `entdecken_category_is_new[${index}]`).attr('id', `ent_is_new_${index}`);
-                $(this).find('label.form-check-label').attr('for', `ent_is_new_${index}`);
+        function buildEntdeckenSubitemRow(label, url, catId) {
+            label = label || '';
+            url   = url   || '#';
+            catId = catId || '';
+            return '<div class="d-flex mb-2 entdecken-subitem" style="gap:8px;">' +
+                '<input type="text" class="form-control form-control-sm ent-sub-label" placeholder="Label" value="' + label + '">' +
+                '<input type="text" class="form-control form-control-sm ent-sub-url" placeholder="URL" value="' + url + '">' +
+                '<input type="hidden" class="ent-sub-cat-id" value="' + catId + '">' +
+                '<button type="button" class="btn btn-sm btn-outline-danger remove-entdecken-subitem flex-shrink-0">×</button>' +
+                '</div>';
+        }
+
+        // Add sub-item manually
+        $(document).on('click', '.add-entdecken-subitem', function() {
+            $(this).closest('.entdecken-subitems-wrap').find('.entdecken-subitems-container')
+                .append(buildEntdeckenSubitemRow());
+        });
+
+        // Remove sub-item
+        $(document).on('click', '.remove-entdecken-subitem', function() {
+            $(this).closest('.entdecken-subitem').remove();
+        });
+
+        // Before form submit — serialize ENTDECKEN sub-items into hidden JSON field
+        $('form').on('submit', function() {
+            $('#entdecken-categories-container .entdecken-cat-item').each(function() {
+                var subs = [];
+                $(this).find('.entdecken-subitem').each(function() {
+                    var label = $(this).find('.ent-sub-label').val().trim();
+                    var url   = $(this).find('.ent-sub-url').val().trim();
+                    var catId = $(this).find('.ent-sub-cat-id').val();
+                    if (label) subs.push({ label: label, url: url || '#', category_id: catId });
+                });
+                $(this).find('.entdecken-sub-json').val(JSON.stringify(subs));
             });
         });
 

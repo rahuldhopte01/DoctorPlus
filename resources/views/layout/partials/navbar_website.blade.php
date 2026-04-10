@@ -590,6 +590,59 @@
         color: #7b42f6 !important;
         background: #f1eeff !important;
     }
+
+    /* ── Drill-down sidebar panels ─────────────────────────────── */
+    .sidebar-content {
+        position: relative;
+        overflow: hidden;
+        flex: 1;
+    }
+    .sidebar-panel {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+    }
+    .sidebar-panel.panel-main  { transform: translateX(0); }
+    .sidebar-panel.panel-sub   { transform: translateX(100%); }
+
+    /* When a sub-panel is active */
+    .sidebar-content.drilled .panel-main { transform: translateX(-100%); }
+    .sidebar-content.drilled .panel-sub  { transform: translateX(0); }
+
+    /* Back row */
+    .sidebar-back-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 4px 18px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #7b42f6;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 8px;
+    }
+    .sidebar-back-row i { font-size: 1.1rem; }
+    .sidebar-back-row:hover { opacity: .75; }
+
+    /* Parent-row items (has sub-items) */
+    .has-submenu > .menu-parent-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 4px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #2d2d2d;
+        border-radius: 12px;
+        transition: background 0.2s, color 0.2s;
+    }
+    .has-submenu > .menu-parent-row:hover { color: #7b42f6; }
+    .has-submenu > .menu-parent-row .submenu-arrow { transition: transform 0.3s; }
 </style>
 
 <div class="sidebar-overlay" id="sidebarOverlay">
@@ -605,65 +658,84 @@
         <div class="toggle-btn" data-type="no-rezept">{{ __('Ohne Rezept') }}</div>
     </div>
 
-    <div class="sidebar-content">
-        <ul class="sidebar-menu">
-            <!-- 1. TOP-KATEGORIEN -->
-            @if(count($sidebar_top_items) > 0)
-                <li class="menu-section-header">{{ __('TOP-KATEGORIEN') }}</li>
-                @foreach($sidebar_top_items as $item)
-                    <li>
-                        <a href="{{ route('category.detail', $item->id) }}">
-                            <span class="menu-label-wrapper">
-                                {{ $item->sidebar_custom_title }}
-                                @if($item->is_sidebar_new)
-                                    <span class="badge-neu">{{ __('NEU') }}</span>
-                                @endif
-                            </span>
-                            <i class="bi bi-chevron-right menu-arrow"></i>
-                        </a>
-                    </li>
-                @endforeach
-            @endif
+    <div class="sidebar-content" id="sidebarContent">
 
-            <!-- 2. ENTDECKEN -->
-            @if(count($sidebar_entdecken_items) > 0)
-                <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
-                @foreach($sidebar_entdecken_items as $item)
-                    <li>
-                        <a href="{{ route('category.detail', $item->id) }}">
-                            <span class="menu-label-wrapper">
-                                {{ $item->sidebar_custom_title }}
-                                @if($item->is_sidebar_new)
-                                    <span class="badge-neu">{{ __('NEU') }}</span>
-                                @endif
-                            </span>
-                            <i class="bi bi-chevron-right menu-arrow"></i>
-                        </a>
-                    </li>
-                @endforeach
-            @endif
+        {{-- ── PANEL MAIN (root list) ── --}}
+        <div class="sidebar-panel panel-main">
+            <ul class="sidebar-menu">
+                <!-- 1. TOP-KATEGORIEN -->
+                @if(count($sidebar_top_items) > 0)
+                    <li class="menu-section-header">{{ __('TOP-KATEGORIEN') }}</li>
+                    @foreach($sidebar_top_items as $item)
+                        <li>
+                            <a href="{{ route('category.detail', $item->id) }}">
+                                <span class="menu-label-wrapper">
+                                    {{ $item->sidebar_custom_title }}
+                                    @if($item->is_sidebar_new)
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                    @endforeach
+                @endif
 
-            <!-- 3. LERNEN SIE DR.FUXX KENNEN -->
-            @if(count($sidebar_lernen_items) > 0)
-                <li class="menu-section-header">{{ __('LERNEN SIE DR.FUXX KENNEN') }}</li>
-                @foreach($sidebar_lernen_items as $item)
-                    <li>
-                        <a href="{{ $item['url'] ?? '#' }}">
-                            <span class="menu-label-wrapper">{{ $item['label'] ?? '' }}</span>
-                            <i class="bi bi-chevron-right menu-arrow"></i>
-                        </a>
-                    </li>
-                @endforeach
-            @endif
+                <!-- 2. ENTDECKEN -->
+                @if(count($sidebar_entdecken_items) > 0)
+                    <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
+                    @foreach($sidebar_entdecken_items as $item)
+                        @if($item->mode === 'dropdown' && !empty($item->sub_items))
+                            <li class="has-submenu">
+                                <div class="menu-parent-row"
+                                     data-label="{{ $item->label }}"
+                                     data-subitems="{{ json_encode($item->sub_items) }}"
+                                     onclick="sidebarDrillIn(this)">
+                                    <span class="menu-label-wrapper">{{ $item->label }}</span>
+                                    <i class="bi bi-chevron-right menu-arrow"></i>
+                                </div>
+                            </li>
+                        @else
+                            <li>
+                                <a href="{{ $item->url ?? '#' }}">
+                                    <span class="menu-label-wrapper">{{ $item->label }}</span>
+                                    <i class="bi bi-chevron-right menu-arrow"></i>
+                                </a>
+                            </li>
+                        @endif
+                    @endforeach
+                @endif
 
-            {{-- Fallback --}}
-            @if(count($sidebar_top_items) == 0 && count($sidebar_entdecken_items) == 0 && count($sidebar_lernen_items) == 0)
-                <li><a href="{{ route('categories') }}"><span class="menu-label-wrapper">{{ __('Behandlungen') }}</span> <i
-                            class="bi bi-chevron-right menu-arrow"></i></a></li>
-                <li><a href="{{ url('/about-us') }}"><span class="menu-label-wrapper">{{ __('Über uns') }}</span> <i
-                            class="bi bi-chevron-right menu-arrow"></i></a></li>
-            @endif
-        </ul>
+                <!-- 3. LERNEN SIE DR.FUXX KENNEN -->
+                @if(count($sidebar_lernen_items) > 0)
+                    <li class="menu-section-header">{{ __('LERNEN SIE DR.FUXX KENNEN') }}</li>
+                    @foreach($sidebar_lernen_items as $item)
+                        <li>
+                            <a href="{{ $item['url'] ?? '#' }}">
+                                <span class="menu-label-wrapper">{{ $item['label'] ?? '' }}</span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                    @endforeach
+                @endif
+
+                {{-- Fallback --}}
+                @if(count($sidebar_top_items) == 0 && count($sidebar_entdecken_items) == 0 && count($sidebar_lernen_items) == 0)
+                    <li><a href="{{ route('categories') }}"><span class="menu-label-wrapper">{{ __('Behandlungen') }}</span><i class="bi bi-chevron-right menu-arrow"></i></a></li>
+                    <li><a href="{{ url('/about-us') }}"><span class="menu-label-wrapper">{{ __('Über uns') }}</span><i class="bi bi-chevron-right menu-arrow"></i></a></li>
+                @endif
+            </ul>
+        </div>
+
+        {{-- ── PANEL SUB (drill-down) ── --}}
+        <div class="sidebar-panel panel-sub" id="sidebarSubPanel">
+            <div class="sidebar-back-row" onclick="sidebarDrillBack()">
+                <i class="bi bi-arrow-left"></i>
+                <span id="sidebarSubTitle"></span>
+            </div>
+            <ul class="sidebar-menu" id="sidebarSubList"></ul>
+        </div>
+
     </div>
 </div>
 
@@ -940,5 +1012,49 @@
         function escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
+
+        // ── Sidebar drill-down: reset sub-panel when sidebar closes ──
+        const sidebarEl = document.getElementById('sidebarOverlay');
+        if (sidebarEl) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(m) {
+                    if (!sidebarEl.classList.contains('active')) {
+                        // Sidebar closed — reset drill-down silently (no animation)
+                        const content = document.getElementById('sidebarContent');
+                        if (content) content.classList.remove('drilled');
+                    }
+                });
+            });
+            observer.observe(sidebarEl, { attributes: true, attributeFilter: ['class'] });
+        }
     });
+
+    // ── Drill in: show sub-panel ─────────────────────────────────────
+    function sidebarDrillIn(el) {
+        var label    = el.getAttribute('data-label') || '';
+        var subItems = JSON.parse(el.getAttribute('data-subitems') || '[]');
+
+        document.getElementById('sidebarSubTitle').textContent = label;
+
+        var list = document.getElementById('sidebarSubList');
+        list.innerHTML = '';
+        subItems.forEach(function(sub) {
+            var li  = document.createElement('li');
+            var a   = document.createElement('a');
+            a.href  = sub.url || '#';
+            a.innerHTML =
+                '<span class="menu-label-wrapper">' + (sub.label || '') + '</span>' +
+                '<i class="bi bi-chevron-right menu-arrow"></i>';
+            li.appendChild(a);
+            list.appendChild(li);
+        });
+
+        document.getElementById('sidebarContent').classList.add('drilled');
+        document.getElementById('sidebarSubPanel').scrollTop = 0;
+    }
+
+    // ── Drill back: return to main panel ─────────────────────────────
+    function sidebarDrillBack() {
+        document.getElementById('sidebarContent').classList.remove('drilled');
+    }
 </script>
