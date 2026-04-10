@@ -168,11 +168,11 @@
             padding: 0;
             border-radius: 0;
             background: transparent;
-            color: #efeaf8;
+            color: #6b3ee9;
             box-shadow: none;
         }
 
-        .promo-countdown .cd-block > span {
+        .promo-countdown .cd-block>span {
             font-size: 1.95rem;
             font-weight: 800;
             line-height: 1;
@@ -224,7 +224,7 @@
                 padding: 0;
             }
 
-            .promo-countdown .cd-block > span {
+            .promo-countdown .cd-block>span {
                 font-size: 1.45rem;
             }
 
@@ -238,55 +238,56 @@
         <div class="floral-right"></div>
         <div class="promo-text">
             <em>{{ $promo['text_italic'] ?? 'Erfrischen Sie im März Ihre Gesundheit:' }}</em>
-            &nbsp;Mit dem Rabattcode <span class="promo-code">{{ $promo['text_bold_black'] ?? 'M4RZ' }}</span> sparen Sie 10 €.
-        @if(!empty($promo['end_date']))
-            <span class="promo-countdown promo-timer-container" id="promoCountdown" data-endtime="{{ $promo['end_date'] }}">
-                <span class="cd-block"><span id="cdHours" class="hours-box">00</span><small>Std</small></span>
-                <span class="cd-sep">:</span>
-                <span class="cd-block"><span id="cdMins" class="mins-box">00</span><small>Min</small></span>
-                <span class="cd-sep">:</span>
-                <span class="cd-block"><span id="cdSecs" class="secs-box">00</span><small>Sek</small></span>
-            </span>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const timerContainer = document.querySelector('.promo-timer-container');
-                    if (timerContainer) {
-                        const endTimeStr = timerContainer.getAttribute('data-endtime');
-                        // The input might be datetime-local which creates a string like "2024-04-01T23:59"
-                        const endTime = new Date(endTimeStr).getTime();
+            &nbsp;Mit dem Rabattcode <span class="promo-code">{{ $promo['text_bold_black'] ?? 'M4RZ' }}</span> sparen Sie 10
+            €.
+            @if(!empty($promo['end_date']))
+                <span class="promo-countdown promo-timer-container" id="promoCountdown" data-endtime="{{ $promo['end_date'] }}">
+                    <span class="cd-block"><span id="cdHours" class="hours-box">00</span><small>Std</small></span>
+                    <span class="cd-sep">:</span>
+                    <span class="cd-block"><span id="cdMins" class="mins-box">00</span><small>Min</small></span>
+                    <span class="cd-sep">:</span>
+                    <span class="cd-block"><span id="cdSecs" class="secs-box">00</span><small>Sek</small></span>
+                </span>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const timerContainer = document.querySelector('.promo-timer-container');
+                        if (timerContainer) {
+                            const endTimeStr = timerContainer.getAttribute('data-endtime');
+                            // The input might be datetime-local which creates a string like "2024-04-01T23:59"
+                            const endTime = new Date(endTimeStr).getTime();
 
-                        const hoursBox = timerContainer.querySelector('.hours-box');
-                        const minsBox = timerContainer.querySelector('.mins-box');
-                        const secsBox = timerContainer.querySelector('.secs-box');
+                            const hoursBox = timerContainer.querySelector('.hours-box');
+                            const minsBox = timerContainer.querySelector('.mins-box');
+                            const secsBox = timerContainer.querySelector('.secs-box');
 
-                        if (!isNaN(endTime)) {
-                            const updateTimer = () => {
-                                const now = new Date().getTime();
-                                const distance = endTime - now;
+                            if (!isNaN(endTime)) {
+                                const updateTimer = () => {
+                                    const now = new Date().getTime();
+                                    const distance = endTime - now;
 
-                                if (distance < 0) {
-                                    hoursBox.innerHTML = "00";
-                                    minsBox.innerHTML = "00";
-                                    secsBox.innerHTML = "00";
-                                    return;
-                                }
+                                    if (distance < 0) {
+                                        hoursBox.innerHTML = "00";
+                                        minsBox.innerHTML = "00";
+                                        secsBox.innerHTML = "00";
+                                        return;
+                                    }
 
-                                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(distance / (1000 * 60 * 60 * 24)) * 24;
-                                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(distance / (1000 * 60 * 60 * 24)) * 24;
+                                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                                hoursBox.innerHTML = hours < 10 ? "0" + hours : hours;
-                                minsBox.innerHTML = minutes < 10 ? "0" + minutes : minutes;
-                                secsBox.innerHTML = seconds < 10 ? "0" + seconds : seconds;
-                            };
+                                    hoursBox.innerHTML = hours < 10 ? "0" + hours : hours;
+                                    minsBox.innerHTML = minutes < 10 ? "0" + minutes : minutes;
+                                    secsBox.innerHTML = seconds < 10 ? "0" + seconds : seconds;
+                                };
 
-                            updateTimer(); // Initial call
-                            setInterval(updateTimer, 1000);
+                                updateTimer(); // Initial call
+                                setInterval(updateTimer, 1000);
+                            }
                         }
-                    }
-                });
-            </script>
-        @endif
+                    });
+                </script>
+            @endif
         </div>
     </div>
 @endif

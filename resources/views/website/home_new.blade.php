@@ -586,7 +586,9 @@
                 @endif
                 
                 @if(!empty($step['icon']))
-                    <img src="{{ url('images/upload/'.$step['icon']) }}" class="hiw-card-photo" alt="">
+                    <div class="hiw-card-photo-wrap">
+                        <img src="{{ url('images/upload/'.$step['icon']) }}" class="hiw-card-photo" alt="">
+                    </div>
                 @endif
             </div>
             @endforeach
@@ -1271,7 +1273,11 @@
 @php
     $nlData = $homeSettings['newsletter_section'] ?? [];
     $nlHeading = $nlData['heading'] ?? "Bleib auf dem\nLaufenden";
-    $nlBg = $nlData['bg_image'] ?? 'https://drfuxx.stratolution.de/WhatsApp%20Image%202026-03-17%20at%2009.45.39%20%281%29.jpeg';
+    $nlBgDefault = url('images/upload/69d60e2caf968.png');
+    $nlBg = $nlData['bg_image'] ?? '';
+    if (empty($nlBg) || str_contains($nlBg, 'WhatsApp%20Image%202026-03-17')) {
+        $nlBg = $nlBgDefault;
+    }
 @endphp
 
 <section class="newsletter-hero home-story-newsletter">
