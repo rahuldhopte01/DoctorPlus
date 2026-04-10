@@ -1184,7 +1184,8 @@ class QuestionnaireReviewController extends Controller
                 ]);
             } else {
                 $prescription->refresh();
-                $prescriptionUrl = rtrim(config('app.url'), '/') . '/prescription/upload/' . $prescription->pdf;
+                $pdfPath = storage_path('prescription-upload/' . $prescription->pdf);
+                $prescriptionUrl = base64_encode(file_get_contents($pdfPath));
                 $customer = User::find($prescription->user_id);
                 if (! $customer) {
                     Log::warning('Cannaleo prescription: customer not found', ['prescription_id' => $prescription->id]);
@@ -1658,7 +1659,8 @@ class QuestionnaireReviewController extends Controller
 
         $prescription->load(['doctor.user', 'doctor.hospital']);
         $pharmacy        = $submission->selectedCannaleoPharmacy;
-        $prescriptionUrl = rtrim(config('app.url'), '/') . '/prescription/upload/' . $prescription->pdf;
+        $pdfPath         = storage_path('prescription-upload/' . $prescription->pdf);
+        $prescriptionUrl = base64_encode(file_get_contents($pdfPath));
         $products        = CannaleoMedicine::whereIn('id', $cannaleoMedicineIds)->get();
         $payload         = CuroboPrescriptionPayloadBuilder::build(
             $prescription, $submission, $customer, $prescription->doctor, $products, $prescriptionUrl, $pharmacy

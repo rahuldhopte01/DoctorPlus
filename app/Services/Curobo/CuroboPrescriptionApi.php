@@ -37,6 +37,7 @@ class CuroboPrescriptionApi
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'API-KEY' => $this->apiKey ?? '',
+            'domain' => config('cannaleo.curobo_domain', ''),
         ])->withOptions(['verify' => $this->verifySsl])
             ->post($url, $payload);
 

@@ -83,17 +83,37 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
-                // 2. ENTDECKEN
+                // 2. ENTDECKEN — treatment-based with optional sub-items
                 $entdeckenJson = json_decode($setting->website_sidebar_entdecken, true) ?: [];
                 $sidebar_entdecken_items = collect();
-                if (count($entdeckenJson) > 0) {
-                    foreach ($entdeckenJson as $item) {
-                        $cat = \App\Models\Category::with('treatment')->whereStatus(1)->find($item['id']);
-                        if ($cat) {
-                            $cat->sidebar_custom_title = !empty($item['custom_title']) ? $item['custom_title'] : ($cat->treatment->name ?? $cat->name);
-                            $cat->is_sidebar_new = $item['is_new'] ?? 0;
-                            $sidebar_entdecken_items->push($cat);
+                foreach ($entdeckenJson as $item) {
+                    $treatId = $item['treatment_id'] ?? null;
+                    if (!$treatId) continue;
+                    $treatment = \App\Models\Treatments::find($treatId);
+                    if (!$treatment) continue;
+                    $mode  = $item['mode'] ?? 'link';
+                    $label = !empty($item['custom_label']) ? $item['custom_label'] : $treatment->name;
+                    if ($mode === 'dropdown') {
+                        // Build sub-items from saved list
+                        $subItems = [];
+                        foreach ($item['sub_items'] ?? [] as $sub) {
+                            $subItems[] = [
+                                'label'       => $sub['label'] ?? '',
+                                'url'         => $sub['url']   ?? '#',
+                                'category_id' => $sub['category_id'] ?? null,
+                            ];
                         }
+                        $sidebar_entdecken_items->push((object)[
+                            'mode'      => 'dropdown',
+                            'label'     => $label,
+                            'sub_items' => $subItems,
+                        ]);
+                    } else {
+                        $sidebar_entdecken_items->push((object)[
+                            'mode'  => 'link',
+                            'label' => $label,
+                            'url'   => $item['url'] ?? '#',
+                        ]);
                     }
                 }
 

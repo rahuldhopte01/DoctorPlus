@@ -145,25 +145,8 @@ class CuroboPrescriptionPayloadBuilder
             $totalGrossFloat += $priceFloat * $qty;
         }
 
-        // Curobo API accepted shipping values: 'delivery', 'express', 'pickup'
-        $shipping = 'delivery';
-        if (! empty($submission->cannaleo_delivery_option)) {
-            $rawOption = $submission->cannaleo_delivery_option;
-            $shippingMap = [
-                'delivery' => 'delivery',
-                'standard' => 'delivery',
-                'express'  => 'express',
-                'pickup'   => 'pickup',
-            ];
-            $shipping = $shippingMap[$rawOption] ?? 'delivery';
-        } elseif ($submission->delivery_type === 'pickup') {
-            $shipping = 'pickup';
-        }
-
+        $shipping = 'shipping';
         $pickupBranchId = null;
-        if ($shipping === 'pickup' && $pharmacy->external_id !== null && $pharmacy->external_id !== '') {
-            $pickupBranchId = is_numeric($pharmacy->external_id) ? (int) $pharmacy->external_id : null;
-        }
 
         $doctorPayload = [
             'name'            => $doctorName,
@@ -171,7 +154,6 @@ class CuroboPrescriptionPayloadBuilder
             'email'           => $doctorEmail,
             'cityOfSignature' => $cityOfSignature,
             'dateOfSignature' => $dateOfSignature,
-            'signature'       => self::resolveDoctorSignature($doctor),
         ];
 
         return [
