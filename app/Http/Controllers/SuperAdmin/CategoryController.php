@@ -516,12 +516,16 @@ class CategoryController extends Controller
             ];
         }
         $testoInfo = [
-            'enabled'     => isset($tiInput['enabled']),
-            'heading'     => $tiInput['heading']     ?? ($existingTi['heading'] ?? 'Was ist eine Testosteron-Injektion?'),
-            'paragraph_1' => $tiInput['paragraph_1'] ?? ($existingTi['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.'),
-            'paragraph_2' => $tiInput['paragraph_2'] ?? ($existingTi['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.'),
-            'paragraph_3' => $tiInput['paragraph_3'] ?? ($existingTi['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.'),
-            'cards'       => $testoCards,
+            'enabled'       => isset($tiInput['enabled']),
+            'bg_color'      => $tiInput['bg_color']      ?? ($existingTi['bg_color'] ?? '#ffffff'),
+            'card_bg_color' => $tiInput['card_bg_color'] ?? ($existingTi['card_bg_color'] ?? '#fdf5f5'),
+            'icon_color'    => $tiInput['icon_color']    ?? ($existingTi['icon_color'] ?? '#e63946'),
+            'icon_bg_color' => $tiInput['icon_bg_color'] ?? ($existingTi['icon_bg_color'] ?? '#ffffff'),
+            'heading'       => $tiInput['heading']       ?? ($existingTi['heading'] ?? 'Was ist eine Testosteron-Injektion?'),
+            'paragraph_1'   => $tiInput['paragraph_1']   ?? ($existingTi['paragraph_1'] ?? 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.'),
+            'paragraph_2'   => $tiInput['paragraph_2']   ?? ($existingTi['paragraph_2'] ?? 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.'),
+            'paragraph_3'   => $tiInput['paragraph_3']   ?? ($existingTi['paragraph_3'] ?? 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.'),
+            'cards'         => $testoCards,
         ];
 
         // --- Testosterone Treatments (Section 9) ---
@@ -548,10 +552,13 @@ class CategoryController extends Controller
             ];
         }
         $testoTreatments = [
-            'enabled'    => isset($ttInput['enabled']),
-            'heading'    => $ttInput['heading']    ?? ($existingTt['heading'] ?? 'Unsere Testosteron-Behandlungen'),
-            'subheading' => $ttInput['subheading'] ?? ($existingTt['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.'),
-            'cards'      => $treatCards,
+            'enabled'           => isset($ttInput['enabled']),
+            'bg_color'          => $ttInput['bg_color']          ?? ($existingTt['bg_color'] ?? '#fdf5f5'),
+            'button_color'      => $ttInput['button_color']      ?? ($existingTt['button_color'] ?? '#8b5cf6'),
+            'button_text_color' => $ttInput['button_text_color'] ?? ($existingTt['button_text_color'] ?? '#ffffff'),
+            'heading'           => $ttInput['heading']           ?? ($existingTt['heading'] ?? 'Unsere Testosteron-Behandlungen'),
+            'subheading'        => $ttInput['subheading']        ?? ($existingTt['subheading'] ?? 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.'),
+            'cards'             => $treatCards,
         ];
 
         // --- Security / Trust (Section 10) ---
@@ -572,9 +579,13 @@ class CategoryController extends Controller
             ];
         }
         $security = [
-            'enabled'    => isset($secInput['enabled']),
-            'heading'    => $secInput['heading']    ?? ($existingSec['heading'] ?? 'Ihre Sicherheit ist unsere Priorität'),
-            'subheading' => $secInput['subheading'] ?? ($existingSec['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.'),
+            'enabled'       => isset($secInput['enabled']),
+            'bg_color'      => $secInput['bg_color']      ?? ($existingSec['bg_color'] ?? '#fdf5f5'),
+            'card_bg_color' => $secInput['card_bg_color'] ?? ($existingSec['card_bg_color'] ?? '#ffffff'),
+            'icon_color'    => $secInput['icon_color']    ?? ($existingSec['icon_color'] ?? '#f05050'),
+            'icon_bg_color' => $secInput['icon_bg_color'] ?? ($existingSec['icon_bg_color'] ?? '#fdf0f0'),
+            'heading'       => $secInput['heading']       ?? ($existingSec['heading'] ?? 'Ihre Sicherheit ist unsere Priorität'),
+            'subheading'    => $secInput['subheading']    ?? ($existingSec['subheading'] ?? 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.'),
             'cards'      => $secCards,
         ];
 

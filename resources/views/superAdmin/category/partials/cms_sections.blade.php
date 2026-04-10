@@ -1184,6 +1184,27 @@
                                 <input type="text" class="form-control color-hex"
                                        value="{{ $ti['bg_color'] ?? '#ffffff' }}">
                             </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Card BG</label>
+                                <input type="color" name="sections[testo_info][card_bg_color]"
+                                       value="{{ $ti['card_bg_color'] ?? '#fdf5f5' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $ti['card_bg_color'] ?? '#fdf5f5' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Icon Color</label>
+                                <input type="color" name="sections[testo_info][icon_color]"
+                                       value="{{ $ti['icon_color'] ?? '#e63946' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $ti['icon_color'] ?? '#e63946' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Icon BG</label>
+                                <input type="color" name="sections[testo_info][icon_bg_color]"
+                                       value="{{ $ti['icon_bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $ti['icon_bg_color'] ?? '#ffffff' }}">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Section Heading</label>
@@ -1273,6 +1294,20 @@
                                        value="{{ $tt['bg_color'] ?? '#fdf5f5' }}" class="cms-color-picker">
                                 <input type="text" class="form-control color-hex"
                                        value="{{ $tt['bg_color'] ?? '#fdf5f5' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Button Color</label>
+                                <input type="color" name="sections[testo_treatments][button_color]"
+                                       value="{{ $tt['button_color'] ?? '#8b5cf6' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $tt['button_color'] ?? '#8b5cf6' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Btn Text</label>
+                                <input type="color" name="sections[testo_treatments][button_text_color]"
+                                       value="{{ $tt['button_text_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $tt['button_text_color'] ?? '#ffffff' }}">
                             </div>
                         </div>
                         <div class="row">
@@ -1377,6 +1412,27 @@
                                        value="{{ $sec['bg_color'] ?? '#fdf5f5' }}" class="cms-color-picker">
                                 <input type="text" class="form-control color-hex"
                                        value="{{ $sec['bg_color'] ?? '#fdf5f5' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Card BG</label>
+                                <input type="color" name="sections[security][card_bg_color]"
+                                       value="{{ $sec['card_bg_color'] ?? '#ffffff' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $sec['card_bg_color'] ?? '#ffffff' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Icon Color</label>
+                                <input type="color" name="sections[security][icon_color]"
+                                       value="{{ $sec['icon_color'] ?? '#f05050' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $sec['icon_color'] ?? '#f05050' }}">
+                            </div>
+                            <div class="cms-color-row">
+                                <label class="mb-0 text-muted" style="font-size:0.85rem;">Icon BG</label>
+                                <input type="color" name="sections[security][icon_bg_color]"
+                                       value="{{ $sec['icon_bg_color'] ?? '#fdf0f0' }}" class="cms-color-picker">
+                                <input type="text" class="form-control color-hex"
+                                       value="{{ $sec['icon_bg_color'] ?? '#fdf0f0' }}">
                             </div>
                         </div>
                         <div class="row">
@@ -2173,6 +2229,17 @@ $(function () {
         reindexDrParas();
         reindexT3Items();
         reindexSnavItems();
+    });
+
+    // Color picker sync
+    $(document).on('input', '.cms-color-picker', function() {
+        $(this).next('.color-hex').val($(this).val());
+    });
+    $(document).on('input', '.color-hex', function() {
+        var val = $(this).val();
+        if(/^#[0-9A-F]{6}$/i.test(val)) {
+            $(this).prev('.cms-color-picker').val(val);
+        }
     });
 });
 </script>

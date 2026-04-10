@@ -74,16 +74,22 @@
     ];
 
     $cmsSteps = array_merge([
-        'enabled'          => true,
-        'bg_color'         => '#ffffff',
-        'section_title'    => '3 einfache Schritte',
-        'section_subtitle' => '100 % online',
-        'subtitle_color'   => '#3b6fd4',
-        'step_number_bg'   => '#3b6fd4',
-        'steps' => [
-            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null],
-            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null],
-            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null],
+        'enabled'           => true,
+        'type'              => 'type1',
+        'section_title'     => 'Der dr.fuxx Weg:',
+        'section_subtitle'  => 'So schnell & einfach geht es',
+        'subtitle_color'    => '#3b6fd4',
+        'bg_color'          => '#ffffff',
+        'step_number_bg'    => '#3b6fd4',
+        't2_title'          => 'In nur 3 Schritten zu Ihrer Behandlung',
+        't2_subtitle'       => 'Diskret, sicher und professionell.',
+        't2_desc'           => '',
+        'icon_color'        => '#ef4444',
+        'icon_bg_color'     => '#fef2f2',
+        'steps'             => [
+            ['title_plain' => 'Füllen Sie den',  'title_highlighted' => 'medizinischen Fragebogen aus', 'highlight_color' => '#3b6fd4', 'description' => 'Starten Sie die Online-Konsultation und beantworten Sie die medizinischen Fragen.',    'image' => null, 'icon' => 'bx bx-file', 't2_title' => 'Anamnese-Bogen ausfüllen'],
+            ['title_plain' => 'Wählen Sie die',  'title_highlighted' => 'gewünschte Behandlung',        'highlight_color' => '#3b6fd4', 'description' => 'Der behandelnde Arzt prüft Ihre Angaben und stellt Ihnen bei Bedarf ein Rezept aus.', 'image' => null, 'icon' => 'bx bx-user', 't2_title' => 'Ärztliche Prüfung'],
+            ['title_plain' => 'Lieferung in',    'title_highlighted' => '1–2 Werktagen',                'highlight_color' => '#3b6fd4', 'description' => 'Sie erhalten Ihre Medikamente diskret und sicher.',                                    'image' => null, 'icon' => 'bx bx-truck', 't2_title' => 'Express-Zustellung'],
         ],
     ], $_cms['steps'] ?? []);
 
@@ -149,12 +155,15 @@
     ], $_cms['faq'] ?? []);
 
     $cmsTestoInfo = array_merge([
-        'enabled'     => true,
-        'bg_color'    => '#ffffff',
-        'heading'     => 'Was ist eine Testosteron-Injektion?',
-        'paragraph_1' => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
-        'paragraph_2' => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
-        'paragraph_3' => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
+        'enabled'       => true,
+        'bg_color'      => '#ffffff',
+        'card_bg_color' => '#fdf3f3',
+        'icon_color'    => '#f05050',
+        'icon_bg_color' => '#ffffff',
+        'heading'       => 'Was ist eine Testosteron-Injektion?',
+        'paragraph_1'   => 'Testosteron ist das wichtigste männliche Sexualhormon und spielt eine zentrale Rolle für Energie, Muskelaufbau, Stimmung und Libido. Mit zunehmendem Alter oder durch bestimmte Erkrankungen kann der Testosteronspiegel sinken — oft mit spürbaren Auswirkungen auf Körper und Wohlbefinden.',
+        'paragraph_2'   => 'Unsere fertige Testosteron-Injektion wurde speziell für die einfache Anwendung entwickelt: kein Mischen, kein Vorbereiten. Sie ist ärztlich dosiert, qualitätsgeprüft und sofort einsatzbereit. Ideal für Männer, die ihren Testosteronspiegel effektiv und unkompliziert anheben möchten.',
+        'paragraph_3'   => 'Die Behandlung erfolgt unter ärztlicher Aufsicht: Ein zugelassener Arzt prüft Ihre Angaben, stellt das Rezept aus und die fertige Injektion wird diskret zu Ihnen nach Hause geliefert.',
         'cards' => [
             ['icon' => 'bi-activity',     'title' => 'Fertige Injektion',        'subtitle' => 'Sofort einsatzbereit, keine Vorbereitung'],
             ['icon' => 'bi-check-circle', 'title' => 'Keine Vorbereitung nötig', 'subtitle' => 'Kein Mischen, kein Dosieren'],
@@ -164,10 +173,12 @@
     ], $_cms['testo_info'] ?? []);
 
     $cmsTestoTreatments = array_merge([
-        'enabled'    => true,
-        'bg_color'   => '#fdf5f5',
-        'heading'    => 'Unsere Testosteron-Behandlungen',
-        'subheading' => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
+        'enabled'           => true,
+        'bg_color'          => '#fdf5f5',
+        'button_color'      => '#8b5cf6',
+        'button_text_color' => '#ffffff',
+        'heading'           => 'Unsere Testosteron-Behandlungen',
+        'subheading'        => 'Wählen Sie die passende Behandlung — ärztlich geprüft und fertig zur Anwendung.',
         'cards' => [
             ['image' => null, 'title' => 'Energie und Antrieb zurückgewinnen',      'description' => 'Spüren Sie wieder mehr Vitalität, Leistungsfähigkeit und Lebensfreude. Unsere Testosteron-Injektion unterstützt Sie dabei, Ihren Alltag mit neuer Energie zu meistern.', 'button_text' => 'Behandlung starten', 'button_url' => '#'],
             ['image' => null, 'title' => 'Fertige Injektion — einfach und sicher',  'description' => 'Keine komplizierte Vorbereitung, kein Mischen. Die Injektion ist ärztlich dosiert und sofort anwendbar — für maximale Sicherheit und Komfort.',                         'button_text' => 'Jetzt anfragen',     'button_url' => '#'],
@@ -180,10 +191,13 @@
     ];
 
     $cmsSecurity = array_merge([
-        'enabled'    => true,
-        'bg_color'   => '#fdf5f5',
-        'heading'    => 'Ihre Sicherheit ist unsere Priorität',
-        'subheading' => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
+        'enabled'       => true,
+        'bg_color'      => '#fdf5f5',
+        'card_bg_color' => '#ffffff',
+        'icon_color'    => '#f05050',
+        'icon_bg_color' => '#fdf0f0',
+        'heading'       => 'Ihre Sicherheit ist unsere Priorität',
+        'subheading'    => 'Vertrauen, Datenschutz und medizinische Qualität — darauf können Sie sich bei dr.fuxx verlassen.',
         'cards' => [
             ['icon' => 'bi-shield', 'title' => '100% DSGVO-konform',   'description' => 'Ihre persönlichen und medizinischen Daten werden nach höchsten deutschen Datenschutzstandards verschlüsselt und geschützt.'],
             ['icon' => 'bi-person', 'title' => 'Deutsche Ärzte',        'description' => 'Alle Rezepte werden von in Deutschland zugelassenen Ärzten ausgestellt. Qualität und Sicherheit stehen bei uns an erster Stelle.'],
@@ -436,8 +450,8 @@
         .step-card-t2 { background: #fff; border-radius: 24px; padding: 48px 32px 40px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.03); transition: transform 0.3s ease; display: flex; flex-direction: column; align-items: center; }
         .step-card-t2:hover { transform: translateY(-10px); }
         .step-num-t2 { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 40px; height: 40px; background: #ef4444; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4); }
-        .step-icon-t2 { width: 72px; height: 72px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
-        .step-icon-t2 i { font-size: 1.8rem; color: #ef4444; }
+        .step-icon-t2 { width: 72px; height: 72px; background: {{ $cmsSteps['icon_bg_color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        .step-icon-t2 i { font-size: 1.8rem; color: {{ $cmsSteps['icon_color'] }}; }
         .step-card-t2 h3 { font-size: 1.35rem; font-weight: 800; color: #ef4444; margin-bottom: 12px; }
         .step-card-t2 p { font-size: 0.9rem; color: #555; line-height: 1.6; margin: 0; }
 
@@ -498,14 +512,14 @@
         .testo-content h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 24px; line-height: 1.25; }
         .testo-content p { font-size: 0.95rem; color: #555; line-height: 1.7; margin-bottom: 20px; }
         .testo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .testo-card { background-color: #fdf3f3; border-radius: 12px; padding: 28px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; }
-        .testo-icon-wrap { width: 44px; height: 44px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
-        .testo-icon-wrap i { color: #f05050; font-size: 1.3rem; }
+        .testo-card { background-color: {{ $cmsTestoInfo['card_bg_color'] }} !important; border-radius: 12px; padding: 28px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px; }
+        .testo-icon-wrap { width: 44px; height: 44px; background: {{ $cmsTestoInfo['icon_bg_color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+        .testo-icon-wrap i { color: {{ $cmsTestoInfo['icon_color'] }}; font-size: 1.3rem; }
         .testo-card h4 { font-size: 0.95rem; font-weight: 800; color: var(--ed-dark); margin: 0 0 8px; line-height: 1.3; }
         .testo-card p { font-size: 0.8rem; color: #666; margin: 0; line-height: 1.45; }
 
         /* TESTOSTERON TREATMENTS SECTION */
-        .testo-treat-section { background-color: #fdf5f5; padding: 80px 24px; text-align: center; }
+        .testo-treat-section { background-color: {{ $cmsTestoTreatments['bg_color'] }} !important; padding: 80px 24px; text-align: center; }
         .testo-treat-header h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 12px; line-height: 1.2; }
         .testo-treat-header p { font-size: 0.95rem; color: #666; max-width: 600px; margin: 0 auto 48px; line-height: 1.6; }
         .testo-treat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 1000px; margin: 0 auto; text-align: left; }
@@ -514,17 +528,17 @@
         .testo-treat-content { padding: 32px; display: flex; flex-direction: column; flex-grow: 1; justify-content: flex-start; }
         .testo-treat-content h3 { font-size: 1.25rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 12px; }
         .testo-treat-content p { font-size: 0.85rem; color: #555; line-height: 1.6; margin-bottom: 24px; }
-        .testo-treat-btn { background: #8b5cf6; color: #fff; text-decoration: none; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; transition: background 0.3s; margin-top: auto; }
-        .testo-treat-btn:hover { background: #7c3aed; color: #fff; }
+        .testo-treat-btn { background: {{ $cmsTestoTreatments['button_color'] }}; color: {{ $cmsTestoTreatments['button_text_color'] }}; text-decoration: none; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; transition: background 0.3s; margin-top: auto; }
+        .testo-treat-btn:hover { opacity: 0.9; color: {{ $cmsTestoTreatments['button_text_color'] }}; }
 
         /* SECURITY SECTION */
-        .security-section { background-color: #fdf5f5; padding: 0 24px 80px; text-align: center; } 
+        .security-section { background-color: {{ $cmsSecurity['bg_color'] }} !important; padding: 0 24px 80px; text-align: center; } 
         .security-header h2 { font-size: 2.2rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 12px; line-height: 1.25; }
         .security-header p { font-size: 0.95rem; color: #555; max-width: 600px; margin: 0 auto 48px; line-height: 1.6; }
         .security-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1040px; margin: 0 auto; text-align: center; }
-        .security-card { background: #fff; border-radius: 16px; padding: 40px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; }
-        .security-icon { width: 64px; height: 64px; background: #fdf0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
-        .security-icon i { color: #f05050; font-size: 1.6rem; }
+        .security-card { background: {{ $cmsSecurity['card_bg_color'] }} !important; border-radius: 16px; padding: 40px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); display: flex; flex-direction: column; align-items: center; }
+        .security-icon { width: 64px; height: 64px; background: {{ $cmsSecurity['icon_bg_color'] }}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; }
+        .security-icon i { color: {{ $cmsSecurity['icon_color'] }}; font-size: 1.6rem; }
         .security-card h3 { font-size: 1.05rem; font-weight: 800; color: var(--ed-dark); margin-bottom: 16px; line-height: 1.3; }
         .security-card p { font-size: 0.85rem; color: #666; line-height: 1.6; margin: 0; }
 
@@ -590,7 +604,7 @@
 
     @if($_heroType == 'type3')
         {{-- TYPE 3: TESTOSTERONE --}}
-        <section class="ed-hero-t3" style="background-image: url('{{ $_heroImgPath }}'); background-color: {{ $cmsHero['bg_color'] }};">
+        <section class="ed-hero-t3" style="background-image: url('{{ $_heroImgPath }}'); background-color: {{ $cmsHero['bg_color'] }} !important;">
             <div class="ed-hero-t3-overlay"></div>
             <div class="ed-hero-t3-card">
                 <h1>{!! $cmsHero['t3_heading'] ?? $category->name !!}</h1>
@@ -621,7 +635,7 @@
 
     @elseif($_heroType == 'type2')
         {{-- TYPE 2: CANNABIS --}}
-        <section class="ed-hero-t2" style="background-color: {{ $cmsHero['bg_color'] }};">
+        <section class="ed-hero-t2" style="background-color: {{ $cmsHero['bg_color'] }} !important;">
             <div class="ed-hero-t2-inner">
                 <div class="ed-hero-t2-text">
                     <h1>{!! $cmsHero['t2_heading'] ?? $category->name !!}</h1>
@@ -670,7 +684,7 @@
 
     @else
         {{-- TYPE 1: DEFAULT --}}
-        <section class="ed-hero" style="background-color: {{ $cmsHero['bg_color'] }};">
+        <section class="ed-hero" style="background-color: {{ $cmsHero['bg_color'] }} !important;">
             <img class="ed-hero-bg" src="{{ $_heroImgPath }}" alt="{{ $category->name }}">
             <div class="ed-hero-overlay"></div>
             <div class="ed-hero-inner">
@@ -928,7 +942,7 @@
 @case('faq')
 <!-- FAQ -->
 @if($cmsFaq['enabled'] && !empty($cmsFaq['items']))
-<section class="py-5" style="background-color: {{ $cmsFaq['bg_color'] }};">
+<section class="py-5" style="background-color: {{ $cmsFaq['bg_color'] }} !important;">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
@@ -1006,7 +1020,7 @@
 @case('testo_info')
 <!-- Section 8: Testosterone Info -->
 @if($cmsTestoInfo['enabled'])
-<section style="background-color: {{ $cmsTestoInfo['bg_color'] }};">
+<section class="testo-section-wrap" style="background-color: {{ $cmsTestoInfo['bg_color'] }} !important;">
   <div class="testo-section">
     <div class="testo-content">
       <h2>{!! $cmsTestoInfo['heading'] !!}</h2>
@@ -1032,7 +1046,7 @@
 @case('testo_treatments')
 <!-- Section 9: Testosterone Treatments -->
 @if($cmsTestoTreatments['enabled'])
-<section class="testo-treat-section" style="background-color: {{ $cmsTestoTreatments['bg_color'] }};">
+<section class="testo-treat-section" style="background-color: {{ $cmsTestoTreatments['bg_color'] }} !important;">
   <div class="testo-treat-header">
     <h2>{!! $cmsTestoTreatments['heading'] !!}</h2>
     <p>{!! $cmsTestoTreatments['subheading'] !!}</p>
