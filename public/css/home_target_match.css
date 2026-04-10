@@ -65,7 +65,7 @@ body.home-target .marquee-content {
   flex-shrink: 0;
   align-items: center;
   height: 100%;
-  animation: marquee 25s linear infinite;
+  animation: marquee 100s linear infinite;
   white-space: nowrap;
 }
 
@@ -370,8 +370,8 @@ body.home-target .tcat-img {
 
 body.home-target .tcat-img img,
 body.home-target .tcat-img i {
-  width: 52px;
-  height: 52px;
+  width: 80%;
+  height: auto;
   object-fit: contain;
   display: block;
 }
@@ -453,8 +453,8 @@ body.home-target .rating-section .text-muted {
 
 body.home-target .live-viewers {
   color: #605f64 !important;
-  margin-top: 8px !important;
-  margin-bottom: 26px;
+  margin-top: 30px !important;
+  margin-bottom: 30px;
 }
 
 body.home-target .live-viewers .spinner-grow {
@@ -471,7 +471,7 @@ body.home-target .categories-marquee-wrapper {
 body.home-target .categories-marquee-content {
   gap: 12px;
   padding: 0 0 12px;
-  animation-duration: 46s;
+  animation-duration: 100s;
 }
 
 body.home-target .category-pill {
@@ -1490,6 +1490,36 @@ body.home-target .faq-container {
   max-width: 860px;
 }
 
+body.home-target .faq-accordion {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border-top: 1px solid #e0d4fc;
+}
+
+/* New FAQ Hover Effect */
+.faq-item {
+  border-bottom: 1px solid #ececec;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 12px;
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+.faq-item:hover {
+  background-color: #a78bfa;
+  /* Vibrant purple from video */
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(124, 58, 237, 0.2);
+  border-color: transparent;
+}
+
+.faq-item:hover .faq-q,
+.faq-item:hover .faq-icon {
+  color: #ffffff !important;
+}
+
+
 body.home-target .faq-header {
   margin-bottom: 52px;
 }
@@ -1500,11 +1530,67 @@ body.home-target .faq-sub {
 }
 
 body.home-target .faq-question {
-  padding: 26px 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 0;
+  padding-left: 0;
+  border: none;
+  border-left: 3px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: padding-left 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 body.home-target .faq-q-text {
+  flex: 1;
   font-size: 1.08rem;
+  line-height: 1.45;
+  color: var(--color-text);
+  transition: color 0.2s ease;
+}
+
+body.home-target .faq-chevron {
+  flex-shrink: 0;
+  color: var(--color-text);
+  transition: transform 0.3s ease, color 0.2s ease;
+}
+
+body.home-target .faq-answer {
+  padding: 0 0 20px;
+  color: var(--color-text-light);
+  line-height: 1.7;
+  transition: color 0.2s ease;
+}
+
+body.home-target .faq-question[aria-expanded="true"] {
+  padding-left: 0;
+  border-left-color: transparent;
+}
+
+body.home-target .faq-question[aria-expanded="true"] .faq-chevron {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  body.home-target .faq-question:hover {}
+
+  body.home-target .faq-question:hover .faq-q-text,
+  body.home-target .faq-question:hover .faq-chevron {
+    color: var(--color-primary);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  body.home-target .faq-question,
+  body.home-target .faq-q-text,
+  body.home-target .faq-chevron,
+  body.home-target .faq-answer {
+    transition: none;
+  }
 }
 
 body.home-target .press-logos {
@@ -1839,6 +1925,24 @@ body.home-target .footer-inner-v2 {
     margin-right: 0 !important;
   }
 
+  body.home-target .step-card-tilted.tilt-left {
+    height: 29rem;
+    margin-right: 0 !important;
+    transform: none !important;
+  }
+
+  body.home-target .step-card-tilted.tilt-center {
+    height: 29rem;
+    margin-right: 0 !important;
+    transform: none !important;
+  }
+
+  body.home-target .step-card-tilted.tilt-right {
+    height: 29rem;
+    transform: none !important;
+    margin-left: 0 !important;
+  }
+
   body.home-target .step-card-tilted h3 {
     font-size: 1.15rem !important;
   }
@@ -1907,6 +2011,7 @@ body.home-target .footer-inner-v2 {
 
   body.home-target .cbs-btns-overlay,
   body.home-target .ed-btns-overlay,
+  body.home-target .testo-btns-overlay,
   body.home-target .wl-btns-overlay {
     position: relative;
     top: auto;
@@ -2141,7 +2246,8 @@ body.home-target .footer-inner-v2 {
   }
 
   body.home-target .comp-floating-img-wrap {
-    width: 150px;
+    width: 42%;
+    position: relative;
   }
 
   body.home-target .comp-col {
@@ -2168,7 +2274,7 @@ body.home-target .footer-inner-v2 {
   }
 
   body.home-target .faq-question {
-    padding: 22px 0;
+    padding: 20px 0;
   }
 
   body.home-target .faq-q-text {
@@ -2315,6 +2421,7 @@ body.home-target .footer-inner-v2 {
   body.home-target .advisor-img-wrap {
     aspect-ratio: 3 / 4.3;
     margin-bottom: 12px;
+    height: 12rem;
   }
 
   body.home-target .advisor-name {
@@ -2343,6 +2450,7 @@ body.home-target .home-story-intermission {
 }
 
 body.home-target .home-story-cannabis {
+  margin-top: 2rem;
   order: 30;
   padding-top: 12px;
   padding-bottom: 28px;
@@ -2888,6 +2996,7 @@ body.home-target .home-story-ed .ed-hero-img-wrap::after {
 
 body.home-target .home-story-ed .ed-btns-overlay {
   bottom: 58px;
+  color: white;
   gap: 14px;
   z-index: 60;
 }
@@ -2898,16 +3007,35 @@ body.home-target .home-story-ed .ed-btn-outline {
   background: rgba(255, 255, 255, 0.84);
 }
 
-body.home-target .home-story-ed .ed-btn-filled {
-  background: #3b6fd4;
-  border-color: #3b6fd4;
-}
-
 body.home-target .home-story-ed .ed-btn {
   min-width: 250px;
   padding: 14px 26px;
   font-size: 1rem;
   font-weight: 600;
+  text-decoration: none !important;
+  border-radius: 50px;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+body.home-target .home-story-ed .ed-btn-outline:hover {
+  background: #ffffff !important;
+  color: #11141b !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+body.home-target .home-story-ed .ed-btn-filled {
+  background: #3b6fd4;
+  border-color: #3b6fd4;
+  color: #ffffff !important;
+}
+
+body.home-target .home-story-ed .ed-btn-filled:hover {
+  background: #2a52a8 !important;
+  border-color: #2a52a8 !important;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 111, 212, 0.35);
 }
 
 body.home-target .home-story-ed .ed-cards {
@@ -2956,20 +3084,221 @@ body.home-target .home-story-ed .ed-card-large .ed-card-btn {
 }
 
 body.home-target .home-story-testo {
-  padding-top: 0;
+  order: 50;
+  padding-top: 12px;
+  padding-bottom: 28px;
 }
 
 body.home-target .home-story-testo .testo-banner-section {
-  padding-top: 64px;
+  max-width: var(--home-target-max);
+  margin: 0 auto;
+  padding: 42px 14px 26px;
+  border-radius: 30px;
+  background: linear-gradient(160deg, #f5c6c6 0%, #edb0b0 50%, #f5c6c6 100%);
+  overflow: hidden;
+  position: relative;
+}
+
+body.home-target .home-story-testo .testo-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 8;
+}
+
+body.home-target .home-story-testo .testo-pill {
+  border-color: #8b6340;
+  color: #8b6340;
+  background: rgba(250, 248, 255, 0.8);
+  padding: 8px 20px;
+  font-size: 0.71rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 20px;
+  border-radius: 50px;
+  border: 1px solid #8b6340;
+  backdrop-filter: blur(4px);
 }
 
 body.home-target .home-story-testo .testo-heading {
-  max-width: 860px;
-  font-size: clamp(2.55rem, 4.1vw, 3.45rem);
+  max-width: 70%;
+  margin: 0 auto 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(2.25rem, 4vw, 3.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: #10151b;
+  text-wrap: balance;
+}
+
+body.home-target .testo-red {
+  color: #E24B4A;
 }
 
 body.home-target .home-story-testo .testo-hero-img-wrap {
-  max-width: 860px;
+  --testo-center-x: 50%;
+  max-width: 380px;
+  margin: 0 auto -2px;
+  position: relative;
+  z-index: 4;
+  text-align: center;
+}
+
+body.home-target .home-story-testo .testo-hero-img {
+  width: min(100%, 320px);
+  height: auto;
+  max-height: 340px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1));
+  display: block;
+  position: relative;
+  left: var(--testo-center-x);
+  transform: translateX(-50%);
+}
+
+body.home-target .home-story-testo .testo-btns-overlay {
+  position: absolute;
+  left: var(--testo-center-x);
+  right: auto;
+  bottom: -6px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: max-content;
+  padding: 0;
+  z-index: 50;
+}
+
+body.home-target .home-story-testo .testo-btn {
+  min-width: 230px;
+  padding: 11px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 50px;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+body.home-target .home-story-testo .testo-btn-outline {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, 0.62);
+}
+
+body.home-target .home-story-testo .testo-btn-outline:hover {
+  background: #fff;
+  transform: translateY(-2px);
+}
+
+body.home-target .home-story-testo .testo-btn-filled {
+  background: #E24B4A;
+  border: 1px solid #E24B4A;
+  color: #fff;
+}
+
+body.home-target .home-story-testo .testo-btn-filled:hover {
+  background: #d73f3e;
+  border-color: #d73f3e;
+  transform: translateY(-2px);
+}
+
+body.home-target .home-story-testo .testo-cards {
+  max-width: var(--home-content-max);
+  margin: -4px auto 0;
+  padding: 0 8px 0;
+  gap: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  z-index: 3;
+}
+
+body.home-target .home-story-testo .testo-card {
+  min-width: 34rem;
+  width: 100%;
+  min-height: 168px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.84);
+  background: linear-gradient(135deg, #fce8e8 0%, #fdf2f2 100%);
+  box-shadow: 0 8px 24px rgba(226, 75, 74, 0.08);
+  padding: 20px 0 20px 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+body.home-target .home-story-testo .testo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(226, 75, 74, 0.15);
+}
+
+body.home-target .home-story-testo .testo-card-text {
+  width: 54%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 12px;
+  position: relative;
+  z-index: 2;
+  text-align: left;
+}
+
+body.home-target .home-story-testo .testo-card-text h3 {
+  max-width: 16rem;
+  margin: 0 0 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.04rem, 1.55vw, 1.28rem);
+  font-weight: 800;
+  line-height: 1.24;
+  color: #111;
+}
+
+body.home-target .home-story-testo .testo-card-btn {
+  background: #E24B4A;
+  border: 1px solid #E24B4A;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: fit-content;
+  text-decoration: none;
+}
+
+body.home-target .home-story-testo .testo-card-btn:hover {
+  background: #c53030;
+  border-color: #c53030;
+}
+
+body.home-target .home-story-testo .testo-card-img-wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: auto;
+  width: 46%;
+  height: 100%;
+  border-radius: 0 20px 20px 0;
+  overflow: hidden;
+}
+
+body.home-target .home-story-testo .testo-card-img {
+  width: 100%;
+  min-height: 8rem;
+  min-width: 5rem;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 body.home-target .home-story-stats .stats-section {
@@ -3116,7 +3445,7 @@ body.home-target .home-story-newsletter .nl-hero-content {
   }
 
   body.home-target .home-story-cannabis .cbs-hero-img-wrap {
-    max-width: 240px;
+    max-width: 322px;
     margin-bottom: 0;
   }
 
@@ -3126,7 +3455,13 @@ body.home-target .home-story-newsletter .nl-hero-content {
   }
 
 
-  body.home-target .home-story-cannabis .cbs-btns-overlay {
+  body.home-target .comp-table-card {
+    margin-top: -4rem !important;
+    border-radius: var(--home-card-radius);
+  }
+
+  body.home-target .home-story-cannabis .cbs-btns-overlay,
+  body.home-target .home-story-testo .testo-btns-overlay {
     position: absolute;
     bottom: 24px;
     left: 0;
@@ -3135,50 +3470,60 @@ body.home-target .home-story-newsletter .nl-hero-content {
     gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
-    padding: 0 16px;
+    padding: 0 64px;
     z-index: 5;
     transform: none;
   }
 
-  body.home-target .home-story-cannabis .cbs-btn {
+  body.home-target .home-story-cannabis .cbs-btn,
+  body.home-target .home-story-testo .testo-btn {
     width: 100%;
     min-width: 0;
     padding: 12px 16px;
     font-size: 0.9rem;
   }
 
-  body.home-target .home-story-cannabis .cbs-cards {
+  body.home-target .home-story-cannabis .cbs-cards,
+  body.home-target .home-story-testo .testo-cards {
     grid-template-columns: 1fr !important;
     padding: 0 4px 10px;
     margin-top: 10px;
     gap: 10px;
   }
 
-  body.home-target .home-story-cannabis .cbs-card {
-    min-height: 186px;
-    padding: 18px 0 18px 18px;
+  body.home-target .home-story-cannabis .cbs-card,
+  body.home-target .home-story-testo .testo-card {
+    min-width: 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
   }
 
-  body.home-target .home-story-cannabis .cbs-card-text {
-    width: 56%;
-    padding-right: 8px;
+  body.home-target .home-story-cannabis .cbs-card-text,
+  body.home-target .home-story-testo .testo-card-text {
+    padding-right: 0;
+    margin-top: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  body.home-target .home-story-cannabis .cbs-card-text h3 {
-    font-size: 1.03rem;
-    line-height: 1.25;
-    margin-bottom: 10px;
+  body.home-target .home-story-cannabis .cbs-card-text h3,
+  body.home-target .home-story-testo .testo-card-text h3 {
+    font-size: 1.05rem;
+    margin-bottom: 12px;
   }
 
-  body.home-target .home-story-cannabis .cbs-card-btn {
-    font-size: 0.78rem;
-    padding: 8px 14px;
+  body.home-target .home-story-cannabis .cbs-card-img-wrap,
+  body.home-target .home-story-testo .testo-card-img-wrap {
+    position: relative;
+    width: 153px;
+    border-radius: 12px;
+    margin: 0 auto;
   }
 
-  body.home-target .home-story-cannabis .cbs-card-img-wrap {
-    width: 44%;
-    border-radius: 0 16px 16px 0;
-  }
 
   body.home-target .home-story-weight {
     padding: 0 12px 18px;

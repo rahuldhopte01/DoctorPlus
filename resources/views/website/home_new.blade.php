@@ -343,7 +343,7 @@
             @endif
 
             <!-- Ratings -->
-            <div class="rating-section mb-3 d-flex flex-wrap align-items-center justify-content-center gap-2 mt-4">
+            <!-- <div class="rating-section mb-3 d-flex flex-wrap align-items-center justify-content-center gap-2 mt-4">
                 <div class="stars text-warning d-flex fs-5">
                     @php 
                         $stars = floatval($hero['rating_stars'] ?? 5);
@@ -357,7 +357,7 @@
                 </div>
                 <div class="fw-bold fs-6">{{ $hero['rating_score'] ?? '4,79' }}</div>
                 <div class="text-muted small">{{ $hero['rating_text'] ?? 'Hervorragend aus 13.764 Bewertungen' }}</div>
-            </div>
+            </div> -->
 
             <!-- Live Viewers -->
             @if(!empty($hero['live_viewers']))
@@ -827,51 +827,66 @@
     $testoBtn2Text = !empty($testo['btn2_text']) ? $testo['btn2_text'] : 'Jetzt Beratung starten';
     $testoBtn2Url = !empty($testo['btn2_url']) ? $testo['btn2_url'] : route('categories');
 
-    $tLeft = $testo['left_card'] ?? [];
-    $tLeftTitle = !empty($tLeft['title']) ? str_replace('|', '<br>', $tLeft['title']) : 'Energie und Antrieb zurückgewinnen';
-    $tLeftBtnText = !empty($tLeft['btn_text']) ? $tLeft['btn_text'] : 'Mehr erfahren';
-    $tLeftBtnUrl = !empty($tLeft['btn_url']) ? $tLeft['btn_url'] : route('categories');
-    $tLeftImage = !empty($tLeft['image']) ? url('images/upload/'.$tLeft['image']) : 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1000&auto=format&fit=crop';
-
-    $tRight = $testo['right_card'] ?? [];
-    $tRightTitle = !empty($tRight['title']) ? str_replace('|', '<br>', $tRight['title']) : 'Fertige Injektion — einfach und sicher';
-    $tRightBtnText = !empty($tRight['btn_text']) ? $tRight['btn_text'] : 'Behandlung starten';
-    $tRightBtnUrl = !empty($tRight['btn_url']) ? $tRight['btn_url'] : route('categories');
-    $tRightImage = !empty($tRight['image']) ? url('images/upload/'.$tRight['image']) : 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop';
+    $tCards = $testo['cards'] ?? [];
+    if (empty($tCards)) {
+        $tCards = [
+            [
+                'title' => $testo['left_card']['title'] ?? 'Energie und Antrieb zurückgewinnen',
+                'btn_text' => $testo['left_card']['btn_text'] ?? 'Mehr erfahren',
+                'btn_url' => $testo['left_card']['btn_url'] ?? route('categories'),
+                'icon' => $testo['left_card']['image'] ?? ''
+            ],
+            [
+                'title' => $testo['right_card']['title'] ?? 'Fertige Injektion — einfach und sicher',
+                'btn_text' => $testo['right_card']['btn_text'] ?? 'Behandlung starten',
+                'btn_url' => $testo['right_card']['btn_url'] ?? route('categories'),
+                'icon' => $testo['right_card']['image'] ?? ''
+            ]
+        ];
+    }
 @endphp
-<div class="premium-section-outer home-story-testo">
-    <section class="ha-banner-section testo-banner-section">
-        <div class="testo-bg-art" style="background-image:url('{{ $testoHeroImage }}');"></div>
-        <div class="testo-bg-wash"></div>
-        <div class="ha-inner testo-inner">
-            <span class="ha-pill testo-pill">{{ $testoPill }}</span>
-            <h2 class="ha-heading testo-heading">{!! $testoHeading !!}</h2>
 
-            <div class="testo-btns">
-                <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
-                <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
+<div class="premium-section-outer home-story-testo">
+    <section class="testo-banner-section">
+        <div class="testo-inner">
+            @if(!empty($testoPill))
+                <span class="testo-pill">{{ $testoPill }}</span>
+            @endif
+            
+            <h2 class="testo-heading">{!! $testoHeading !!}</h2>
+
+            <div class="testo-hero-img-wrap">
+                <img src="{{ $testoHeroImage }}" alt="Testosteron" class="testo-hero-img">
+
+                <div class="testo-btns-overlay">
+                    @if(!empty($testoBtn1Text))
+                        <a href="{{ $testoBtn1Url }}" class="testo-btn testo-btn-outline">{{ $testoBtn1Text }}</a>
+                    @endif
+                    @if(!empty($testoBtn2Text))
+                        <a href="{{ $testoBtn2Url }}" class="testo-btn testo-btn-filled">{{ $testoBtn2Text }}</a>
+                    @endif
+                </div>
             </div>
         </div>
 
         <div class="testo-cards">
+            @foreach($tCards as $card)
+            @if(!empty($card['title']))
             <div class="testo-card">
-                <div class="testo-card-text">
-                    <h3>{!! $tLeftTitle !!}</h3>
-                    <a href="{{ $tLeftBtnUrl }}" class="testo-card-btn">{{ $tLeftBtnText }}</a>
+                <div class="testo-card-text" @if(empty($card['icon'])) style="width:100%;padding-right:0;" @endif>
+                    <h3>{!! str_replace('|', '<br>', $card['title']) !!}</h3>
+                    @if(!empty($card['btn_text']))
+                        <a href="{{ $card['btn_url'] ?? '#' }}" class="testo-card-btn">{{ $card['btn_text'] }}</a>
+                    @endif
                 </div>
+                @if(!empty($card['icon']))
                 <div class="testo-card-img-wrap">
-                    <img src="{{ $tLeftImage }}" alt="Testosteron Behandlung" class="testo-card-img loaded" width="300" height="200" loading="lazy" />
+                    <img src="{{ url('images/upload/'.$card['icon']) }}" alt="" class="testo-card-img" />
                 </div>
+                @endif
             </div>
-            <div class="testo-card">
-                <div class="testo-card-text">
-                    <h3>{!! $tRightTitle !!}</h3>
-                    <a href="{{ $tRightBtnUrl }}" class="testo-card-btn">{{ $tRightBtnText }}</a>
-                </div>
-                <div class="testo-card-img-wrap">
-                    <img src="{{ $tRightImage }}" alt="Testosteron Injektion" class="testo-card-img loaded" width="300" height="200" loading="lazy" />
-                </div>
-            </div>
+            @endif
+            @endforeach
         </div>
     </section>
 </div>
