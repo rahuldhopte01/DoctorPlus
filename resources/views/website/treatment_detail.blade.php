@@ -44,6 +44,87 @@
             background-color: #fefce8;
         }
     </style>
+    <style>
+        /* ── FAQ Section ── */
+        .faq-section {
+            background: radial-gradient(circle at 12% 18%, rgba(124,58,237,0.07), transparent 34%),
+                        radial-gradient(circle at 88% 10%, rgba(139,92,246,0.06), transparent 28%),
+                        linear-gradient(180deg, #f0edf6 0%, #ece8f3 100%);
+            padding: 100px 20px;
+        }
+        .faq-container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        .faq-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .faq-heading {
+            font-family: 'Inter', system-ui, sans-serif !important;
+            font-size: 3rem;
+            font-weight: 900 !important;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+        .faq-accordion {
+            background: transparent;
+        }
+        .faq-item {
+            border-bottom: 1px solid #e0e0e0;
+            background: transparent;
+        }
+        .faq-question {
+            padding: 28px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-left: 5px solid transparent;
+            padding-left: 0;
+            transition: all 0.3s ease;
+        }
+        .faq-q-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #1f2129;
+            line-height: 1.4;
+        }
+        .faq-chevron {
+            font-size: 1.1rem;
+            color: #1f2129;
+            transition: transform 0.3s ease;
+            font-weight: bold;
+        }
+        .faq-question:hover {
+            border-left: 5px solid var(--primary-color, #7c3aed);
+            padding-left: 25px;
+        }
+        .faq-question:hover .faq-q-text {
+            color: var(--primary-color, #7c3aed);
+        }
+        .faq-question[aria-expanded="true"] .faq-chevron {
+            transform: rotate(180deg);
+        }
+        .faq-question:hover .faq-chevron {
+            color: var(--primary-color, #7c3aed);
+        }
+        .faq-answer {
+            padding: 0 0 28px 0;
+            color: #605f64;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 100%;
+        }
+        @media (max-width: 768px) {
+            .faq-section { padding: 60px 15px; }
+            .faq-heading { font-size: 1.8rem; }
+            .faq-q-text { font-size: 1rem; }
+        }
+    </style>
 </head>
 <body>
     @include('layout.partials.skeleton_loader')
@@ -332,57 +413,6 @@
                     </p>
                 </div>
 
-                <!-- FAQs -->
-                @php
-                    $faqs = [];
-                    if (isset($category->faqs)) {
-                        if (is_array($category->faqs)) {
-                            $faqs = $category->faqs;
-                        } elseif (is_string($category->faqs)) {
-                            $faqs = json_decode($category->faqs, true) ?? [];
-                        }
-                    }
-                    
-                    // Default FAQs if not available
-                    if (empty($faqs)) {
-                        $faqs = [
-                            [
-                                'question' => 'How long does the consultation process take?',
-                                'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'
-                            ],
-                            [
-                                'question' => 'Is this treatment suitable for me?',
-                                'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'
-                            ],
-                            [
-                                'question' => 'What if I have questions about my medication?',
-                                'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'
-                            ]
-                        ];
-                    }
-                @endphp
-                
-                <div class="mb-5">
-                    <h2 class="display-6 fw-bold mb-4">Frequently asked questions</h2>
-                    <div class="accordion" id="faqAccordion">
-                        @foreach($faqs as $index => $faq)
-                            <div class="accordion-item">
-                                <h2 class="accordion-header">
-                                    <button class="accordion-button {{ $index !== 0 ? 'collapsed' : '' }}" type="button" 
-                                            data-bs-toggle="collapse" data-bs-target="#faq{{ $index }}">
-                                        {{ is_array($faq) ? ($faq['question'] ?? '') : (isset($faq->question) ? $faq->question : '') }}
-                                    </button>
-                                </h2>
-                                <div id="faq{{ $index }}" class="accordion-collapse collapse {{ $index === 0 ? 'show' : '' }}" 
-                                     data-bs-parent="#faqAccordion">
-                                    <div class="accordion-body text-muted">
-                                        {{ is_array($faq) ? ($faq['answer'] ?? '') : (isset($faq->answer) ? $faq->answer : '') }}
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
             </div>
 
             <!-- Right Column - Sticky CTA -->
@@ -445,6 +475,53 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQs -->
+@php
+    $faqs = [];
+    if (isset($category->faqs)) {
+        if (is_array($category->faqs)) {
+            $faqs = $category->faqs;
+        } elseif (is_string($category->faqs)) {
+            $faqs = json_decode($category->faqs, true) ?? [];
+        }
+    }
+    if (empty($faqs)) {
+        $faqs = [
+            ['question' => 'How long does the consultation process take?', 'answer' => 'The entire process typically takes 24-48 hours from questionnaire submission to prescription approval and shipping.'],
+            ['question' => 'Is this treatment suitable for me?', 'answer' => 'Our doctors will review your questionnaire and medical history to determine if this treatment is appropriate for your specific situation.'],
+            ['question' => 'What if I have questions about my medication?', 'answer' => 'You can contact our medical team at any time with questions about your treatment. We provide ongoing support throughout your treatment period.'],
+        ];
+    }
+@endphp
+<section class="faq-section home-story-faq">
+    <div class="faq-container">
+        <div class="faq-header">
+            <h2 class="faq-heading">Frequently asked questions</h2>
+        </div>
+        <div class="faq-accordion" id="categoryFaqAccordion">
+            @foreach($faqs as $index => $faq)
+            <div class="faq-item">
+                <div class="faq-question"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#catFaqCollapse{{ $index }}"
+                     aria-expanded="{{ $index === 0 ? 'true' : 'false' }}"
+                     aria-controls="catFaqCollapse{{ $index }}">
+                    <span class="faq-q-text">{{ is_array($faq) ? ($faq['question'] ?? '') : (isset($faq->question) ? $faq->question : '') }}</span>
+                    <i class="bi bi-chevron-down faq-chevron"></i>
+                </div>
+                <div id="catFaqCollapse{{ $index }}"
+                     class="collapse {{ $index === 0 ? 'show' : '' }}"
+                     data-bs-parent="#categoryFaqAccordion">
+                    <div class="faq-answer">
+                        {!! nl2br(e(is_array($faq) ? ($faq['answer'] ?? '') : (isset($faq->answer) ? $faq->answer : ''))) !!}
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
     </div>
 </section>
