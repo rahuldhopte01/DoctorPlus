@@ -627,12 +627,12 @@ foreach ($_validSections as $_sk) {
                     </div>
 
                     @if($cmsHero['rating_enabled'])
-                    <div class="ed-hero-t2-rating">
+                    <!-- <div class="ed-hero-t2-rating">
                         <span class="stars">★★★★★</span>
                         <div class="ml-1">
                             {!! $cmsHero['t2_rating_line'] ?? '<strong>' . ($cmsHero['rating_value'] ?? '4,79') . '</strong>/5 <span style="color:#666">(' . ($cmsHero['rating_count'] ?? '14.082') . ' Bewertungen)</span>' !!}
                         </div>
-                    </div>
+                    </div> -->
                     @endif
                 </div>
 
