@@ -1,9 +1,10 @@
+@php $setting = \App\Models\Setting::first(); @endphp
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Fragebogen eingereicht – dr.fuxx</title>
+<title>Fragebogen eingereicht – {{ $setting->business_name ?? 'dr.fuxx' }}</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f8f7ff;font-family:'Helvetica Neue',Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8f7ff;padding:40px 0;">
@@ -17,7 +18,7 @@
             <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
               <tr>
                 <td style="vertical-align:middle;">
-                  <img src="{{ asset('images/logo-white.png') }}" alt="dr.fuxx" style="max-width:160px;height:auto;display:block;margin:0 auto;" />
+                  <img src="{{ ($setting && $setting->company_white_logo) ? $setting->companyWhite : asset('images/logo-white.png') }}" alt="{{ $setting->business_name ?? 'dr.fuxx' }}" style="max-width:160px;height:auto;display:block;margin:0 auto;" />
                 </td>
               </tr>
             </table>
@@ -157,7 +158,5 @@
     </td>
   </tr>
 </table>
-</body>
-</html>
 </body>
 </html>
