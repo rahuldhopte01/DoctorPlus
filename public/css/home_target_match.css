@@ -1296,8 +1296,8 @@ body.home-target .ha-inner {
 body.home-target .testo-heading,
 body.home-target .ha-heading {
   max-width: 860px;
-  font-size: clamp(2.55rem, 4.1vw, 3.45rem);
-  line-height: 1.06;
+  font-size: clamp(1.8rem, 4.1vw, 2.75rem);
+  line-height: 1.1;
   margin-bottom: 18px;
 }
 
@@ -3536,6 +3536,13 @@ body.home-target .home-story-newsletter .nl-hero-content {
     min-height: auto !important;
     width: auto !important;
     object-fit: contain;
+  }
+
+  body.home-target .home-story-testo .testo-heading {
+    font-size: 29px !important;
+    max-width: 320px;
+    margin: 0 auto 12px !important;
+    line-height: 1.2 !important;
   }
 
 
