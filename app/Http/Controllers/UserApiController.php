@@ -42,7 +42,7 @@ use OneSignal;
 use Spatie\Permission\Models\Role;
 use Stripe\StripeClient;
 
-include 'RtcTokenBuilder.php';
+require_once 'RtcTokenBuilder.php';
 
 class UserApiController extends Controller
 {

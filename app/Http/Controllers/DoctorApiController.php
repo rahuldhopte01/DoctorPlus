@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use OneSignal;
 
-include 'RtcTokenBuilder.php';
+require_once 'RtcTokenBuilder.php';
 
 class DoctorApiController extends Controller
 {

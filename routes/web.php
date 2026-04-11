@@ -52,6 +52,11 @@ use Illuminate\Support\Facades\Route;
 */
 Auth::routes();
 
+Route::get('/test-translation', function() {
+    \Illuminate\Support\Facades\Log::info('Test translation route hit');
+    return 'Route synchronization is working!';
+});
+
 Route::get('/auth-check', function () {
     return response()->json(['authenticated' => auth()->check()]);
 });
@@ -242,6 +247,12 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // pending blog
         Route::get('/blog/pending-blog', [BlogController::class, 'pending_blog']);
 
+        Route::get('language/{id}/translation', function($id) {
+            \Illuminate\Support\Facades\Log::info('Translation route hit with ID: ' . $id);
+            return app(\App\Http\Controllers\SuperAdmin\LanguageController::class)->translation($id);
+        })->name('language.translation');
+        Route::post('language/{id}/translation', [LanguageController::class, 'update_translation'])->name('language.update_translation');
+
         Route::resources([
             'treatments' => TreatmentsController::class,
             'expertise' => ExpertiseController::class,
@@ -260,9 +271,6 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
             'insurers' => InsurerController::class,
             'questionnaire' => \App\Http\Controllers\SuperAdmin\QuestionnaireController::class,
         ]);
-        
-        Route::get('language/{id}/translation', [LanguageController::class, 'translation'])->name('language.translation');
-        Route::post('language/{id}/translation', [LanguageController::class, 'update_translation'])->name('language.update_translation');
 
         // Category routes - defined separately to avoid conflict with public /category/{id} route
         Route::resource('category', CategoryController::class)->except(['show']);
