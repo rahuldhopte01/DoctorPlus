@@ -183,4 +183,44 @@ class LanguageController extends Controller
 
         return response()->download($pathToFile, $name, $headers);
     }
+
+    public function translation($id)
+    {
+        abort_if(Gate::denies('language_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $language = Language::find($id);
+        if (!$language) {
+            abort(404);
+        }
+        $path = resource_path('lang/'.$language->json_file);
+        $translations = [];
+        if (File::exists($path)) {
+            $translations = json_decode(file_get_contents($path), true);
+        }
+        return view('superAdmin.language.translation', compact('language', 'translations'));
+    }
+
+    public function update_translation(Request $request, $id)
+    {
+        abort_if(Gate::denies('language_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $language = Language::find($id);
+        if (!$language) {
+            abort(404);
+        }
+        
+        $keys = $request->input('keys');
+        $values = $request->input('values');
+        
+        $translations = [];
+        if (is_array($keys) && is_array($values) && count($keys) == count($values)) {
+            // Remove any potential empty keys or extra processing if needed
+            // But usually array_combine is enough
+            $translations = array_combine($keys, $values);
+        }
+        
+        $path = resource_path('lang/'.$language->json_file);
+        
+        File::put($path, json_encode($translations, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        
+        return redirect()->back()->with('status', __('Translations updated successfully.'));
+    }
 }

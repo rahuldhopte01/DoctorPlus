@@ -59,7 +59,10 @@
                                     @if (Gate::check('language_edit') || Gate::check('language_delete'))
                                         <td>
                                             @can('language_edit')
-                                            <a class="text-success" href="{{url('language/'.$language->id.'/edit')}}">
+                                            <a class="text-primary mr-2" href="{{url('language/'.$language->id.'/translation')}}" title="{{__('Edit Translations')}}">
+                                                <i class="fas fa-language"></i>
+                                            </a>
+                                            <a class="text-success mr-2" href="{{url('language/'.$language->id.'/edit')}}">
                                                 <i class="far fa-edit"></i>
                                             </a>
                                             @endcan

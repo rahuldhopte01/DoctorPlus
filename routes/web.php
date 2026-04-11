@@ -261,6 +261,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
             'questionnaire' => \App\Http\Controllers\SuperAdmin\QuestionnaireController::class,
         ]);
         
+        Route::get('language/{id}/translation', [LanguageController::class, 'translation'])->name('language.translation');
+        Route::post('language/{id}/translation', [LanguageController::class, 'update_translation'])->name('language.update_translation');
+
         // Category routes - defined separately to avoid conflict with public /category/{id} route
         Route::resource('category', CategoryController::class)->except(['show']);
 

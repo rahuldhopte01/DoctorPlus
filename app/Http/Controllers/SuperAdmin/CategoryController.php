@@ -442,6 +442,7 @@ class CategoryController extends Controller
         }
         $medicalContent = [
             'enabled'       => isset($mcInput['enabled']),
+            'bg_color'      => $mcInput['bg_color'] ?? ($existing['medical_content']['bg_color'] ?? '#ffffff'),
             'section_title' => $mcInput['section_title'] ?? 'Behandlungen bei',
             'toc_enabled'   => isset($mcInput['toc_enabled']),
             'toc_title'     => $mcInput['toc_title'] ?? 'Themenliste',
@@ -463,6 +464,7 @@ class CategoryController extends Controller
         }
         $doctorReview = [
             'enabled'           => isset($drInput['enabled']),
+            'bg_color'          => $drInput['bg_color'] ?? ($existing['doctor_review']['bg_color'] ?? '#ffffff'),
             'image'             => $drImage,
             'name'              => $drInput['name'] ?? ($existing['doctor_review']['name'] ?? 'Dr. med. Experte'),
             'role'              => $drInput['role'] ?? ($existing['doctor_review']['role'] ?? 'Facharzt für Urologie'),
@@ -483,6 +485,7 @@ class CategoryController extends Controller
         }
         $faq = [
             'enabled'              => isset($faqInput['enabled']),
+            'bg_color'             => $faqInput['bg_color']             ?? ($existing['faq']['bg_color']             ?? '#ffffff'),
             'title'                => $faqInput['title']                ?? ($existing['faq']['title']                ?? 'Frequently asked questions'),
             'subtitle'             => $faqInput['subtitle']             ?? ($existing['faq']['subtitle']             ?? ''),
             'subtitle_color'       => $faqInput['subtitle_color']       ?? ($existing['faq']['subtitle_color']       ?? '#e63946'),

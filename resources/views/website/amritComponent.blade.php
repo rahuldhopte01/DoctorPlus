@@ -843,7 +843,8 @@
 @case('medical_content')
 <!-- Medical Content -->
 @if($cmsMedical['enabled'])
-<div class="med-content" style="background-color: {{ $cmsMedical['bg_color'] }};">
+<div style="background-color: {{ $cmsMedical['bg_color'] }} !important; padding: 40px 0;">
+  <div class="med-content" style="padding-top: 0; padding-bottom: 0;">
   <h2>{!! $cmsMedical['section_title'] !!} {{ $category->name }}</h2>
 
   @if($cmsMedical['toc_enabled'] && !empty($cmsMedical['toc_items']))
@@ -901,8 +902,8 @@
           @break
       @endswitch
     @endforeach
+    @endforeach
   </div>
-  @endforeach
 </div>
 @endif
 @break
@@ -916,10 +917,11 @@
     ? asset('images/upload/' . $cmsDr['image'])
     : 'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=800&q=80';
 @endphp
-<div class="med-review" style="background-color: {{ $cmsDr['bg_color'] }};">
-  <div class="med-review-img">
-    <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
-  </div>
+<div style="background-color: {{ $cmsDr['bg_color'] }} !important; padding: 40px 0;">
+  <div class="med-review" style="padding-top: 0; padding-bottom: 0;">
+    <div class="med-review-img">
+      <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
+    </div>
   <div class="med-review-text">
     <div class="med-review-doc">{!! $cmsDr['name'] !!}</div>
     <div class="med-review-role">{!! $cmsDr['role'] !!}</div>
@@ -933,6 +935,7 @@
     @if($cmsDr['show_last_updated'])
     <div class="update">Letzte Aktualisierung am {{ date('d/m/Y') }}</div>
     @endif
+  </div>
   </div>
 </div>
 @endif
