@@ -52,6 +52,13 @@
         }
         body { font-family: var(--font-body, 'Inter', sans-serif); }
         h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading, 'Clash Display', sans-serif); }
+        
+        /* Global Mobile Overflow Fix */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
     </style>
 </head>
 
