@@ -144,13 +144,13 @@
         <h1 class="text-2xl md:text-3xl font-bold text-white font-heading mb-2">{{ $questionnaire->name }}</h1>
         <nav class="flex justify-center" aria-label="Breadcrumb">
             <ol class="flex items-center flex-wrap space-x-2 text-sm text-white font-body justify-center">
-                <li><a href="{{ url('/') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ __('Home') }}</a></li>
+                <li><a href="{{ url('/') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">Startseite</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li><a href="{{ route('categories') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ __('Categories') }}</a></li>
+                <li><a href="{{ route('categories') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">Kategorien</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
                 <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ $category->name }}</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li class="text-white font-semibold opacity-100">{{ __('Questionnaire') }}</li>
+                <li class="text-white font-semibold opacity-100">Fragebogen</li>
             </ol>
         </nav>
     </div>
@@ -184,7 +184,7 @@
                 <!-- Modern Progress Indicator -->
                 <div class="mb-6 pb-6 border-b border-gray-100">
                     <div class="flex justify-between items-center mb-3">
-                        <span class="font-body text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Questionnaire Progress') }}</span>
+                        <span class="font-body text-xs font-bold text-gray-500 uppercase tracking-wider">Fortschritt des Fragebogens</span>
                         <span class="font-heading text-lg font-bold text-primary" id="progressText">0%</span>
                     </div>
                     <div class="progress h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -196,7 +196,7 @@
                 <div id="saveIndicator" class="hidden mb-5 p-3 bg-purple-light border border-primary/20 rounded-3">
                     <div class="flex items-center text-primary">
                         <i class="fas fa-save mr-2"></i>
-                        <span class="font-body text-sm fw-medium" id="saveIndicatorText">{{ __('Saving...') }}</span>
+                        <span class="font-body text-sm fw-medium" id="saveIndicatorText">Speichern...</span>
                     </div>
                 </div>
 
@@ -237,7 +237,7 @@
                                     class="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                     data-question-id="{{ $question->id }}"
                                     value="{{ $savedValue }}"
-                                    placeholder="{{ __('Type your answer here...') }}"
+                                    placeholder="Geben Sie hier Ihre Antwort ein..."
                                     @if($question->required) required @endif
                                     @if($question->validation_rules)
                                         @if(isset($question->validation_rules['min'])) minlength="{{ $question->validation_rules['min'] }}" @endif
@@ -255,7 +255,7 @@
                                     class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                     data-question-id="{{ $question->id }}"
                                     rows="4"
-                                    placeholder="{{ __('Type your detailed answer here...') }}"
+                                    placeholder="Geben Sie hier Ihre detaillierte Antwort ein..."
                                     @if($question->required) required @endif>{{ $savedValue }}</textarea>
                                 @break
 
@@ -289,7 +289,7 @@
                                         style="left: 50%; top: 50%;"
                                         data-question-id="{{ $question->id }}"
                                         @if($question->required) required @endif>
-                                        <option value="">{{ __('Select an option') }}</option>
+                                            <span>Option auswählen</span>
                                         @foreach($question->options ?? [] as $option)
                                             <option value="{{ $option }}" 
                                                 {{ $savedValue !== null && $savedValue == $option ? 'selected' : '' }}>
@@ -300,7 +300,7 @@
                                     
                                     <div class="custom-select-trigger w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/10 transition-all font-body text-gray-800 flex justify-between items-center cursor-pointer hover:border-primary shadow-sm group text-base" tabindex="0">
                                         <span class="selected-text truncate font-medium align-middle {{ $savedValue !== null && $savedValue !== '' ? 'text-gray-900' : 'text-gray-500' }}">
-                                            {{ $savedValue !== null && $savedValue !== '' ? $savedValue : __('Select an option') }}
+                                            {{ $savedValue !== null && $savedValue !== '' ? $savedValue : 'Option auswählen' }}
                                         </span>
                                         <div class="w-8 h-8 rounded-circle bg-white flex items-center justify-center shadow-sm border border-gray-100 flex-shrink-0 transition-colors duration-300 trigger-icon-bg group-hover:border-primary/50">
                                             <i class="fas fa-chevron-down text-primary text-sm transition-transform duration-300 dropdown-icon"></i>
@@ -309,7 +309,7 @@
                                     
                                     <div class="custom-select-options absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 pointer-events-none transition-all duration-300 font-body overflow-hidden p-1 text-base" style="z-index: 1000; top: 100%; left: 0; max-height: 250px; overflow-y: auto;">
                                         <div class="option-item flex items-center justify-between px-4 py-2 mb-1 rounded-md cursor-pointer transition-all duration-200 {{ $savedValue === null || $savedValue === '' ? 'bg-purple-light text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-primary' }}" data-value="">
-                                            <span>{{ __('Select an option') }}</span>
+                                            <span>Option auswählen</span>
                                             <i class="fas fa-check text-primary {{ $savedValue === null || $savedValue === '' ? 'opacity-100' : 'opacity-0' }} transition-opacity"></i>
                                         </div>
                                         @foreach($question->options ?? [] as $option)
@@ -400,7 +400,7 @@
                                         @endif>
                                     @if($question->validation_rules && isset($question->validation_rules['file_types']))
                                         <p class="mt-3 text-xs text-muted font-body">
-                                            {{ __('Allowed types:') }} <span class="font-medium text-gray-700">{{ implode(', ', $question->validation_rules['file_types']) }}</span>
+                                            Erlaubte Typen: <span class="font-medium text-gray-700">{{ implode(', ', $question->validation_rules['file_types']) }}</span>
                                         </p>
                                     @endif
                                 </div>
@@ -456,7 +456,7 @@
                 <!-- Warning Flags -->
                 <div id="warningFlags" class="hidden mb-5 p-4 bg-orange-light border border-warning/30 rounded-3">
                     <h5 class="font-heading font-medium text-warning mb-2 d-flex align-items-center">
-                        <i class="bi bi-exclamation-circle-fill mr-2"></i> {{ __('Please note:') }}
+                        <i class="bi bi-exclamation-circle-fill mr-2"></i> Bitte beachten Sie:
                     </h5>
                     <ul id="warningList" class="list-disc list-inside text-muted font-body mb-0"></ul>
                 </div>
@@ -471,8 +471,8 @@
                                 <i class="bi bi-person-circle text-white fs-5"></i>
                             </div>
                             <div>
-                                <h6 class="fw-bold mb-0 font-heading">{{ __('Konto anlegen & bezahlen') }}</h6>
-                                <small class="text-muted">{{ __('Ihr Konto wird automatisch für Sie eingerichtet') }}</small>
+                                <h6 class="fw-bold mb-0 font-heading">Konto anlegen & bezahlen</h6>
+                                <small class="text-muted">Ihr Konto wird automatisch für Sie eingerichtet</small>
                             </div>
                         </div>
 
@@ -482,13 +482,13 @@
                                 class="btn btn-sm fw-semibold flex-fill active-auth-tab"
                                 onclick="switchInlineAuthTab('register')"
                                 style="border-radius:20px;padding:6px 16px;background:var(--primary-color);color:#fff;border:none;min-width:140px;">
-                                {{ __('Neu registrieren') }}
+                                Neu registrieren
                             </button>
                             <button type="button" id="authTabLogin"
                                 class="btn btn-sm fw-semibold flex-fill"
                                 onclick="switchInlineAuthTab('login')"
                                 style="border-radius:20px;padding:6px 16px;background:#f1f3f5;color:#333;border:none;min-width:140px;">
-                                {{ __('Bereits registriert') }}
+                                Bereits registriert
                             </button>
                         </div>
 
@@ -497,31 +497,31 @@
                             <div class="row g-2 mb-2">
                                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                                     <input type="text" id="inline_first_name" class="form-control form-control-sm"
-                                           placeholder="{{ __('Vorname') }} *">
+                                           placeholder="Vorname *">
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <input type="text" id="inline_last_name" class="form-control form-control-sm"
-                                           placeholder="{{ __('Nachname') }} *">
+                                           placeholder="Nachname *">
                                 </div>
                             </div>
                             <div class="mb-2">
                                 <input type="email" id="inline_email" class="form-control form-control-sm"
-                                       placeholder="{{ __('E-Mail-Adresse') }} *">
+                                       placeholder="E-Mail-Adresse *">
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-12 col-md-6 mb-2 mb-md-0">
                                     <input type="password" id="inline_password" class="form-control form-control-sm"
-                                           placeholder="{{ __('Passwort') }} ({{ __('mind. 8 Zeichen') }}) *">
+                                           placeholder="Passwort (mind. 8 Zeichen) *">
                                 </div>
                                 <div class="col-12 col-md-6">
                                     <input type="tel" id="inline_phone" class="form-control form-control-sm"
-                                           placeholder="{{ __('Telefon') }}">
+                                           placeholder="Telefon">
                                 </div>
                             </div>
                             <p class="text-muted small mb-0">
-                                {{ __('Sie haben bereits ein Konto?') }}
+                                Sie haben bereits ein Konto?
                                 <a href="#" class="text-primary text-decoration-none fw-semibold"
-                                   onclick="switchInlineAuthTab('login'); return false;">{{ __('Direkt einloggen') }}</a>
+                                   onclick="switchInlineAuthTab('login'); return false;">Direkt einloggen</a>
                             </p>
                         </div>
 
@@ -529,16 +529,16 @@
                         <div id="inlineLoginForm" style="display:none;">
                             <div class="mb-2">
                                 <input type="email" id="inline_login_email" class="form-control form-control-sm"
-                                       placeholder="{{ __('E-Mail-Adresse') }} *">
+                                       placeholder="E-Mail-Adresse *">
                             </div>
                             <div class="mb-2">
                                 <input type="password" id="inline_login_password" class="form-control form-control-sm"
-                                       placeholder="{{ __('Passwort') }} *">
+                                       placeholder="Passwort *">
                             </div>
                             <p class="text-muted small mb-0">
-                                {{ __('Noch kein Konto?') }}
+                                Noch kein Konto?
                                 <a href="#" class="text-primary text-decoration-none fw-semibold"
-                                   onclick="switchInlineAuthTab('register'); return false;">{{ __('Jetzt registrieren') }}</a>
+                                   onclick="switchInlineAuthTab('register'); return false;">Jetzt registrieren</a>
                             </p>
                         </div>
 
@@ -550,14 +550,14 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" id="inlineTermsCheck">
                             <label class="form-check-label small" for="inlineTermsCheck">
-                                {{ __('Ich bestätige, dass alle Angaben wahrheitsgemäß sind. Ich stimme der Verarbeitung meiner Gesundheitsdaten gemäß der') }}
-                                <a href="#" class="text-primary">{{ __('Datenschutzerklärung') }}</a>
-                                {{ __('zu und akzeptiere die') }}
-                                <a href="#" class="text-primary">{{ __('AGB') }}</a>.
+                                Ich bestätige, dass alle Angaben wahrheitsgemäß sind. Ich stimme der Verarbeitung meiner Gesundheitsdaten gemäß der
+                                <a href="#" class="text-primary">Datenschutzerklärung</a>
+                                zu und akzeptiere die
+                                <a href="#" class="text-primary">AGB</a>.
                             </label>
                         </div>
                         <div id="inlineTermsError" class="text-danger small mt-1" style="display:none;">
-                            {{ __('Bitte stimmen Sie den Bedingungen zu.') }}
+                            Bitte stimmen Sie den Bedingungen zu.
                         </div>
                     </div>
                 </div>
@@ -566,7 +566,7 @@
 
             <div class="bg-light border-t border-gray-200 px-6 py-4 flex flex-wrap flex-md-row justify-between items-center sticky bottom-0 z-10 gap-3" style="border-radius: 0 0 20px 20px;">
                 <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-body text-gray-500 hover:text-primary transition-colors duration-200 no-underline hover:no-underline font-medium order-2 order-md-1 w-full text-center w-md-auto">
-                    <i class="bi bi-arrow-left mr-2"></i>{{ __('Back') }}
+                    <i class="bi bi-arrow-left mr-2"></i>Zurück
                 </a>
                 <div class="flex flex-wrap flex-sm-nowrap items-center justify-center gap-3 order-1 order-md-2 w-full w-md-auto">
                     @if(empty($category->is_cannaleo_only))
@@ -574,9 +574,9 @@
                         style="border-radius: 6px; background: white; color: var(--primary-color); border-color: var(--primary-color); min-width: 140px;"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
-                            {{ __('Under Review') }}
+                            In Bearbeitung
                         @else
-                            {{ __('Prescription Only') }}
+                            Nur Rezept
                         @endif
                     </button>
                     @endif
@@ -584,9 +584,9 @@
                         style="border-radius: 6px; background: var(--primary-color); color: #fff; min-width: 140px;"
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit']) disabled @endif>
                         @if(isset($submissionCheck) && !$submissionCheck['can_submit'])
-                            {{ __('Under Review') }}
+                            In Bearbeitung
                         @else
-                            {{ __('With Medicine') }}
+                            Mit Medikament
                         @endif
                     </button>
                 </div>
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitButtons.forEach(button => {
                     button.disabled = true;
                     button.classList.add('opacity-50', 'cursor-not-allowed');
-                    button.innerHTML = '{{ __("Questionnaire Under Review") }} <i class="fas fa-lock ml-2"></i>';
+                    button.innerHTML = 'Fragebogen wird geprüft <i class="fas fa-lock ml-2"></i>';
                 });
                 
                 // Show status message
@@ -759,7 +759,7 @@ document.addEventListener('DOMContentLoaded', function() {
             appendSubAnswersToFormData(formData);
 
             saveIndicator.classList.remove('hidden');
-            saveIndicatorText.textContent = '{{ __("Saving...") }}';
+            saveIndicatorText.textContent = 'Speichern...';
             
             fetch('{{ route("questionnaire.save", ["categoryId" => $category->id]) }}', {
                 method: 'POST',
@@ -772,15 +772,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    saveIndicatorText.textContent = '{{ __("Saved") }}';
+                    saveIndicatorText.textContent = 'Gespeichert';
                     setTimeout(() => saveIndicator.classList.add('hidden'), 2000);
                 } else {
-                    saveIndicatorText.textContent = '{{ __("Save failed") }}';
+                    saveIndicatorText.textContent = 'Speichern fehlgeschlagen';
                 }
             })
             .catch(error => {
                 console.error('Auto-save error:', error);
-                saveIndicatorText.textContent = '{{ __("Save failed") }}';
+                saveIndicatorText.textContent = 'Speichern fehlgeschlagen';
             });
         }, SAVE_DELAY);
     }
@@ -1094,7 +1094,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = document.getElementById('inline_login_email')?.value.trim();
             const password = document.getElementById('inline_login_password')?.value;
             if (!email || !password) {
-                if (errEl) { errEl.textContent = '{{ __("Please fill in your email and password.") }}'; errEl.style.display = ''; }
+                if (errEl) { errEl.textContent = 'Bitte geben Sie E-Mail und Passwort ein.'; errEl.style.display = ''; }
                 return false;
             }
             const resp = await fetch('{{ route("questionnaire.inline-login") }}', {
@@ -1107,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.csrf_token) currentCsrfToken = data.csrf_token;
                 return true;
             }
-            if (errEl) { errEl.textContent = data.message || '{{ __("Login failed. Please try again.") }}'; errEl.style.display = ''; }
+            if (errEl) { errEl.textContent = data.message || 'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.'; errEl.style.display = ''; }
             return false;
         } else {
             const firstName = document.getElementById('inline_first_name')?.value.trim();
@@ -1116,11 +1116,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const password  = document.getElementById('inline_password')?.value;
             const phone     = document.getElementById('inline_phone')?.value.trim();
             if (!firstName || !lastName || !email || !password) {
-                if (errEl) { errEl.textContent = '{{ __("Please fill in all required fields (Vorname, Nachname, E-Mail, Passwort).") }}'; errEl.style.display = ''; }
+                if (errEl) { errEl.textContent = 'Bitte füllen Sie alle Pflichtfelder aus (Vorname, Nachname, E-Mail, Passwort).'; errEl.style.display = ''; }
                 return false;
             }
             if (password.length < 8) {
-                if (errEl) { errEl.textContent = '{{ __("Password must be at least 8 characters.") }}'; errEl.style.display = ''; }
+                if (errEl) { errEl.textContent = 'Das Passwort muss mindestens 8 Zeichen lang sein.'; errEl.style.display = ''; }
                 return false;
             }
             const resp = await fetch('{{ route("questionnaire.inline-register") }}', {
@@ -1133,7 +1133,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.csrf_token) currentCsrfToken = data.csrf_token;
                 return true;
             }
-            if (errEl) { errEl.textContent = data.message || '{{ __("Registration failed. Please try again.") }}'; errEl.style.display = ''; }
+            if (errEl) { errEl.textContent = data.message || 'Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut.'; errEl.style.display = ''; }
             return false;
         }
     }
@@ -1167,7 +1167,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             // Auth section already shown – perform auth now
             submitButtons.forEach(b => { b.disabled = true; b.classList.add('opacity-50', 'cursor-not-allowed'); });
-            if (activeSubmitBtn) activeSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Signing in...") }}';
+            if (activeSubmitBtn) activeSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Anmelden...';
 
             const authOk = await performInlineAuth();
 
@@ -1183,7 +1183,7 @@ document.addEventListener('DOMContentLoaded', function() {
             button.classList.add('opacity-50', 'cursor-not-allowed');
         });
         if (activeSubmitBtn) {
-            activeSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Submitting...") }}';
+            activeSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird übermittelt...';
         }
 
         const formData = new FormData(form);
@@ -1244,7 +1244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (activeSubmitBtn) {
                 activeSubmitBtn.innerHTML = activeSubmitBtnHtml;
             }
-            alert('{{ __("An error occurred. Please try again.") }}');
+            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         });
     });
 

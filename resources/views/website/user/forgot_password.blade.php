@@ -1,5 +1,5 @@
 @extends('layout.mainlayout',['activePage' => 'login'])
-@section('title',__('Forgot Password'))
+@section('title','Passwort vergessen')
 @section('content')
 <div class="container py-5 mt-5">
     <div class="row min-vh-75 align-items-center justify-content-center">
@@ -9,7 +9,7 @@
                     <!-- Left side: Image -->
                     <div class="col-md-6 d-none d-md-block bg-light position-relative">
                         <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
-                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Talk to thousands of specialist doctors.</h2>
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Sprechen Sie mit Tausenden von Fachärzten.</h2>
                             <img src="{{asset('assets/image/login.png')}}" class="img-fluid custom-login-image" alt="Forgot Password Graphic" style="max-height: 250px; object-fit: contain;">
                         </div>
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
@@ -18,8 +18,8 @@
                     <!-- Right side: Form -->
                     <div class="col-md-6 p-4 p-lg-5">
                         <div class="mb-5">
-                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Welcome Back,')}}</h2>
-                            <h3 class="fw-medium text-muted fs-5">{{__('Forgot Password For Patient Account')}}</h3>
+                            <h2 class="fw-bold fs-3 text-dark mb-1">Willkommen zurück,</h2>
+                            <h3 class="fw-medium text-muted fs-5">Passwort vergessen für Patienten-Konto</h3>
                         </div>
 
                         @if (session('status'))
@@ -33,8 +33,8 @@
                         <form action="{{ url('/user_forget_password') }}" method="post">
                             @csrf
                             <div class="form-floating mb-4">
-                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Enter email')}}" required autofocus>
-                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="E-Mail eingeben" required autofocus>
+                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>E-Mail-Adresse</label>
                                 @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -43,11 +43,11 @@
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
-                                {{__('Send Email')}}
+                                E-Mail senden
                             </button>
 
                             <div class="text-center mt-4">
-                                <a href="{{url('/patient-login')}}" class="text-decoration-none small text-muted hover-primary transition-all fw-semibold"><i class="bi bi-arrow-left me-1"></i> {{__('Remember Password? Login here')}}</a>
+                                <a href="{{url('/patient-login')}}" class="text-decoration-none small text-muted hover-primary transition-all fw-semibold"><i class="bi bi-arrow-left me-1"></i> Passwort gemerkt? Hier anmelden</a>
                             </div>
                         </form>
                     </div>

@@ -70,7 +70,7 @@
             <select name="{{ $inputName }}"
                     class="sub-question-input w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary"
                     data-temp-id="{{ $tempId }}">
-                <option value="">{{ __('Select an option') }}</option>
+                <option value="">Option auswählen</option>
                 @foreach($options as $opt)
                     <option value="{{ $opt }}" {{ ($savedVal === $opt) ? 'selected' : '' }}>{{ $opt }}</option>
                 @endforeach

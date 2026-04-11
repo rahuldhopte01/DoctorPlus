@@ -133,13 +133,13 @@
         <h1 class="text-2xl md:text-3xl font-bold text-white font-heading mb-2">{{ $questionnaire->name }}</h1>
         <nav class="flex justify-center" aria-label="Breadcrumb">
             <ol class="flex items-center flex-wrap space-x-2 text-sm text-white font-body justify-center">
-                <li><a href="{{ url('/') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ __('Home') }}</a></li>
+                <li><a href="{{ url('/') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">Startseite</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li><a href="{{ route('categories') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ __('Categories') }}</a></li>
+                <li><a href="{{ route('categories') }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">Kategorien</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
                 <li><a href="{{ route('category.detail', ['id' => $category->id]) }}" class="text-white hover:text-white transition-colors opacity-80 hover:opacity-100">{{ $category->name }}</a></li>
                 <li><span class="mx-2 text-white opacity-50">/</span></li>
-                <li class="text-white font-semibold opacity-100">{{ __('Questionnaire') }}</li>
+                <li class="text-white font-semibold opacity-100">Fragebogen</li>
             </ol>
         </nav>
     </div>
@@ -169,7 +169,7 @@
         <!-- Modern Step Indicator -->
         <div class="mb-6 pb-6 border-b border-gray-100 px-6 sm:px-10">
             <div class="flex justify-between items-center mb-3">
-                <span class="font-body text-xs font-bold text-gray-500 uppercase tracking-wider">{{ __('Questionnaire Progress') }}</span>
+                <span class="font-body text-xs font-bold text-gray-500 uppercase tracking-wider">Fortschritt des Fragebogens</span>
                 <span class="font-heading text-lg font-bold text-primary">{{ round((($sectionIndex + 1) / $totalSections) * 100) }}%</span>
             </div>
             <div class="progress h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -185,7 +185,7 @@
                 </div>
                 <div class="ml-3 flex-1">
                     <h3 class="text-lg font-fira-sans font-medium text-red-800 mb-2">
-                        {{ __('Please fix the following validation errors:') }}
+                        Bitte beheben Sie die folgenden Validierungsfehler:
                     </h3>
                     <ul id="validationErrorsList" class="list-disc list-inside space-y-2 text-sm font-fira-sans text-red-700">
                         <!-- Errors will be populated here by JavaScript -->
@@ -240,7 +240,7 @@
                                 class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                 data-question-id="{{ $question->id }}"
                                 value="{{ $savedValue }}"
-                                placeholder="{{ __('Type your answer here...') }}"
+                                placeholder="Geben Sie hier Ihre Antwort ein..."
                                 @if($question->required) required @endif
                                 @if($question->validation_rules)
                                     @if(isset($question->validation_rules['min'])) minlength="{{ $question->validation_rules['min'] }}" @endif
@@ -258,7 +258,7 @@
                                 class="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all font-body question-input placeholder-gray-400 text-gray-800 text-base"
                                 data-question-id="{{ $question->id }}"
                                 rows="4"
-                                placeholder="{{ __('Type your detailed answer here...') }}"
+                                placeholder="Geben Sie hier Ihre detaillierte Antwort ein..."
                                 @if($question->required) required @endif>{{ $savedValue }}</textarea>
                             @break
 
@@ -292,7 +292,7 @@
                                         style="left: 50%; top: 50%;"
                                         data-question-id="{{ $question->id }}"
                                         @if($question->required) required @endif>
-                                        <option value="">{{ __('Select an option') }}</option>
+                                        <option value="">Option auswählen</option>
                                         @foreach($question->options ?? [] as $option)
                                             <option value="{{ $option }}" 
                                                 {{ $savedValue !== null && $savedValue == $option ? 'selected' : '' }}>
@@ -303,7 +303,7 @@
                                     
                                     <div class="custom-select-trigger w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/10 transition-all font-body text-gray-800 flex justify-between items-center cursor-pointer hover:border-primary shadow-sm group text-base" tabindex="0">
                                         <span class="selected-text truncate font-medium align-middle {{ $savedValue !== null && $savedValue !== '' ? 'text-gray-900' : 'text-gray-500' }}">
-                                            {{ $savedValue !== null && $savedValue !== '' ? $savedValue : __('Select an option') }}
+                                            {{ $savedValue !== null && $savedValue !== '' ? $savedValue : 'Option auswählen' }}
                                         </span>
                                         <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 flex-shrink-0 transition-colors duration-300 trigger-icon-bg group-hover:border-primary/50">
                                             <i class="fas fa-chevron-down text-primary text-sm transition-transform duration-300 dropdown-icon"></i>
@@ -312,7 +312,7 @@
                                     
                                     <div class="custom-select-options absolute w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 pointer-events-none transition-all duration-300 font-body overflow-hidden p-1 text-base" style="z-index: 1000; top: 100%; left: 0; max-height: 250px; overflow-y: auto;">
                                         <div class="option-item flex items-center justify-between px-4 py-2 mb-1 rounded-md cursor-pointer transition-all duration-200 {{ $savedValue === null || $savedValue === '' ? 'bg-purple-light text-primary font-semibold' : 'text-gray-600 hover:bg-gray-50 hover:text-primary' }}" data-value="">
-                                            <span>{{ __('Select an option') }}</span>
+                                            <span>Option auswählen</span>
                                             <i class="fas fa-check text-primary {{ $savedValue === null || $savedValue === '' ? 'opacity-100' : 'opacity-0' }} transition-opacity"></i>
                                         </div>
                                         @foreach($question->options ?? [] as $option)
@@ -399,7 +399,7 @@
                                     accept=".pdf,.jpg,.jpeg,.png"
                                     data-max-size="5242880">
                                 <p class="mt-3 text-xs text-muted font-body">
-                                    {{ __('Allowed types: PDF, JPG, PNG. Max size: 5MB') }}
+                                    Erlaubte Typen: PDF, JPG, PNG. Maximale Größe: 5MB
                                 </p>
                                 @if(isset($savedAnswers['answers'][$question->id]) && !empty($savedAnswers['answers'][$question->id]))
                                     @php
@@ -409,7 +409,7 @@
                                     @if(!empty($filePath))
                                     <p class="mt-2 text-sm text-green-600 font-fira-sans">
                                         <i class="fas fa-check-circle mr-1"></i>
-                                        {{ __('File uploaded:') }} {{ basename($filePath) }}
+                                        Datei hochgeladen: {{ basename($filePath) }}
                                     </p>
                                     @endif
                                 @endif
@@ -441,23 +441,23 @@
                 <div>
                     @if($sectionIndex > 0)
                     <button type="button" id="prevBtn" class="btn border font-heading font-semibold px-4 py-2 text-sm shadow-sm transition-all" style="border-radius: 6px; background: white; color: var(--primary-color); border-color: var(--primary-color);">
-                        <i class="bi bi-arrow-left mr-2"></i>{{ __('Previous') }}
+                        <i class="bi bi-arrow-left mr-2"></i>Zurück
                     </button>
                     @else
                     <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-body text-gray-500 hover:text-primary transition-colors duration-200 no-underline hover:no-underline font-medium">
-                        <i class="bi bi-arrow-left mr-2"></i>{{ __('Back') }}
+                        <i class="bi bi-arrow-left mr-2"></i>Zurück
                     </a>
                     @endif
                 </div>
                 <div>
                     @if($sectionIndex < $totalSections - 1)
                     <button type="button" id="nextBtn" class="btn font-heading font-semibold px-6 py-2 text-sm shadow-sm transition-all" style="border-radius: 6px; background: var(--primary-color); color: #fff;">
-                        {{ __('Next') }}
+                        Weiter
                         <i class="bi bi-arrow-right ml-2"></i>
                     </button>
                     @else
                     <button type="button" id="submitBtn" class="btn font-heading font-semibold px-6 py-2 text-sm shadow-sm transition-all" style="border-radius: 6px; background: var(--primary-color); color: #fff;">
-                        {{ __('With Medicine') }}
+                        Mit Medikament
                     </button>
                     @endif
                 </div>
@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInput.addEventListener('change', function() {
             const maxSize = parseInt(this.dataset.maxSize) || 5242880; // 5MB default
             if (this.files[0] && this.files[0].size > maxSize) {
-                alert('{{ __("File size exceeds 5MB limit") }}');
+                alert('Dateigröße überschreitet das Limit von 5MB');
                 this.value = '';
             }
         });
@@ -815,7 +815,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const originalButtonText = activeButton ? activeButton.innerHTML : '';
         if (activeButton) {
-            activeButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Saving...") }}';
+            activeButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Speichern...';
         }
 
         fetch('{{ url("/questionnaire/category/" . $category->id . "/save-section") }}', {
@@ -831,7 +831,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Re-enable buttons and restore text
             if (nextBtn) {
                 nextBtn.disabled = false;
-                nextBtn.innerHTML = '{{ __("Next Section") }} <i class="fas fa-arrow-right ml-2"></i>';
+                nextBtn.innerHTML = 'Nächster Abschnitt <i class="fas fa-arrow-right ml-2"></i>';
             }
             if (prevBtn) {
                 prevBtn.disabled = false;
@@ -860,12 +860,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Re-enable buttons and restore text
             if (nextBtn) {
                 nextBtn.disabled = false;
-                nextBtn.innerHTML = '{{ __("Next Section") }} <i class="fas fa-arrow-right ml-2"></i>';
+                nextBtn.innerHTML = 'Nächster Abschnitt <i class="fas fa-arrow-right ml-2"></i>';
             }
             if (prevBtn) {
                 prevBtn.disabled = false;
             }
-            alert('{{ __("An error occurred. Please try again.") }}');
+            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         });
     }
 
@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', function() {
         appendSubAnswersToFormData(formData);
 
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>{{ __("Submitting...") }}';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird übermittelt...';
 
         // Save current section first
         fetch('{{ url("/questionnaire/category/" . $category->id . "/save-section") }}', {
@@ -892,7 +892,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.errors) {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '{{ __("Submit Questionnaire") }} <i class="fas fa-check ml-2"></i>';
+                submitBtn.innerHTML = 'Fragebogen abschicken <i class="fas fa-check ml-2"></i>';
                 Object.keys(data.errors).forEach(questionId => {
                     const input = document.querySelector(`[data-question-id="${questionId}"] .question-input, [data-question-id="${questionId}"] input`);
                     const errorDiv = document.getElementById('error_' + questionId);
@@ -915,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '{{ __("Submit Questionnaire") }} <i class="fas fa-check ml-2"></i>';
+                submitBtn.innerHTML = 'Fragebogen abschicken <i class="fas fa-check ml-2"></i>';
 
                 if (data.blocked) {
                     alert(data.message);
@@ -940,15 +940,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '{{ __("Submit Questionnaire") }} <i class="fas fa-check ml-2"></i>';
-                alert('{{ __("An error occurred. Please try again.") }}');
+                submitBtn.innerHTML = 'Fragebogen abschicken <i class="fas fa-check ml-2"></i>';
+                alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
             });
         })
         .catch(error => {
             console.error('Error:', error);
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '{{ __("Submit Questionnaire") }} <i class="fas fa-check ml-2"></i>';
-            alert('{{ __("An error occurred. Please try again.") }}');
+            submitBtn.innerHTML = 'Fragebogen abschicken <i class="fas fa-check ml-2"></i>';
+            alert('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         });
     }
 });

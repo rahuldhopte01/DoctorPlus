@@ -1,6 +1,6 @@
 @extends('layout.mainlayout', ['activePage' => 'questionnaire'])
 
-@section('title', __('Questionnaire Submitted'))
+@section('title', 'Fragebogen eingereicht')
 
 @section('css')
 <style>
@@ -125,19 +125,19 @@
             <i class="bi bi-check-lg"></i>
         </div>
         
-        <h1 class="success-title">{{ __('Application Submitted!') }}</h1>
+        <h1 class="success-title">Antrag eingereicht!</h1>
         
         <p class="success-text">
-            {{ __('Thank you for completing the questionnaire. Your responses have been successfully transmitted and are now being reviewed by our medical team.') }}
+            Vielen Dank für das Ausfüllen des Fragebogens. Ihre Antworten wurden erfolgreich übermittelt und werden nun von unserem medizinischen Team geprüft.
         </p>
 
         <div class="success-actions">
             <a href="{{ route('categories') }}" class="btn-premium-solid">
-                <span>{{ __('Browse Treatments') }}</span>
+                <span>Behandlungen durchsuchen</span>
                 <i class="bi bi-grid-3x3-gap-fill"></i>
             </a>
             <a href="{{ url('/') }}" class="btn-premium-outline">
-                <span>{{ __('Return Home') }}</span>
+                <span>Zurück zur Startseite</span>
                 <i class="bi bi-house-door-fill"></i>
             </a>
         </div>
