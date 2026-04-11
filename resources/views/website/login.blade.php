@@ -9,7 +9,7 @@
                     <!-- Left side: Image -->
                     <div class="col-md-6 d-none d-md-block bg-light position-relative">
                         <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
-                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Talk to thousands of specialist doctors.</h2>
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">{{__('Talk to thousands of specialist doctors.')}}</h2>
                             <img src="{{asset('assets/image/login.png')}}" class="img-fluid custom-login-image" alt="Login Graphic" style="max-height: 250px; object-fit: contain;">
                         </div>
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>

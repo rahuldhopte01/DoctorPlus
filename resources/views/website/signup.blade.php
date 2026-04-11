@@ -73,7 +73,7 @@
                     <!-- Left side: Image -->
                     <div class="col-md-5 d-none d-lg-block bg-light position-relative">
                         <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
-                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Find the best doctor and medicine for you.</h2>
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">{{__('Find the best doctor and medicine for you.')}}</h2>
                             <img src="{{asset('assets/image/doctor-nurses.png')}}" class="img-fluid custom-login-image mt-4" alt="Signup Graphic">
                         </div>
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>

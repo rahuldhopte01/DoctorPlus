@@ -576,7 +576,7 @@
 <div class="bg-light border-bottom">
     <div class="container py-3">
         <a href="{{ route('categories') }}" class="breadcrumb-link text-decoration-none">
-            <i class="bi bi-chevron-left"></i> Back to all treatments
+            <i class="bi bi-chevron-left"></i> {{__('Back to all treatments')}}
         </a>
     </div>
 </div>
@@ -701,7 +701,7 @@
                 @else
                     <a href="{{ route('categories') }}" class="hero-cta"
                        style="background:{{ $cmsHero['cta_color'] }}; color:{{ $cmsHero['cta_text_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
-                        Browse treatments
+                        {{ __('Browse treatments') }}
                     </a>
                 @endif
 
@@ -717,8 +717,8 @@
                 @if($cmsHero['rating_enabled'])
                 <div class="hero-rating">
                   <span class="stars">★★★★★</span>
-                  <strong>{{ $cmsHero['rating_value'] }}</strong> Hervorragend
-                  <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} Bewertungen</span>
+                  <strong>{{ $cmsHero['rating_value'] }}</strong> {{ __('Hervorragend') }}
+                  <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} {{ __('Bewertungen') }}</span>
                 </div>
                 @endif
               </div>

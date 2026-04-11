@@ -48,7 +48,7 @@
                         <i class="bi bi-search"></i>
                     </button>
                     <form action="{{ route('categories') }}" method="GET" class="search-form">
-                        <input type="text" name="search" placeholder="Suche..." value="{{ request('search') }}">
+                        <input type="text" name="search" placeholder="{{__('Suche...')}}" value="{{ request('search') }}">
                         <button type="submit" class="search-submit">
                             <i class="bi bi-search"></i>
                         </button>
@@ -755,9 +755,9 @@
                 @endif
             </div>
             @if(auth()->check())
-                <p class="dropdown-header-text">Hallo, {{ auth()->user()->name }}</p>
+                <p class="dropdown-header-text">{{__('Hallo,')}} {{ auth()->user()->name }}</p>
             @else
-                <p class="dropdown-header-text">Bitte einloggen/registrieren um Mein Konto zu sehen</p>
+                <p class="dropdown-header-text">{{__('Bitte einloggen/registrieren um Mein Konto zu sehen')}}</p>
             @endif
         </div>
         <div class="dropdown-body">
