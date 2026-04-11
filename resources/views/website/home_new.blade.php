@@ -192,7 +192,7 @@
     @if(!empty($hero['bg_image']))
         <!-- Image sits at z-index:1 (lowest) -->
         <div class="position-absolute" style="top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;max-width:380px;width:100%;">
-            <img src="{{ getLandingImage($hero['bg_image']) }}" alt="" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%); opacity: 0.9;">
+            <img src="{{ getLandingImage($hero['bg_image']) }}" alt="" class="img-fluid" style="mask-image: linear-gradient(to top, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to top, transparent 0%, black 40%); opacity: 0.9;" loading="lazy">
         </div>
         <!-- Color overlay #f3ecfe sits at z-index:2, above image -->
         <div class="position-absolute" style="top:0;left:0;right:0;bottom:0;background-color:#f3ecfe;opacity:0.78;z-index:2;pointer-events:none;"></div>
@@ -603,7 +603,7 @@
                 
                 @if(!empty($step['icon']))
                     <div class="hiw-card-photo-wrap">
-                        <img src="{{ getLandingImage($step['icon']) }}" class="hiw-card-photo" alt="">
+                        <img src="{{ getLandingImage($step['icon']) }}" class="hiw-card-photo" alt="" loading="lazy">
                     </div>
                 @endif
             </div>
@@ -683,7 +683,7 @@
 
             <!-- Center hero image with buttons overlaid -->
             <div class="cbs-hero-img-wrap">
-                <img src="{{ !empty($relief['image']) ? getLandingImage($relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img">
+                <img src="{{ !empty($relief['image']) ? getLandingImage($relief['image']) : 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80' }}" alt="" class="cbs-hero-img" loading="lazy">
 
                 <div class="cbs-btns-overlay">
                     @if(!empty($relief['btn1_text']))
@@ -1385,17 +1385,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const heroRating = document.querySelector('.rating-section');
     const heroTitle = document.querySelector('.hero-main-content h1');
 
+    let scrollTick = false;
     function updateHeaderState() {
-        if (header) {
-            header.classList.toggle('is-scrolled', window.scrollY > 10);
-        }
+        if (!scrollTick) {
+            window.requestAnimationFrame(() => {
+                if (header) {
+                    header.classList.toggle('is-scrolled', window.scrollY > 10);
+                }
 
-        if (trustMotion && window.scrollY < 600) {
-            trustMotion.style.transform = 'translateY(' + (window.scrollY * 0.08) + 'px)';
-        }
-
-        if (heroRating && window.scrollY < 600) {
-            heroRating.style.transform = 'translateY(' + (window.scrollY * 0.05) + 'px)';
+                const sY = window.scrollY;
+                if (sY < 600) {
+                    if (trustMotion) trustMotion.style.transform = 'translate3d(0, ' + (sY * 0.08) + 'px, 0)';
+                    if (heroRating) heroRating.style.transform = 'translate3d(0, ' + (sY * 0.05) + 'px, 0)';
+                }
+                scrollTick = false;
+            });
+            scrollTick = true;
         }
     }
 
@@ -1576,11 +1581,18 @@ document.addEventListener('DOMContentLoaded', function () {
         dragOffset = index * cardStep();
         track.style.transition = 'none';
     });
+    let dragTick = false;
     window.addEventListener('mousemove', function(e) {
         if (!dragging) return;
-        var delta = dragStartX - e.clientX;
-        var raw = Math.min(Math.max(dragOffset + delta, 0), maxIdx() * cardStep());
-        track.style.transform = 'translateX(-' + raw + 'px)';
+        if (!dragTick) {
+            window.requestAnimationFrame(() => {
+                var delta = dragStartX - e.clientX;
+                var raw = Math.min(Math.max(dragOffset + delta, 0), maxIdx() * cardStep());
+                track.style.transform = 'translate3d(-' + raw + 'px, 0, 0)';
+                dragTick = false;
+            });
+            dragTick = true;
+        }
     });
     window.addEventListener('mouseup', function(e) {
         if (!dragging) return;
