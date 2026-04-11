@@ -739,7 +739,7 @@
 @case('features_bar')
 <!-- Features Bar -->
 @if($cmsFb['enabled'])
-<section class="features-bar" style="background:{{ $cmsFb['bg_color'] }};">
+<section class="features-bar" style="background-color: {{ $cmsFb['bg_color'] }} !important;">
     <div class="features-bar-inner">
         @foreach($cmsFb['features'] as $i => $feat)
         @if($feat['enabled'] ?? true)
@@ -766,7 +766,7 @@
     
     @if($_stepsType == 'type2')
         {{-- TYPE 2: TESTOSTERONE --}}
-        <section class="steps-section-t2" style="background-color: {{ $cmsSteps['bg_color'] ?? '#fffafb' }};">
+        <section class="steps-section-t2" style="background-color: {{ $cmsSteps['bg_color'] ?? '#fffafb' }} !important;">
             <h2>{!! $cmsSteps['t2_title'] !!}</h2>
             <div class="subtitle">{!! $cmsSteps['t2_subtitle'] !!}</div>
             @if(!empty($cmsSteps['t2_desc']))
@@ -788,7 +788,7 @@
         </section>
     @else
         {{-- TYPE 1: DEFAULT --}}
-        <section class="steps-section" style="background-color: {{ $cmsSteps['bg_color'] }};">
+        <section class="steps-section" style="background-color: {{ $cmsSteps['bg_color'] }} !important;">
             <h2 class="steps-title">
                 {!! $cmsSteps['section_title'] !!}<br>
                 <span style="color:{{ $cmsSteps['subtitle_color'] }};">{!! $cmsSteps['section_subtitle'] !!}</span>
@@ -821,7 +821,7 @@
 @case('payment_bar')
 <!-- Payment Methods -->
 @if($cmsPay['enabled'])
-<section class="payment-bar" style="background:{{ $cmsPay['bg_color'] }};">
+<section class="payment-bar" style="background-color: {{ $cmsPay['bg_color'] }} !important;">
   <div class="payment-bar-inner">
     <span>{{ $cmsPay['label'] }}</span>
     <div class="payment-logos">
@@ -1081,7 +1081,7 @@
 @case('security')
 <!-- Section 10: Security / Trust -->
 @if($cmsSecurity['enabled'])
-<section class="security-section" style="background-color: {{ $cmsSecurity['bg_color'] }};">
+<section class="security-section" style="background-color: {{ $cmsSecurity['bg_color'] }} !important;">
   <div class="security-header">
     <h2>{!! $cmsSecurity['heading'] !!}</h2>
     <p>{!! $cmsSecurity['subheading'] !!}</p>

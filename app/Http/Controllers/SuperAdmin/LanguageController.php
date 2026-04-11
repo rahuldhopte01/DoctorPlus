@@ -186,7 +186,6 @@ class LanguageController extends Controller
 
     public function translation($id)
     {
-        dd("Translation method reached with id: " . $id);
         abort_if(Gate::denies('language_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         $language = Language::find($id);
         if (!$language) {
