@@ -141,7 +141,7 @@
     .categories-marquee-content {
         display: flex;
         gap: 15px;
-        animation: marquee-scroll 100s linear infinite;
+        animation: marquee-scroll 200s linear infinite;
         padding: 10px 0;
         width: max-content;
     }
