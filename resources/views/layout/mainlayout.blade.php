@@ -55,8 +55,9 @@
         
         /* Global Mobile Overflow Fix */
         html, body {
-            overflow-x: hidden;
-            width: 100%;
+            overflow-x: hidden !important;
+            width: 100% !important;
+            max-width: 100% !important;
             position: relative;
         }
     </style>

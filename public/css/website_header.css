@@ -312,11 +312,14 @@
     line-height: 1.4;
     margin: 0;
     font-weight: 500;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
+    display: block !important;
 }
 
 .dropdown-body {
