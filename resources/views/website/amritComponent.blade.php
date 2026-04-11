@@ -548,6 +548,12 @@
         }
 
         @media (max-width: 768px) {
+            .med-review { grid-template-columns: 1fr; gap: 30px; text-align: center; padding-bottom: 48px; }
+            .med-review-img { max-width: 280px; margin: 0 auto; }
+            .med-review-img img { height: 320px; }
+            .med-review-text h3 { font-size: 1.6rem; }
+            .med-review-text p { font-size: 0.9rem; }
+            
             .testo-treat-grid { grid-template-columns: 1fr; max-width: 500px; }
             .testo-treat-img { height: 240px; }
             .testo-treat-section { padding: 48px 24px; }

@@ -89,11 +89,17 @@
     
     /* Modern Question Wrapper */
     .question-wrapper {
-        padding: 1.5rem 2rem;
+        padding: 1.5rem 1rem; /* Reduced horizontal padding for mobile */
         background: #ffffff;
         border-radius: 12px;
         border: 1px solid #e2e8f0;
         margin-bottom: 1.5rem !important;
+    }
+    
+    @media (min-width: 768px) {
+        .question-wrapper {
+            padding: 1.5rem 2.5rem; /* Restored/enhanced padding for desktop */
+        }
     }
     
     /* Modern Checkbox Style */
@@ -101,13 +107,19 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.85rem 1.25rem;
+        padding: 1rem 0.75rem; /* Optimized for mobile */
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
         cursor: pointer;
         transition: all 0.2s ease;
-        min-height: 60px; /* Ensure a minimum height */
+        min-height: 64px;
+    }
+    
+    @media (min-width: 640px) {
+        .modern-check-label {
+            padding: 0.85rem 1.25rem;
+        }
     }
     .modern-check-label span {
         flex: 1; /* Allow text to take up remaining space and wrap */
@@ -140,7 +152,7 @@
 @section('content')
 <section class="relative w-full overflow-hidden" style="background: var(--primary-color); padding-top: 40px; padding-bottom: 60px;">
     
-    <div class="relative z-10 px-4 w-full max-w-4xl mx-auto text-center">
+    <div class="relative z-10 px-3 md:px-4 w-full max-w-4xl mx-auto text-center">
         <h1 class="text-2xl md:text-3xl font-bold text-white font-heading mb-2">{{ $questionnaire->name }}</h1>
         <nav class="flex justify-center" aria-label="Breadcrumb">
             <ol class="flex items-center flex-wrap space-x-2 text-sm text-white font-body justify-center">
@@ -157,10 +169,10 @@
 </section>
 
 <div class="py-12">
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 -mt-16">
+<div class="max-w-4xl mx-auto px-0 md:px-6 lg:px-8 relative z-20 -mt-16">
     <!-- Questionnaire Card -->
-    <div class="bg-white font-body shadow-sm border border-gray-200" style="border-radius: 12px; overflow: visible; position: relative;">
-        <div class="p-6 border-b border-gray-100 bg-gray-50/50" style="border-radius: 12px 12px 0 0;">
+    <div class="bg-white font-body shadow-sm border-x-0 md:border-x border-y border-gray-200 md:rounded-xl" style="overflow: visible; position: relative;">
+        <div class="p-4 md:p-6 border-b border-gray-100 bg-gray-50/50 rounded-t-none md:rounded-t-xl">
              <div class="flex items-center gap-4">
                  <div class="w-12 h-12 bg-white border border-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
                     <i class="fas fa-clipboard-list text-xl text-primary"></i>
@@ -180,7 +192,7 @@
             <input type="hidden" name="questionnaire_id" value="{{ $questionnaire->id }}">
             <input type="hidden" name="submission_flow" id="submissionFlow" value="with_medicine">
 
-            <div class="p-6 sm:p-10">
+            <div class="px-4 py-8 sm:p-10">
                 <!-- Modern Progress Indicator -->
                 <div class="mb-6 pb-6 border-b border-gray-100">
                     <div class="flex justify-between items-center mb-3">
@@ -564,7 +576,7 @@
                 @endguest
             </div>
 
-            <div class="bg-light border-t border-gray-200 px-6 py-4 flex flex-wrap flex-md-row justify-between items-center sticky bottom-0 z-10 gap-3" style="border-radius: 0 0 20px 20px;">
+            <div class="bg-light border-t border-gray-200 px-4 md:px-6 py-4 flex flex-wrap flex-md-row justify-between items-center sticky bottom-0 z-10 gap-3 md:rounded-b-xl">
                 <a href="{{ route('category.detail', ['id' => $category->id]) }}" class="font-body text-gray-500 hover:text-primary transition-colors duration-200 no-underline hover:no-underline font-medium order-2 order-md-1 w-full text-center w-md-auto">
                     <i class="bi bi-arrow-left mr-2"></i>Zurück
                 </a>

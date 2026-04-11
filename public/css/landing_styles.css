@@ -1762,11 +1762,14 @@
 }
 
 @media (max-width: 768px) {
-    .nl-hero-content h2 { font-size: 2.6rem; }
-    .newsletter-hero { min-height: auto; }
-    .nl-hero-bg { opacity: 0.5; }
-    .nl-hero-bg::before { background: rgba(255,255,255,0.9); }
-    .nl-hero-content { padding: 60px 20px; }
+    .newsletter-hero { min-height: auto; padding: 40px 0; }
+    .nl-hero-bg { opacity: 0.3; background-position: center; }
+    .nl-hero-bg::before { background: rgba(255,255,255,0.85); }
+    .nl-hero-content { padding: 40px 20px; text-align: center; }
+    .nl-hero-content h2 { font-size: 2.2rem; margin-bottom: 24px; letter-spacing: -1px; }
+    .nl-hero-content > p { margin: 0 auto 30px; font-size: 1rem; }
+    .nl-hero-form { margin: 0 auto; width: 100%; border-radius: 14px; }
+    .nl-hero-legal { margin: 25px auto 0; }
 }
 
 /* ==========================================================================
