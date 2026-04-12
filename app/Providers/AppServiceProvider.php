@@ -93,8 +93,6 @@ class AppServiceProvider extends ServiceProvider
                     if (!$treatment) continue;
                     $mode  = $item['mode'] ?? 'link';
                     $label = !empty($item['custom_label']) ? $item['custom_label'] : $treatment->name;
-                    $isNew = $item['is_new'] ?? 0;
-
                     if ($mode === 'dropdown') {
                         // Build sub-items from saved list
                         $subItems = [];
@@ -106,17 +104,15 @@ class AppServiceProvider extends ServiceProvider
                             ];
                         }
                         $sidebar_entdecken_items->push((object)[
-                            'mode'           => 'dropdown',
-                            'label'          => $label,
-                            'sub_items'      => $subItems,
-                            'is_sidebar_new' => $isNew,
+                            'mode'      => 'dropdown',
+                            'label'     => $label,
+                            'sub_items' => $subItems,
                         ]);
                     } else {
                         $sidebar_entdecken_items->push((object)[
-                            'mode'           => 'link',
-                            'label'          => $label,
-                            'url'            => $item['url'] ?? '#',
-                            'is_sidebar_new' => $isNew,
+                            'mode'  => 'link',
+                            'label' => $label,
+                            'url'   => $item['url'] ?? '#',
                         ]);
                     }
                 }
