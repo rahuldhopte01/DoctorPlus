@@ -1,4 +1,12 @@
-﻿/* ===== CATEGORY SECTIONS OUTER WRAPPER ===== */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== CATEGORY SECTIONS OUTER WRAPPER ===== */
 .premium-section-outer {
   background-color: #f3effe;
   padding: 60px 20px;

@@ -45,6 +45,15 @@
 
 /* Typography – Clash Display (headings), Inter (body) */
 html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+html,
 body,
 p,
 span,

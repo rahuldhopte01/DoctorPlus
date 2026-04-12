@@ -108,6 +108,7 @@
     /* Categories Marquee */
     .categories-marquee-wrapper {
         width: 100%;
+        max-width: 100vw;
         overflow: hidden;
         position: relative;
         z-index: 10;
@@ -141,6 +142,9 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: inline-block;
+        max-width: 280px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .category-pill-link:hover .category-pill {
         background-color: #8a48ff;
