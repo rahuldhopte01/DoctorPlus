@@ -517,15 +517,42 @@
                 <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
                 @foreach($sidebar_entdecken_items as $item)
                     <li>
-                        <a href="{{ route('category.detail', $item->id) }}">
-                            <span class="menu-label-wrapper">
-                                {{ $item->sidebar_custom_title }}
-                                @if($item->is_sidebar_new)
-                                    <span class="badge-neu">{{ __('NEU') }}</span>
+                        @if(($item->mode ?? 'link') === 'dropdown')
+                            <a href="javascript:void(0)" class="has-submenu">
+                                <span class="menu-label-wrapper">
+                                    {{ $item->label ?? '' }}
+                                    @if(!empty($item->is_sidebar_new))
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                            <ul class="sidebar-submenu">
+                                @if(!empty($item->sub_items))
+                                    @foreach($item->sub_items as $sub)
+                                        <li>
+                                            @php
+                                                $subUrl = $sub['url'] ?? '#';
+                                                if (!empty($sub['category_id'])) {
+                                                    $subUrl = route('category.detail', $sub['category_id']);
+                                                }
+                                            @endphp
+                                            <a href="{{ $subUrl }}">{{ $sub['label'] ?? '' }}</a>
+                                        </li>
+                                    @endforeach
                                 @endif
-                            </span>
-                            <i class="bi bi-chevron-right menu-arrow"></i>
-                        </a>
+                            </ul>
+                        @else
+                            <a href="{{ $item->url ?? '#' }}">
+                                <span class="menu-label-wrapper">
+                                    {{ $item->label ?? '' }}
+                                    @if(!empty($item->is_sidebar_new))
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        @endif
                     </li>
                 @endforeach
             @endif
