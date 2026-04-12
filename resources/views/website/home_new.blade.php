@@ -177,6 +177,32 @@
     .categories-marquee-wrapper:hover .categories-marquee-content {
         animation-play-state: paused;
     }
+
+    @media (max-width: 768px) {
+        .hero-fuxx {
+            min-height: auto !important;
+            padding-top: 30px !important;
+            padding-bottom: 40px !important;
+        }
+        .hero-main-content h1 {
+            font-size: 2rem !important;
+            margin-bottom: 15px !important;
+        }
+        .hero-main-content .lead {
+            font-size: 1rem !important;
+            margin-bottom: 30px !important;
+            padding: 0 10px;
+        }
+        .hero-main-content .btn-hero-premium {
+            width: 100%;
+            max-width: 320px;
+            padding: 12px 20px !important;
+            font-size: 1.1rem !important;
+        }
+        .hero-main-content {
+            margin-top: 30px !important;
+        }
+    }
 </style>
 
 <section class="hero-fuxx position-relative overflow-hidden" style="min-height: 80vh; padding-top: 50px; padding-bottom: 0;">
