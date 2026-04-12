@@ -49,6 +49,22 @@
     100% { transform: translateX(-100%); }
 }
 
+@media (max-width: 576px) {
+    .top-header-marquee {
+        height: 38px;
+    }
+    .marquee-item {
+        padding: 0 12px;
+        font-size: 0.75rem;
+    }
+    .marquee-item i, 
+    .marquee-item img {
+        width: 14px;
+        height: 14px;
+        font-size: 14px;
+    }
+}
+
 /* Main Header */
 .main-header {
     background: rgba(255, 255, 255, 0.95);
@@ -213,7 +229,19 @@
         padding: 0 15px;
     }
     .header-logo img {
-        height: 36px !important;
+        height: 32px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-container {
+        padding: 0 10px;
+    }
+    .header-logo img {
+        height: 28px !important;
+    }
+    .header-actions {
+        gap: 12px;
     }
 }
 
@@ -514,22 +542,37 @@
 
 @media (max-width: 768px) {
     .made-in-germany-badge {
-        bottom: 20px;
-        right: 15px;
-        padding: 8px 18px 8px 10px;
+        bottom: 15px;
+        left: 15px;
+        right: auto;
+        padding: 6px 14px 6px 8px;
+        max-width: calc(100vw - 30px);
     }
     .badge-flag {
-        width: 36px;
-        height: 24px;
+        width: 30px;
+        height: 20px;
     }
     .badge-title {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
     }
     .badge-points-horizontal {
-        font-size: 0.75rem;
-        gap: 4px;
+        font-size: 0.65rem;
+        gap: 3px;
+        display: none; /* Hide points on very small screens to keep it compact */
     }
     .badge-text-group {
-        margin-left: 10px;
+        margin-left: 8px;
+    }
+}
+
+@media (max-width: 380px) {
+    .made-in-germany-badge {
+        bottom: 10px;
+        left: 10px;
+        padding: 4px 10px 4px 6px;
+    }
+    .badge-flag {
+        width: 24px;
+        height: 16px;
     }
 }

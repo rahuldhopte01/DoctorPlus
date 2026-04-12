@@ -116,6 +116,27 @@
         color: var(--site_color, #7b42f6);
         opacity: 0.8;
     }
+    @media (max-width: 576px) {
+        .fuxx-promo-bar {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            flex-wrap: wrap;
+        }
+        .fuxx-promo-bar .text-center {
+            font-size: 0.8rem;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .promo-timer-container {
+            margin-left: 0 !important;
+            scale: 0.9;
+        }
+        .promo-countdown-box {
+            min-width: 28px;
+            padding: 1px 2px;
+            font-size: 0.85rem !important;
+        }
+    }
 </style>
 <div class="fuxx-promo-bar d-flex justify-content-center align-items-center py-2 px-3 overflow-hidden position-relative">
     <!-- Decor -->
