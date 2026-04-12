@@ -498,15 +498,32 @@
                 <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
                 @foreach($sidebar_entdecken_items as $item)
                     <li>
-                        <a href="{{ route('category.detail', $item->id) }}">
-                            <span class="menu-label-wrapper">
-                                {{ $item->sidebar_custom_title }}
-                                @if($item->is_sidebar_new)
-                                    <span class="badge-neu">{{ __('NEU') }}</span>
-                                @endif
-                            </span>
-                            <i class="bi bi-chevron-right menu-arrow"></i>
-                        </a>
+                        @if($item->mode === 'dropdown')
+                            <a href="javascript:void(0)" class="has-submenu">
+                                <span class="menu-label-wrapper">
+                                    {{ $item->label }}
+                                    @if($item->is_sidebar_new)
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                            <ul class="sidebar-submenu">
+                                @foreach($item->sub_items as $sub)
+                                    <li><a href="{{ $sub['url'] }}">{{ $sub['label'] }}</a></li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <a href="{{ $item->url }}">
+                                <span class="menu-label-wrapper">
+                                    {{ $item->label }}
+                                    @if($item->is_sidebar_new)
+                                        <span class="badge-neu">{{ __('NEU') }}</span>
+                                    @endif
+                                </span>
+                                <i class="bi bi-chevron-right menu-arrow"></i>
+                            </a>
+                        @endif
                     </li>
                 @endforeach
             @endif
