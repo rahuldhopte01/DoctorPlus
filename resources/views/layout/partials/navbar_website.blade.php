@@ -116,25 +116,6 @@
         color: var(--site_color, #7b42f6);
         opacity: 0.8;
     }
-    @media (max-width: 768px) {
-        .fuxx-promo-bar {
-            padding-top: 10px !important;
-            padding-bottom: 10px !important;
-        }
-        .fuxx-promo-bar .pe-3 {
-            padding-right: 0 !important;
-            margin-bottom: 8px;
-            font-size: 0.88rem;
-            line-height: 1.3;
-        }
-        .promo-countdown-box {
-            min-width: 28px !important;
-            font-size: 0.8rem !important;
-        }
-        .promo-timer-container {
-            margin-left: 0 !important;
-        }
-    }
 </style>
 <div class="fuxx-promo-bar d-flex justify-content-center align-items-center py-2 px-3 overflow-hidden position-relative">
     <!-- Decor -->
@@ -517,42 +498,15 @@
                 <li class="menu-section-header">{{ __('ENTDECKEN') }}</li>
                 @foreach($sidebar_entdecken_items as $item)
                     <li>
-                        @if(($item->mode ?? 'link') === 'dropdown')
-                            <a href="javascript:void(0)" class="has-submenu">
-                                <span class="menu-label-wrapper">
-                                    {{ $item->label ?? '' }}
-                                    @if(!empty($item->is_sidebar_new))
-                                        <span class="badge-neu">{{ __('NEU') }}</span>
-                                    @endif
-                                </span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                            <ul class="sidebar-submenu">
-                                @if(!empty($item->sub_items))
-                                    @foreach($item->sub_items as $sub)
-                                        <li>
-                                            @php
-                                                $subUrl = $sub['url'] ?? '#';
-                                                if (!empty($sub['category_id'])) {
-                                                    $subUrl = route('category.detail', $sub['category_id']);
-                                                }
-                                            @endphp
-                                            <a href="{{ $subUrl }}">{{ $sub['label'] ?? '' }}</a>
-                                        </li>
-                                    @endforeach
+                        <a href="{{ route('category.detail', $item->id) }}">
+                            <span class="menu-label-wrapper">
+                                {{ $item->sidebar_custom_title }}
+                                @if($item->is_sidebar_new)
+                                    <span class="badge-neu">{{ __('NEU') }}</span>
                                 @endif
-                            </ul>
-                        @else
-                            <a href="{{ $item->url ?? '#' }}">
-                                <span class="menu-label-wrapper">
-                                    {{ $item->label ?? '' }}
-                                    @if(!empty($item->is_sidebar_new))
-                                        <span class="badge-neu">{{ __('NEU') }}</span>
-                                    @endif
-                                </span>
-                                <i class="bi bi-chevron-right menu-arrow"></i>
-                            </a>
-                        @endif
+                            </span>
+                            <i class="bi bi-chevron-right menu-arrow"></i>
+                        </a>
                     </li>
                 @endforeach
             @endif

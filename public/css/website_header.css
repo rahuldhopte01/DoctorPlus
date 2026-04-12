@@ -9,9 +9,6 @@
     display: flex;
     align-items: center;
     z-index: 100;
-    width: 100%;
-    max-width: 100vw;
-    box-sizing: border-box;
 }
 
 .marquee-content {
@@ -29,13 +26,6 @@
     font-size: 0.88rem;
     font-weight: 500;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
-@media (max-width: 768px) {
-    .marquee-item {
-        padding: 0 15px;
-        font-size: 0.75rem;
-    }
 }
 
 .marquee-item i, 
@@ -220,10 +210,10 @@
         display: none !important;
     }
     .header-container {
-        padding: 0 20px;
+        padding: 0 15px;
     }
     .header-logo img {
-        height: 38px !important;
+        height: 36px !important;
     }
 }
 
@@ -524,25 +514,22 @@
 
 @media (max-width: 768px) {
     .made-in-germany-badge {
-        bottom: 15px;
-        right: auto;
-        left: 15px;
-        padding: 6px 14px 6px 8px;
-        backdrop-filter: blur(8px);
-        background: rgba(255, 255, 255, 0.9);
+        bottom: 20px;
+        right: 15px;
+        padding: 8px 18px 8px 10px;
     }
     .badge-flag {
-        width: 32px;
-        height: 22px;
+        width: 36px;
+        height: 24px;
     }
     .badge-title {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
     }
     .badge-points-horizontal {
-        font-size: 0.65rem;
-        gap: 3px;
+        font-size: 0.75rem;
+        gap: 4px;
     }
     .badge-text-group {
-        margin-left: 8px;
+        margin-left: 10px;
     }
 }

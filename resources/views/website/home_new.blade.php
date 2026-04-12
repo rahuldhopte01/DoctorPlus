@@ -108,7 +108,6 @@
     /* Categories Marquee */
     .categories-marquee-wrapper {
         width: 100%;
-        max-width: 100vw;
         overflow: hidden;
         position: relative;
         z-index: 10;
@@ -142,9 +141,6 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.04);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: inline-block;
-        max-width: 280px;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
     .category-pill-link:hover .category-pill {
         background-color: #8a48ff;
@@ -326,22 +322,6 @@
         @endif
 
         <!-- Main Content -->
-        <style>
-            @media (max-width: 768px) {
-                .hero-main-content {
-                    margin-top: 30px !important;
-                }
-                .hero-main-content h1 {
-                    font-size: 2.4rem !important;
-                    margin-bottom: 20px !important;
-                }
-                .hero-main-content p.lead {
-                    font-size: 1.05rem !important;
-                    margin-bottom: 40px !important;
-                    padding: 0 10px;
-                }
-            }
-        </style>
         <div class="hero-main-content text-center mx-auto" style="max-width: 800px; margin-top: 60px;">
             <style>
                 .hero-ticker-badge {
@@ -431,18 +411,10 @@
                         50%       { box-shadow: 0 0 0 12px rgba(124, 58, 237, 0); }
                     }
                 </style>
-                <style>
-                    .btn-hero-premium.btn-mobile-full {
-                        @media (max-width: 576px) {
-                            width: 100%;
-                            display: block;
-                        }
-                    }
-                </style>
-                <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium btn-cta-pulse btn-mobile-full rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
+                <a href="{{ $hero['btn_url'] ?? '#' }}" class="btn btn-hero-premium btn-cta-pulse rounded-pill px-5 py-3 fs-5 fw-bold mb-5">
                     {{ $hero['btn_text'] }}
                 </a>
-@endif
+            @endif
 
             <!-- Trust Items -->
             @if(!empty($hero['trust_items']) && count($hero['trust_items']) > 0)
