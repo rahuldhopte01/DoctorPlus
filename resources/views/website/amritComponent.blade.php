@@ -849,7 +849,7 @@
 @case('medical_content')
 <!-- Medical Content -->
 @if($cmsMedical['enabled'])
-<div style="background-color: {{ $cmsMedical['bg_color'] }} !important; padding: 40px 0;">
+<section style="background-color: {{ $cmsMedical['bg_color'] }} !important; padding: 40px 0;">
   <div class="med-content" style="padding-top: 0; padding-bottom: 0;">
   <h2>{!! $cmsMedical['section_title'] !!} {{ $category->name }}</h2>
 
@@ -910,7 +910,7 @@
     @endforeach
     @endforeach
   </div>
-</div>
+</section>
 @endif
 @break
 
