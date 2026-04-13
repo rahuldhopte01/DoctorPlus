@@ -144,7 +144,7 @@
         'question_bg_color'       => '#ffffff',
         'question_bg_hover_color' => '#f8f9fa',
         'question_bg_active_color' => '#ffffff',
-        'question_active_color'    => '#ffffff',
+        'question_active_color'    => '#1a1a1a',
         'answer_bg_color'          => '#ffffff',
         'answer_text_color'        => '#6c757d',
         'items'                => [
@@ -982,7 +982,7 @@
                     }
                     #faqAccordion .accordion-button:not(.collapsed) {
                         background-color: {{ $cmsFaq['question_bg_active_color'] ?? '#ffffff' }} !important;
-                        color: {{ $cmsFaq['question_active_color'] ?? '#1a1a1a' }} !important;
+                        color: {{ $cmsFaq['question_color'] ?? '#1a1a1a' }} !important;
                     }
                     #faqAccordion .accordion-button:hover {
                         background-color: {{ $cmsFaq['question_bg_hover_color'] ?? '#f8f9fa' }} !important;
@@ -990,6 +990,7 @@
                     }
                     #faqAccordion .accordion-collapse {
                         background-color: {{ $cmsFaq['answer_bg_color'] ?? '#ffffff' }} !important;
+                        color: {{ $cmsFaq['question_color'] ?? '#1a1a1a' }} !important;
                     }
                     #faqAccordion .accordion-body {
                         color: {{ $cmsFaq['answer_text_color'] ?? '#6c757d' }} !important;
