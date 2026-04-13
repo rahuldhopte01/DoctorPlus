@@ -38,8 +38,8 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- New Design CSS -->
-    <link href="{{asset('css/new-design.css')}}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url('css/website_header.css') }}">
+    <link href="{{asset('css/new-design.css')}}?v={{ filemtime(public_path('css/new-design.css')) }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url('css/website_header.css') }}?v={{ filemtime(public_path('css/website_header.css')) }}">
     <link href="{{asset('styles.css')}}?v={{ time() }}" rel="stylesheet">
 
     @yield('css')
@@ -52,13 +52,21 @@
         }
         body { font-family: var(--font-body, 'Inter', sans-serif); }
         h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading, 'Clash Display', sans-serif); }
+        
+        /* Global Mobile Overflow Fix */
+        html, body {
+            overflow-x: hidden !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            position: relative;
+        }
     </style>
 </head>
 
 @if (session()->has('direction') && session()->get('direction') == 'rtl')
 <link rel="stylesheet" href="{{ asset('css/rtl.css') }}">
 @endif
-<body @if (session()->has('direction') && session()->get('direction') == 'rtl') dir="rtl" @endif>
+<body class="@yield('bodyClass', '')" @if (session()->has('direction') && session()->get('direction') == 'rtl') dir="rtl" @endif>
         @include('layout.partials.skeleton_loader')
         @include('layout.partials.navbar_website')
 

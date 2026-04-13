@@ -548,6 +548,12 @@
         }
 
         @media (max-width: 768px) {
+            .med-review { grid-template-columns: 1fr; gap: 30px; text-align: center; padding-bottom: 48px; }
+            .med-review-img { max-width: 280px; margin: 0 auto; }
+            .med-review-img img { height: 320px; }
+            .med-review-text h3 { font-size: 1.6rem; }
+            .med-review-text p { font-size: 0.9rem; }
+            
             .testo-treat-grid { grid-template-columns: 1fr; max-width: 500px; }
             .testo-treat-img { height: 240px; }
             .testo-treat-section { padding: 48px 24px; }
@@ -576,7 +582,7 @@
 <div class="bg-light border-bottom">
     <div class="container py-3">
         <a href="{{ route('categories') }}" class="breadcrumb-link text-decoration-none">
-            <i class="bi bi-chevron-left"></i> Back to all treatments
+            <i class="bi bi-chevron-left"></i> {{__('Back to all treatments')}}
         </a>
     </div>
 </div>
@@ -701,7 +707,7 @@
                 @else
                     <a href="{{ route('categories') }}" class="hero-cta"
                        style="background:{{ $cmsHero['cta_color'] }}; color:{{ $cmsHero['cta_text_color'] }}; box-shadow:0 6px 20px {{ $cmsHero['cta_color'] }}55;">
-                        Browse treatments
+                        {{ __('Browse treatments') }}
                     </a>
                 @endif
 
@@ -717,8 +723,8 @@
                 @if($cmsHero['rating_enabled'])
                 <div class="hero-rating">
                   <span class="stars">★★★★★</span>
-                  <strong>{{ $cmsHero['rating_value'] }}</strong> Hervorragend
-                  <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} Bewertungen</span>
+                  <strong>{{ $cmsHero['rating_value'] }}</strong> {{ __('Hervorragend') }}
+                  <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} {{ __('Bewertungen') }}</span>
                 </div>
                 @endif
               </div>
@@ -739,7 +745,7 @@
 @case('features_bar')
 <!-- Features Bar -->
 @if($cmsFb['enabled'])
-<section class="features-bar" style="background:{{ $cmsFb['bg_color'] }};">
+<section class="features-bar" style="background-color: {{ $cmsFb['bg_color'] }} !important;">
     <div class="features-bar-inner">
         @foreach($cmsFb['features'] as $i => $feat)
         @if($feat['enabled'] ?? true)
@@ -766,7 +772,7 @@
     
     @if($_stepsType == 'type2')
         {{-- TYPE 2: TESTOSTERONE --}}
-        <section class="steps-section-t2" style="background-color: {{ $cmsSteps['bg_color'] ?? '#fffafb' }};">
+        <section class="steps-section-t2" style="background-color: {{ $cmsSteps['bg_color'] ?? '#fffafb' }} !important;">
             <h2>{!! $cmsSteps['t2_title'] !!}</h2>
             <div class="subtitle">{!! $cmsSteps['t2_subtitle'] !!}</div>
             @if(!empty($cmsSteps['t2_desc']))
@@ -788,7 +794,7 @@
         </section>
     @else
         {{-- TYPE 1: DEFAULT --}}
-        <section class="steps-section" style="background-color: {{ $cmsSteps['bg_color'] }};">
+        <section class="steps-section" style="background-color: {{ $cmsSteps['bg_color'] }} !important;">
             <h2 class="steps-title">
                 {!! $cmsSteps['section_title'] !!}<br>
                 <span style="color:{{ $cmsSteps['subtitle_color'] }};">{!! $cmsSteps['section_subtitle'] !!}</span>
@@ -821,7 +827,7 @@
 @case('payment_bar')
 <!-- Payment Methods -->
 @if($cmsPay['enabled'])
-<section class="payment-bar" style="background:{{ $cmsPay['bg_color'] }};">
+<section class="payment-bar" style="background-color: {{ $cmsPay['bg_color'] }} !important;">
   <div class="payment-bar-inner">
     <span>{{ $cmsPay['label'] }}</span>
     <div class="payment-logos">
@@ -843,7 +849,8 @@
 @case('medical_content')
 <!-- Medical Content -->
 @if($cmsMedical['enabled'])
-<div class="med-content" style="background-color: {{ $cmsMedical['bg_color'] }};">
+<section style="background-color: {{ $cmsMedical['bg_color'] }} !important; padding: 40px 0;">
+  <div class="med-content" style="padding-top: 0; padding-bottom: 0;">
   <h2>{!! $cmsMedical['section_title'] !!} {{ $category->name }}</h2>
 
   @if($cmsMedical['toc_enabled'] && !empty($cmsMedical['toc_items']))
@@ -901,9 +908,9 @@
           @break
       @endswitch
     @endforeach
+    @endforeach
   </div>
-  @endforeach
-</div>
+</section>
 @endif
 @break
 
@@ -916,10 +923,11 @@
     ? asset('images/upload/' . $cmsDr['image'])
     : 'https://images.unsplash.com/photo-1612349317150-e410f624c427?auto=format&fit=crop&w=800&q=80';
 @endphp
-<div class="med-review" style="background-color: {{ $cmsDr['bg_color'] }};">
-  <div class="med-review-img">
-    <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
-  </div>
+<div style="background-color: {{ $cmsDr['bg_color'] }} !important; padding: 40px 0;">
+  <div class="med-review" style="padding-top: 0; padding-bottom: 0;">
+    <div class="med-review-img">
+      <img src="{{ $_drImg }}" alt="{{ $cmsDr['name'] }}" loading="lazy">
+    </div>
   <div class="med-review-text">
     <div class="med-review-doc">{!! $cmsDr['name'] !!}</div>
     <div class="med-review-role">{!! $cmsDr['role'] !!}</div>
@@ -933,6 +941,7 @@
     @if($cmsDr['show_last_updated'])
     <div class="update">Letzte Aktualisierung am {{ date('d/m/Y') }}</div>
     @endif
+  </div>
   </div>
 </div>
 @endif
@@ -1079,7 +1088,7 @@
 @case('security')
 <!-- Section 10: Security / Trust -->
 @if($cmsSecurity['enabled'])
-<section class="security-section" style="background-color: {{ $cmsSecurity['bg_color'] }};">
+<section class="security-section" style="background-color: {{ $cmsSecurity['bg_color'] }} !important;">
   <div class="security-header">
     <h2>{!! $cmsSecurity['heading'] !!}</h2>
     <p>{!! $cmsSecurity['subheading'] !!}</p>

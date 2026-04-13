@@ -48,7 +48,7 @@
                         <i class="bi bi-search"></i>
                     </button>
                     <form action="{{ route('categories') }}" method="GET" class="search-form">
-                        <input type="text" name="search" placeholder="Suche..." value="{{ request('search') }}">
+                        <input type="text" name="search" placeholder="{{__('Suche...')}}" value="{{ request('search') }}">
                         <button type="submit" class="search-submit">
                             <i class="bi bi-search"></i>
                         </button>
@@ -313,13 +313,14 @@
     .sidebar-overlay {
         position: fixed;
         top: 0;
-        right: -400px;
+        right: 0;
         width: 100%;
         max-width: 400px;
         height: 100%;
         background: #fff;
         z-index: 2000;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateX(100%);
         box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
         display: flex;
         flex-direction: column;
@@ -328,7 +329,7 @@
     }
 
     .sidebar-overlay.active {
-        right: 0;
+        transform: translateX(0);
     }
 
     /* Search Suggestions Styles */
@@ -771,9 +772,9 @@
                 @endif
             </div>
             @if(auth()->check())
-                <p class="dropdown-header-text">Hallo, {{ auth()->user()->name }}</p>
+                <p class="dropdown-header-text">{{__('Hallo,')}} {{ auth()->user()->name }}</p>
             @else
-                <p class="dropdown-header-text">Bitte einloggen/registrieren um Mein Konto zu sehen</p>
+                <p class="dropdown-header-text">{{__('Bitte einloggen/registrieren um Mein Konto zu sehen')}}</p>
             @endif
         </div>
         <div class="dropdown-body">

@@ -242,6 +242,9 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
         // pending blog
         Route::get('/blog/pending-blog', [BlogController::class, 'pending_blog']);
 
+        Route::get('language/{id}/translation', [LanguageController::class, 'translation'])->name('language.translation');
+        Route::post('language/{id}/translation', [LanguageController::class, 'update_translation'])->name('language.update_translation');
+
         Route::resources([
             'treatments' => TreatmentsController::class,
             'expertise' => ExpertiseController::class,
@@ -260,7 +263,7 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
             'insurers' => InsurerController::class,
             'questionnaire' => \App\Http\Controllers\SuperAdmin\QuestionnaireController::class,
         ]);
-        
+
         // Category routes - defined separately to avoid conflict with public /category/{id} route
         Route::resource('category', CategoryController::class)->except(['show']);
 

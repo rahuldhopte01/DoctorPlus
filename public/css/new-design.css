@@ -45,6 +45,15 @@
 
 /* Typography – Clash Display (headings), Inter (body) */
 html,
+body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
+html,
 body,
 p,
 span,
@@ -111,7 +120,7 @@ h6 span,
     padding: 11px 24px;
     font-weight: 600;
     box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn-primary:hover,
@@ -214,7 +223,8 @@ h6 span,
 
 /* Service Cards */
 .service-card {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, box-shadow;
     cursor: pointer;
 }
 
@@ -224,7 +234,7 @@ h6 span,
 .service-card .text-muted,
 .service-card .text-primary,
 .service-card .service-icon {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, color 0.3s ease, opacity 0.3s ease;
 }
 
 /* Same hover as categories listing (.treatment-page-card) */
@@ -257,13 +267,14 @@ h6 span,
 /* Treatment Page Cards Hover Effect – theme-aligned (primary violet, subtle tint) */
 .treatment-page-card {
     border: 1px solid transparent;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, box-shadow;
 }
 
 .treatment-page-card h3,
 .treatment-page-card p,
 .treatment-page-card span {
-    transition: all 0.3s ease;
+    transition: color 0.3s ease;
 }
 
 .treatment-page-card:hover {
@@ -353,7 +364,7 @@ h6 span,
     border-radius: 8px;
     padding: 12px 24px;
     font-weight: 700;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .bloomwell-btn:hover {
@@ -670,7 +681,8 @@ h6 span,
 
 /* Treatment Cards */
 .treatment-card {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, box-shadow;
     cursor: pointer;
 }
 
@@ -713,7 +725,8 @@ h6 span,
 
 /* Treatment listing (categories page) carousel/grid cards – same hover as .treatment-card */
 #treatmentsContainer .treatment-area-card {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, box-shadow;
     cursor: pointer;
     border: 2px solid #e5e7eb;
 }
@@ -755,7 +768,8 @@ h6 span,
 
 /* Landing page treatment carousel – same default border and hover as categories page */
 .treatment-areas-section .treatment-area-card {
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform, box-shadow;
     cursor: pointer;
     border: 2px solid #e5e7eb;
 }
@@ -815,7 +829,7 @@ h6 span,
     background-color: #f3f4f6;
     color: #374151;
     text-decoration: none;
-    transition: all 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
     border: none;
     cursor: pointer;
 }
@@ -912,7 +926,7 @@ img {
     justify-content: center;
     cursor: pointer;
     z-index: 1000;
-    transition: all 0.3s;
+    transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .back-to-top:hover {
@@ -962,7 +976,7 @@ input[type="submit"].bg-primary {
     color: var(--primary-color) !important;
     border: 1px solid var(--primary-color) !important;
     border-radius: 50px !important;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .btn:hover,
@@ -990,7 +1004,7 @@ input[type="submit"].bg-primary:hover {
     color: #ffffff !important;
     border: 1px solid var(--primary-color) !important;
     border-radius: 8px !important;
-    transition: all 0.3s ease !important;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .bloomwell-btn:hover,
@@ -1271,7 +1285,10 @@ input[type="submit"].bg-primary:hover {
     padding: 40px 0 40px;
     font-family: var(--font-body);
     position: relative;
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: clip;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .footer-inner-v2 {
@@ -1280,9 +1297,10 @@ input[type="submit"].bg-primary:hover {
     padding: 0 40px;
     display: grid;
     grid-template-columns: 1.5fr 1fr 1fr 1fr;
-    gap: 50px;
+    gap: 40px;
     position: relative;
     z-index: 1;
+    box-sizing: border-box;
 }
 
 .footer-brand-v2 .footer-logo {
@@ -1377,6 +1395,9 @@ input[type="submit"].bg-primary:hover {
     padding: 16px 0;
     display: flex;
     justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .ticker-inner-v2 {
@@ -1425,10 +1446,19 @@ input[type="submit"].bg-primary:hover {
     color: rgba(255, 255, 255, 0.3);
 }
 
+@media (max-width: 1100px) {
+    .footer-inner-v2 {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        padding: 0 30px;
+    }
+}
+
 @media (max-width: 992px) {
     .footer-inner-v2 {
         grid-template-columns: 1fr 1fr;
-        gap: 40px;
+        gap: 28px;
+        padding: 0 24px;
     }
 }
 
@@ -1436,8 +1466,13 @@ input[type="submit"].bg-primary:hover {
     .footer-inner-v2 {
         grid-template-columns: 1fr;
         padding: 0 20px;
+        gap: 24px;
     }
     .ticker-inner-v2 {
         gap: 20px;
+        padding: 0 16px;
+    }
+    .ticker-bar-v2 {
+        padding: 12px 0;
     }
 }

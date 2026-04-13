@@ -340,7 +340,13 @@ class QuestionnaireReviewController extends Controller
         
         // Lock when any doctor (sub or admin) opens an unlocked questionnaire: status -> IN_REVIEW, set reviewer
         // Only lock if status is 'pending' - don't lock if already approved/rejected. Lock only the current batch.
-        if (!$firstAnswer->isLocked() && $firstAnswer->status === 'pending') {
+        // Admin doctors must not steal a questionnaire that already has a sub-doctor assigned
+        // (e.g. the questionnaire was set back to 'pending' but reviewing_doctor_id was not cleared).
+        $adminViewingOthersQuestionnaire = $doctor->isAdminDoctor()
+            && $firstAnswer->reviewing_doctor_id !== null
+            && $firstAnswer->reviewing_doctor_id != $doctor->id;
+
+        if (!$firstAnswer->isLocked() && $firstAnswer->status === 'pending' && !$adminViewingOthersQuestionnaire) {
             $currentSubmittedAtKey = $currentBatch['submitted_at']->format('Y-m-d H:i:s');
             DB::transaction(function () use ($userId, $categoryId, $questionnaireId, $doctor, $currentSubmittedAtKey) {
                 $lockQuery = QuestionnaireAnswer::where('user_id', $userId)
@@ -443,8 +449,10 @@ class QuestionnaireReviewController extends Controller
         // Get prescription for this questionnaire review only if it was generated for THIS answer batch.
         // Do not show a prescription from a previous questionnaire as "generated" for this review.
         $submittedAt = $firstAnswer->submitted_at ?? $firstAnswer->created_at;
+        // Find prescription for this questionnaire regardless of which doctor created it.
+        // This ensures the "Prescription Already Created" message shows correctly even when
+        // a different doctor (e.g. a sub-doctor) created the prescription.
         $prescription = Prescription::where('user_id', $userId)
-            ->where('doctor_id', $doctor->id)
             ->whereNull('appointment_id')
             ->where('status', '!=', 'expired')
             ->whereNotNull('questionnaire_submitted_at')

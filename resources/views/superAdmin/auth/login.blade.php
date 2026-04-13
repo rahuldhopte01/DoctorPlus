@@ -1,6 +1,6 @@
 @extends('layout.mainlayout',['activePage' => 'login'])
 
-@section('title', __('Admin login'))
+@section('title', 'Admin Login')
 
 @section('content')
 <div class="container py-5 mt-5">
@@ -11,7 +11,7 @@
                     <!-- Left side: Image -->
                     <div class="col-md-6 d-none d-md-block bg-light position-relative">
                         <div class="position-absolute top-50 start-50 translate-middle w-100 p-5 text-center z-index-2">
-                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Platform Administration.</h2>
+                            <h2 class="display-6 fw-bold mb-4" style="color: var(--primary-color);">Plattform-Verwaltung.</h2>
                             <img src="{{asset('assets/image/login.png')}}" class="img-fluid custom-login-image" alt="Admin Login Graphic" style="max-height: 250px; object-fit: contain;">
                         </div>
                         <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(242, 239, 234, 0.9) 0%, rgba(255, 255, 255, 0.4) 100%);"></div>
@@ -20,8 +20,8 @@
                     <!-- Right side: Form -->
                     <div class="col-md-6 p-4 p-lg-5">
                         <div class="mb-5">
-                            <h2 class="fw-bold fs-3 text-dark mb-1">{{__('Admin Portal')}}</h2>
-                            <h3 class="fw-medium text-muted fs-5">{{__('Sign in to manage the platform.')}}</h3>
+                            <h2 class="fw-bold fs-3 text-dark mb-1">Admin-Portal</h2>
+                            <h3 class="fw-medium text-muted fs-5">Melden Sie sich an, um die Plattform zu verwalten.</h3>
                         </div>
 
                         @if ($errors->any())
@@ -37,8 +37,8 @@
                             @csrf
                             
                             <div class="form-floating mb-3">
-                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="{{__('Enter email')}}" value="{{ old('email') }}" required autofocus>
-                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>{{__('Email Address')}}</label>
+                                <input type="email" name="email" id="email" class="form-control rounded-3 border-light shadow-sm @error('email') is-invalid @enderror" placeholder="E-Mail eingeben" value="{{ old('email') }}" required autofocus>
+                                <label for="email" class="text-muted"><i class="bi bi-envelope me-2"></i>E-Mail-Adresse</label>
                                 @error('email')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -47,8 +47,8 @@
                             </div>
 
                             <div class="form-floating mb-4">
-                                <input type="password" name="password" id="password" class="form-control rounded-3 border-light shadow-sm @error('password') is-invalid @enderror" placeholder="{{__('Enter password')}}" required>
-                                <label for="password" class="text-muted"><i class="bi bi-lock me-2"></i>{{__('Password')}}</label>
+                                <input type="password" name="password" id="password" class="form-control rounded-3 border-light shadow-sm @error('password') is-invalid @enderror" placeholder="Passwort eingeben" required>
+                                <label for="password" class="text-muted"><i class="bi bi-lock me-2"></i>Passwort</label>
                                 @error('password')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -57,22 +57,22 @@
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <a href="{{url('admin_forgot_password')}}" class="text-decoration-none small text-muted hover-primary transition-all">{{__('Forgot Password?')}}</a>
+                                <a href="{{url('admin_forgot_password')}}" class="text-decoration-none small text-muted hover-primary transition-all">Passwort vergessen?</a>
                             </div>
 
                             <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm mb-4 bloomwell-btn border-0 py-3 fw-semibold">
-                                {{__('Login')}} <i class="fas fa-sign-in-alt ms-2"></i>
+                                Anmelden <i class="fas fa-sign-in-alt ms-2"></i>
                             </button>
 
                             <div class="mt-5 text-center">
-                                <p class="text-muted mb-3 font-weight-600 small">{{__('Other Portals')}}</p>
+                                <p class="text-muted mb-3 font-weight-600 small">Andere Portale</p>
                                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                                    <a href="{{ url('doctor/doctor_login') }}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="fas fa-user-md me-1"></i> {{ __('Doctor') }}</a>
-                                    <a href="{{ url('pharmacy_login') }}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="fas fa-pills me-1"></i> {{ __('Pharmacy') }}</a>
-                                    <a href="{{ url('pathologist_login') }}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="fas fa-microscope me-1"></i> {{ __('Lab') }}</a>
+                                    <a href="{{ url('doctor/doctor_login') }}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="fas fa-user-md me-1"></i> Arzt</a>
+                                    <a href="{{ url('pharmacy_login') }}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="fas fa-pills me-1"></i> Apotheke</a>
+                                    <a href="{{ url('pathologist_login') }}" class="badge bg-light text-dark border p-2 text-decoration-none hover-primary transition-all"><i class="fas fa-microscope me-1"></i> Labor</a>
                                 </div>
                                 <div class="mt-4">
-                                    <a href="{{ url('patient-login') }}" class="text-muted small text-decoration-none hover-primary"><i class="fas fa-arrow-left me-1"></i> Back to Patient Login</a>
+                                    <a href="{{ url('patient-login') }}" class="text-muted small text-decoration-none hover-primary"><i class="fas fa-arrow-left me-1"></i> Zurück zum Patienten-Login</a>
                                 </div>
                             </div>
                         </form>

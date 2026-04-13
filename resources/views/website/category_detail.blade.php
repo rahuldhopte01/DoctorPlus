@@ -1,6 +1,12 @@
 @extends('layout.mainlayout', ['activePage' => 'category'])
 
+@section('bodyClass', 'home-target')
+
 @section('title', $category->name)
+
+@section('css')
+<link href="{{asset('css/home_target_match.css')}}?v={{ filemtime(public_path('css/home_target_match.css')) }}" rel="stylesheet">
+@endsection
 
 @section('content')
 {{-- Hero Banner Section --}}
