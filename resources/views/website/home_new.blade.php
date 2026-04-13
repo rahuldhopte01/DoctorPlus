@@ -211,7 +211,7 @@
                     'url' => !empty($cmsQuickLinks[0]['url']) && $cmsQuickLinks[0]['url'] !== '#' ? $cmsQuickLinks[0]['url'] : route('categories'),
                     'image' => !empty($cmsQuickLinks[0]['image']) ? url('images/upload/'.$cmsQuickLinks[0]['image']) : '',
                     'alt' => 'Cannabis',
-                    'active' => false,
+                    'active' => true,
                 ],
                 [
                     'title' => 'Erektions&shy;st&ouml;rungen',
@@ -535,12 +535,6 @@
         .hiw-sub-item-desc  { font-size: 0.65rem; color: #777; line-height: 1.3; }
         .hiw-card-photo { display: block; width: 100%; margin-top: 20px; object-fit: contain; max-height: 190px; }
 
-        /* Mobile: stack cards vertically instead of overflowing */
-        @media (max-width: 767px) {
-            .hiw-deck { flex-direction: column !important; align-items: center !important; gap: 16px !important; padding: 24px 16px 20px !important; }
-            .step-card-tilted { transform: none !important; margin: 0 !important; width: 100% !important; max-width: 360px !important; min-height: auto !important; }
-            .step-card-tilted.hiw-active { transform: none !important; }
-        }
     </style>
 
     <div class="container text-center position-relative" style="z-index:2;">
@@ -553,7 +547,9 @@
         </div>
         @endif
 
-        <div class="hiw-deck mx-auto" style="max-width: 950px;">
+        <div class="hiw-deck-wrapper position-relative mx-auto" style="max-width: 950px;">
+            <button class="advisor-nav-btn prev-btn d-md-none" id="hiwPrev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+            <div class="hiw-deck" id="hiwDeck">
             @foreach($how['steps'] as $i => $step)
             @php
                 $tiltClass = ['tilt-left','tilt-center','tilt-right'][$i] ?? 'tilt-center';
@@ -608,6 +604,8 @@
                 @endif
             </div>
             @endforeach
+            </div>
+            <button class="advisor-nav-btn next-btn d-md-none" id="hiwNext" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
 
@@ -1007,23 +1005,27 @@
 <section class="advisors-section home-story-advisors">
     <div class="advisors-container">
         <h2 class="advisors-heading">{{ $advHeading }}</h2>
-        <div class="advisors-grid">
-            @foreach($advSlots as $slot)
-                @if(!empty($slot['name']) || !empty($slot['image']))
-                    <div class="advisor-card">
-                        <div class="advisor-img-wrap">
-                            @if(!empty($slot['image']))
-                                <img src="{{ getLandingImage($slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
-                            @else
-                                <div class="advisor-img advisor-img-placeholder"></div>
-                            @endif
+        <div class="advisors-grid-wrapper position-relative">
+            <button class="advisor-nav-btn prev-btn d-md-none" id="advPrev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+            <div class="advisors-grid" id="advisorsGrid">
+                @foreach($advSlots as $slot)
+                    @if(!empty($slot['name']) || !empty($slot['image']))
+                        <div class="advisor-card">
+                            <div class="advisor-img-wrap">
+                                @if(!empty($slot['image']))
+                                    <img src="{{ getLandingImage($slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
+                                @else
+                                    <div class="advisor-img advisor-img-placeholder"></div>
+                                @endif
+                            </div>
+                            <div class="advisor-name">
+                                {!! !empty($slot['name']) ? str_replace('|', '<br>', $slot['name']) : '' !!}
+                            </div>
                         </div>
-                        <div class="advisor-name">
-                            {!! !empty($slot['name']) ? str_replace('|', '<br>', $slot['name']) : '' !!}
-                        </div>
-                    </div>
-                @endif
-            @endforeach
+                    @endif
+                @endforeach
+            </div>
+            <button class="advisor-nav-btn next-btn d-md-none" id="advNext" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
 </section>
@@ -1394,9 +1396,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 const sY = window.scrollY;
-                if (sY < 600) {
+                if (sY < 600 && window.innerWidth > 767) {
                     if (trustMotion) trustMotion.style.transform = 'translate3d(0, ' + (sY * 0.08) + 'px, 0)';
                     if (heroRating) heroRating.style.transform = 'translate3d(0, ' + (sY * 0.05) + 'px, 0)';
+                } else {
+                    if (trustMotion) trustMotion.style.transform = 'none';
+                    if (heroRating) heroRating.style.transform = 'none';
                 }
                 scrollTick = false;
             });
@@ -1630,6 +1635,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
     buildDots();
     render(false);
+
+    // Advisors Scroll Logic
+    const advGrid = document.getElementById('advisorsGrid');
+    const advPrev = document.getElementById('advPrev');
+    const advNext = document.getElementById('advNext');
+    if (advGrid && advPrev && advNext) {
+        advPrev.addEventListener('click', function() {
+            advGrid.scrollBy({ left: -advGrid.offsetWidth, behavior: 'smooth' });
+        });
+        advNext.addEventListener('click', function() {
+            advGrid.scrollBy({ left: advGrid.offsetWidth, behavior: 'smooth' });
+        });
+        
+        advGrid.addEventListener('scroll', function() {
+            advPrev.style.opacity = advGrid.scrollLeft <= 10 ? '0.3' : '1';
+            advNext.style.opacity = Math.ceil(advGrid.scrollLeft + advGrid.clientWidth) >= advGrid.scrollWidth ? '0.3' : '1';
+        });
+        advGrid.dispatchEvent(new Event('scroll'));
+    }
+
+    // HIW Scroll Logic
+    const hiwDeck = document.getElementById('hiwDeck');
+    const hiwPrev = document.getElementById('hiwPrev');
+    const hiwNext = document.getElementById('hiwNext');
+    if (hiwDeck && hiwPrev && hiwNext) {
+        hiwPrev.addEventListener('click', function() {
+            hiwDeck.scrollBy({ left: -hiwDeck.offsetWidth, behavior: 'smooth' });
+        });
+        hiwNext.addEventListener('click', function() {
+            hiwDeck.scrollBy({ left: hiwDeck.offsetWidth, behavior: 'smooth' });
+        });
+        
+        hiwDeck.addEventListener('scroll', function() {
+            hiwPrev.style.opacity = hiwDeck.scrollLeft <= 10 ? '0.3' : '1';
+            hiwNext.style.opacity = Math.ceil(hiwDeck.scrollLeft + hiwDeck.clientWidth) >= hiwDeck.scrollWidth ? '0.3' : '1';
+        });
+        hiwDeck.dispatchEvent(new Event('scroll'));
+    }
 })();
 </script>
 </body>
