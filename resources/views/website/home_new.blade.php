@@ -597,7 +597,7 @@
                 @endif
                 
                 @if(!empty($step['icon']))
-                    <div class="hiw-card-photo-wrap">
+                    <div class="hiw-card-photo-wrap" style="margin-top: auto;">
                         <img src="{{ getLandingImage($step['icon']) }}" class="hiw-card-photo" alt="" loading="lazy">
                     </div>
                 @endif
