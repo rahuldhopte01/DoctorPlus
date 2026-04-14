@@ -170,8 +170,9 @@ body.home-target .header-btn {
   padding: 11px 24px;
   border: none;
   border-radius: 50px;
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
   text-decoration: none;
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.38);
   transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
