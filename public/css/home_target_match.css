@@ -814,8 +814,15 @@ body.home-target .hero-main-content .rating-section {
     padding-top: 22px !important;
   }
 
+  body.home-target .hero-fuxx .container {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
   body.home-target .desktop-only-cats {
+    order: 2 !important;
     padding: 8px 8px 0;
+    margin-top: 25px !important;
   }
 
   body.home-target .desktop-cats-grid {
@@ -825,6 +832,7 @@ body.home-target .hero-main-content .rating-section {
   }
 
   body.home-target .hero-main-content {
+    order: 1 !important;
     margin-top: 6px !important;
   }
 
