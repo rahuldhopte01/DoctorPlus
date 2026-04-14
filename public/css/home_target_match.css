@@ -1058,8 +1058,8 @@ body.home-target .hiw-card-photo-wrap {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: #f4f4f7;
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: transparent !important;
+  border: none !important;
 }
 
 body.home-target .hiw-card-photo-wrap::before {
