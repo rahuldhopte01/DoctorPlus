@@ -192,7 +192,7 @@
         .promo-countdown .cd-sep {
             font-weight: 800;
             color: #8b8598;
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             font-size: 0.9rem;
         }
 
@@ -285,7 +285,7 @@
                                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                                     if (days > 0) {
-                                        daysBlock.style.display = 'inline-block';
+                                        daysBlock.style.display = 'inline-flex';
                                         daysSep.style.display = 'inline-block';
                                         daysBox.innerHTML = days < 10 ? "0" + days : days;
                                     } else {
