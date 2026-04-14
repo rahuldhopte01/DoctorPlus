@@ -820,9 +820,10 @@ body.home-target .hero-main-content .rating-section {
   }
 
   body.home-target .desktop-only-cats {
-    order: 2 !important;
+    order: 5 !important;
     padding: 8px 8px 0;
-    margin-top: 25px !important;
+    margin-top: 5px !important;
+    margin-bottom: 25px !important;
   }
 
   body.home-target .desktop-cats-grid {
@@ -832,16 +833,39 @@ body.home-target .hero-main-content .rating-section {
   }
 
   body.home-target .hero-main-content {
-    order: 1 !important;
-    margin-top: 6px !important;
+    display: contents !important;
+  }
+
+  body.home-target .hero-main-content .btn-cta-pulse {
+    order: 4 !important;
+    margin-bottom: 10px !important;
+    max-width: fit-content;
+    align-self: center;
   }
 
   body.home-target .hero-main-content h1.display-4 {
+    order: 2 !important;
     font-size: 1.95rem !important;
+    margin-top: 6px !important;
   }
 
   body.home-target .hero-main-content p.lead {
+    order: 3 !important;
     font-size: 0.85rem !important;
+  }
+
+  body.home-target .hero-main-content .hero-fuxx-ticker {
+    order: 1 !important;
+  }
+
+  body.home-target .hero-main-content .trust-motion {
+    order: 6 !important;
+    margin-top: 10px !important;
+  }
+
+  body.home-target .hero-main-content .live-viewers {
+    order: 7 !important;
+    margin-bottom: 30px !important;
   }
 
   body.home-target .categories-marquee-content {
