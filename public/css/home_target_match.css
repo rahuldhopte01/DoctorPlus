@@ -1989,7 +1989,7 @@ body.home-target .footer-inner-v2 {
 
 @media (max-width: 767px) {
   body.home-target .home-intermission-banner {
-    padding: 48px 16px !important;
+    padding: 10px 10px !important;
   }
 
   body.home-target .ed-card-large .ed-card-text {
@@ -1999,7 +1999,7 @@ body.home-target .footer-inner-v2 {
   }
 
   body.home-target .home-intermission-banner h2 {
-    font-size: 1.95rem !important;
+    font-size: 1.3rem !important;
   }
 
   body.home-target .hiw-title {
@@ -2558,11 +2558,11 @@ body.home-target .footer-inner-v2 {
   }
 
   body.home-target .mid-cta {
-    padding: 52px 16px;
+    padding: 10px 10px;
   }
 
   body.home-target .mid-cta h2 {
-    font-size: 1.95rem;
+    font-size: 1.3rem;
   }
 
   body.home-target .btn-cta-lg {
