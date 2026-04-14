@@ -2603,11 +2603,11 @@ body.home-target .footer-inner-v2 {
   }
 
   body.home-target .nl-hero-bg {
-    opacity: 0.44;
+    opacity: 0.25;
   }
 
   body.home-target .nl-hero-bg::before {
-    background: rgba(255, 255, 255, 0.9);
+    background: radial-gradient(circle, transparent 0%, rgba(255, 255, 255, 0.45) 50%, #fff 100%);
   }
 
   body.home-target .nl-hero-content {
@@ -3584,12 +3584,12 @@ body.home-target .home-story-newsletter .newsletter-hero {
 body.home-target .home-story-newsletter .nl-hero-bg {
   margin: 0 auto;
   align-content: center;
-  height: 58rem;
-  width: 80rem;
+  height: auto;
+  width: 100%;
   max-width: 100%;
   align-items: center;
   background-size: contain;
-  background-position: right;
+  background-position: center bottom;
   background-repeat: no-repeat;
 }
 
@@ -3992,14 +3992,15 @@ body.home-target .home-story-newsletter .nl-hero-content {
   }
 
   body.home-target .nl-hero-bg {
-    position: relative;
-    height: 300px;
-    background-size: cover;
+    position: absolute;
+    inset: 0;
+    background-size: contain;
     background-position: center bottom;
+    opacity: 0.3;
   }
 
   body.home-target .nl-hero-bg::before {
-    background: linear-gradient(to top, #fff 0%, transparent 100%);
+    background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.2) 60%, #fff 100%);
   }
 
   body.home-target .nl-hero-content {
