@@ -173,26 +173,27 @@
         }
 
         .promo-countdown .cd-block>span {
-            font-size: 1.95rem;
+            font-size: 0.95rem;
             font-weight: 800;
-            line-height: 1;
-            letter-spacing: 0.03em;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
         }
 
         .promo-countdown .cd-block small {
-            margin-top: 5px;
-            font-size: 0.72rem;
+            margin-top: 2px;
+            font-size: 0.55rem;
             font-weight: 700;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             color: #55506a;
-            opacity: 0.95;
+            opacity: 0.85;
         }
 
         .promo-countdown .cd-sep {
             font-weight: 800;
             color: #8b8598;
-            transform: translateY(-8px);
+            transform: translateY(-5px);
+            font-size: 0.9rem;
         }
 
         @media (max-width: 767px) {
@@ -225,11 +226,11 @@
             }
 
             .promo-countdown .cd-block>span {
-                font-size: 1.45rem;
+                font-size: 0.82rem;
             }
 
             .promo-countdown .cd-block small {
-                font-size: 0.58rem;
+                font-size: 0.5rem;
             }
         }
     </style>
