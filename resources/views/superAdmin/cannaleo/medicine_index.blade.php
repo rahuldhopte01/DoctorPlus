@@ -33,7 +33,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="w-100 display table datatable text-center">
+                    <table class="w-100 display table text-center">
                         <thead>
                             <tr>
                                 <th> # </th>
@@ -84,6 +84,11 @@
                         </tbody>
                     </table>
                 </div>
+                @if ($medicines->hasPages())
+                    <div class="card-footer">
+                        {{ $medicines->links() }}
+                    </div>
+                @endif
             </div>
         </div>
     </div>

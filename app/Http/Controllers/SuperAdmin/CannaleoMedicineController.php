@@ -19,7 +19,14 @@ class CannaleoMedicineController extends Controller
     {
         abort_if(Gate::denies('category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $query = CannaleoMedicine::with(['cannaleoPharmacy', 'categories']);
+        // Exclude raw_data — it's a large JSON blob only needed on the edit form.
+        $columns = ['id', 'cannaleo_pharmacy_id', 'external_id', 'name', 'category', 'price', 'thc', 'cbd', 'image', 'last_synced_at'];
+
+        $query = CannaleoMedicine::select($columns)
+            ->with([
+                'cannaleoPharmacy:id,name',
+                'categories:id,name',
+            ]);
 
         if ($request->filled('pharmacy_id')) {
             $query->where('cannaleo_pharmacy_id', $request->pharmacy_id);
@@ -30,9 +37,9 @@ class CannaleoMedicineController extends Controller
             });
         }
 
-        $medicines = $query->orderBy('name')->get();
-        $pharmacies = CannaleoPharmacy::orderBy('name')->get();
-        $categories = \App\Models\Category::orderBy('name')->get();
+        $medicines = $query->orderBy('name')->paginate(100)->withQueryString();
+        $pharmacies = CannaleoPharmacy::orderBy('name')->get(['id', 'name']);
+        $categories = \App\Models\Category::orderBy('name')->get(['id', 'name']);
 
         return view('superAdmin.cannaleo.medicine_index', compact('medicines', 'pharmacies', 'categories'));
     }
