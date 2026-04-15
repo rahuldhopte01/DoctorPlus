@@ -18,7 +18,16 @@
                 <div class="row">
                     <div class="col-md-4">
                         <p class="mb-1"><strong>{{ __('Name') }}:</strong> {{ $medicine->name }}</p>
-                        <p class="mb-1"><strong>{{ __('Pharmacy') }}:</strong> {{ $medicine->cannaleoPharmacy->name ?? '—' }}</p>
+                        <p class="mb-1">
+                            <strong>{{ __('Pharmacies') }}:</strong>
+                            @if ($siblingPharmacies->isNotEmpty())
+                                @foreach ($siblingPharmacies as $ph)
+                                    <span class="badge badge-info mr-1">{{ $ph->name }}</span>
+                                @endforeach
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </p>
                         <p class="mb-1"><strong>{{ __('API Category') }}:</strong> {{ $medicine->category ?? '—' }}</p>
                     </div>
                     <div class="col-md-4">
@@ -37,7 +46,16 @@
 
         {{-- Editable fields --}}
         <div class="card">
-            <div class="card-header font-weight-bold">{{ __('Image & Description') }} <small class="text-muted">({{ __('these fields are preserved across syncs') }})</small></div>
+            <div class="card-header font-weight-bold">
+                {{ __('Image & Description') }}
+                <small class="text-muted">({{ __('these fields are preserved across syncs') }})</small>
+                @if ($siblingPharmacies->count() > 1)
+                    <div class="alert alert-info mt-2 mb-0 py-2 px-3 small">
+                        <i class="fas fa-info-circle"></i>
+                        {{ __('Saving will apply these changes to all') }} <strong>{{ $siblingPharmacies->count() }}</strong> {{ __('pharmacies carrying this medicine.') }}
+                    </div>
+                @endif
+            </div>
             <form action="{{ route('cannaleo.medicines.update', $medicine->id) }}" method="post" class="myform" enctype="multipart/form-data">
                 @csrf
                 @method('POST')

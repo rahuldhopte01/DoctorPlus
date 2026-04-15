@@ -49,10 +49,32 @@
                         </thead>
                         <tbody>
                             @forelse ($medicines as $medicine)
+                            @php
+                                $rowPharmacies = $pharmaciesByExternalId[$medicine->external_id] ?? collect();
+                            @endphp
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $medicine->name }}</td>
-                                <td>{{ $medicine->cannaleoPharmacy->name ?? '—' }}</td>
+                                <td>
+                                    @if ($rowPharmacies->isNotEmpty())
+                                        @if ($rowPharmacies->count() === 1)
+                                            {{ $rowPharmacies->first()->name }}
+                                        @else
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    {{ $rowPharmacies->count() }} {{ __('pharmacies') }}
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    @foreach ($rowPharmacies as $ph)
+                                                        <span class="dropdown-item-text px-3 py-1 small">{{ $ph->name }}</span>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <span class="text-muted">—</span>
+                                    @endif
+                                </td>
                                 <td>{{ $medicine->category ?? '—' }}</td>
                                 <td>{{ $medicine->price !== null ? number_format($medicine->price, 2) . ' €' : '—' }}</td>
                                 <td>{{ ($medicine->thc !== null || $medicine->cbd !== null) ? (number_format($medicine->thc ?? 0, 1) . ' / ' . number_format($medicine->cbd ?? 0, 1)) : '—' }}</td>
