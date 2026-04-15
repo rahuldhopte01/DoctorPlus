@@ -20,18 +20,12 @@ class Localization
     {
         if (env('DB_DATABASE')) {
 
-            if (auth()->check()) {
-                // if (!auth()->user()->hasAnyRole(Role::all()) && auth()->user()->language) {
-                if (auth()->user()->language) {
-                    $language = auth()->user()->language;
-                    // Log::error($language);
-                } else {
-                    $language = Setting::first()->language;
-                    // Log::error($language);
-                }
-            } elseif (session()->has('locale') && session()->has('direction')) {
-                // dd(session()->get('locale'));
+            if (session()->has('locale') && session()->has('direction')) {
+                // Session locale takes priority (set when user manually switches language)
                 $language = session()->get('locale');
+            } elseif (auth()->check() && auth()->user()->language) {
+                // Fall back to user's saved language preference
+                $language = auth()->user()->language;
                 // Log::error($language);
             } else {
                 $language = Setting::first()->language;
