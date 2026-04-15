@@ -141,7 +141,7 @@
     .categories-marquee-content {
         display: flex;
         gap: 15px;
-        animation: marquee-scroll 100s linear infinite;
+        animation: marquee-scroll 200s linear infinite;
         padding: 10px 0;
         width: max-content;
     }
@@ -211,7 +211,7 @@
                     'url' => !empty($cmsQuickLinks[0]['url']) && $cmsQuickLinks[0]['url'] !== '#' ? $cmsQuickLinks[0]['url'] : route('categories'),
                     'image' => !empty($cmsQuickLinks[0]['image']) ? url('images/upload/'.$cmsQuickLinks[0]['image']) : '',
                     'alt' => 'Cannabis',
-                    'active' => false,
+                    'active' => true,
                 ],
                 [
                     'title' => 'Erektions&shy;st&ouml;rungen',
@@ -535,12 +535,6 @@
         .hiw-sub-item-desc  { font-size: 0.65rem; color: #777; line-height: 1.3; }
         .hiw-card-photo { display: block; width: 100%; margin-top: 20px; object-fit: contain; max-height: 190px; }
 
-        /* Mobile: stack cards vertically instead of overflowing */
-        @media (max-width: 767px) {
-            .hiw-deck { flex-direction: column !important; align-items: center !important; gap: 16px !important; padding: 24px 16px 20px !important; }
-            .step-card-tilted { transform: none !important; margin: 0 !important; width: 100% !important; max-width: 360px !important; min-height: auto !important; }
-            .step-card-tilted.hiw-active { transform: none !important; }
-        }
     </style>
 
     <div class="container text-center position-relative" style="z-index:2;">
@@ -553,7 +547,8 @@
         </div>
         @endif
 
-        <div class="hiw-deck mx-auto" style="max-width: 950px;">
+        <div class="hiw-deck-wrapper position-relative mx-auto" style="max-width: 950px;">
+            <div class="hiw-deck" id="hiwDeck">
             @foreach($how['steps'] as $i => $step)
             @php
                 $tiltClass = ['tilt-left','tilt-center','tilt-right'][$i] ?? 'tilt-center';
@@ -602,12 +597,15 @@
                 @endif
                 
                 @if(!empty($step['icon']))
-                    <div class="hiw-card-photo-wrap">
+                    <div class="hiw-card-photo-wrap" style="margin-top: auto;">
                         <img src="{{ getLandingImage($step['icon']) }}" class="hiw-card-photo" alt="" loading="lazy">
                     </div>
                 @endif
             </div>
             @endforeach
+            </div>
+            <div class="slider-swipe-hint d-md-none"><span class="swipe-arrow">&rarr;</span> Wischen zum Blättern</div>
+            <div class="slider-pagination-dots d-md-none" id="hiwDots"></div>
         </div>
     </div>
 
@@ -1007,23 +1005,27 @@
 <section class="advisors-section home-story-advisors">
     <div class="advisors-container">
         <h2 class="advisors-heading">{{ $advHeading }}</h2>
-        <div class="advisors-grid">
-            @foreach($advSlots as $slot)
-                @if(!empty($slot['name']) || !empty($slot['image']))
-                    <div class="advisor-card">
-                        <div class="advisor-img-wrap">
-                            @if(!empty($slot['image']))
-                                <img src="{{ getLandingImage($slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
-                            @else
-                                <div class="advisor-img advisor-img-placeholder"></div>
-                            @endif
+        <div class="advisors-grid-wrapper position-relative">
+            <div class="advisors-grid" id="advisorsGrid">
+                @foreach($advSlots as $slot)
+                    @if(!empty($slot['name']) || !empty($slot['image']))
+                        <div class="advisor-card">
+                            <div class="advisor-img-wrap">
+                                @if(!empty($slot['image']))
+                                    <img src="{{ getLandingImage($slot['image']) }}" alt="{{ $slot['name'] ?? 'Advisor' }}" class="advisor-img" />
+                                @else
+                                    <div class="advisor-img advisor-img-placeholder"></div>
+                                @endif
+                            </div>
+                            <div class="advisor-name">
+                                {!! !empty($slot['name']) ? str_replace('|', '<br>', $slot['name']) : '' !!}
+                            </div>
                         </div>
-                        <div class="advisor-name">
-                            {!! !empty($slot['name']) ? str_replace('|', '<br>', $slot['name']) : '' !!}
-                        </div>
-                    </div>
-                @endif
-            @endforeach
+                    @endif
+                @endforeach
+            </div>
+            <div class="slider-swipe-hint d-md-none"><span class="swipe-arrow">&rarr;</span> Wischen zum Blättern</div>
+            <div class="slider-pagination-dots d-md-none" id="advDots"></div>
         </div>
     </div>
 </section>
@@ -1394,9 +1396,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 const sY = window.scrollY;
-                if (sY < 600) {
+                if (sY < 600 && window.innerWidth > 767) {
                     if (trustMotion) trustMotion.style.transform = 'translate3d(0, ' + (sY * 0.08) + 'px, 0)';
                     if (heroRating) heroRating.style.transform = 'translate3d(0, ' + (sY * 0.05) + 'px, 0)';
+                } else {
+                    if (trustMotion) trustMotion.style.transform = 'none';
+                    if (heroRating) heroRating.style.transform = 'none';
                 }
                 scrollTick = false;
             });
@@ -1513,123 +1518,162 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- Treatment Areas Carousel -->
 <script>
 (function() {
+    // Treatment Areas Carousel
     var viewport = document.getElementById('treatment-viewport');
     var track = document.getElementById('treatment-track');
-    if (!viewport || !track) return;
-    var cards = track.querySelectorAll('.treatment-area-card');
-    if (cards.length === 0) return;
+    if (viewport && track) {
+        var cards = track.querySelectorAll('.treatment-area-card');
+        if (cards.length > 0) {
+            var prevBtn = document.getElementById('treatment-prev-btn');
+            var nextBtn = document.getElementById('treatment-next-btn');
+            var dotsWrap = document.getElementById('treatment-dots');
+            var index = 0;
+            var dragging = false;
+            var dragStartX = 0;
+            var dragOffset = 0;
+            var touchStartX = 0;
+            var resizeTimer;
 
-    var prevBtn = document.getElementById('treatment-prev-btn');
-    var nextBtn = document.getElementById('treatment-next-btn');
-    var dotsWrap = document.getElementById('treatment-dots');
-    var index = 0;
-    var dragging = false;
-    var dragStartX = 0;
-    var dragOffset = 0;
-    var touchStartX = 0;
-    var resizeTimer;
+            function cardStep() {
+                var gap = 20;
+                var style = window.getComputedStyle(track);
+                if (style.gap) gap = parseFloat(style.gap) || 20;
+                return (cards[0].offsetWidth || 280) + gap;
+            }
 
-    function cardStep() {
-        var gap = 20;
-        var style = window.getComputedStyle(track);
-        if (style.gap) gap = parseFloat(style.gap) || 20;
-        return (cards[0].offsetWidth || 280) + gap;
-    }
+            function visibleCount() {
+                return Math.max(1, Math.floor(viewport.offsetWidth / cardStep()));
+            }
 
-    function visibleCount() {
-        return Math.max(1, Math.floor(viewport.offsetWidth / cardStep()));
-    }
+            function maxIdx() {
+                return Math.max(0, cards.length - visibleCount());
+            }
 
-    function maxIdx() {
-        return Math.max(0, cards.length - visibleCount());
-    }
+            function render(animated) {
+                if (animated === false) track.style.transition = 'none';
+                track.style.transform = 'translateX(-' + (index * cardStep()) + 'px)';
+                if (animated === false) { void track.offsetWidth; track.style.transition = ''; }
+                if (prevBtn) prevBtn.disabled = index <= 0;
+                if (nextBtn) nextBtn.disabled = index >= maxIdx();
+                if (dotsWrap) {
+                    var dots = dotsWrap.querySelectorAll('.treatment-dot');
+                    for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('active', i === index);
+                }
+            }
 
-    function render(animated) {
-        if (animated === false) track.style.transition = 'none';
-        track.style.transform = 'translateX(-' + (index * cardStep()) + 'px)';
-        if (animated === false) { void track.offsetWidth; track.style.transition = ''; }
-        if (prevBtn) prevBtn.disabled = index <= 0;
-        if (nextBtn) nextBtn.disabled = index >= maxIdx();
-        var dots = dotsWrap.querySelectorAll('.treatment-dot');
-        for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('active', i === index);
-    }
+            function goTo(n) {
+                index = Math.min(Math.max(n, 0), maxIdx());
+                render(true);
+            }
 
-    function goTo(n) {
-        index = Math.min(Math.max(n, 0), maxIdx());
-        render(true);
-    }
+            function buildDots() {
+                if (!dotsWrap) return;
+                dotsWrap.innerHTML = '';
+                var max = maxIdx();
+                for (var i = 0; i <= max; i++) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'treatment-dot' + (i === 0 ? ' active' : '');
+                    btn.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+                    (function(idx) { btn.addEventListener('click', function() { goTo(idx); }); })(i);
+                    dotsWrap.appendChild(btn);
+                }
+            }
 
-    function buildDots() {
-        dotsWrap.innerHTML = '';
-        var max = maxIdx();
-        for (var i = 0; i <= max; i++) {
-            var btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'treatment-dot' + (i === 0 ? ' active' : '');
-            btn.setAttribute('aria-label', @json(__('landing.treatments.go_to_slide')) + ' ' + (i + 1));
-            (function(idx) { btn.addEventListener('click', function() { goTo(idx); }); })(i);
-            dotsWrap.appendChild(btn);
-        }
-    }
+            if (prevBtn) prevBtn.addEventListener('click', function() { goTo(index - 1); });
+            if (nextBtn) nextBtn.addEventListener('click', function() { goTo(index + 1); });
 
-    if (prevBtn) prevBtn.addEventListener('click', function() { goTo(index - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function() { goTo(index + 1); });
-
-    viewport.addEventListener('mousedown', function(e) {
-        dragging = true;
-        dragStartX = e.clientX;
-        dragOffset = index * cardStep();
-        track.style.transition = 'none';
-    });
-    let dragTick = false;
-    window.addEventListener('mousemove', function(e) {
-        if (!dragging) return;
-        if (!dragTick) {
-            window.requestAnimationFrame(() => {
-                var delta = dragStartX - e.clientX;
-                var raw = Math.min(Math.max(dragOffset + delta, 0), maxIdx() * cardStep());
-                track.style.transform = 'translate3d(-' + raw + 'px, 0, 0)';
-                dragTick = false;
+            viewport.addEventListener('mousedown', function(e) {
+                dragging = true;
+                dragStartX = e.clientX;
+                dragOffset = index * cardStep();
+                track.style.transition = 'none';
             });
-            dragTick = true;
-        }
-    });
-    window.addEventListener('mouseup', function(e) {
-        if (!dragging) return;
-        dragging = false;
-        track.style.transition = '';
-        var delta = dragStartX - e.clientX;
-        if (Math.abs(delta) > 60) goTo(delta > 0 ? index + 1 : index - 1);
-        else render(true);
-    });
+            let dragTick = false;
+            window.addEventListener('mousemove', function(e) {
+                if (!dragging) return;
+                if (!dragTick) {
+                    window.requestAnimationFrame(() => {
+                        var delta = dragStartX - e.clientX;
+                        var raw = Math.min(Math.max(dragOffset + delta, 0), maxIdx() * cardStep());
+                        track.style.transform = 'translate3d(-' + raw + 'px, 0, 0)';
+                        dragTick = false;
+                    });
+                    dragTick = true;
+                }
+            });
+            window.addEventListener('mouseup', function(e) {
+                if (!dragging) return;
+                dragging = false;
+                track.style.transition = '';
+                var delta = dragStartX - e.clientX;
+                if (Math.abs(delta) > 60) goTo(delta > 0 ? index + 1 : index - 1);
+                else render(true);
+            });
 
-    viewport.addEventListener('touchstart', function(e) {
-        touchStartX = e.touches[0].clientX;
-        track.style.transition = 'none';
-    }, { passive: true });
-    viewport.addEventListener('touchend', function(e) {
-        track.style.transition = '';
-        var delta = touchStartX - e.changedTouches[0].clientX;
-        if (Math.abs(delta) > 50) goTo(delta > 0 ? index + 1 : index - 1);
-        else render(true);
-    });
+            viewport.addEventListener('touchstart', function(e) {
+                touchStartX = e.touches[0].clientX;
+                track.style.transition = 'none';
+            }, { passive: true });
+            viewport.addEventListener('touchend', function(e) {
+                track.style.transition = '';
+                var delta = touchStartX - e.changedTouches[0].clientX;
+                if (Math.abs(delta) > 50) goTo(delta > 0 ? index + 1 : index - 1);
+                else render(true);
+            });
 
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'ArrowLeft') goTo(index - 1);
-        if (e.key === 'ArrowRight') goTo(index + 1);
-    });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') goTo(index - 1);
+                if (e.key === 'ArrowRight') goTo(index + 1);
+            });
 
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            index = Math.min(index, maxIdx());
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    index = Math.min(index, maxIdx());
+                    buildDots();
+                    render(false);
+                }, 150);
+            });
+
             buildDots();
             render(false);
-        }, 150);
-    });
+        }
+    }
 
-    buildDots();
-    render(false);
+    function initSliderDots(sliderId, dotsId) {
+        const slider = document.getElementById(sliderId);
+        const dotsGrid = document.getElementById(dotsId);
+        if (!slider || !dotsGrid) return;
+
+        const cards = slider.children;
+        const count = cards.length;
+        
+        // Build dots
+        dotsGrid.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
+            dotsGrid.appendChild(dot);
+        }
+
+        const dots = dotsGrid.querySelectorAll('.slider-dot');
+
+        slider.addEventListener('scroll', function() {
+            if (window.innerWidth > 767) return;
+            const scrollPos = slider.scrollLeft;
+            const itemWidth = slider.scrollWidth / count;
+            const activeIndex = Math.min(Math.round(scrollPos / itemWidth), count - 1);
+            
+            dots.forEach((dot, idx) => {
+                dot.classList.toggle('active', idx === activeIndex);
+            });
+        }, { passive: true });
+    }
+
+    // Initialize both sliders
+    initSliderDots('hiwDeck', 'hiwDots');
+    initSliderDots('advisorsGrid', 'advDots');
 })();
 </script>
 </body>

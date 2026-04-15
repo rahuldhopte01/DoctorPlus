@@ -173,26 +173,27 @@
         }
 
         .promo-countdown .cd-block>span {
-            font-size: 1.95rem;
+            font-size: 0.95rem;
             font-weight: 800;
-            line-height: 1;
-            letter-spacing: 0.03em;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
         }
 
         .promo-countdown .cd-block small {
-            margin-top: 5px;
-            font-size: 0.72rem;
+            margin-top: 2px;
+            font-size: 0.55rem;
             font-weight: 700;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             color: #55506a;
-            opacity: 0.95;
+            opacity: 0.85;
         }
 
         .promo-countdown .cd-sep {
             font-weight: 800;
             color: #8b8598;
-            transform: translateY(-8px);
+            transform: translateY(-3px);
+            font-size: 0.9rem;
         }
 
         @media (max-width: 767px) {
@@ -225,11 +226,11 @@
             }
 
             .promo-countdown .cd-block>span {
-                font-size: 1.45rem;
+                font-size: 0.82rem;
             }
 
             .promo-countdown .cd-block small {
-                font-size: 0.58rem;
+                font-size: 0.5rem;
             }
         }
     </style>
@@ -242,23 +243,28 @@
             €.
             @if(!empty($promo['end_date']))
                 <span class="promo-countdown promo-timer-container" id="promoCountdown" data-endtime="{{ $promo['end_date'] }}">
-                    <span class="cd-block"><span id="cdHours" class="hours-box">00</span><small>Std</small></span>
+                    <span class="cd-block days-block"><span class="days-box">00</span><small>Tage</small></span>
+                    <span class="cd-sep days-sep">:</span>
+                    <span class="cd-block"><span class="hours-box">00</span><small>Std</small></span>
                     <span class="cd-sep">:</span>
-                    <span class="cd-block"><span id="cdMins" class="mins-box">00</span><small>Min</small></span>
+                    <span class="cd-block"><span class="mins-box">00</span><small>Min</small></span>
                     <span class="cd-sep">:</span>
-                    <span class="cd-block"><span id="cdSecs" class="secs-box">00</span><small>Sek</small></span>
+                    <span class="cd-block"><span class="secs-box">00</span><small>Sek</small></span>
                 </span>
                 <script>
                     document.addEventListener('DOMContentLoaded', function () {
                         const timerContainer = document.querySelector('.promo-timer-container');
                         if (timerContainer) {
                             const endTimeStr = timerContainer.getAttribute('data-endtime');
-                            // The input might be datetime-local which creates a string like "2024-04-01T23:59"
                             const endTime = new Date(endTimeStr).getTime();
 
+                            const daysBox = timerContainer.querySelector('.days-box');
                             const hoursBox = timerContainer.querySelector('.hours-box');
                             const minsBox = timerContainer.querySelector('.mins-box');
                             const secsBox = timerContainer.querySelector('.secs-box');
+                            
+                            const daysBlock = timerContainer.querySelector('.days-block');
+                            const daysSep = timerContainer.querySelector('.days-sep');
 
                             if (!isNaN(endTime)) {
                                 const updateTimer = () => {
@@ -266,22 +272,33 @@
                                     const distance = endTime - now;
 
                                     if (distance < 0) {
+                                        daysBox.innerHTML = "00";
                                         hoursBox.innerHTML = "00";
                                         minsBox.innerHTML = "00";
                                         secsBox.innerHTML = "00";
                                         return;
                                     }
 
-                                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)) + Math.floor(distance / (1000 * 60 * 60 * 24)) * 24;
+                                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                                     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                                     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                    if (days > 0) {
+                                        daysBlock.style.display = 'inline-flex';
+                                        daysSep.style.display = 'inline-block';
+                                        daysBox.innerHTML = days < 10 ? "0" + days : days;
+                                    } else {
+                                        daysBlock.style.display = 'none';
+                                        daysSep.style.display = 'none';
+                                    }
 
                                     hoursBox.innerHTML = hours < 10 ? "0" + hours : hours;
                                     minsBox.innerHTML = minutes < 10 ? "0" + minutes : minutes;
                                     secsBox.innerHTML = seconds < 10 ? "0" + seconds : seconds;
                                 };
 
-                                updateTimer(); // Initial call
+                                updateTimer();
                                 setInterval(updateTimer, 1000);
                             }
                         }
