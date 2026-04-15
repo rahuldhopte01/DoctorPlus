@@ -94,7 +94,7 @@
                     }
                     else
                     {
-                        $lang_image = "english.png";
+                        $lang_image = "Germany.png";
                     }
                     @endphp
                 </div>

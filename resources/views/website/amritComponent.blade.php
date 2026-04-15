@@ -658,6 +658,7 @@
                         </div>
                     </div>
 
+                    {{-- RATING HIDDEN (re-enable when global setting is ready)
                     @if($cmsHero['rating_enabled'])
                     <div class="ed-hero-t2-rating">
                         <span class="stars">★★★★★</span>
@@ -666,6 +667,7 @@
                         </div>
                     </div>
                     @endif
+                    --}}
                 </div>
 
                 <div class="ed-hero-t2-img-wrap">
@@ -720,6 +722,7 @@
                         41,58 &euro;
                     @endif
                 </div>
+                {{-- RATING HIDDEN (re-enable when global setting is ready)
                 @if($cmsHero['rating_enabled'])
                 <div class="hero-rating">
                   <span class="stars">★★★★★</span>
@@ -727,6 +730,7 @@
                   <span style="color:var(--ed-text-muted)">{{ $cmsHero['rating_count'] }} {{ __('Bewertungen') }}</span>
                 </div>
                 @endif
+                --}}
               </div>
             </div>
             @if($cmsHero['badge_enabled'])

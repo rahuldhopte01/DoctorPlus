@@ -221,11 +221,13 @@
                 <p>Führen Sie einfach unsere Online-Beratung durch, um ein Rezept zu erhalten und das Potenzmittel wird Ihnen in 1-2 Werktagen geliefert.</p>
                 <a href="{{ $consultationUrl }}" class="hero-cta">Zu den medizinischen Fragen</a>
                 <div class="hero-pricing">Behandlungsgebühr 29 € +<br>Medikament ab 41,58 €</div>
+                {{-- RATING HIDDEN (re-enable when global setting is ready)
                 <div class="hero-rating">
                     <span class="stars">★★★★★</span>
                     <strong>4,79</strong> Hervorragend
                     <span class="text-muted">14.082 Bewertungen</span>
                 </div>
+                --}}
             </div>
         </div>
         <div class="ed-hero-badge">
