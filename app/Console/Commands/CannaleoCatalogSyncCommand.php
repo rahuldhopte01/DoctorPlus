@@ -9,7 +9,7 @@ class CannaleoCatalogSyncCommand extends Command
 {
     protected $signature = 'cannaleo:catalog-sync';
 
-    protected $description = 'Sync Cannaleo/Curobo catalog (pharmacies and medicines) from API. Run every 30 minutes via scheduler.';
+    protected $description = 'Sync Cannaleo catalog (pharmacies and medicines) from cannaleo.de API. Run every 15 minutes via scheduler.';
 
     public function handle(): int
     {
