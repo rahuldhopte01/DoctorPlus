@@ -14,7 +14,7 @@
     $cols = $footerSettings['columns'] ?? [
         ['title' => 'Behandlungen', 'links' => [['name' => 'Med. Cannabis', 'url' => '#'], ['name' => 'Erektionsstörungen', 'url' => '#']]],
         ['title' => 'Service', 'links' => [['name' => 'FAQ (Hilfe)', 'url' => '#'], ['name' => 'Versand', 'url' => '#']]],
-        ['title' => 'Rechtliches', 'links' => [['name' => 'AGB', 'url' => '#'], ['name' => 'Datenschutz', 'url' => '#']]]
+        ['title' => 'Rechtliches', 'links' => [['name' => 'AGB', 'url' => route('agb')], ['name' => 'Datenschutz', 'url' => route('privacy')]]]
     ];
     $disclaimer = $footerSettings['disclaimer'] ?? 'dr.fuxx ist eine Vermittlungsplattform – keine Internetapotheke und kein Ersatz für ärztliche Beratung.';
     $bottomInfo = $footerSettings['bottom_info'] ?? 'dr.fuxx GmbH · Berlin, Deutschland info@drfuxx.de';
@@ -91,6 +91,12 @@
 
                     if (in_array($linkUrl, ['', '#'], true) && stripos($linkLabel, 'Erektions') !== false) {
                         $linkUrl = route('erektionsstoerungen');
+                    }
+                    if (in_array($linkUrl, ['', '#'], true) && stripos($linkLabel, 'AGB') !== false) {
+                        $linkUrl = route('agb');
+                    }
+                    if (in_array($linkUrl, ['', '#'], true) && (stripos($linkLabel, 'Daten') !== false || stripos($linkLabel, 'Privacy') !== false)) {
+                        $linkUrl = route('privacy');
                     }
                 @endphp
                 <li><a href="{{ $linkUrl }}">{{ $linkLabel }}</a></li>

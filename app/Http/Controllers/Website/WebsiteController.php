@@ -1568,6 +1568,11 @@ class WebsiteController extends Controller
         return view('website.privacy', compact('privacy_policy'));
     }
 
+    public function agb()
+    {
+        return view('website.agb');
+    }
+
     public function userProfile()
     {
         (new CustomController)->cancel_max_order();

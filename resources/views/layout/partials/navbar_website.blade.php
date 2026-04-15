@@ -742,6 +742,7 @@
                 @if(count($sidebar_top_items) == 0 && count($sidebar_entdecken_items) == 0 && count($sidebar_lernen_items) == 0)
                     <li><a href="{{ route('categories') }}"><span class="menu-label-wrapper">{{ __('Behandlungen') }}</span><i class="bi bi-chevron-right menu-arrow"></i></a></li>
                     <li><a href="{{ url('/about-us') }}"><span class="menu-label-wrapper">{{ __('Über uns') }}</span><i class="bi bi-chevron-right menu-arrow"></i></a></li>
+                    <li><a href="{{ route('agb') }}"><span class="menu-label-wrapper">{{ __('AGB') }}</span><i class="bi bi-chevron-right menu-arrow"></i></a></li>
                 @endif
             </ul>
         </div>

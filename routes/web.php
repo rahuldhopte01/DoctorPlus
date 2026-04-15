@@ -112,7 +112,8 @@ Route::group(['middleware' => ['XssSanitizer']], function () {
     Route::post('/single_radiology_details', [WebsiteController::class, 'single_radiology_details']);
     Route::get('/about-us', [WebsiteController::class, 'aboutUs']);
     Route::get('/zoom', [WebsiteController::class, 'zoomDocPage']);
-    Route::get('/privacy-policy', [WebsiteController::class, 'privacy']);
+    Route::get('/privacy-policy', [WebsiteController::class, 'privacy'])->name('privacy');
+    Route::get('/agb', [WebsiteController::class, 'agb'])->name('agb');
     Route::get('/select_language/{id}', [WebsiteController::class, 'selectLanguage']);
 
     Route::get('/forgot_password', [WebsiteController::class, 'forgotPassword']);
