@@ -13,6 +13,8 @@ class CannaleoCatalogSyncCommand extends Command
 
     public function handle(): int
     {
+        ini_set('memory_limit', '512M');
+
         if (! config('cannaleo.catalog_sync_enabled', true)) {
             $this->warn('Cannaleo catalog sync is disabled (CUROBO_CATALOG_SYNC_ENABLED=false).');
             return 0;

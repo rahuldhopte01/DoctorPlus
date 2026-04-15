@@ -238,12 +238,25 @@ class QuestionnaireCannaleoController extends Controller
         }
 
         $submission->update([
-            'cannaleo_delivery_option' => $request->cannaleo_delivery_option,
+            'cannaleo_delivery_option'  => $request->cannaleo_delivery_option,
+            'cannaleo_pickup_branch_id' => null, // reset branch when delivery option changes
         ]);
 
-        // Pickup doesn't need a delivery address
         if ($request->cannaleo_delivery_option === 'pickup') {
-            $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection');
+            // Pickup: check if pharmacy has multiple branches that the patient must choose from
+            $branches = is_array($pharmacy->pickup_branches) ? $pharmacy->pickup_branches : [];
+
+            if (count($branches) > 1) {
+                // Multiple branches — patient must choose one
+                $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-branch-selection');
+            } elseif (count($branches) === 1) {
+                // Exactly one branch — auto-select it and skip the branch step
+                $submission->update(['cannaleo_pickup_branch_id' => (string) ($branches[0]['id'] ?? '')]);
+                $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection');
+            } else {
+                // No branches defined — go straight to medicine selection (pickup_branch_id stays null)
+                $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection');
+            }
         } else {
             $nextUrl = url('/questionnaire/category/' . $categoryId . '/cannaleo-delivery-address');
         }
@@ -363,6 +376,16 @@ class QuestionnaireCannaleoController extends Controller
                 ->with('error', __('Please select a delivery option first.'));
         }
 
+        // For pickup with multiple branches, ensure a branch was selected
+        if ($submission->cannaleo_delivery_option === 'pickup') {
+            $pharm = CannaleoPharmacy::find($submission->selected_cannaleo_pharmacy_id);
+            $branches = ($pharm && is_array($pharm->pickup_branches)) ? $pharm->pickup_branches : [];
+            if (count($branches) > 1 && empty($submission->cannaleo_pickup_branch_id)) {
+                return redirect()->route('questionnaire.cannaleo-branch-selection', ['categoryId' => $categoryId])
+                    ->with('error', __('Please select a pickup branch first.'));
+            }
+        }
+
         // Cannaleo-only category: show all medicines from selected pharmacy; otherwise only those assigned to this category
         if ($category->is_cannaleo_only) {
             $medicines = CannaleoMedicine::where('cannaleo_pharmacy_id', $submission->selected_cannaleo_pharmacy_id)
@@ -461,6 +484,95 @@ class QuestionnaireCannaleoController extends Controller
             'success' => true,
             'message' => __('Medicines selected successfully. Doctor will review your selection.'),
             'redirect_url' => url('/questionnaire/category/' . $categoryId . '/success'),
+        ]);
+    }
+
+    /**
+     * Show pickup branch selection for the chosen pharmacy (only when pharmacy has multiple branches).
+     */
+    public function showBranchSelection($categoryId)
+    {
+        if (!Auth::check()) {
+            return redirect('/patient-login')->with('info', __('Please login to continue'));
+        }
+
+        $category = Category::findOrFail($categoryId);
+        $user = Auth::user();
+
+        $submission = QuestionnaireSubmission::where('user_id', $user->id)
+            ->where('category_id', $categoryId)
+            ->firstOrFail();
+
+        if ($submission->delivery_type !== 'cannaleo'
+            || !$submission->hasSelectedCannaleoPharmacy()
+            || $submission->cannaleo_delivery_option !== 'pickup') {
+            return redirect()->route('questionnaire.cannaleo-delivery-selection', ['categoryId' => $categoryId])
+                ->with('error', __('Please select pickup as your delivery option first.'));
+        }
+
+        $pharmacy = CannaleoPharmacy::find($submission->selected_cannaleo_pharmacy_id);
+        if (!$pharmacy) {
+            return redirect()->route('questionnaire.cannaleo-pharmacy-selection', ['categoryId' => $categoryId])
+                ->with('error', __('Selected pharmacy not found.'));
+        }
+
+        $branches = is_array($pharmacy->pickup_branches) ? $pharmacy->pickup_branches : [];
+        if (count($branches) <= 1) {
+            // Nothing to choose — skip this step
+            return redirect()->route('questionnaire.cannaleo-medicine-selection', ['categoryId' => $categoryId]);
+        }
+
+        $selectedBranchId = $submission->cannaleo_pickup_branch_id;
+        $isCannaleoOnly = $category->is_cannaleo_only ?? false;
+
+        return view('website.questionnaire.cannaleo_branch_selection', compact(
+            'category',
+            'submission',
+            'pharmacy',
+            'branches',
+            'selectedBranchId',
+            'isCannaleoOnly'
+        ));
+    }
+
+    /**
+     * Save the patient's chosen pickup branch.
+     */
+    public function saveBranchSelection(Request $request, $categoryId)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => __('Please login to continue')], 401);
+        }
+
+        $request->validate([
+            'pickup_branch_id' => 'required|string|max:128',
+        ]);
+
+        $user = Auth::user();
+        $submission = QuestionnaireSubmission::where('user_id', $user->id)
+            ->where('category_id', $categoryId)
+            ->firstOrFail();
+
+        if ($submission->delivery_type !== 'cannaleo'
+            || !$submission->hasSelectedCannaleoPharmacy()
+            || $submission->cannaleo_delivery_option !== 'pickup') {
+            return response()->json(['success' => false, 'message' => __('Invalid flow.')], 422);
+        }
+
+        $pharmacy = CannaleoPharmacy::find($submission->selected_cannaleo_pharmacy_id);
+        $branches = ($pharmacy && is_array($pharmacy->pickup_branches)) ? $pharmacy->pickup_branches : [];
+        $allowedIds = array_map(fn ($b) => (string) ($b['id'] ?? ''), $branches);
+
+        if (!in_array($request->pickup_branch_id, $allowedIds, true)) {
+            return response()->json(['success' => false, 'message' => __('Selected branch is not valid for this pharmacy.')], 422);
+        }
+
+        $submission->update(['cannaleo_pickup_branch_id' => $request->pickup_branch_id]);
+
+        return response()->json([
+            'success'      => true,
+            'message'      => __('Pickup branch selected successfully'),
+            'redirect_url' => url('/questionnaire/category/' . $categoryId . '/cannaleo-medicine-selection'),
         ]);
     }
 

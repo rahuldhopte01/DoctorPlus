@@ -89,35 +89,70 @@ class CuroboPrescriptionPayloadBuilder
             'city'            => $homeCity,
         ];
 
-        $deliveryStreet = $submission->delivery_address ?? '';
-        $deliveryPostalCode = (string) ($submission->delivery_postcode ?? '');
-        $deliveryCity = (string) ($submission->delivery_city ?? '');
+        // Gap 1 fix: resolve delivery option first so delivery address is built correctly below
+        $deliveryOption = $submission->cannaleo_delivery_option ?? 'shipping';
+        $shipping = $deliveryOption;
 
-        // Try to extract postal code from the delivery street string
-        if (! preg_match('/^[0-9]{5}$/', $deliveryPostalCode)) {
-            $deliveryPostalCode = self::extractPostalCode($deliveryStreet);
-        }
-        // Fall back to home address values when delivery postal code / city are missing
-        if (! preg_match('/^[0-9]{5}$/', $deliveryPostalCode)) {
-            $deliveryPostalCode = $homePostalCode;
-        }
-        if (mb_strlen($deliveryCity) < 2) {
-            $deliveryCity = self::extractCityFromAddress($deliveryStreet);
-        }
-        if (mb_strlen($deliveryCity) < 2) {
-            $deliveryCity = $homeCity;
-        }
+        // Gap 2 fix: send the pickup branch ID the patient selected (null for non-pickup options)
+        $pickupBranchId = ($deliveryOption === 'pickup')
+            ? ($submission->cannaleo_pickup_branch_id ?: null)
+            : null;
 
-        $deliveryAddress = [
-            'streetName'      => $deliveryStreet ?: $homeStreet,
-            'houseNr'         => '',
-            'addressAddition' => (string) ($submission->delivery_state ?? ''),
-            'postalCode'      => $deliveryPostalCode,
-            'city'            => $deliveryCity,
-            'salutation'      => $salutation,
-            'firstname'       => $nameParts['firstname'],
-            'lastname'        => $nameParts['lastname'],
-        ];
+        // Gap 3 fix: for pickup orders use the pharmacy address as delivery address;
+        // for all other options use the patient's submitted delivery address.
+        if ($deliveryOption === 'pickup') {
+            $pharmacyStreet = $pharmacy->street ?? '';
+            $pharmacyPostal = (string) ($pharmacy->plz ?? '');
+            $pharmacyCity   = (string) ($pharmacy->city ?? '');
+
+            if (! preg_match('/^[0-9]{5}$/', $pharmacyPostal)) {
+                $pharmacyPostal = self::extractPostalCode($pharmacyStreet);
+            }
+            if (mb_strlen($pharmacyCity) < 2) {
+                $pharmacyCity = self::extractCityFromAddress($pharmacyStreet);
+            }
+
+            $deliveryAddress = [
+                'streetName'      => $pharmacyStreet,
+                'houseNr'         => '',
+                'addressAddition' => '',
+                'postalCode'      => $pharmacyPostal ?: $homePostalCode,
+                'city'            => mb_strlen($pharmacyCity) >= 2 ? $pharmacyCity : $homeCity,
+                'salutation'      => $salutation,
+                'firstname'       => $nameParts['firstname'],
+                'lastname'        => $nameParts['lastname'],
+            ];
+        } else {
+            $deliveryStreet = $submission->delivery_address ?? '';
+            $deliveryPostalCode = (string) ($submission->delivery_postcode ?? '');
+            $deliveryCity = (string) ($submission->delivery_city ?? '');
+
+            // Try to extract postal code from the delivery street string
+            if (! preg_match('/^[0-9]{5}$/', $deliveryPostalCode)) {
+                $deliveryPostalCode = self::extractPostalCode($deliveryStreet);
+            }
+            // Fall back to home address values when delivery postal code / city are missing
+            if (! preg_match('/^[0-9]{5}$/', $deliveryPostalCode)) {
+                $deliveryPostalCode = $homePostalCode;
+            }
+            if (mb_strlen($deliveryCity) < 2) {
+                $deliveryCity = self::extractCityFromAddress($deliveryStreet);
+            }
+            if (mb_strlen($deliveryCity) < 2) {
+                $deliveryCity = $homeCity;
+            }
+
+            $deliveryAddress = [
+                'streetName'      => $deliveryStreet ?: $homeStreet,
+                'houseNr'         => '',
+                'addressAddition' => (string) ($submission->delivery_state ?? ''),
+                'postalCode'      => $deliveryPostalCode,
+                'city'            => $deliveryCity,
+                'salutation'      => $salutation,
+                'firstname'       => $nameParts['firstname'],
+                'lastname'        => $nameParts['lastname'],
+            ];
+        }
 
         $customerPayload = [
             'salutation'      => $salutation,
@@ -145,8 +180,8 @@ class CuroboPrescriptionPayloadBuilder
             $totalGrossFloat += $priceFloat * $qty;
         }
 
-        $shipping = 'shipping';
-        $pickupBranchId = null;
+        // Gap 4 fix: resolve doctor signature and include it in the payload
+        $doctorSignature = self::resolveDoctorSignature($doctor);
 
         $doctorPayload = [
             'name'            => $doctorName,
@@ -154,6 +189,7 @@ class CuroboPrescriptionPayloadBuilder
             'email'           => $doctorEmail,
             'cityOfSignature' => $cityOfSignature,
             'dateOfSignature' => $dateOfSignature,
+            'signature'       => $doctorSignature,
         ];
 
         return [
@@ -172,15 +208,19 @@ class CuroboPrescriptionPayloadBuilder
     }
 
     /**
-     * Resolve the doctor's signature for the Curobo API.
-     * Priority: uploaded signature file (as base64 data URL) → static config value.
-     * Throws if no signature is available — submission is blocked until the doctor uploads one.
+     * Resolve the doctor's own uploaded signature for the Curobo API.
+     * Each doctor must have their own signature uploaded — the static env fallback
+     * is intentionally NOT used here because sending one shared signature for
+     * multiple doctors is medically and legally incorrect.
+     *
+     * Throws if the doctor has no personal signature file, blocking prescription
+     * submission until the doctor uploads one via the admin panel.
      *
      * @throws \RuntimeException
      */
     protected static function resolveDoctorSignature(Doctor $doctor): string
     {
-        // 1. Use the doctor's uploaded scanned signature (image or PDF)
+        // Require the doctor's own uploaded scanned signature (image or PDF)
         if (! empty($doctor->signature)) {
             $path = storage_path('app/doctor-signatures/' . $doctor->signature);
             if (file_exists($path)) {
@@ -191,21 +231,21 @@ class CuroboPrescriptionPayloadBuilder
                 $base64 = base64_encode(file_get_contents($path));
                 return 'data:' . $mimeType . ';base64,' . $base64;
             }
-            Log::warning('Doctor signature file missing on disk', [
+
+            // File record exists in DB but file is missing from disk — log and block
+            Log::error('Doctor signature file missing on disk — cannot submit Cannaleo prescription', [
                 'doctor_id'     => $doctor->id,
                 'expected_path' => $path,
             ]);
-        }
-
-        // 2. Static signature from config (set CUROBO_STATIC_DOCTOR_SIGNATURE in .env)
-        $staticSignature = (string) config('cannaleo.static_doctor_signature', '');
-        if ($staticSignature !== '') {
-            return $staticSignature;
+            throw new \RuntimeException(
+                'Doctor (ID: ' . $doctor->id . ') signature file is missing from disk (' . $path . '). ' .
+                'Please re-upload the signature in the admin panel before approving Cannaleo prescriptions.'
+            );
         }
 
         throw new \RuntimeException(
             'Doctor (ID: ' . $doctor->id . ') has no signature uploaded. ' .
-            'Please upload a signature before approving Cannaleo prescriptions.'
+            'Please upload a personal signature in the admin panel before approving Cannaleo prescriptions.'
         );
     }
 

@@ -24,6 +24,7 @@ class QuestionnaireSubmission extends Model
         'selected_pharmacy_id',
         'selected_cannaleo_pharmacy_id',
         'cannaleo_delivery_option',
+        'cannaleo_pickup_branch_id',
         'selected_medicines',
         'status',
     ];

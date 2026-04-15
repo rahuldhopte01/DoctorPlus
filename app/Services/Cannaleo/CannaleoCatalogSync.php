@@ -60,6 +60,7 @@ class CannaleoCatalogSync
             $items = $this->api->getCatalog();
             $stats['items_fetched'] = count($items);
             $this->syncMedicines($items, $pharmaciesByExternalId, $stats);
+            unset($items);
 
             if ($this->log) {
                 $this->log->update([
@@ -193,63 +194,71 @@ class CannaleoCatalogSync
 
     /**
      * Upsert cannaleo_medicine for each catalog item.
+     * Processes in chunks to avoid exhausting PHP memory on large catalogs.
      *
-     * @param array<int, array<string, mixed>> $items
+     * @param array<int, array<string, mixed>> $items  (passed by reference so spliced items are freed)
      * @param array<string|int, CannaleoPharmacy> $pharmaciesByExternalId
      * @param array<string, int> $stats
      */
-    protected function syncMedicines(array $items, array $pharmaciesByExternalId, array &$stats): void
+    protected function syncMedicines(array &$items, array $pharmaciesByExternalId, array &$stats): void
     {
         $now = Carbon::now();
 
-        foreach ($items as $item) {
-            $pharmacyId = $item['pharmacy_id'] ?? null;
-            if ($pharmacyId === null) {
-                continue;
-            }
-            $pharmacy = $pharmaciesByExternalId[(string) $pharmacyId] ?? null;
-            if (! $pharmacy) {
-                continue;
+        // Process in chunks of 200; array_splice removes each chunk from $items as we go,
+        // so the bulk of the catalog array is freed from memory progressively.
+        while ($chunk = array_splice($items, 0, 200)) {
+            foreach ($chunk as $item) {
+                $pharmacyId = $item['pharmacy_id'] ?? null;
+                if ($pharmacyId === null) {
+                    continue;
+                }
+                $pharmacy = $pharmaciesByExternalId[(string) $pharmacyId] ?? null;
+                if (! $pharmacy) {
+                    continue;
+                }
+
+                $externalId = (string) ($item['id'] ?? '');
+                if ($externalId === '') {
+                    continue;
+                }
+
+                $payload = [
+                    'ansay_id' => $item['ansayId'] ?? null,
+                    'name' => $item['name'] ?? '',
+                    'category' => $item['category'] ?? null,
+                    'is_api_medicine' => true,
+                    'price' => isset($item['price']) ? (float) $item['price'] : null,
+                    'thc' => isset($item['thc']) ? (float) $item['thc'] : null,
+                    'cbd' => isset($item['cbd']) ? (float) $item['cbd'] : null,
+                    'genetic' => $item['genetic'] ?? null,
+                    'strain' => $item['strain'] ?? null,
+                    'country' => $item['country'] ?? null,
+                    'manufacturer' => $item['manufacturer'] ?? null,
+                    'grower' => $item['grower'] ?? null,
+                    'availability' => $item['availibility'] ?? $item['availability'] ?? null,
+                    'irradiated' => isset($item['irradiated']) ? (int) $item['irradiated'] : null,
+                    'terpenes' => isset($item['terpenes']) && is_array($item['terpenes']) ? $item['terpenes'] : null,
+                    'raw_data' => $item,
+                    'last_synced_at' => $now,
+                ];
+
+                $medicine = CannaleoMedicine::updateOrCreate(
+                    [
+                        'cannaleo_pharmacy_id' => $pharmacy->id,
+                        'external_id' => $externalId,
+                    ],
+                    $payload
+                );
+
+                if ($medicine->wasRecentlyCreated) {
+                    $stats['medicines_created']++;
+                } else {
+                    $stats['medicines_updated']++;
+                }
             }
 
-            $externalId = (string) ($item['id'] ?? '');
-            if ($externalId === '') {
-                continue;
-            }
-
-            $payload = [
-                'ansay_id' => $item['ansayId'] ?? null,
-                'name' => $item['name'] ?? '',
-                'category' => $item['category'] ?? null,
-                'is_api_medicine' => true,
-                'price' => isset($item['price']) ? (float) $item['price'] : null,
-                'thc' => isset($item['thc']) ? (float) $item['thc'] : null,
-                'cbd' => isset($item['cbd']) ? (float) $item['cbd'] : null,
-                'genetic' => $item['genetic'] ?? null,
-                'strain' => $item['strain'] ?? null,
-                'country' => $item['country'] ?? null,
-                'manufacturer' => $item['manufacturer'] ?? null,
-                'grower' => $item['grower'] ?? null,
-                'availability' => $item['availibility'] ?? $item['availability'] ?? null,
-                'irradiated' => isset($item['irradiated']) ? (int) $item['irradiated'] : null,
-                'terpenes' => isset($item['terpenes']) && is_array($item['terpenes']) ? $item['terpenes'] : null,
-                'raw_data' => $item,
-                'last_synced_at' => $now,
-            ];
-
-            $medicine = CannaleoMedicine::updateOrCreate(
-                [
-                    'cannaleo_pharmacy_id' => $pharmacy->id,
-                    'external_id' => $externalId,
-                ],
-                $payload
-            );
-
-            if ($medicine->wasRecentlyCreated) {
-                $stats['medicines_created']++;
-            } else {
-                $stats['medicines_updated']++;
-            }
+            unset($chunk);
+            gc_collect_cycles();
         }
     }
 }
