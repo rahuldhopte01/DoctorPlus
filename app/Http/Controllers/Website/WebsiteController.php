@@ -1573,6 +1573,11 @@ class WebsiteController extends Controller
         return view('website.agb');
     }
 
+    public function impressum()
+    {
+        return view('website.impressum');
+    }
+
     public function userProfile()
     {
         (new CustomController)->cancel_max_order();
