@@ -976,4 +976,31 @@ class SettingController extends Controller
 
         return redirect()->back()->withStatus(__('Zoom settings updated successfully..!!'));
     }
+
+    public function update_seo_setting(Request $request)
+    {
+        abort_if(Gate::denies('superadmin_setting'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $setting = Setting::first();
+        $data = $request->only([
+            'meta_title',
+            'meta_description',
+            'meta_keywords',
+            'maintenance_message',
+        ]);
+
+        // Checkboxes — present means ON, absent means OFF
+        $data['maintenance_mode'] = $request->has('maintenance_mode') ? 1 : 0;
+        $data['google_indexing']  = $request->has('google_indexing') ? 1 : 0;
+
+        if ($request->hasFile('og_image')) {
+            $request->validate(['og_image' => 'mimes:jpeg,png,jpg,gif|max:2048']);
+            (new CustomController)->deleteFile($setting->og_image);
+            $data['og_image'] = (new CustomController)->imageUpload($request->og_image);
+        }
+
+        $setting->update($data);
+
+        return redirect()->back()->withStatus(__('SEO & Maintenance settings updated successfully.'));
+    }
 }

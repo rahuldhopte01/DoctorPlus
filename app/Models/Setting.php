@@ -67,6 +67,13 @@ class Setting extends Model
         'website_sidebar_entdecken',
         'website_sidebar_lernen',
         'website_badge_settings',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'og_image',
+        'maintenance_mode',
+        'maintenance_message',
+        'google_indexing',
     ];
 
     protected $appends = ['companyWhite', 'logo', 'favicon'];

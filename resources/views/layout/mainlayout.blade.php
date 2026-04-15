@@ -8,8 +8,37 @@
     @if (isset($title))
     <title>{{ $title }} - {{ $setting->business_name }}</title>
     @else
-    <title>{{ $setting->business_name }}</title>
+    <title>{{ $setting->meta_title ?? $setting->business_name }}</title>
     @endif
+
+    {{-- SEO Meta Tags --}}
+    @if($setting->meta_description)
+    <meta name="description" content="{{ $setting->meta_description }}">
+    @endif
+    @if($setting->meta_keywords)
+    <meta name="keywords" content="{{ $setting->meta_keywords }}">
+    @endif
+
+    {{-- Google Indexing Control --}}
+    @if(!$setting->google_indexing)
+    <meta name="robots" content="noindex, nofollow">
+    @else
+    <meta name="robots" content="index, follow">
+    @endif
+
+    {{-- Open Graph (social share) --}}
+    <meta property="og:title" content="{{ isset($title) ? $title . ' - ' . $setting->business_name : ($setting->meta_title ?? $setting->business_name) }}">
+    <meta property="og:description" content="{{ $setting->meta_description ?? '' }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @if($setting->og_image)
+    <meta property="og:image" content="{{ url('images/upload/' . $setting->og_image) }}">
+    @endif
+    <meta property="og:site_name" content="{{ $setting->business_name }}">
+
+    {{-- Canonical URL --}}
+    <link rel="canonical" href="{{ url()->current() }}">
+
     <link rel="shortcut icon" type="image/x-icon" href="{{$setting->favicon}}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">

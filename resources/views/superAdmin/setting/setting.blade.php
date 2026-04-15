@@ -38,6 +38,7 @@
                         <li class="nav-item"><a class="nav-link" href="#solid-justified-tab8" data-toggle="tab">{{__('Static Pages')}}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#solid-justified-tab9" data-toggle="tab">{{__('Video Call Setting')}}</a></li>
                         <li class="nav-item"><a class="nav-link" href="#solid-justified-tab10" data-toggle="tab">{{__('Zoom Integration')}}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#solid-justified-tab-seo" data-toggle="tab">{{__('SEO & Maintenance')}}</a></li>
                         @endif
                         <li class="nav-item"><a class="nav-link {{ $setting->license_verify == 0 ? 'active' : ''  }}" href="#solid-justified-tab7" data-toggle="tab">{{__('License Setting')}}</a></li>
                     </ul>
@@ -2357,6 +2358,91 @@
                                 </div>
                             </form>
                         </div>
+
+                        {{-- SEO & Maintenance Tab --}}
+                        <div class="tab-pane" id="solid-justified-tab-seo">
+                            <form action="{{ url('update_seo_setting') }}" method="POST" enctype="multipart/form-data" class="myform">
+                                @csrf
+
+                                <h5 class="mb-3">{{ __('SEO Settings') }}</h5>
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label class="col-form-label">{{ __('Default Meta Title') }}</label>
+                                        <input type="text" name="meta_title" value="{{ $setting->meta_title }}" class="form-control" placeholder="{{ __('Leave blank to use business name') }}">
+                                        <small class="text-muted">{{ __('Shown in Google search results as the page title.') }}</small>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label class="col-form-label">{{ __('Meta Keywords') }}</label>
+                                        <input type="text" name="meta_keywords" value="{{ $setting->meta_keywords }}" class="form-control" placeholder="{{ __('e.g. doctor, pharmacy, health') }}">
+                                        <small class="text-muted">{{ __('Comma-separated keywords for search engines.') }}</small>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">{{ __('Meta Description') }}</label>
+                                    <textarea name="meta_description" class="form-control" rows="3" placeholder="{{ __('Brief description shown in Google search snippets (recommended: 150–160 characters)') }}">{{ $setting->meta_description }}</textarea>
+                                    <small class="text-muted" id="meta_desc_count">{{ strlen($setting->meta_description ?? '') }}/160 {{ __('characters') }}</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">{{ __('Open Graph / Social Share Image') }}</label>
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if($setting->og_image)
+                                        <img src="{{ url('images/upload/' . $setting->og_image) }}" alt="OG Image" style="max-height:80px; border-radius:6px; border:1px solid #ddd;">
+                                        @endif
+                                        <input type="file" name="og_image" accept=".png,.jpg,.jpeg,.gif" class="form-control" style="max-width:320px;">
+                                    </div>
+                                    <small class="text-muted">{{ __('Recommended size: 1200×630 px. Shown when sharing your site on Facebook, WhatsApp, etc.') }}</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-form-label d-block">{{ __('Sitemap URL') }}</label>
+                                    <a href="{{ url('sitemap.xml') }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fa fa-sitemap"></i> {{ url('sitemap.xml') }}
+                                    </a>
+                                    <small class="d-block text-muted mt-1">{{ __('Submit this URL to Google Search Console to help Google discover your pages.') }}</small>
+                                </div>
+
+                                <hr class="my-4">
+                                <h5 class="mb-3">{{ __('Google Search Indexing') }}</h5>
+
+                                <div class="form-group d-flex align-items-center gap-3">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="google_indexing" name="google_indexing" value="1" {{ $setting->google_indexing ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="google_indexing">{{ __('Allow Google to index this website') }}</label>
+                                    </div>
+                                </div>
+                                <small class="text-muted d-block mb-4">
+                                    {{ __('When OFF, a "noindex, nofollow" tag is added to all pages and robots.txt will block all crawlers. Turn OFF while the site is under development.') }}
+                                </small>
+
+                                <hr class="my-4">
+                                <h5 class="mb-3">{{ __('Maintenance Mode') }}</h5>
+
+                                <div class="form-group d-flex align-items-center gap-3">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="maintenance_mode" name="maintenance_mode" value="1" {{ $setting->maintenance_mode ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="maintenance_mode">{{ __('Enable Maintenance Mode') }}</label>
+                                    </div>
+                                    @if($setting->maintenance_mode)
+                                    <span class="badge badge-danger">{{ __('SITE IS CURRENTLY OFFLINE') }}</span>
+                                    @endif
+                                </div>
+                                <small class="text-muted d-block mb-3">
+                                    {{ __('When ON, all visitors see the maintenance page. Admins can still log in and access the dashboard normally.') }}
+                                </small>
+
+                                <div class="form-group">
+                                    <label class="col-form-label">{{ __('Maintenance Message') }}</label>
+                                    <textarea name="maintenance_message" class="form-control" rows="3" placeholder="{{ __('We are currently performing scheduled maintenance. We\'ll be back shortly.') }}">{{ $setting->maintenance_message }}</textarea>
+                                    <small class="text-muted">{{ __('This message is shown to visitors on the maintenance page.') }}</small>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary mt-3">{{ __('Save SEO & Maintenance Settings') }}</button>
+                                </div>
+                            </form>
+                        </div>
                         @endif
 
                         <div class="tab-pane {{ $setting->license_verify == 0 ? ' show active' : ''  }}" id="solid-justified-tab7">
@@ -3024,6 +3110,13 @@
                 },
                 complete: function() { btn.prop('disabled', false); }
             });
+        });
+
+        // --- Meta Description Character Counter ---
+        $('textarea[name="meta_description"]').on('input', function() {
+            var len = $(this).val().length;
+            var color = len > 160 ? 'text-danger' : (len > 140 ? 'text-warning' : 'text-muted');
+            $('#meta_desc_count').attr('class', color).text(len + '/160 characters');
         });
 
         // --- Generic Clone Fallback (if any sections were missed) ---

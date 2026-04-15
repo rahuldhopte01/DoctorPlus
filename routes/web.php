@@ -86,7 +86,7 @@ Route::post('/stripe/webhook', [\App\Http\Controllers\Website\PrescriptionPaymen
     ->name('stripe.webhook')
     ->withoutMiddleware(['web']);
 
-Route::group(['middleware' => ['XssSanitizer']], function () {
+Route::group(['middleware' => ['XssSanitizer', 'maintenance']], function () {
     Route::get('/', [WebsiteController::class, 'index']);
     Route::any('/show-doctors', [WebsiteController::class, 'doctor']);
     Route::get('/doctor-profile/{id}/{name}', [WebsiteController::class, 'doctor_profile']);
@@ -536,4 +536,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Medicine (Super Admin only)
     Route::resource('medicine',MedicineController::class);
+
+    // SEO & Maintenance settings
+    Route::post('/update_seo_setting', [SettingController::class, 'update_seo_setting']);
 });
+
+// Sitemap & dynamic robots.txt (public, no auth needed)
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
+Route::get('/robots.txt', [\App\Http\Controllers\SitemapController::class, 'robots']);
