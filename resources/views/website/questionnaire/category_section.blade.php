@@ -95,6 +95,66 @@
         border: 1px solid #e2e8f0;
         margin-bottom: 1.5rem !important;
     }
+
+    /* Keep long question text and option labels inside cards on mobile */
+    .question-title {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+    .question-options-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .question-option-item {
+        min-width: 0;
+    }
+    .question-option-label {
+        width: 100%;
+        max-width: 100%;
+        white-space: normal;
+        line-height: 1.35;
+    }
+    .question-option-text {
+        display: block;
+        width: 100%;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+    @media (max-width: 991px) {
+        .question-title {
+            font-size: 1.35rem;
+            line-height: 1.3;
+        }
+        .question-wrapper {
+            padding: 1.25rem 1rem;
+        }
+        .question-options-grid .question-option-item {
+            width: 100%;
+            flex: 0 0 100%;
+        }
+        .question-options-grid .question-option-label {
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .question-options-grid .question-option-text {
+            max-height: 11rem;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y;
+            padding-right: 0.2rem;
+        }
+        .modern-check-label span {
+            font-size: 0.95rem;
+            line-height: 1.45;
+        }
+    }
     
     /* Modern Checkbox Style */
     .modern-check-label {
@@ -111,6 +171,13 @@
     .modern-check-label:hover {
         border-color: var(--primary-color);
         background: #f8fafc;
+    }
+    .modern-check-label span {
+        flex: 1;
+        min-width: 0;
+        padding-right: 0.75rem;
+        overflow-wrap: anywhere;
+        word-break: break-word;
     }
     input[type="checkbox"]:checked + .modern-check-label {
         border-color: var(--primary-color);
@@ -222,7 +289,7 @@
                 @php $savedSubAnswers = $savedAnswers['sub_answers'][$question->id] ?? []; @endphp
                 <div class="question-wrapper mb-10" data-question-id="{{ $question->id }}"
                      data-behaviors='@json($question->option_behaviors ?? [])'>
-                    <label class="block font-heading font-bold text-gray-900 mb-6 text-2xl leading-tight">
+                    <label class="question-title block font-heading font-bold text-gray-900 mb-6 text-2xl leading-tight">
                         {{ $question->question_text }}
                         @if($question->required)
                         <span class="text-danger ml-1">*</span>
@@ -330,9 +397,9 @@
                                 $savedValue = isset($savedAnswers['answers'][$question->id]) ? $savedAnswers['answers'][$question->id] : null;
                                 $savedValue = is_array($savedValue) ? null : $savedValue;
                             @endphp
-                                <div class="flex flex-wrap gap-4">
+                                <div class="question-options-grid">
                                     @foreach($question->options ?? [] as $optionIndex => $option)
-                                    <div class="relative">
+                                    <div class="question-option-item relative">
                                         <input type="radio" 
                                             id="q{{ $question->id }}_opt{{ $optionIndex }}"
                                             name="answers[{{ $question->id }}]" 
@@ -342,8 +409,8 @@
                                             {{ $savedValue !== null && $savedValue == $option ? 'checked' : '' }}
                                             @if($question->required) required @endif>
                                     <label for="q{{ $question->id }}_opt{{ $optionIndex }}" 
-                                        class="flex items-center justify-center min-w-[120px] px-8 py-4 text-base font-bold text-gray-700 bg-white border-2 border-gray-100 rounded-full cursor-pointer hover:-translate-y-1 hover:shadow-md hover:border-primary peer-checked:bg-primary peer-checked:!text-white peer-checked:border-primary peer-checked:shadow-lg peer-focus:ring-4 peer-focus:ring-primary/20 transition-all duration-300 font-body shadow-sm text-center">
-                                        {{ $option }}
+                                        class="question-option-label flex items-center justify-center min-w-[120px] px-8 py-4 text-base font-bold text-gray-700 bg-white border-2 border-gray-100 rounded-full cursor-pointer hover:-translate-y-1 hover:shadow-md hover:border-primary peer-checked:bg-primary peer-checked:!text-white peer-checked:border-primary peer-checked:shadow-lg peer-focus:ring-4 peer-focus:ring-primary/20 transition-all duration-300 font-body shadow-sm text-center">
+                                        <span class="question-option-text">{{ $option }}</span>
                                     </label>
                                     </div>
                                     @endforeach
