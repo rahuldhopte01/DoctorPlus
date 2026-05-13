@@ -1094,7 +1094,7 @@
         ['left' => 'Daten im Ausland', 'right' => 'Daten sicher in DE'],
         ['left' => 'Keine DSGVO', 'right' => '100% DSGVO-konform'],
         ['left' => 'Support eingeschränkt', 'right' => 'Immer erreichbar'],
-        ['left' => 'Ausländische Tech', 'right' => 'Made in Germany']
+        ['left' => 'Ausländische Tech', 'right' => 'In Deutschland hergestellt']
     ];
 
     $compBtnText = !empty($compData['btn_text']) ? $compData['btn_text'] : 'Jetzt Rezept anfragen &rarr;';
@@ -1267,7 +1267,7 @@
                             <img src="https://drfuxx.stratolution.de/sample-a-klassisch/img/made-in-germany.svg" width="30" alt="Shield" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2092/2092663.png'">
                         </div>
                         <div class="badge-text">
-                            <h4>Made in Germany</h4>
+                            <h4>In Deutschland hergestellt</h4>
                             <p>Entwickelt, gehostet und betrieben in Deutschland</p>
                         </div>
                     </div>

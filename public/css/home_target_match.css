@@ -1610,12 +1610,13 @@ body.home-target .comp-btn {
 }
 
 .faq-question {
-  padding: 28px 0;
+  padding: 28px 0 28px 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  border-left: 5px solid transparent;
+  transition: background-color 0.2s ease, border-left-color 0.2s ease, color 0.2s ease;
 }
 
 /* Text styling for question */
@@ -1634,20 +1635,11 @@ body.home-target .comp-btn {
   font-weight: bold;
 }
 
-/* Active & Hover State Styling - UPDATED TO INCLUDE ARIA-EXPANDED */
-.faq-question {
-  border-left: 5px solid transparent;
-  padding-left: 0;
-  transition: all 0.3s ease;
-}
-
+/* Keep open/close smooth without layout-shifting indent animation */
 .faq-question:hover,
 .faq-question[aria-expanded="true"] {
-  border-left: 12px solid var(--primary-color);
-  padding-left: 25px;
-  /* Significant indent to accommodate the border */
+  border-left-color: var(--primary-color);
   background: rgba(124, 58, 237, 0.03);
-  /* Subtle background for better focus */
 }
 
 .faq-question:hover .faq-q-text,
@@ -1674,6 +1666,15 @@ body.home-target .comp-btn {
   max-width: 100%;
 }
 
+.faq-accordion .collapse,
+.faq-accordion .collapsing {
+  will-change: height;
+}
+
+.faq-accordion .collapsing {
+  transition: height 0.2s ease;
+}
+
 @media (max-width: 768px) {
   .faq-section {
     padding: 60px 15px;
@@ -1694,14 +1695,7 @@ body.home-target .comp-btn {
   }
 
   .faq-question {
-    padding: 22px 0;
-  }
-
-  /* Optimized hover/active indent for mobile */
-  .faq-question:hover,
-  .faq-question[aria-expanded="true"] {
-    border-left-width: 8px;
-    padding-left: 18px;
+    padding: 22px 0 22px 12px;
   }
 }
 
