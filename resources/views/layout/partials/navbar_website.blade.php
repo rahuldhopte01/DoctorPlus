@@ -457,22 +457,31 @@
 
     /* Toggle Buttons */
     .sidebar-toggles {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
         margin-bottom: 32px;
     }
 
     .toggle-btn {
-        flex: 1;
-        padding: 12px;
+        min-width: 0;
+        min-height: 52px;
+        padding: 10px 12px;
         border-radius: 30px;
         border: 1px solid #eee;
         background: #fff;
         font-weight: 700;
         font-size: 0.95rem;
+        line-height: 1.2;
         cursor: pointer;
         transition: all 0.3s;
         text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: normal;
     }
 
     .toggle-btn.active {
