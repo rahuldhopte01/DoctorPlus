@@ -323,6 +323,7 @@ class SettingController extends Controller
                 'status' => $request->has('promo_status') ? 1 : 0,
                 'text_italic' => $request->promo_text_italic,
                 'text_bold' => $request->promo_text_bold,
+                'text_bold_black' => $request->promo_text_bold_black,
                 'end_date' => $request->promo_end_date,
             ];
             $data['website_header_promo_bar'] = json_encode($promoInfo);
@@ -661,6 +662,16 @@ class SettingController extends Controller
             if (!isset($advisors['slots'])) $advisors['slots'] = [];
             
             for ($i = 0; $i < 6; $i++) {
+                $shouldDelete = $request->input('advisor_delete_'.$i) == '1';
+                if ($shouldDelete) {
+                    $slotToDelete = $advisors['slots'][$i] ?? [];
+                    if (!empty($slotToDelete['image'])) {
+                        (new CustomController)->deleteFile($slotToDelete['image']);
+                    }
+                    $advisors['slots'][$i] = [];
+                    continue;
+                }
+
                 if ($request->has('advisor_name_'.$i) || $request->hasFile('advisor_image_'.$i)) {
                     $slot = $advisors['slots'][$i] ?? [];
                     

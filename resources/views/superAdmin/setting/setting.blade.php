@@ -652,7 +652,7 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <label>{{__('Promo Text (Italic)')}}</label>
-                                                <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im April Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im April Ihre Gesundheit:">
+                                                <input type="text" name="promo_text_italic" value="{{ $promo['text_italic'] ?? 'Erfrischen Sie im Mai Ihre Gesundheit:' }}" class="form-control" placeholder="Erfrischen Sie im Mai Ihre Gesundheit:">
                                             </div>
                                                 <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
@@ -660,11 +660,11 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
-                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode APRIL sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode APRIL sparen Sie 10 €">
+                                                <input type="text" name="promo_text_bold" value="{{ $promo['text_bold'] ?? 'Mit dem Rabattcode MAI sparen Sie 10 €.' }}" class="form-control" placeholder="Mit dem Rabattcode MAI sparen Sie 10 €">
                                             </div>
                                                 <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
-                                                <input type="text" name="promo_text_bold_black" value="{{ $promo['text_bold'] ?? 'APRIL' }}" class="form-control" placeholder="APRIL ">
+                                                <input type="text" name="promo_text_bold_black" value="{{ $promo['text_bold_black'] ?? 'MAI' }}" class="form-control" placeholder="MAI ">
                                             </div>
                                                 <div class="col-md-5">
                                                 <label>{{__('Promo Text (Bold)')}}</label>
@@ -1742,11 +1742,15 @@
                                                 @php $slot = $adv['slots'][$i] ?? []; @endphp
                                                 <div class="col-md-4 border-right border-bottom p-3">
                                                     <label class="font-weight-bold">{{__('Advisor Slot ' . ($i + 1))}}</label>
+                                                    <input type="hidden" name="advisor_delete_{{$i}}" id="advisor_delete_{{$i}}" value="0">
                                                     <div class="avatar-upload avatar-box">
                                                         <div class="avatar-edit">
                                                             <input type='file' id="advisor_image_{{$i}}" name="advisor_image_{{$i}}" accept=".png, .jpg, .jpeg" />
                                                             <label for="advisor_image_{{$i}}"></label>
                                                         </div>
+                                                        <button type="button" class="btn btn-danger btn-sm advisor-delete-btn" data-index="{{$i}}" title="Delete advisor" style="position:absolute; top:8px; right:50px; z-index:5; border-radius:50%; width:28px; height:28px; padding:0;">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
                                                         <div class="avatar-preview">
                                                             <div id="advisor_image_{{$i}}_Preview" style="background-image: url('{{ !empty($slot['image']) ? url('images/upload/'.$slot['image']) : url('images/upload/default.png') }}');"></div>
                                                         </div>
@@ -3067,6 +3071,8 @@
         $(document).on('click', '.remove-lernen-link', function() { $(this).closest('.lernen-link-item').remove(); });
 
         // --- Image Previews ---
+        const advisorDefaultPreview = @json(url('images/upload/default.png'));
+
         function readURL(input, previewId) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
@@ -3080,6 +3086,24 @@
         $("#hero_bg_image").change(function() { readURL(this, 'heroBgImagePreview'); });
         $("#about_image").change(function() { readURL(this, 'aboutImagePreview'); });
         $("#website_header_logo").change(function() { readURL(this, 'websiteHeaderLogoPreview'); });
+        
+        for (let i = 0; i < 6; i++) {
+            $(`#advisor_image_${i}`).on('change', function() {
+                readURL(this, `advisor_image_${i}_Preview`);
+                $(`#advisor_delete_${i}`).val('0');
+            });
+            $(`input[name="advisor_name_${i}"]`).on('input', function() {
+                $(`#advisor_delete_${i}`).val('0');
+            });
+        }
+        
+        $(document).on('click', '.advisor-delete-btn', function() {
+            const idx = $(this).data('index');
+            $(`#advisor_delete_${idx}`).val('1');
+            $(`input[name="advisor_name_${idx}"]`).val('');
+            $(`#advisor_image_${idx}`).val('');
+            $(`#advisor_image_${idx}_Preview`).css('background-image', `url('${advisorDefaultPreview}')`);
+        });
 
         // --- Zoom Settings Toggle ---
         $('#zoom_switch').change(function() {
